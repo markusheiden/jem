@@ -1,7 +1,7 @@
 package de.heiden.jem.models.c64;
 
 import de.heiden.jem.components.clock.Clock;
-import de.heiden.jem.components.clock.RealTimeSlowDown;
+import de.heiden.jem.components.clock.StopWatch;
 import de.heiden.jem.components.clock.serialthreads.SerialClock;
 import de.heiden.jem.models.c64.components.CIA6526;
 import de.heiden.jem.models.c64.components.ColorRAM;
@@ -82,19 +82,19 @@ public class C64
 
     // real time measurement
     // TODO 2010-03-14 mh: NTSC: 1022700 Hz
-    new RealTimeSlowDown(clock, 985248, 50);
+    new StopWatch(clock, 985248);
   }
 
   public void start() throws Exception
   {
-    // init RAM with 0xEA
-    // TODO correct?
+    // init RAM with 0x02 (crash) to easier detect wrong behaviour
+    // TODO 2010-06-22 mh: realistic init?
     for (int addr = 0; addr < 0x10000; addr++)
     {
       _ram.write(0x02, addr);
     }
 
-    // TODO fill screen with complete character set
+    // fill screen with complete character set
     for (int i = 0; i < 0x400; i++)
     {
       _ram.write(i & 0xFF, 0x400 + i);
