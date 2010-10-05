@@ -105,7 +105,7 @@ class MemAccessUnit implements ClockedComponent
   {
     // TODO BA for next sprites
     int pointer = _vic._bus.read(0); // VIC cycle part
-    int address = 0 + pointer << 7 + 0; // TODO base and row
+    int address = 0 + pointer << 6 + 0; // TODO base and row
     waitForTick();
     if (_vic._sprites[number].enabled)
     {

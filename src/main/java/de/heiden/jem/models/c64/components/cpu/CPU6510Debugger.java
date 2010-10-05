@@ -1,6 +1,7 @@
 package de.heiden.jem.models.c64.components.cpu;
 
 import de.heiden.jem.components.clock.Clock;
+import de.heiden.jem.models.c64.components.bus.C64Bus;
 import org.serialthreads.Interruptible;
 
 import java.util.HashSet;

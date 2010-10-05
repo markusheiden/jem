@@ -9,6 +9,7 @@ import de.heiden.jem.components.ports.InputOutputPortImpl;
 import de.heiden.jem.components.ports.InputPort;
 import de.heiden.jem.components.ports.InputPortImpl;
 import de.heiden.jem.components.ports.InputPortListener;
+import de.heiden.jem.models.c64.components.bus.C64Bus;
 import de.heiden.jem.models.c64.monitor.Monitor;
 import org.apache.log4j.Logger;
 import org.serialthreads.Interruptible;
@@ -147,7 +148,10 @@ public class CPU6510 implements ClockedComponent
       else
       {
         preExecute();
-        OPCODES[readBytePC()].execute();
+        int b = readBytePC();
+        Opcode opcode = OPCODES[b];
+        opcode.execute();
+//        OPCODES[readBytePC()].execute();
       }
     }
   }
