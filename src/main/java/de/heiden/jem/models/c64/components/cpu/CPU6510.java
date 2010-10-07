@@ -23,17 +23,13 @@ public class CPU6510 implements ClockedComponent
    * Constructor.
    *
    * @param clock system clock
-   * @param bus cpu bus
    * @require clock != null
-   * @require bus != null
    */
-  public CPU6510(Clock clock, C64Bus bus)
+  public CPU6510(Clock clock)
   {
     assert clock != null : "clock != null";
-    assert bus != null : "bus != null";
 
     _state = new CPU6510State();
-    _bus = bus;
 
     _port = new InputOutputPortImpl();
 
@@ -90,6 +86,19 @@ public class CPU6510 implements ClockedComponent
   }
 
   /**
+   * Connect to bus.
+   *
+   * @param bus cpu bus
+   * @require bus != null
+   */
+  public void connect(C64Bus bus)
+  {
+    assert bus != null : "bus != null";
+    
+    _bus = bus;
+  }
+
+  /**
    * Reset CPU.
    * <p/>
    * TODO should be protected?
@@ -109,6 +118,14 @@ public class CPU6510 implements ClockedComponent
   public String getName()
   {
     return getClass().getSimpleName();
+  }
+
+  /**
+   * CPU port.
+   */
+  public InputOutputPort getPort()
+  {
+    return _port;
   }
 
   /**
@@ -3530,7 +3547,16 @@ public class CPU6510 implements ClockedComponent
   @Interruptible
   protected final void write(int value, int addr)
   {
+    if (addr == 0)
+    {
+      _port.setOutputMask(value);
+    }
+    else if (addr == 1) 
+    {
+      _port.setOutputMask(value);
+    }
     _bus.write(value, addr);
+
     _tick.waitForTick();
   }
 
@@ -3543,7 +3569,20 @@ public class CPU6510 implements ClockedComponent
   @Interruptible
   protected final int read(int addr)
   {
-    int result = _bus.read(addr);
+    int result;
+    if (addr == 0)
+    {
+      result = _port.outputMask();
+    }
+    else if (addr == 1)
+    {
+      result = _port.inputData();
+    }
+    else
+    {
+      result = _bus.read(addr);
+    }
+
     _tick.waitForTick();
 
     return result;
@@ -3587,8 +3626,8 @@ public class CPU6510 implements ClockedComponent
   final CPU6510State _state;
 
   final Tick _tick;
-  private final C64Bus _bus;
-  private final InputOutputPort _port;
+  private C64Bus _bus;
+  private final InputOutputPortImpl _port;
   private final InputPort _irq;
   private final InputPort _nmi;
 

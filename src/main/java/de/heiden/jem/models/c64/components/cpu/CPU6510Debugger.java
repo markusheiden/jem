@@ -25,13 +25,11 @@ public class CPU6510Debugger extends CPU6510
    * Constructor.
    *
    * @param clock system clock
-   * @param bus cpu bus
    * @require clock != null
-   * @require bus != null
    */
-  public CPU6510Debugger(Clock clock, C64Bus bus)
+  public CPU6510Debugger(Clock clock)
   {
-    super(clock, bus);
+    super(clock);
 
     _suspend = false;
     _suspended = false;
