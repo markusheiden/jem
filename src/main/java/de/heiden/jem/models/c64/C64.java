@@ -8,7 +8,7 @@ import de.heiden.jem.models.c64.components.CIA6526;
 import de.heiden.jem.models.c64.components.ColorRAM;
 import de.heiden.jem.models.c64.components.RAM;
 import de.heiden.jem.models.c64.components.ROM;
-import de.heiden.jem.models.c64.components.bus.C64Bus;
+import de.heiden.jem.components.bus.C64Bus;
 import de.heiden.jem.models.c64.components.cpu.CPU6510;
 import de.heiden.jem.models.c64.components.cpu.CPU6510Debugger;
 import de.heiden.jem.models.c64.components.keyboard.Keyboard;

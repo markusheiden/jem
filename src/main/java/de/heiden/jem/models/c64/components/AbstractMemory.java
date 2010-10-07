@@ -1,6 +1,6 @@
 package de.heiden.jem.models.c64.components;
 
-import de.heiden.jem.models.c64.components.bus.BusDevice;
+import de.heiden.jem.components.bus.BusDevice;
 
 /**
  * Byte memory based bus device.

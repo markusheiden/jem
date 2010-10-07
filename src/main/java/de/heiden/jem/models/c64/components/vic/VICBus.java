@@ -4,7 +4,7 @@ import de.heiden.jem.components.ports.OutputPort;
 import de.heiden.jem.components.ports.OutputPortListener;
 import de.heiden.jem.models.c64.components.RAM;
 import de.heiden.jem.models.c64.components.ROM;
-import de.heiden.jem.models.c64.components.bus.BusDevice;
+import de.heiden.jem.components.bus.BusDevice;
 
 /**
  * VIC CPUBus.

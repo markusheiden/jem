@@ -2,7 +2,7 @@ package de.heiden.jem.models.c64.components.vic;
 
 import de.heiden.jem.components.clock.Clock;
 import de.heiden.jem.models.c64.components.ColorRAM;
-import de.heiden.jem.models.c64.components.bus.BusDevice;
+import de.heiden.jem.components.bus.BusDevice;
 import org.apache.log4j.Logger;
 
 /**

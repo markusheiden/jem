@@ -1,4 +1,4 @@
-package de.heiden.jem.models.c64.components.bus;
+package de.heiden.jem.components.bus;
 
 /**
  * Device (slave) connected to bus.

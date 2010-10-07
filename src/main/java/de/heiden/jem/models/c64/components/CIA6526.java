@@ -6,7 +6,7 @@ import de.heiden.jem.components.ports.InputOutputPort;
 import de.heiden.jem.components.ports.InputOutputPortImpl;
 import de.heiden.jem.components.ports.OutputPort;
 import de.heiden.jem.components.ports.OutputPortImpl;
-import de.heiden.jem.models.c64.components.bus.BusDevice;
+import de.heiden.jem.components.bus.BusDevice;
 import org.apache.log4j.Logger;
 
 /**

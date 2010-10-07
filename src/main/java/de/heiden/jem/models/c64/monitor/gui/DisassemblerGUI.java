@@ -2,7 +2,7 @@ package de.heiden.jem.models.c64.monitor.gui;
 
 import de.heiden.c64dt.assembler.Disassembler;
 import de.heiden.c64dt.gui.JC64TextArea;
-import de.heiden.jem.models.c64.components.bus.BusDevice;
+import de.heiden.jem.components.bus.BusDevice;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;

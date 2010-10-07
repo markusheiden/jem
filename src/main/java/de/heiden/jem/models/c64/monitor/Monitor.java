@@ -2,7 +2,7 @@ package de.heiden.jem.models.c64.monitor;
 
 import de.heiden.c64dt.assembler.Opcode;
 import de.heiden.c64dt.util.HexUtil;
-import de.heiden.jem.models.c64.components.bus.BusDevice;
+import de.heiden.jem.components.bus.BusDevice;
 import de.heiden.jem.models.c64.components.cpu.CPU6510State;
 
 /**

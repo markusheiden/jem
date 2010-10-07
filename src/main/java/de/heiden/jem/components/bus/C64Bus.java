@@ -1,14 +1,8 @@
-package de.heiden.jem.models.c64.components.bus;
+package de.heiden.jem.components.bus;
 
 import de.heiden.jem.components.ports.OutputPort;
 import de.heiden.jem.components.ports.OutputPortListener;
-import de.heiden.jem.models.c64.components.CIA6526;
-import de.heiden.jem.models.c64.components.ColorRAM;
 import de.heiden.jem.models.c64.components.RAM;
-import de.heiden.jem.models.c64.components.ROM;
-import de.heiden.jem.models.c64.components.bus.BusDevice;
-import de.heiden.jem.models.c64.components.bus.NoBusDevice;
-import de.heiden.jem.models.c64.components.vic.VIC6569PAL;
 
 /**
  * C64 bus.
