@@ -1,10 +1,12 @@
 package de.heiden.jem.models.c64.components.cpu;
 
+import de.heiden.c64dt.util.HexUtil;
 import de.heiden.jem.components.bus.BusDevice;
 import de.heiden.jem.components.bus.NoBusDevice;
 import de.heiden.jem.components.ports.OutputPort;
 import de.heiden.jem.components.ports.OutputPortListener;
 import de.heiden.jem.models.c64.components.RAM;
+import org.apache.log4j.Logger;
 
 /**
  * C64 bus.
@@ -63,7 +65,15 @@ public class C64Bus implements BusDevice
       @Override
       public final void outputPortChanged(int value, int mask)
       {
-        _ioMode = _ioModes[((value << 2) | 0x03) & 0x1f];
+        BusDevice oldIoMode = _ioMode;
+        // TODO 2010-10-08 mh: consider signals from expansion port
+        int mode = ((value << 2) | 0x03) & 0x1f;
+        BusDevice newIoMode = _ioModes[mode];
+        _ioMode = newIoMode;
+        if (_logger.isDebugEnabled() && oldIoMode != _ioMode)
+        {
+          _logger.debug("Change bus mode to " + HexUtil.hexBytePlain(mode));
+        }
       }
     });
 
@@ -216,6 +226,11 @@ public class C64Bus implements BusDevice
   private BusDevice _ioMode;
   private final BusDevice[] _ioModes;
   private final BusDevice[] _ioMap;
+
+  /**
+   * Logger.
+   */
+  private final Logger _logger = Logger.getLogger(getClass());
 
   //
   // Inner classes for different address configurations
