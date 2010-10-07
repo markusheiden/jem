@@ -3633,5 +3633,5 @@ public class CPU6510 implements ClockedComponent
   /**
    * Logger.
    */
-  private static final Logger _logger = Logger.getLogger(CPU6510.class);
+  private final Logger _logger = Logger.getLogger(getClass());
 }
