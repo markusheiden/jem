@@ -38,6 +38,14 @@ public class C64
 
   /**
    * Constructor.
+   */
+  public C64() throws Exception
+  {
+    this(false);
+  }
+
+  /**
+   * Constructor.
    *
    * @param debug use debugger cpu?
    */
@@ -52,7 +60,7 @@ public class C64
    * @param clock clock
    * @param debug use debugger cpu?
    */
-  public C64(Clock clock, boolean debug) throws Exception
+  private C64(Clock clock, boolean debug) throws Exception
   {
     _clock = clock;
 

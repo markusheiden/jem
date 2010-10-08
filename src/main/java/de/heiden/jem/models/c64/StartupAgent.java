@@ -10,7 +10,7 @@ public class StartupAgent
   public void start() throws Exception
   {
     _logger.debug("Starting c64");
-    new C64(true).start();
+    new C64().start();
   }
 
   public static void main(String[] args)

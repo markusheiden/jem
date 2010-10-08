@@ -1,5 +1,7 @@
 package de.heiden.jem.models.c64.components.cpu;
 
+import static de.heiden.c64dt.assembler.Opcode.OPCODES;
+
 import de.heiden.c64dt.assembler.Opcode;
 import de.heiden.jem.components.clock.Clock;
 import de.heiden.jem.models.c64.monitor.Monitor;
@@ -82,7 +84,7 @@ public class CPU6510Debugger extends CPU6510
   }
 
   @Override
-  protected void preExecute()
+  protected final void preExecute()
   {
     //
     // Support for manual tracing per java breakpoint
@@ -124,7 +126,7 @@ public class CPU6510Debugger extends CPU6510
     int pc = _state.PC;
     trace.address = pc;
 
-    Opcode opcode = Opcode.opcode(_bus.read(pc++));
+    Opcode opcode = OPCODES[_bus.read(pc++)];
     trace.opcode = opcode;
 
     int argument = 0;
@@ -236,11 +238,13 @@ public class CPU6510Debugger extends CPU6510
     }
   }
 
+  @Override
   public String toString()
   {
     StringBuilder result = new StringBuilder();
-    result.append("Debugger:\n");
-    for (int i = 10; i > 0; i--)
+    result.append(getClass().getSimpleName());
+    result.append(":\n");
+    for (int i = 20; i > 0; i--)
     {
       int t = _currentTrace - i;
       if (t < 0)

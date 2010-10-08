@@ -149,6 +149,7 @@ public class CPU6510 implements ClockedComponent
     reset();
 
     final CPU6510State state = _state;
+    final Opcode[] opcodes = OPCODES;
     while (true)
     {
       if (state.NMI)
@@ -164,10 +165,10 @@ public class CPU6510 implements ClockedComponent
       else
       {
         preExecute();
-        int b = readBytePC();
-        Opcode opcode = OPCODES[b];
-        opcode.execute();
-//        OPCODES[readBytePC()].execute();
+//        int b = readBytePC();
+//        Opcode opcode = opcodes[b];
+//        opcode.execute();
+        opcodes[readBytePC()].execute();
       }
     }
   }
@@ -182,7 +183,7 @@ public class CPU6510 implements ClockedComponent
       {
         @Override
         @Interruptible
-        public void execute() // $00: BRK (7)
+        public final void execute() // $00: BRK (7)
         {
           _state.B = true;
           interrupt(0xFFFA);
@@ -193,7 +194,7 @@ public class CPU6510 implements ClockedComponent
       {
         @Override
         @Interruptible
-        public void execute() // $01: ORA ($XX,X) (6)
+        public final void execute() // $01: ORA ($XX,X) (6)
         {
           or(read(readZeropageIndirectXAddressPC()));
         }
@@ -203,7 +204,7 @@ public class CPU6510 implements ClockedComponent
       {
         @Override
         @Interruptible
-        public void execute() // $02: *KIL (*)
+        public final void execute() // $02: *KIL (*)
         {
           crash();
         }
@@ -213,7 +214,7 @@ public class CPU6510 implements ClockedComponent
       {
         @Override
         @Interruptible
-        public void execute() // $03: *SLO ($XX,X) (8)
+        public final void execute() // $03: *SLO ($XX,X) (8)
         {
           shiftLeftOr(readZeropageIndirectXAddressPC());
         }
@@ -223,7 +224,7 @@ public class CPU6510 implements ClockedComponent
       {
         @Override
         @Interruptible
-        public void execute() // $04: *NOP (3)
+        public final void execute() // $04: *NOP (3)
         {
           nop13();
         }
@@ -233,7 +234,7 @@ public class CPU6510 implements ClockedComponent
       {
         @Override
         @Interruptible
-        public void execute() // $05: ORA $XX (3)
+        public final void execute() // $05: ORA $XX (3)
         {
           or(read(readAbsoluteZeropageAddressPC()));
         }
@@ -243,7 +244,7 @@ public class CPU6510 implements ClockedComponent
       {
         @Override
         @Interruptible
-        public void execute() // $06: ASL $XX (5)
+        public final void execute() // $06: ASL $XX (5)
         {
           int addr = readAbsoluteZeropageAddressPC();
           write(shiftLeft(read(addr)), addr);
@@ -254,7 +255,7 @@ public class CPU6510 implements ClockedComponent
       {
         @Override
         @Interruptible
-        public void execute() // $07: *SLO $XX (5)
+        public final void execute() // $07: *SLO $XX (5)
         {
           shiftLeftOr(readAbsoluteZeropageAddressPC());
         }
@@ -264,7 +265,7 @@ public class CPU6510 implements ClockedComponent
       {
         @Override
         @Interruptible
-        public void execute() // $08: PHP (3)
+        public final void execute() // $08: PHP (3)
         {
           pushByte(_state.getP());
         }
@@ -274,7 +275,7 @@ public class CPU6510 implements ClockedComponent
       {
         @Override
         @Interruptible
-        public void execute() // $09: ORA #$XX (2)
+        public final void execute() // $09: ORA #$XX (2)
         {
           or(readImmediatePC());
         }
@@ -284,7 +285,7 @@ public class CPU6510 implements ClockedComponent
       {
         @Override
         @Interruptible
-        public void execute() // $0A: ASL (2)
+        public final void execute() // $0A: ASL (2)
         {
           _tick.waitForTick(); // minimum operation time: 1 tick
           _state.A = shiftLeft(_state.A);
@@ -295,7 +296,7 @@ public class CPU6510 implements ClockedComponent
       {
         @Override
         @Interruptible
-        public void execute() // $0B:
+        public final void execute() // $0B:
         {
           // TODO implement opcode
           notImplementedYet();
@@ -306,7 +307,7 @@ public class CPU6510 implements ClockedComponent
       {
         @Override
         @Interruptible
-        public void execute() // $0C: *NOP (4)
+        public final void execute() // $0C: *NOP (4)
         {
           nop24();
         }
@@ -316,7 +317,7 @@ public class CPU6510 implements ClockedComponent
       {
         @Override
         @Interruptible
-        public void execute() // $0D: ORA $XXXX (4)
+        public final void execute() // $0D: ORA $XXXX (4)
         {
           or(read(readAbsoluteAddressPC()));
         }
@@ -326,7 +327,7 @@ public class CPU6510 implements ClockedComponent
       {
         @Override
         @Interruptible
-        public void execute() // $0E: ASL $XXXX (6)
+        public final void execute() // $0E: ASL $XXXX (6)
         {
           int addr = readAbsoluteAddressPC();
           write(shiftLeft(read(addr)), addr);
@@ -337,7 +338,7 @@ public class CPU6510 implements ClockedComponent
       {
         @Override
         @Interruptible
-        public void execute() // $0F: *SLO $XXXX (6)
+        public final void execute() // $0F: *SLO $XXXX (6)
         {
           shiftLeftOr(readAbsoluteAddressPC());
         }
@@ -347,7 +348,7 @@ public class CPU6510 implements ClockedComponent
       {
         @Override
         @Interruptible
-        public void execute() // $10: BPL $XXXX (2/3)
+        public final void execute() // $10: BPL $XXXX (2/3)
         {
           branchIf(!_state.N);
         }
@@ -357,7 +358,7 @@ public class CPU6510 implements ClockedComponent
       {
         @Override
         @Interruptible
-        public void execute() // $11: ORA ($XX),Y (5)
+        public final void execute() // $11: ORA ($XX),Y (5)
         {
           or(read(readZeropageIndirectYAddressPC()));
         }
@@ -367,7 +368,7 @@ public class CPU6510 implements ClockedComponent
       {
         @Override
         @Interruptible
-        public void execute() // $12: *KIL (*)
+        public final void execute() // $12: *KIL (*)
         {
           crash();
         }
@@ -377,7 +378,7 @@ public class CPU6510 implements ClockedComponent
       {
         @Override
         @Interruptible
-        public void execute() // $13: *SLO ($XX),Y (8)
+        public final void execute() // $13: *SLO ($XX),Y (8)
         {
           // TODO 1 tick
           shiftLeftOr(readZeropageIndirectYAddressPC());
@@ -388,7 +389,7 @@ public class CPU6510 implements ClockedComponent
       {
         @Override
         @Interruptible
-        public void execute() // $14: *NOP (4)
+        public final void execute() // $14: *NOP (4)
         {
           nop14();
         }
@@ -398,7 +399,7 @@ public class CPU6510 implements ClockedComponent
       {
         @Override
         @Interruptible
-        public void execute() // $15: ORA $XX,X (4)
+        public final void execute() // $15: ORA $XX,X (4)
         {
           or(read(readAbsoluteZeropageAddressPC(_state.X)));
         }
@@ -408,7 +409,7 @@ public class CPU6510 implements ClockedComponent
       {
         @Override
         @Interruptible
-        public void execute() // $16: ASL $XX,X (6)
+        public final void execute() // $16: ASL $XX,X (6)
         {
           // TODO 1 tick
           int addr = readAbsoluteZeropageAddressPC(_state.X);
@@ -420,7 +421,7 @@ public class CPU6510 implements ClockedComponent
       {
         @Override
         @Interruptible
-        public void execute() // $17: *SLO $XX,X (6)
+        public final void execute() // $17: *SLO $XX,X (6)
         {
           // TODO 1 tick
           shiftLeftOr(readAbsoluteZeropageAddressPC(_state.X));
@@ -431,7 +432,7 @@ public class CPU6510 implements ClockedComponent
       {
         @Override
         @Interruptible
-        public void execute() // $18: CLC (2)
+        public final void execute() // $18: CLC (2)
         {
           _tick.waitForTick(); // minimum operation time: 1 tick
           _state.C = false;
@@ -442,7 +443,7 @@ public class CPU6510 implements ClockedComponent
       {
         @Override
         @Interruptible
-        public void execute() // $19: ORA $XXXX,Y (4)
+        public final void execute() // $19: ORA $XXXX,Y (4)
         {
           or(read(readAbsoluteAddressPC(_state.Y)));
         }
@@ -452,7 +453,7 @@ public class CPU6510 implements ClockedComponent
       {
         @Override
         @Interruptible
-        public void execute() // $1A: *NOP (2)
+        public final void execute() // $1A: *NOP (2)
         {
           nop2();
         }
@@ -462,7 +463,7 @@ public class CPU6510 implements ClockedComponent
       {
         @Override
         @Interruptible
-        public void execute() // $1B: *SLO $XXXX,Y (7)
+        public final void execute() // $1B: *SLO $XXXX,Y (7)
         {
           // TODO 1 tick
           shiftLeftOr(readAbsoluteAddressPC(_state.Y));
@@ -473,7 +474,7 @@ public class CPU6510 implements ClockedComponent
       {
         @Override
         @Interruptible
-        public void execute() // $1C: *NOP (5)
+        public final void execute() // $1C: *NOP (5)
         {
           nop25();
         }
@@ -483,7 +484,7 @@ public class CPU6510 implements ClockedComponent
       {
         @Override
         @Interruptible
-        public void execute() // $1D: ORA $XXXX,X (4)
+        public final void execute() // $1D: ORA $XXXX,X (4)
         {
           or(read(readAbsoluteAddressPC(_state.X)));
         }
@@ -493,7 +494,7 @@ public class CPU6510 implements ClockedComponent
       {
         @Override
         @Interruptible
-        public void execute() // $1E: ASL $XXXX,X (7)
+        public final void execute() // $1E: ASL $XXXX,X (7)
         {
           // TODO 1 tick
           int addr = readAbsoluteAddressPC(_state.X);
@@ -505,7 +506,7 @@ public class CPU6510 implements ClockedComponent
       {
         @Override
         @Interruptible
-        public void execute() // $1F: *SLO $XXXX,X (7)
+        public final void execute() // $1F: *SLO $XXXX,X (7)
         {
           // TODO 1 tick
           shiftLeftOr(readAbsoluteAddressPC(_state.X));
@@ -516,7 +517,7 @@ public class CPU6510 implements ClockedComponent
       {
         @Override
         @Interruptible
-        public void execute() // $20: JSR $XXXX (6) (TODO rework: see AAY64)
+        public final void execute() // $20: JSR $XXXX (6) (TODO rework: see AAY64)
         {
           int addr = readAbsoluteAddressPC();
           int returnAddr = (_state.PC - 1) & 0xFFFF;
@@ -530,7 +531,7 @@ public class CPU6510 implements ClockedComponent
       {
         @Override
         @Interruptible
-        public void execute() // $21: AND ($XX,X) (6)
+        public final void execute() // $21: AND ($XX,X) (6)
         {
           and(read(readZeropageIndirectXAddressPC()));
         }
@@ -540,7 +541,7 @@ public class CPU6510 implements ClockedComponent
       {
         @Override
         @Interruptible
-        public void execute() // $22: *KIL (*)
+        public final void execute() // $22: *KIL (*)
         {
           crash();
         }
@@ -550,7 +551,7 @@ public class CPU6510 implements ClockedComponent
       {
         @Override
         @Interruptible
-        public void execute() // $23: *RLA ($XX,X) (8)
+        public final void execute() // $23: *RLA ($XX,X) (8)
         {
           rotateLeftAnd(readZeropageIndirectXAddressPC());
         }
@@ -560,7 +561,7 @@ public class CPU6510 implements ClockedComponent
       {
         @Override
         @Interruptible
-        public void execute() // $24: BIT $XX (4)
+        public final void execute() // $24: BIT $XX (4)
         {
           bit(read(readAbsoluteZeropageAddressPC()));
         }
@@ -570,7 +571,7 @@ public class CPU6510 implements ClockedComponent
       {
         @Override
         @Interruptible
-        public void execute() // $25: AND $XX (3)
+        public final void execute() // $25: AND $XX (3)
         {
           and(read(readAbsoluteZeropageAddressPC()));
         }
@@ -580,7 +581,7 @@ public class CPU6510 implements ClockedComponent
       {
         @Override
         @Interruptible
-        public void execute() // $26: ROL $XX (5)
+        public final void execute() // $26: ROL $XX (5)
         {
           int addr = readAbsoluteZeropageAddressPC();
           write(rotateLeft(read(addr)), addr);
@@ -591,7 +592,7 @@ public class CPU6510 implements ClockedComponent
       {
         @Override
         @Interruptible
-        public void execute() // $27: *RLA $XX (5)
+        public final void execute() // $27: *RLA $XX (5)
         {
           rotateLeftAnd(readAbsoluteZeropageAddressPC());
         }
@@ -601,7 +602,7 @@ public class CPU6510 implements ClockedComponent
       {
         @Override
         @Interruptible
-        public void execute() // $28: PLP (4)
+        public final void execute() // $28: PLP (4)
         {
           _state.setP(popByte());
         }
@@ -611,7 +612,7 @@ public class CPU6510 implements ClockedComponent
       {
         @Override
         @Interruptible
-        public void execute() // $29: AND #$XX (2)
+        public final void execute() // $29: AND #$XX (2)
         {
           and(readImmediatePC());
         }
@@ -621,7 +622,7 @@ public class CPU6510 implements ClockedComponent
       {
         @Override
         @Interruptible
-        public void execute() // $2A: ROL (2)
+        public final void execute() // $2A: ROL (2)
         {
           _tick.waitForTick(); // minimum operation time: 1 tick
           _state.A = rotateLeft(_state.A);
@@ -632,7 +633,7 @@ public class CPU6510 implements ClockedComponent
       {
         @Override
         @Interruptible
-        public void execute() // $2B:
+        public final void execute() // $2B:
         {
           // TODO implement opcode
           notImplementedYet();
@@ -2877,6 +2878,10 @@ public class CPU6510 implements ClockedComponent
 
   private void notImplementedYet()
   {
+    if (_logger.isDebugEnabled())
+    {
+      _logger.debug("Not implemented yet");
+    }
     if (DEBUG)
     {
       throw new UnsupportedOperationException();
