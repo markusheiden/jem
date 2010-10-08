@@ -172,35 +172,8 @@ public class CPU6510 implements ClockedComponent
     }
   }
 
-  private boolean trace = false;
-  private int count = 1000;
-
   protected void preExecute()
   {
-    if (_state.PC == 0x0000)
-    {
-      trace = true;
-    }
-
-    if (trace)
-    {
-      if (count-- == 0)
-      {
-        System.out.println("STOP");
-      }
-      if (_logger.isDebugEnabled())
-      {
-        if (_state.NMI || _state.IRQ && !_state.I)
-        {
-          _logger.debug(Monitor.state(_state));
-        }
-        else
-        {
-          _logger.debug(Monitor.state(_state));
-          _logger.debug(Monitor.disassemble(_state.PC, _bus));
-        }
-      }
-    }
   }
 
   private final Opcode[] OPCODES =
@@ -3622,10 +3595,10 @@ public class CPU6510 implements ClockedComponent
   // stack
   protected static final int STACK = 0x0100;
 
-  final CPU6510State _state;
+  protected final CPU6510State _state;
 
-  final Tick _tick;
-  private C64Bus _bus;
+  protected final Tick _tick;
+  protected C64Bus _bus;
   private final InputOutputPortImpl _port;
   private final InputPort _irq;
   private final InputPort _nmi;

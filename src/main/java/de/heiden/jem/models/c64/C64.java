@@ -79,7 +79,7 @@ public class C64
 
     // real time measurement
     // TODO 2010-03-14 mh: NTSC: 1022700 Hz
-    new RealTimeSlowDown(clock, 985248, 1000);
+    new RealTimeSlowDown(clock, 985248, 50);
   }
 
   public void start() throws Exception

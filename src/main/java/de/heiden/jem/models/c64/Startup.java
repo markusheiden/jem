@@ -18,7 +18,7 @@ public class Startup
   {
     _logger.debug("Loading c64");
     Class<?> clazz = loadClass("de.heiden.jem.models.c64.C64");
-    Object c64 = clazz.getConstructor(boolean.class).newInstance(false);
+    Object c64 = clazz.getConstructor(boolean.class).newInstance(true);
     _logger.debug("Starting c64");
     c64.getClass().getDeclaredMethod("start").invoke(c64);
   }

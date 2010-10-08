@@ -1,6 +1,9 @@
 package de.heiden.jem.models.c64.components.cpu;
 
+import de.heiden.c64dt.assembler.Opcode;
 import de.heiden.jem.components.clock.Clock;
+import de.heiden.jem.models.c64.monitor.Monitor;
+import org.apache.log4j.Logger;
 import org.serialthreads.Interruptible;
 
 import java.util.HashSet;
@@ -11,10 +14,31 @@ import java.util.Set;
  */
 public class CPU6510Debugger extends CPU6510
 {
+  /**
+   * Logger.
+   */
+  private final Logger _logger = Logger.getLogger(getClass());
+
+  /**
+   * PC to start tracing at.
+   */
+  private int _tracePoint = -1;
+  /**
+   * Is tracing enabled?
+   */
+  private boolean _trace = false;
+  /**
+   * How many opcodes to trace before java breakpoint.
+   */
+  private int _count = 1000;
+
   private boolean _suspend;
   private boolean _suspended;
   private boolean _stop;
   private final Object _suspendLock = new Object();
+
+  private int _currentTrace;
+  private final Trace[] _traces;
 
   private final Set<Integer> _breakpoints;
 
@@ -33,6 +57,14 @@ public class CPU6510Debugger extends CPU6510
     _suspend = false;
     _suspended = false;
     _stop = false;
+
+    _currentTrace = 0;
+    _traces = new Trace[1000000];
+    for (int i = 0; i < _traces.length; i++)
+    {
+      _traces[i] = new Trace();
+    }
+
     _breakpoints = new HashSet<Integer>();
 
     _state = getState();
@@ -52,6 +84,60 @@ public class CPU6510Debugger extends CPU6510
   @Override
   protected void preExecute()
   {
+    //
+    // Support for manual tracing per java breakpoint
+    //
+
+    if (_state.PC == _tracePoint)
+    {
+      _trace = true;
+    }
+
+    if (_trace && _logger.isDebugEnabled())
+    {
+      if (_state.NMI || _state.IRQ && !_state.I)
+      {
+        _logger.debug(Monitor.state(_state));
+      }
+      else
+      {
+        _logger.debug(Monitor.state(_state));
+        _logger.debug(Monitor.disassemble(_state.PC, _bus));
+      }
+      if (_count-- == 0)
+      {
+        // dummy statement to set java breakpoint at
+        System.out.println("STOP");
+      }
+    }
+
+    //
+    // Automatic tracing of the last executed opcodes
+    //
+
+    Trace trace = _traces[_currentTrace++];
+    if (_currentTrace >= _traces.length)
+    {
+      _currentTrace = 0;
+    }
+    
+    int pc = _state.PC;
+    trace.address = pc;
+
+    Opcode opcode = Opcode.opcode(_bus.read(pc++));
+    trace.opcode = opcode;
+
+    int argument = 0;
+    for (int i = 0; i < opcode.getMode().getSize(); i++)
+    {
+      argument += _bus.read(pc++ & 0xFFFF) << (i * 8);
+    }
+    trace.argument = argument;
+
+    //
+    // CPU Breakpoints
+    //
+
     synchronized (_suspendLock)
     {
       if (_stop)
@@ -148,5 +234,23 @@ public class CPU6510Debugger extends CPU6510
     {
       _breakpoints.add(addr);
     }
+  }
+
+  public String toString()
+  {
+    StringBuilder result = new StringBuilder();
+    result.append("Debugger:\n");
+    for (int i = 10; i > 0; i--)
+    {
+      int t = _currentTrace - i;
+      if (t < 0)
+      {
+        t = _traces.length;
+      }
+      result.append(_traces[t]);
+      result.append("\n");
+    }
+
+    return result.toString();
   }
 }

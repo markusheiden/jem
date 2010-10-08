@@ -66,6 +66,14 @@ public class Monitor
     }
     int arg = bytes[1] + (bytes[2] << 8);
 
+    return disassemble(addr, bytes, opcode, arg);
+  }
+
+  /**
+   * Disassemble one line of code.
+   */
+  public static String disassemble(int addr, int[] bytes, Opcode opcode, int arg)
+  {
     StringBuilder result = new StringBuilder(32);
     result.append(".> ");
 
