@@ -1,5 +1,6 @@
 package de.heiden.jem.models.c64.monitor.gui;
 
+import de.heiden.c64dt.assembler.CodeBuffer;
 import de.heiden.c64dt.assembler.Disassembler;
 import de.heiden.c64dt.gui.JC64TextArea;
 import de.heiden.jem.components.bus.BusDevice;
@@ -105,12 +106,16 @@ public class DisassemblerGUI
       {
         StringWriter output = new StringWriter();
         int addr = _scrollBar.getValue();
-        byte[] code = new byte[_lines];
-        for (int i = 0; i < _lines; i++)
+        byte[] bytes = new byte[256];
+        for (int i = 0; i < bytes.length; i++)
         {
-          code[i] = (byte) _bus.read(addr + i);
+          bytes[i] = (byte) _bus.read(addr + i);
         }
-        _disassembler.disassemble(addr, code, output);
+        CodeBuffer code = new CodeBuffer(addr, bytes);
+        for (int i = 0; i < 20; i++)
+        {
+          _disassembler.disassemble(code, output);
+        }
 
         _text.setText(0, 0, output.toString());
       }
