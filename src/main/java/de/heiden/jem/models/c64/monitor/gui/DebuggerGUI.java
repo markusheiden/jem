@@ -219,12 +219,16 @@ public class DebuggerGUI extends JPanel
         }
         finally
         {
-          updateComponents();
+          // TODO 2010-10-09 mh: clear gui
+          // updateComponents();
         }
       }
     }, "C64 stop thread").start();
   }
 
+  /**
+   * Notify gui to display current values.
+   */
   private void updateComponents()
   {
     _state.stateChanged();
