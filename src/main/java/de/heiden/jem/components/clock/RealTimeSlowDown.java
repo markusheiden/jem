@@ -2,6 +2,9 @@ package de.heiden.jem.components.clock;
 
 import org.apache.log4j.Logger;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+
 /**
  * Slow down clock to real time.
  */
@@ -133,10 +136,11 @@ public class RealTimeSlowDown implements ClockEvent
     // debug slow down
     if (_logger.isDebugEnabled())
     {
-      _logger.debug("tick     : " + tick);
-      _logger.debug("next tick: " + nextTick);
-      _logger.error("elapsed  : " + (now - _last) + " ns");
-      _logger.debug("remainder: " + (_next - now) + " ns");
+      _logger.debug(String.format("tick      : %,11d", tick));
+      _logger.debug(String.format("next tick : %,11d", nextTick));
+      _logger.debug(String.format("elapsed   : %,11d ns", now - _last));
+      _logger.debug(String.format("remainder : %,11d ns", _next - now));
+      _logger.debug(String.format("real time : %,11d ns", _incrementTime));
     }
 
     // Wait until next
