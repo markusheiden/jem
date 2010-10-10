@@ -8,7 +8,7 @@ import de.heiden.jem.components.bus.BusDevice;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -32,6 +32,7 @@ public class DisassemblerGUI extends JPanel
     setLayout(new BorderLayout());
 
     _text = new JC64TextArea(26, 25, 2);
+    _text.setMinimumSize(new Dimension(_text.getWidth(), 0));
     add(_text, BorderLayout.CENTER);
 
     _scrollBar = new JScrollBar(JScrollBar.VERTICAL);
