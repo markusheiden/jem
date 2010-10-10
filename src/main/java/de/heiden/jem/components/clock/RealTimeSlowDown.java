@@ -109,22 +109,26 @@ public class RealTimeSlowDown implements ClockEvent
     // add it to the duration of processing 1 second
     _elapsed += now - _last;
 
-    long nextTick;
+    long next = _next;
+    long nextTick = tick;
     if (_counter == 0)
     {
       _logger.info("1 simulated second took " + (_elapsed / 1000000) + " ms");
       _elapsed = 0;
 
       _counter = _div;
-      _next += _incrementTime0;
-      nextTick = tick + _incrementFreq0;
+      next += _incrementTime0;
+      nextTick += _incrementFreq0;
     }
     else
     {
       _counter--;
-      _next += _incrementTime;
-      nextTick = tick + _incrementFreq;
+      next += _incrementTime;
+      nextTick += _incrementFreq;
     }
+    // if emulation is too slow, do not accumulate missing time
+    _next = next < now ? now : next;
+    // re-register for next tick
     _clock.addClockEvent(nextTick, this);
 
     if (_logger.isDebugEnabled())
