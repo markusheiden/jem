@@ -73,7 +73,7 @@ public class RealTimeSlowDown implements ClockEvent
     assert clock != null : "Precondition: clock != null";
     assert freq > 0 : "Precondition: freq > 0";
     assert div > 0 : "Precondition: div > 0";
-    assert freq / div >= 1000 : "Precondition: freq / div >= 1000: Maximum timer resolution not exceeded.";
+    assert freq / div >= 1000 : "Precondition: freq / div >= 1000: Maximum timer resolution of 1 ms not exceeded.";
 
     _clock = clock;
 
@@ -95,8 +95,7 @@ public class RealTimeSlowDown implements ClockEvent
 
         _counter = _div;
         _next = now + _incrementTime0;
-        long nextTick = _incrementFreq0;
-        _clock.addClockEvent(nextTick, RealTimeSlowDown.this);
+        _clock.addClockEvent(_incrementFreq0, RealTimeSlowDown.this);
 
         _last = now;
       }
