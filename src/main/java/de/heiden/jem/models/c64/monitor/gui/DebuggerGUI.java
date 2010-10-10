@@ -32,6 +32,9 @@ public class DebuggerGUI extends JPanel
   private DisassemblerGUI _disassembler;
   private final MemDumpGUI _memDump;
 
+  /**
+   * Constructor.
+   */
   public DebuggerGUI()
   {
     setLayout(new BorderLayout());
@@ -126,6 +129,9 @@ public class DebuggerGUI extends JPanel
   // Toolbar actions
   //
 
+  /**
+   * Run C64.
+   */
   private void run()
   {
     try
@@ -174,6 +180,9 @@ public class DebuggerGUI extends JPanel
     }
   }
 
+  /**
+   * Suspend C64.
+   */
   private void suspend()
   {
     new SwingWorker<Object, Object>()
@@ -202,6 +211,9 @@ public class DebuggerGUI extends JPanel
     }.execute();
   }
 
+  /**
+   * Resume C64.
+   */
   private void resume()
   {
     new SwingWorker<Object, Object>()
@@ -230,6 +242,9 @@ public class DebuggerGUI extends JPanel
     }.execute();
   }
 
+  /**
+   * Stop C64.
+   */
   private void stop()
   {
     new SwingWorker<Object, Object>()
