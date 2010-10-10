@@ -176,9 +176,20 @@ public class CPU6510Debugger extends CPU6510
   }
 
   /**
+   * Is the cpu currently suspended?
+   */
+  public boolean isSuspended()
+  {
+    synchronized (_suspendLock)
+    {
+      return _suspend;
+    }
+  }
+
+  /**
    * Suspend cpu execution.
    */
-  public void suspendAndWait()
+  public void suspendAndWait() throws DebuggerExit
   {
     try
     {
