@@ -2,9 +2,6 @@ package de.heiden.jem.components.clock;
 
 import org.apache.log4j.Logger;
 
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-
 /**
  * Slow down clock to real time.
  */
