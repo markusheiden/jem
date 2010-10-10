@@ -31,7 +31,7 @@ public class DisassemblerGUI extends JPanel
   {
     setLayout(new BorderLayout());
 
-    _text = new JC64TextArea(26, 25, 2);
+    _text = new JC64TextArea(26, 25, 2, true);
     _text.setMinimumSize(new Dimension(_text.getWidth(), 0));
     add(_text, BorderLayout.CENTER);
 

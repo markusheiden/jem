@@ -24,7 +24,7 @@ public class StateGUI extends JPanel
   {
     setLayout(new BorderLayout());
 
-    _text = new JC64TextArea(12, 7, 2);
+    _text = new JC64TextArea(12, 7, 2, false);
 
     add(_text, BorderLayout.CENTER);
   }

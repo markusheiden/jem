@@ -28,7 +28,7 @@ public class MemDumpGUI extends JPanel
   {
     setLayout(new BorderLayout());
 
-    _text = new JC64TextArea(39, 25, 2);
+    _text = new JC64TextArea(39, 25, 2, true);
     add(_text, BorderLayout.CENTER);
 
     _scrollBar = new JScrollBar(JScrollBar.VERTICAL);
