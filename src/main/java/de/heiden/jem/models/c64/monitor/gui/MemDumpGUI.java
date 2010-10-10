@@ -7,20 +7,14 @@ import de.heiden.jem.components.bus.BusDevice;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import java.awt.BorderLayout;
-import java.awt.event.AdjustmentEvent;
-import java.awt.event.AdjustmentListener;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
+import java.awt.event.*;
 
 /**
  * GUI for showing a memory dump.
  */
-public class MemDumpGUI
-  extends JPanel
-  implements AdjustmentListener, MouseWheelListener
+public class MemDumpGUI extends JPanel
 {
   private static final int BYTES_PER_LINE = 8;
-  private int _lines = 32;
 
   private final JC64TextArea _text;
   private final JScrollBar _scrollBar;
@@ -34,7 +28,7 @@ public class MemDumpGUI
   {
     setLayout(new BorderLayout());
 
-    _text = new JC64TextArea(39, _lines, 2);
+    _text = new JC64TextArea(39, 25, 2);
     add(_text, BorderLayout.CENTER);
 
     _scrollBar = new JScrollBar(JScrollBar.VERTICAL);
@@ -46,22 +40,37 @@ public class MemDumpGUI
     _scrollBar.setValue(0);
     add(_scrollBar, BorderLayout.EAST);
 
+    // Update scroll bar on containing component change
+    _text.addComponentListener(new ComponentAdapter()
+    {
+      @Override
+      public void componentResized(ComponentEvent e)
+      {
+        _scrollBar.setVisibleAmount(_text.getRows());
+        _scrollBar.setBlockIncrement(_text.getRows());
+        memoryChanged();
+      }
+    });
+
     // Update model on scroll bar change
-    _scrollBar.addAdjustmentListener(this);
+    _scrollBar.addAdjustmentListener(new AdjustmentListener()
+    {
+      @Override
+      public void adjustmentValueChanged(AdjustmentEvent e)
+      {
+        setAddress(e.getValue());
+      }
+    });
+
     // React on mouse wheel
-    addMouseWheelListener(this);
-  }
-
-  @Override
-  public void mouseWheelMoved(MouseWheelEvent e)
-  {
-    _scrollBar.setValue(_scrollBar.getValue() + e.getUnitsToScroll() * BYTES_PER_LINE);
-  }
-
-  @Override
-  public void adjustmentValueChanged(AdjustmentEvent e)
-  {
-    setAddress(e.getValue());
+    addMouseWheelListener(new MouseWheelListener()
+    {
+      @Override
+      public void mouseWheelMoved(MouseWheelEvent e)
+      {
+        _scrollBar.setValue(_scrollBar.getValue() + e.getUnitsToScroll() * BYTES_PER_LINE);
+      }
+    });
   }
 
   /**
@@ -98,7 +107,7 @@ public class MemDumpGUI
     if (_bus != null)
     {
       int addr = _scrollBar.getValue();
-      for (int i = 0; i < _lines; i++, addr += 8)
+      for (int i = 0; i < _text.getRows(); i++, addr += 8)
       {
         dumpLine(addr, i);
       }

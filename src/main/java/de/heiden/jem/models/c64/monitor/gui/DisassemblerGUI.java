@@ -2,29 +2,23 @@ package de.heiden.jem.models.c64.monitor.gui;
 
 import de.heiden.c64dt.assembler.CodeBuffer;
 import de.heiden.c64dt.assembler.Disassembler;
+import de.heiden.c64dt.assembler.ICodeBuffer;
 import de.heiden.c64dt.gui.JC64TextArea;
 import de.heiden.jem.components.bus.BusDevice;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import java.awt.BorderLayout;
-import java.awt.event.AdjustmentEvent;
-import java.awt.event.AdjustmentListener;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
+import java.awt.event.*;
 import java.io.IOException;
 import java.io.StringWriter;
 
 /**
  * GUI for showing the disassembled code.
  */
-public class DisassemblerGUI
-  extends JPanel
-  implements AdjustmentListener, MouseWheelListener
+public class DisassemblerGUI extends JPanel
 {
   private static final int BYTES_PER_LINE = 1;
-  private static final int BYTES_PER_LINE_AVG = 2;
-  private int _lines = 32;
 
   private final JC64TextArea _text;
   private final JScrollBar _scrollBar;
@@ -37,37 +31,56 @@ public class DisassemblerGUI
   {
     setLayout(new BorderLayout());
 
-    _text = new JC64TextArea(26, _lines, 2);
+    _text = new JC64TextArea(26, 25, 2);
     add(_text, BorderLayout.CENTER);
 
     _scrollBar = new JScrollBar(JScrollBar.VERTICAL);
     _scrollBar.setMinimum(0);
     _scrollBar.setMaximum(0x10000 - BYTES_PER_LINE);
-    _scrollBar.setVisibleAmount(_lines / BYTES_PER_LINE_AVG);
-    _scrollBar.setBlockIncrement(_lines / BYTES_PER_LINE_AVG);
+    _scrollBar.setVisibleAmount(25);
+    _scrollBar.setBlockIncrement(25);
     _scrollBar.setUnitIncrement(BYTES_PER_LINE);
     _scrollBar.setValue(0);
     add(_scrollBar, BorderLayout.EAST);
 
     _disassembler = new Disassembler();
 
+    // Update scroll bar on containing component change
+    _text.addComponentListener(new ComponentAdapter()
+    {
+      @Override
+      public void componentResized(ComponentEvent e)
+      {
+        _scrollBar.setVisibleAmount(_text.getRows());
+        _scrollBar.setBlockIncrement(_text.getRows());
+        codeChanged();
+      }
+    });
+
     // Update model on scroll bar change
-    _scrollBar.addAdjustmentListener(this);
+    _scrollBar.addAdjustmentListener(new AdjustmentListener()
+    {
+      @Override
+      public void adjustmentValueChanged(AdjustmentEvent e)
+      {
+        setAddress(e.getValue());
+      }
+    });
+
     // React on mouse wheel
-    addMouseWheelListener(this);
+    addMouseWheelListener(new MouseWheelListener()
+    {
+      @Override
+      public void mouseWheelMoved(MouseWheelEvent e)
+      {
+        _scrollBar.setValue(_scrollBar.getValue() + e.getUnitsToScroll());
+      }
+    });
   }
 
-  @Override
-  public void mouseWheelMoved(MouseWheelEvent e)
-  {
-    _scrollBar.setValue(_scrollBar.getValue() + e.getUnitsToScroll());
-  }
-
-  @Override
-  public void adjustmentValueChanged(AdjustmentEvent e)
-  {
-    setAddress(e.getValue());
-  }
+  //
+  //
+  //
 
   /**
    * Set address to display.
@@ -105,18 +118,11 @@ public class DisassemblerGUI
       try
       {
         StringWriter output = new StringWriter();
-        int addr = _scrollBar.getValue();
-        byte[] bytes = new byte[256];
-        for (int i = 0; i < bytes.length; i++)
-        {
-          bytes[i] = (byte) _bus.read(addr + i);
-        }
-        CodeBuffer code = new CodeBuffer(addr, bytes);
-        for (int i = 0; i < 20; i++)
+        ICodeBuffer code = new BusCodeBuffer(_scrollBar.getValue(), _bus);
+        for (int i = 0; i < _text.getRows() && code.has(1); i++)
         {
           _disassembler.disassemble(code, output);
         }
-
         _text.setText(0, 0, output.toString());
       }
       catch (IOException e)
