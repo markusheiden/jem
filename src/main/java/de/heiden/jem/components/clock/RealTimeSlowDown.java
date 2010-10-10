@@ -105,8 +105,7 @@ public class RealTimeSlowDown implements ClockEvent
   {
     // Save the current timestamp as the end of the last processing cycle
     long now = System.nanoTime();
-    // Compute duration of the last processing cycle and
-    // add it to the duration of processing 1 second
+    // Compute duration of the last processing cycle and add it to the duration of processing 1 second
     _elapsed += now - _last;
 
     long next = _next;
@@ -131,6 +130,7 @@ public class RealTimeSlowDown implements ClockEvent
     // re-register for next tick
     _clock.addClockEvent(nextTick, this);
 
+    // debug slow down
     if (_logger.isDebugEnabled())
     {
       _logger.debug("tick     : " + tick);
@@ -139,9 +139,9 @@ public class RealTimeSlowDown implements ClockEvent
       _logger.debug("remainder: " + (_next - now) + " ns");
     }
 
-    // Wait until _next
+    // Wait until next
     long remainder;
-    while ((remainder = (_next - now) / 1000000) > 0) // 1 milli second precision
+    while ((remainder = (next - now) / 1000000) > 0) // 1 milli second precision
     {
       try
       {
@@ -150,7 +150,9 @@ public class RealTimeSlowDown implements ClockEvent
       }
       catch (InterruptedException e)
       {
-        // ignore
+        // stop slowing down, if thread has been interrupted
+        now = System.nanoTime();
+        break;
       }
     }
 
