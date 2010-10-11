@@ -269,7 +269,7 @@ public class C64Bus implements BusDevice
   private final class Mode1 extends IOBusDevice
   {
     @Override
-    public int read(int address)
+    public final int read(int address)
     {
       switch (address >> 12)
       {
@@ -299,7 +299,7 @@ public class C64Bus implements BusDevice
   private final class Mode2 extends RAMBusDevice
   {
     @Override
-    public int read(int address)
+    public final int read(int address)
     {
       switch (address >> 12)
       {
@@ -329,7 +329,7 @@ public class C64Bus implements BusDevice
   private final class Mode3 extends IOBusDevice
   {
     @Override
-    public int read(int address)
+    public final int read(int address)
     {
       switch (address >> 12)
       {
@@ -354,7 +354,7 @@ public class C64Bus implements BusDevice
   private final class Mode4 extends RAMBusDevice
   {
     @Override
-    public int read(int address)
+    public final int read(int address)
     {
       switch (address >> 12)
       {
@@ -378,7 +378,7 @@ public class C64Bus implements BusDevice
   private final class Mode5 extends RAMBusDevice
   {
     @Override
-    public int read(int address)
+    public final int read(int address)
     {
       return _ram.read(address);
     }
@@ -396,7 +396,7 @@ public class C64Bus implements BusDevice
   private final class Mode6 extends IOBusDevice
   {
     @Override
-    public int read(int address)
+    public final int read(int address)
     {
       switch (address >> 12)
       {
@@ -423,7 +423,7 @@ public class C64Bus implements BusDevice
   private final class Mode7 extends IOBusDevice
   {
     @Override
-    public int read(int address)
+    public final int read(int address)
     {
       switch (address >> 12)
       {
@@ -450,7 +450,7 @@ public class C64Bus implements BusDevice
   private final class Mode8 extends IOBusDevice
   {
     @Override
-    public int read(int address)
+    public final int read(int address)
     {
       switch (address >> 12)
       {
@@ -483,7 +483,7 @@ public class C64Bus implements BusDevice
   private final class Mode9 extends RAMBusDevice
   {
     @Override
-    public int read(int address)
+    public final int read(int address)
     {
       switch (address >> 12)
       {
@@ -516,7 +516,7 @@ public class C64Bus implements BusDevice
   private final class Mode10 extends IOBusDevice
   {
     @Override
-    public int read(int address)
+    public final int read(int address)
     {
       switch (address >> 12)
       {
@@ -546,7 +546,7 @@ public class C64Bus implements BusDevice
   private final class Mode11 extends RAMBusDevice
   {
     @Override
-    public int read(int address)
+    public final int read(int address)
     {
       switch (address >> 12)
       {
@@ -576,7 +576,7 @@ public class C64Bus implements BusDevice
   private final class Mode12 extends IOBusDevice
   {
     @Override
-    public int read(int address)
+    public final int read(int address)
     {
       switch (address >> 12)
       {
@@ -609,7 +609,7 @@ public class C64Bus implements BusDevice
   private final class Mode13 extends RAMBusDevice
   {
     @Override
-    public int read(int address)
+    public final int read(int address)
     {
       switch (address >> 12)
       {
@@ -642,7 +642,7 @@ public class C64Bus implements BusDevice
   private final class Mode14 implements BusDevice
   {
     @Override
-    public int read(int address)
+    public final int read(int address)
     {
       switch (address >> 12)
       {
@@ -660,7 +660,7 @@ public class C64Bus implements BusDevice
     }
 
     @Override
-    public void write(int value, int address)
+    public final void write(int value, int address)
     {
       switch (address >> 12)
       {
