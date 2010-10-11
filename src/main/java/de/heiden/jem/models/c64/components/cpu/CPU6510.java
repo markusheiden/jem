@@ -1,6 +1,7 @@
 package de.heiden.jem.models.c64.components.cpu;
 
 import de.heiden.c64dt.util.HexUtil;
+import de.heiden.jem.components.bus.BusDevice;
 import de.heiden.jem.components.clock.Clock;
 import de.heiden.jem.components.clock.ClockedComponent;
 import de.heiden.jem.components.clock.Tick;
@@ -90,7 +91,7 @@ public class CPU6510 implements ClockedComponent
    * @param bus cpu bus
    * @require bus != null
    */
-  public void connect(C64Bus bus)
+  public void connect(BusDevice bus)
   {
     assert bus != null : "bus != null";
     
@@ -3639,7 +3640,7 @@ public class CPU6510 implements ClockedComponent
   protected final CPU6510State _state;
 
   protected final Tick _tick;
-  protected C64Bus _bus;
+  protected BusDevice _bus;
   private final InputOutputPortImpl _port;
   private final InputPort _irq;
   private final InputPort _nmi;
