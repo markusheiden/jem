@@ -20,6 +20,24 @@ import org.serialthreads.Interruptible;
 public class CPU6510 implements ClockedComponent
 {
   /**
+   * Logger.
+   */
+  private final Logger _logger = Logger.getLogger(getClass());
+
+  protected static final boolean DEBUG = true;
+
+  // stack
+  protected static final int STACK = 0x0100;
+
+  protected final CPU6510State _state;
+
+  protected final Tick _tick;
+  protected BusDevice _bus;
+  private final InputOutputPortImpl _port;
+  private final InputPort _irq;
+  private final InputPort _nmi;
+
+  /**
    * Constructor.
    *
    * @param clock system clock
@@ -3626,27 +3644,4 @@ public class CPU6510 implements ClockedComponent
     @Interruptible
     public void execute();
   }
-
-
-  //
-  // private attributes
-  //
-
-  protected static final boolean DEBUG = true;
-
-  // stack
-  protected static final int STACK = 0x0100;
-
-  protected final CPU6510State _state;
-
-  protected final Tick _tick;
-  protected BusDevice _bus;
-  private final InputOutputPortImpl _port;
-  private final InputPort _irq;
-  private final InputPort _nmi;
-
-  /**
-   * Logger.
-   */
-  private final Logger _logger = Logger.getLogger(getClass());
 }
