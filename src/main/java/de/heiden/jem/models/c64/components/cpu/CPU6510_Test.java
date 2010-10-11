@@ -11,6 +11,13 @@ import org.apache.log4j.Logger;
  */
 public class CPU6510_Test extends TestCase
 {
+  private final Logger _logger = Logger.getLogger(getClass());
+
+  private SerializedClock _clock;
+  private RAM _ram;
+  private CPUTestBus _bus;
+  private CPU6510 _cpu;
+
   /**
    * Test opcode 0x00: BRK.
    */
@@ -101,15 +108,4 @@ public class CPU6510_Test extends TestCase
     assertEquals(expectedState, _cpu.getState());
     assertEquals(expectedLog, _bus.getLastLogEntry());
   }
-
-  //
-  // private attributes
-  //
-
-  private SerializedClock _clock;
-  private RAM _ram;
-  private CPUTestBus _bus;
-  private CPU6510 _cpu;
-
-  private static final Logger _logger = Logger.getLogger(CPU6510_Test.class);
 }

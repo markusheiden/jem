@@ -13,6 +13,14 @@ import org.serialthreads.Interruptible;
  */
 class MemAccessUnit implements ClockedComponent
 {
+  private final VIC _vic;
+  private final Tick _tick;
+
+  protected int x;
+  protected int y;
+  protected final int[] characters;
+  protected final int[] colors;
+
   /**
    * Constructor.
    *
@@ -168,21 +176,4 @@ class MemAccessUnit implements ClockedComponent
     _tick.waitForTick();
     x += 8;
   }
-
-  //
-  // attributes
-  //
-
-  private final VIC _vic;
-  private final Tick _tick;
-
-  protected int x;
-  protected int y;
-  protected final int[] characters;
-  protected final int[] colors;
-
-  /**
-   * Logger.
-   */
-  private static final Logger _logger = Logger.getLogger(MemAccessUnit.class);
 }

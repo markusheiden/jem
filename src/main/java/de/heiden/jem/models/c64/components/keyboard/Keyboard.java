@@ -21,6 +21,31 @@ import static de.heiden.jem.models.c64.components.keyboard.Key.RESTORE;
 public class Keyboard extends KeyAdapter
 {
   /**
+   * Logger.
+   */
+  private final Logger _logger = Logger.getLogger(getClass());
+
+  /**
+   * Ports for key matrix.
+   */
+  private final InputOutputPort _port0;
+  private final InputOutputPort _port1;
+
+  private final OutputPortImpl _matrixPort0;
+  private final OutputPortImpl _matrixPort1;
+  private final OutputPortImpl _nmi;
+
+  /**
+   * Mapping chars/keys -> matrix entry.
+   */
+  private final KeyMapping _keyMapping;
+
+  /**
+   * C64 key matrix.
+   */
+  private final int[] _matrix;
+
+  /**
    * Constructor.
    *
    * @param port0 port for rows
@@ -231,33 +256,4 @@ public class Keyboard extends KeyAdapter
 
     return result.toString();
   }
-
-  //
-  // private attributes
-  //
-
-  /**
-   * Ports for key matrix.
-   */
-  private final InputOutputPort _port0;
-  private final InputOutputPort _port1;
-
-  private final OutputPortImpl _matrixPort0;
-  private final OutputPortImpl _matrixPort1;
-  private final OutputPortImpl _nmi;
-
-  /**
-   * Mapping chars/keys -> matrix entry.
-   */
-  private final KeyMapping _keyMapping;
-
-  /**
-   * C64 key matrix.
-   */
-  private final int[] _matrix;
-
-  /**
-   * Logger.
-   */
-  private static final Logger _logger = Logger.getLogger(Keyboard.class);
 }

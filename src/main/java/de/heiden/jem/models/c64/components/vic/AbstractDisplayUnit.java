@@ -10,6 +10,34 @@ import org.apache.log4j.Logger;
  */
 public abstract class AbstractDisplayUnit implements ClockedComponent
 {
+  protected final VIC _vic;
+  protected final Tick _tick;
+
+  private final int _offset;
+  private final int _lineLength;
+  private final int _lines;
+  private final int _width;
+  private final int _height;
+
+  private IScreenListener _listener;
+
+  /**
+   * Screen buffer for rendering.
+   */
+  protected byte[] _screenRender;
+  /**
+   * Spare screen buffer.
+   */
+  private byte[] _screenSpare;
+  /**
+   * Screen to display next.
+   */
+  private byte[] _screenToDisplay;
+  /**
+   * Currently displayed screen.
+   */
+  private volatile byte[] _screenDisplaying;
+
   /**
    * Hidden constructor.
    *
@@ -130,42 +158,4 @@ public abstract class AbstractDisplayUnit implements ClockedComponent
   {
     return _height;
   }
-
-
-  //
-  // private attributes
-  //
-
-  protected final VIC _vic;
-  protected final Tick _tick;
-
-  private final int _offset;
-  private final int _lineLength;
-  private final int _lines;
-  private final int _width;
-  private final int _height;
-
-  private IScreenListener _listener;
-
-  /**
-   * Screen buffer for rendering.
-   */
-  protected byte[] _screenRender;
-  /**
-   * Spare screen buffer.
-   */
-  private byte[] _screenSpare;
-  /**
-   * Screen to display next.
-   */
-  private byte[] _screenToDisplay;
-  /**
-   * Currently displayed screen.
-   */
-  private volatile byte[] _screenDisplaying;
-
-  /**
-   * Logger.
-   */
-  private static final Logger _logger = Logger.getLogger(AbstractDisplayUnit.class);
 }

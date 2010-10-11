@@ -13,6 +13,10 @@ import de.heiden.jem.components.bus.BusDevice;
  */
 public class VICBus implements BusDevice
 {
+  private int _vicBase;
+  private final RAM _ram;
+  private final ROM _character;
+
   /**
    * Constructor.
    *
@@ -76,12 +80,4 @@ public class VICBus implements BusDevice
   {
     assert false : "VIC does not write anything";
   }
-
-  //
-  // private attributes
-  //
-
-  private int _vicBase;
-  private final RAM _ram;
-  private final ROM _character;
 }

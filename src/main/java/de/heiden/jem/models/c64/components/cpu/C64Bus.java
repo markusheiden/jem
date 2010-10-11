@@ -17,6 +17,32 @@ import org.apache.log4j.Logger;
 public class C64Bus implements BusDevice
 {
   /**
+   * Logger.
+   */
+  private final Logger _logger = Logger.getLogger(getClass());
+
+  private final OutputPort _cpu;
+
+  private final BusDevice _ram;
+  private final BusDevice _basic;
+  private final BusDevice _vic;
+  private final BusDevice _colorRam;
+  private final BusDevice _cia1;
+  private final BusDevice _cia2;
+  private final BusDevice _charset;
+  private final BusDevice _kernel;
+
+  private BusDevice _cartridgeL;
+  private BusDevice _cartridgeH;
+  private BusDevice _cartridge;
+
+  private final BusDevice _noBusDevice;
+
+  private BusDevice _ioMode;
+  private final BusDevice[] _ioModes;
+  private final BusDevice[] _ioMap;
+
+  /**
    * Constructor.
    *
    * @param cpu CPU port
@@ -200,37 +226,6 @@ public class C64Bus implements BusDevice
 
     _ioMode.write(value, address);
   }
-
-
-  //
-  // private attributes
-  //
-
-  private final OutputPort _cpu;
-
-  private final BusDevice _ram;
-  private final BusDevice _basic;
-  private final BusDevice _vic;
-  private final BusDevice _colorRam;
-  private final BusDevice _cia1;
-  private final BusDevice _cia2;
-  private final BusDevice _charset;
-  private final BusDevice _kernel;
-
-  private BusDevice _cartridgeL;
-  private BusDevice _cartridgeH;
-  private BusDevice _cartridge;
-
-  private final BusDevice _noBusDevice;
-
-  private BusDevice _ioMode;
-  private final BusDevice[] _ioModes;
-  private final BusDevice[] _ioMap;
-
-  /**
-   * Logger.
-   */
-  private final Logger _logger = Logger.getLogger(getClass());
 
   //
   // Inner classes for different address configurations

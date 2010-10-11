@@ -10,6 +10,10 @@ import java.awt.event.KeyEvent;
  */
 public class Keyboard_Test extends TestCase
 {
+  private InputOutputPortImpl _port0;
+  private InputOutputPortImpl _port1;
+  private Keyboard _keyboard;
+
   /**
    * Test single key presses.
    */
@@ -103,12 +107,4 @@ public class Keyboard_Test extends TestCase
     _port1 = new InputOutputPortImpl();
     _keyboard = new Keyboard(_port0, _port1);
   }
-
-  //
-  // private attributes
-  //
-
-  private InputOutputPortImpl _port0;
-  private InputOutputPortImpl _port1;
-  private Keyboard _keyboard;
 }

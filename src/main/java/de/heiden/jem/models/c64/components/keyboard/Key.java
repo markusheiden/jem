@@ -79,6 +79,10 @@ public enum Key
   Q(7, 6),
   RUN_STOP(7, 7);
 
+  private final int _row;
+
+  private final int _column;
+
   /**
    * Constructor for special key not mapped on the keyboard matrix.
    */
@@ -124,13 +128,5 @@ public enum Key
     assert _column >= 0 && _column < 8 : "result >= 0 && result < 8";
     return _column;
   }
-
-  //
-  // private attributes
-  //
-
-  private final int _row;
-
-  private final int _column;
 }
 

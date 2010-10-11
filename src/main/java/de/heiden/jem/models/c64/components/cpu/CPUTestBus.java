@@ -11,6 +11,8 @@ import java.util.List;
  */
 public class CPUTestBus extends C64Bus
 {
+  private List<LogEntry> _log;
+
   /**
    * Constructor.
    *
@@ -81,12 +83,6 @@ public class CPUTestBus extends C64Bus
   }
 
   //
-  // private attributes
-  //
-
-  private List<LogEntry> _log;
-
-  //
   // inner class
   //
 
@@ -95,6 +91,10 @@ public class CPUTestBus extends C64Bus
    */
   public static class LogEntry
   {
+    private final boolean _read;
+    private final int _address;
+    private final int _value;
+
     /**
      * Constructor.
      *
@@ -142,13 +142,5 @@ public class CPUTestBus extends C64Bus
         " value " + HexUtil.hexByte(_value);
 
     }
-
-    //
-    // private attributes
-    //
-
-    private boolean _read;
-    private int _address;
-    private int _value;
   }
 }

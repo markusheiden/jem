@@ -4,7 +4,9 @@ import static de.heiden.jem.models.c64.components.cpu.PLA.Input.AEC;
 import static de.heiden.jem.models.c64.components.cpu.PLA.Input.CAS;
 
 /**
- * "MMU"-PLA
+ * "MMU"-PLA.
+ *
+ * TODO 2010-10-11 mh: use AbstractMemory as super class?
  */
 public class PLA
 {
@@ -46,6 +48,8 @@ public class PLA
     ROMH // low active
   }
 
+  private final byte[] _content;
+
   /**
    * Constructor.
    */
@@ -72,10 +76,4 @@ public class PLA
 
     return null;
   }
-
-  //
-  // private attributes
-  //
-
-  private final byte[] _content;
 }

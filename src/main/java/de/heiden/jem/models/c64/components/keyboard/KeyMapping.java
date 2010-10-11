@@ -9,6 +9,9 @@ import java.util.Map;
  */
 public abstract class KeyMapping
 {
+  protected final Map<Character, Key[]> _chars;
+  protected final Map<Integer, Key[]> _keys;
+
   /**
    * Constructor.
    */
@@ -91,11 +94,4 @@ public abstract class KeyMapping
    * Generate default key mapping.
    */
   protected abstract void generateKeyMapping();
-
-  //
-  // private attributes
-  //
-
-  protected Map<Character, Key[]> _chars;
-  protected Map<Integer, Key[]> _keys;
 }

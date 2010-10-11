@@ -5,6 +5,22 @@ package de.heiden.jem.models.c64.components.vic;
  */
 public class Sprite
 {
+  public final int number;
+  public final int bitmask;
+
+  public boolean enabled;
+
+  public int x;
+  public int y;
+
+  public boolean expandX;
+  public boolean expandY;
+
+  public boolean multicolor;
+  public int color;
+  public int multicolor1;
+  public int multicolor2;
+
   /**
    * Constructor.
    *
@@ -91,24 +107,4 @@ public class Sprite
   {
     multicolor = (bitmap & bitmask) != 0;
   }
-
-  //
-  // private attributes
-  //
-
-  public final int number;
-  public final int bitmask;
-
-  public boolean enabled;
-
-  public int x;
-  public int y;
-
-  public boolean expandX;
-  public boolean expandY;
-
-  public boolean multicolor;
-  public int color;
-  public int multicolor1;
-  public int multicolor2;
 }
