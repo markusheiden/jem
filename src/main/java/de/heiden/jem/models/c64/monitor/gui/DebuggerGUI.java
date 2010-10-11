@@ -10,6 +10,7 @@ import javax.swing.*;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 /**
  * Main Monitor frame.
@@ -27,6 +28,7 @@ public class DebuggerGUI extends JPanel
   private final JButton _resumeButton;
   private final JButton _suspendButton;
   private final JButton _stopButton;
+  private final JButton _refreshButton;
 
   private StateGUI _state;
   private DisassemblerGUI _disassembler;
@@ -40,9 +42,10 @@ public class DebuggerGUI extends JPanel
     setLayout(new BorderLayout());
 
     _runButton = new JButton(new ImageIcon(getClass().getResource("/icons/enabled/run_exc.gif"), "Run"));
-    _resumeButton = new JButton(new ImageIcon(getClass().getResource("/icons/enabled/resume_co.gif"), "Run"));
-    _suspendButton = new JButton(new ImageIcon(getClass().getResource("/icons/enabled/suspend_co.gif"), "Run"));
-    _stopButton = new JButton(new ImageIcon(getClass().getResource("/icons/enabled/progress_stop.gif"), "Run"));
+    _resumeButton = new JButton(new ImageIcon(getClass().getResource("/icons/enabled/resume_co.gif"), "Resume"));
+    _suspendButton = new JButton(new ImageIcon(getClass().getResource("/icons/enabled/suspend_co.gif"), "Suspend"));
+    _stopButton = new JButton(new ImageIcon(getClass().getResource("/icons/enabled/progress_stop.gif"), "Stop"));
+    _refreshButton = new JButton(new ImageIcon(getClass().getResource("/icons/enabled/refresh.gif"), "Refresh"));
 
     JToolBar toolBar = new JToolBar();
     toolBar.setFloatable(false);
@@ -51,6 +54,8 @@ public class DebuggerGUI extends JPanel
     toolBar.add(_resumeButton);
     toolBar.add(_suspendButton);
     toolBar.add(_stopButton);
+    toolBar.add(new JLabel(" "));
+    toolBar.add(_refreshButton);
 
     JSplitPane topBottom = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 
@@ -122,7 +127,19 @@ public class DebuggerGUI extends JPanel
       }
     });
 
-    updateComponents();
+    _refreshButton.addActionListener(new ActionListener()
+    {
+      @Override
+      public void actionPerformed(ActionEvent e)
+      {
+        if (_thread != null)
+        {
+          updateComponents();
+        }
+      }
+    });
+
+    updateButtons();
   }
 
   //
@@ -237,7 +254,7 @@ public class DebuggerGUI extends JPanel
       @Override
       protected void done()
       {
-        updateComponents();
+        updateButtons();
       }
     }.execute();
   }
@@ -272,27 +289,33 @@ public class DebuggerGUI extends JPanel
       @Override
       protected void done()
       {
-        updateComponents();
+        updateButtons();
       }
     }.execute();
   }
+
+  /**
+   * Update state of buttons.
+   */
+  private void updateButtons()
+  {
+    _runButton.setEnabled(_thread == null);
+    _suspendButton.setEnabled(_thread != null && !_cpu.isSuspended());
+    _resumeButton.setEnabled(_thread != null && _cpu.isSuspended());
+    _stopButton.setEnabled(_thread != null);
+  }
+
 
   /**
    * Notify gui to display current values.
    */
   private void updateComponents()
   {
-    _runButton.setEnabled(_thread == null);
-    _suspendButton.setEnabled(_thread != null && !_cpu.isSuspended());
-    _resumeButton.setEnabled(_thread != null && _cpu.isSuspended());
-    _stopButton.setEnabled(_thread != null);
-
-    if (_cpu != null)
-    {
-      _state.stateChanged();
-      _disassembler.setAddress(_cpu.getState().PC);
-      _disassembler.codeChanged();
-      _memDump.memoryChanged();
-    }
+    updateButtons();
+    
+    _state.stateChanged();
+    _disassembler.setAddress(_cpu.getState().PC);
+    _disassembler.codeChanged();
+    _memDump.memoryChanged();
   }
 }
