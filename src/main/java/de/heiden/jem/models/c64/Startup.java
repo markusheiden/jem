@@ -9,25 +9,27 @@ import org.serialthreads.transformer.Strategies;
  */
 public class Startup
 {
+  /**
+   * Logger.
+   */
+  private final Logger _logger = Logger.getLogger(getClass());
+
+  private final ClassLoader _classLoader;
+
   public Startup()
   {
     _classLoader = new TransformingClassLoader(Startup.class.getClassLoader(), Strategies.FREQUENT3, "de.heiden.jem");
   }
 
-  public void start() throws Exception
-  {
-    _logger.debug("Loading c64");
-    Class<?> clazz = loadClass("de.heiden.jem.models.c64.C64");
-    Object c64 = clazz.getConstructor().newInstance();
-    _logger.debug("Starting c64");
-    c64.getClass().getDeclaredMethod("start").invoke(c64);
-  }
-
-  public static void main(String[] args)
+  public void start()
   {
     try
     {
-      new Startup().start();
+      _logger.debug("Loading c64");
+      Class<?> clazz = loadClass("de.heiden.jem.models.c64.C64");
+      Object c64 = clazz.getConstructor().newInstance();
+      _logger.debug("Starting c64");
+      c64.getClass().getDeclaredMethod("start").invoke(c64);
     }
     catch (Exception e)
     {
@@ -35,19 +37,13 @@ public class Startup
     }
   }
 
+  public static void main(String[] args)
+  {
+    new Startup().start();
+  }
+
   protected Class<?> loadClass(String className) throws Exception
   {
     return _classLoader.loadClass(className);
   }
-
-  //
-  // private attributes
-  //
-
-  private final ClassLoader _classLoader;
-
-  /**
-   * Logger.
-   */
-  private static final Logger _logger = Logger.getLogger(Startup.class);
 }

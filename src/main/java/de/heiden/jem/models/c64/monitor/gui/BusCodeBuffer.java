@@ -8,7 +8,7 @@ import de.heiden.jem.components.bus.BusDevice;
  */
 public class BusCodeBuffer extends AbstractCodeBuffer
 {
-  private final BusDevice bus;
+  private final BusDevice _bus;
 
   /**
    * Constructor.
@@ -21,12 +21,12 @@ public class BusCodeBuffer extends AbstractCodeBuffer
     super(0x0000, 0x10000);
 
     this.position = position;
-    this.bus = bus;
+    this._bus = bus;
   }
 
   @Override
   public int readByte()
   {
-    return bus.read(position++);
+    return _bus.read(position++);
   }
 }

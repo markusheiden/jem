@@ -1,7 +1,7 @@
 package de.heiden.jem.models.c64.components.cpu;
 
 import de.heiden.c64dt.util.HexUtil;
-import de.heiden.jem.models.c64.components.RAM;
+import de.heiden.jem.models.c64.components.memory.RAM;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,7 +1,7 @@
 package de.heiden.jem.models.c64.components.cpu;
 
 import de.heiden.jem.components.clock.synchronization.SerializedClock;
-import de.heiden.jem.models.c64.components.RAM;
+import de.heiden.jem.models.c64.components.memory.RAM;
 import de.heiden.jem.models.c64.components.cpu.CPUTestBus.LogEntry;
 import junit.framework.TestCase;
 import org.apache.log4j.Logger;

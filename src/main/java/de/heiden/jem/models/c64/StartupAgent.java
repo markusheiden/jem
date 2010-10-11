@@ -7,17 +7,17 @@ import org.apache.log4j.Logger;
  */
 public class StartupAgent
 {
-  public void start() throws Exception
-  {
-    _logger.debug("Starting c64");
-    new C64().start();
-  }
+  /**
+   * Logger.
+   */
+  private final Logger _logger = Logger.getLogger(getClass());
 
-  public static void main(String[] args)
+  public void start()
   {
     try
     {
-      new StartupAgent().start();
+      _logger.debug("Starting c64");
+      new C64().start();
     }
     catch (Exception e)
     {
@@ -25,12 +25,8 @@ public class StartupAgent
     }
   }
 
-  //
-  // private attributes
-  //
-
-  /**
-   * Logger.
-   */
-  private static final Logger _logger = Logger.getLogger(StartupAgent.class);
+  public static void main(String[] args)
+  {
+    new StartupAgent().start();
+  }
 }

@@ -2,8 +2,8 @@ package de.heiden.jem.models.c64.components.vic;
 
 import de.heiden.jem.components.ports.OutputPort;
 import de.heiden.jem.components.ports.OutputPortListener;
-import de.heiden.jem.models.c64.components.RAM;
-import de.heiden.jem.models.c64.components.ROM;
+import de.heiden.jem.models.c64.components.memory.RAM;
+import de.heiden.jem.models.c64.components.memory.ROM;
 import de.heiden.jem.components.bus.BusDevice;
 
 /**

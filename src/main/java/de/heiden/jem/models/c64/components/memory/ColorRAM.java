@@ -1,4 +1,4 @@
-package de.heiden.jem.models.c64.components;
+package de.heiden.jem.models.c64.components.memory;
 
 /**
  * 4 Bit-Color RAM.

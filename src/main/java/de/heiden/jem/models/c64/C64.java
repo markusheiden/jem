@@ -5,9 +5,9 @@ import de.heiden.jem.components.clock.Clock;
 import de.heiden.jem.components.clock.RealTimeSlowDown;
 import de.heiden.jem.components.clock.serialthreads.SerialClock;
 import de.heiden.jem.models.c64.components.CIA6526;
-import de.heiden.jem.models.c64.components.ColorRAM;
-import de.heiden.jem.models.c64.components.RAM;
-import de.heiden.jem.models.c64.components.ROM;
+import de.heiden.jem.models.c64.components.memory.ColorRAM;
+import de.heiden.jem.models.c64.components.memory.RAM;
+import de.heiden.jem.models.c64.components.memory.ROM;
 import de.heiden.jem.models.c64.components.cpu.C64Bus;
 import de.heiden.jem.models.c64.components.cpu.CPU6510;
 import de.heiden.jem.models.c64.components.cpu.CPU6510Debugger;
@@ -26,6 +26,11 @@ import java.awt.event.KeyListener;
  */
 public class C64
 {
+  /**
+   * Logger.
+   */
+  private final Logger _logger = Logger.getLogger(getClass());
+
   private JFrame _frame;
 
   private final Clock _clock;
@@ -171,13 +176,4 @@ public class C64
   {
     return _cpu;
   }
-
-  //
-  // private attributes
-  //
-
-  /**
-   * Logger.
-   */
-  private final Logger _logger = Logger.getLogger(getClass());
 }

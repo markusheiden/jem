@@ -1,6 +1,6 @@
 package de.heiden.jem.models.c64.util;
 
-import de.heiden.jem.models.c64.components.ROM;
+import de.heiden.jem.models.c64.components.memory.ROM;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;

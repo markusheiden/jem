@@ -12,6 +12,8 @@ import java.awt.Graphics;
  */
 public class VICScreen extends JC64ScreenComponent implements IScreenListener
 {
+  private final AbstractDisplayUnit _displayUnit;
+
   /**
    * Constructor.
    *
@@ -51,15 +53,4 @@ public class VICScreen extends JC64ScreenComponent implements IScreenListener
   {
     drawImageResized(g);
   }
-
-  //
-  // private attributes
-  //
-
-  private final AbstractDisplayUnit _displayUnit;
-
-  /**
-   * Logger.
-   */
-  private final Logger _logger = Logger.getLogger(getClass());
 }

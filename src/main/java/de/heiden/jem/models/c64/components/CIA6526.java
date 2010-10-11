@@ -49,6 +49,68 @@ public class CIA6526 implements BusDevice
   public static final int CRB_MODE_TIMER_A_CNT = 0x60;
   public static final int CRB_SET_ALARM = 0x80;
 
+  // system clock
+  private final Clock _clock;
+  private final ClockEvent _timerAUnderflowEvent;
+  private final ClockEvent _timerBUnderflowEvent;
+
+  // address mask
+  private final int _mask;
+
+  // Port A
+  private int _controlA; // 0x0E
+  private InputOutputPortImpl _portA;
+
+  // Port B
+  private int _controlB; // 0x0F
+  private InputOutputPortImpl _portB;
+
+  // serial shift reg
+  private int _sdr; // 0x0C
+  private int _portSValue; // current value
+  private InputOutputPortImpl _portSerial;
+
+  // timer A
+  private boolean _timerAIsRunning;
+  private int _timerA; // LO: 0x04, HI 0x05
+  private int _timerAInit; // LO: 0x04, HI 0x05
+  private boolean _timerACLK; // increment timer A with clock?
+  private long _timerABase; // base tick for count clocking
+  private boolean _timerACNT; // increment timer A when raising edge at CNT?
+
+  // timer B
+  private boolean _timerBIsRunning;
+  private int _timerB; // LO: 0x06, HI 0x07
+  private int _timerBInit; // LO: 0x04, HI 0x05
+  private boolean _timerBCLK; // increment timer B with clock?
+  private long _timerBBase; // base tick for count clocking
+  private boolean _timerBCNT; // increment timer B when raising edge at CNT?
+
+  // real time
+  private long _timeBase;
+  private int _timeTenth; // 0x08
+  private int _timeSec; // 0x09
+  private int _timeMin; // 0x0A
+  private int _timeHour; // 0x0B
+  private boolean _timeIsRunning;
+
+  private boolean _timeLock;
+  private int _timeTenthTemp; // 0x08
+  private int _timeSecTemp; // 0x09
+  private int _timeMinTemp; // 0x0A
+  private int _timeHourTemp; // 0x0B
+
+  private int _alarmTenth; // 0x08
+  private int _alarmSec; // 0x09
+  private int _alarmMin; // 0x0A
+  private int _alarmHour; // 0x0B
+
+  // irq control
+  private int _irq; // 0x0D
+  private int _irqMask; // 0x0D
+
+  private final OutputPortImpl _irqPort;
+
   /**
    * Constructor.
    *
@@ -767,75 +829,4 @@ public class CIA6526 implements BusDevice
   {
     // TODO implement
   }
-
-  //
-  // private attributes
-  //
-
-  // system clock
-  private final Clock _clock;
-  private final ClockEvent _timerAUnderflowEvent;
-  private final ClockEvent _timerBUnderflowEvent;
-
-  // address mask
-  private final int _mask;
-
-  // Port A
-  private int _controlA; // 0x0E
-  private InputOutputPortImpl _portA;
-
-  // Port B
-  private int _controlB; // 0x0F
-  private InputOutputPortImpl _portB;
-
-  // serial shift reg
-  private int _sdr; // 0x0C
-  private int _portSValue; // current value
-  private InputOutputPortImpl _portSerial;
-
-  // timer A
-  private boolean _timerAIsRunning;
-  private int _timerA; // LO: 0x04, HI 0x05
-  private int _timerAInit; // LO: 0x04, HI 0x05
-  private boolean _timerACLK; // increment timer A with clock?
-  private long _timerABase; // base tick for count clocking
-  private boolean _timerACNT; // increment timer A when raising edge at CNT?
-
-  // timer B
-  private boolean _timerBIsRunning;
-  private int _timerB; // LO: 0x06, HI 0x07
-  private int _timerBInit; // LO: 0x04, HI 0x05
-  private boolean _timerBCLK; // increment timer B with clock?
-  private long _timerBBase; // base tick for count clocking
-  private boolean _timerBCNT; // increment timer B when raising edge at CNT?
-
-  // real time
-  private long _timeBase;
-  private int _timeTenth; // 0x08
-  private int _timeSec; // 0x09
-  private int _timeMin; // 0x0A
-  private int _timeHour; // 0x0B
-  private boolean _timeIsRunning;
-
-  private boolean _timeLock;
-  private int _timeTenthTemp; // 0x08
-  private int _timeSecTemp; // 0x09
-  private int _timeMinTemp; // 0x0A
-  private int _timeHourTemp; // 0x0B
-
-  private int _alarmTenth; // 0x08
-  private int _alarmSec; // 0x09
-  private int _alarmMin; // 0x0A
-  private int _alarmHour; // 0x0B
-
-  // irq control
-  private int _irq; // 0x0D
-  private int _irqMask; // 0x0D
-
-  private final OutputPortImpl _irqPort;
-
-  /**
-   * Logger.
-   */
-  private static final Logger _logger = Logger.getLogger(CIA6526.class);
 }

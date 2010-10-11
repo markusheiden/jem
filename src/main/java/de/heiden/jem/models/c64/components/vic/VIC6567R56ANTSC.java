@@ -1,7 +1,7 @@
 package de.heiden.jem.models.c64.components.vic;
 
 import de.heiden.jem.components.clock.Clock;
-import de.heiden.jem.models.c64.components.ColorRAM;
+import de.heiden.jem.models.c64.components.memory.ColorRAM;
 
 /**
  * VIC 6567R56A (NTSC).

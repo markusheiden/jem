@@ -11,26 +11,26 @@ import java.awt.Component;
  */
 public class DebuggerStartup extends Startup
 {
-  public void start() throws Exception
-  {
-    Class<?> clazz = loadClass("de.heiden.jem.models.c64.monitor.gui.DebuggerGUI");
-    Object debugger = clazz.newInstance();
+  /**
+   * Logger.
+   */
+  private final Logger _logger = Logger.getLogger(getClass());
 
-    JFrame frame = new JFrame("C64 Debugger");
-    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    frame.setLayout(new BorderLayout());
-
-    frame.add((Component) debugger, BorderLayout.CENTER);
-
-    frame.pack();
-    frame.setVisible(true);
-  }
-
-  public static void main(String[] args)
+  public void start()
   {
     try
     {
-      new DebuggerStartup().start();
+      Class<?> clazz = loadClass("de.heiden.jem.models.c64.monitor.gui.DebuggerGUI");
+      Object debugger = clazz.newInstance();
+
+      JFrame frame = new JFrame("C64 Debugger");
+      frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+      frame.setLayout(new BorderLayout());
+
+      frame.add((Component) debugger, BorderLayout.CENTER);
+
+      frame.pack();
+      frame.setVisible(true);
     }
     catch (Exception e)
     {
@@ -38,12 +38,8 @@ public class DebuggerStartup extends Startup
     }
   }
 
-  //
-  // private attributes
-  //
-
-  /**
-   * Logger.
-   */
-  private static final Logger _logger = Logger.getLogger(DebuggerStartup.class);
+  public static void main(String[] args)
+  {
+    new DebuggerStartup().start();
+  }
 }
