@@ -67,7 +67,7 @@ public class CIA6526 implements BusDevice
       public void execute (long tick)
       {
         timerAUnderflow();
-        _timerABase = _clock.getTick();
+        _timerABase = tick;
         // continuous mode
         if ((_controlA & CR_ONE_SHOT) == 0)
         {
@@ -88,7 +88,7 @@ public class CIA6526 implements BusDevice
       public void execute (long tick)
       {
         timerBUnderflow();
-        _timerBBase = _clock.getTick();
+        _timerBBase = tick;
         // continuous mode
         if ((_controlB & CR_ONE_SHOT) == 0)
         {

@@ -67,10 +67,9 @@ public interface Clock
 
   /**
    * Get current tick.
+   * Avoid usage of this method for performance reasons, if current tick is available as parameter.
    *
    * @ensure result >= 0
-   * @deprecated avoid usage of this method, because in all situation where the current tick is needed, it is available as parameter
    */
-  @Deprecated
   public long getTick();
 }
