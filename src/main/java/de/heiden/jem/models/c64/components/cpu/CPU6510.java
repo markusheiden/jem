@@ -3520,21 +3520,42 @@ public class CPU6510 implements ClockedComponent
   /**
    * Write value (byte) to addr.
    * (1)
+   *
+   * @param value value
+   * @param addr address
    */
   @Interruptible
   protected final void write(int value, int addr)
+  {
+    // always write to bus!
+    _bus.write(value, addr);
+    if (addr <= 1)
+    {
+      writePort(value, addr);
+    }
+    _tick.waitForTick();
+  }
+
+  /**
+   * Write value to io port.
+   *
+   * @param value value
+   * @param addr port address (0 or 1)
+   */
+  private void writePort(int value, int addr)
   {
     if (addr == 0)
     {
       _port.setOutputMask(value);
     }
-    else if (addr == 1) 
+    else if (addr == 1)
     {
-      _port.setOutputMask(value);
+      _port.setOutputData(value);
     }
-    _bus.write(value, addr);
-
-    _tick.waitForTick();
+    else
+    {
+      throw new IllegalArgumentException("unreachable code");
+    }
   }
 
   /**
@@ -3542,27 +3563,42 @@ public class CPU6510 implements ClockedComponent
    * (1)
    *
    * @param addr address
+   * @return byte from bus
    */
   @Interruptible
   protected final int read(int addr)
   {
-    int result;
-    if (addr == 0)
+    // always read from bus!
+    int result = _bus.read(addr);
+    if (addr <= 1)
     {
-      result = _port.outputMask();
+      result = readPort(addr);
     }
-    else if (addr == 1)
-    {
-      result = _port.inputData();
-    }
-    else
-    {
-      result = _bus.read(addr);
-    }
-
     _tick.waitForTick();
 
     return result;
+  }
+
+  /**
+   * Read byte from io port.
+   *
+   * @param addr
+   * @return byte from port
+   */
+  private int readPort(int addr)
+  {
+    if (addr == 0)
+    {
+      return _port.outputMask();
+    }
+    else if (addr == 1)
+    {
+      return _port.inputData();
+    }
+    else
+    {
+      throw new IllegalArgumentException("unreachable code");
+    }
   }
 
   //
