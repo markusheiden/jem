@@ -119,13 +119,4 @@ public class DisplayUnit extends AbstractDisplayUnit
     // TODO 2010-03-15 mh: 3 sprite data access / idle access
     _tick.waitForTick();
   }
-
-  //
-  // private attributes
-  //
-
-  /**
-   * Logger.
-   */
-  private static final Logger _logger = Logger.getLogger(DisplayUnit.class);
 }

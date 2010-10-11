@@ -11,6 +11,89 @@ import org.apache.log4j.Logger;
 public abstract class VIC implements BusDevice
 {
   /**
+   * Logger.
+   */
+  private final Logger _logger = Logger.getLogger(getClass());
+
+  /**
+   * VIC parameters.
+   */
+  protected final int _linesPerScreen;
+  protected final int _firstLine_25 = 51;
+  protected final int _firstLine_24 = 55;
+  protected final int _lastLine_25 = 250 + 1;
+  protected final int _lasttLine_24 = 246 + 1;
+  protected final int _firstVBlank;
+  protected final int _lastVBlank;
+
+  protected final int _cyclesPerLine;
+  protected final int _firstX_25 = 24;
+  protected final int _firstX_24 = 31;
+  protected final int _lastX_25 = 343 + 1;
+  protected final int _lastX_24 = 334 + 1;
+  protected final int _firstVisibleX;
+  protected final int _lastVisibleX;
+  protected final int _lastX;
+
+
+  // mem access unit
+  private final MemAccessUnit _memAccessUnit;
+
+  // display unit
+  public final AbstractDisplayUnit _displayUnit;
+
+  // address mask
+  private final int _mask;
+
+  // components
+  protected final Clock _clock;
+  public final VICBus _bus;
+  public final ColorRAM _colorRam;
+
+  // sprite register
+  protected Sprite[] _sprites;
+
+  private int _regSpritesEnable; // 0x15
+  private int _regSpritesMSBX; // 0x11
+  private int _regSpritesExpandX; // 0x17
+  private int _regSpritesExpandY; // 0x1D
+  private int _regSpritesMulticolorMode; // 0x1C
+  private int _regSpritesMulticolor0; // 0x15
+  private int _regSpritesMulticolor1; // 0x16
+
+  private int _regSpritesSpriteCollision; // 0x1E
+  private int _regSpritesBackgroundCollision; // 0x1F
+  private int _regSpritesBackgroundPriority; // 0x1B
+
+  // control
+  protected int _regControl1; // 0x11
+  protected int _regRaster; // read: 0x11 bit 7, 0x12
+  protected int _regRasterIRQ; // write: 0x11 bit 7, 0x12
+  protected int _regControl2; // 0x16
+
+  // base addresses
+  private int _regBase; // 0x18
+  public int _baseCharacterMode; // base address of text screen
+  private int _baseBitmapMode; // base address of bitmap screen
+  public int _baseCharacterSet; // base address of character set
+
+  // strobe
+  private int _regStrobeX; // 0x13
+  private int _regStrobeY; // 0x14
+
+  // irq register
+  private int _regInterruptRequest; // 0x19
+  private int _regInterruptMask; // 0x1A
+
+  // color register
+  protected int _regExteriorColor; // 0x20
+  protected int[] _regBackgroundColor = new int[4]; // 0x21-0x24
+
+  // C128 register
+  private int _regKeyboard; // 0x2F
+  private int _regFastMode; // 0x30
+
+  /**
    * Constructor.
    *
    * @param clock system clock (1 MHz).
@@ -663,91 +746,4 @@ public abstract class VIC implements BusDevice
     _baseBitmapMode = (_regBase & 0x04) << 10;
     _baseCharacterSet = (_regBase & 0x0E) << 10; // TODO what about bit 1?
   }
-
-  //
-  // private attributes
-  //
-
-  /**
-   * VIC parameters.
-   */
-  protected final int _linesPerScreen;
-  protected final int _firstLine_25 = 51;
-  protected final int _firstLine_24 = 55;
-  protected final int _lastLine_25 = 250 + 1;
-  protected final int _lasttLine_24 = 246 + 1;
-  protected final int _firstVBlank;
-  protected final int _lastVBlank;
-
-  protected final int _cyclesPerLine;
-  protected final int _firstX_25 = 24;
-  protected final int _firstX_24 = 31;
-  protected final int _lastX_25 = 343 + 1;
-  protected final int _lastX_24 = 334 + 1;
-  protected final int _firstVisibleX;
-  protected final int _lastVisibleX;
-  protected final int _lastX;
-
-
-  // mem access unit
-  private final MemAccessUnit _memAccessUnit;
-
-  // display unit
-  public final AbstractDisplayUnit _displayUnit;
-
-  // address mask
-  private final int _mask;
-
-  // components
-  protected final Clock _clock;
-  public final VICBus _bus;
-  public final ColorRAM _colorRam;
-
-  // sprite register
-  protected Sprite[] _sprites;
-
-  private int _regSpritesEnable; // 0x15
-  private int _regSpritesMSBX; // 0x11
-  private int _regSpritesExpandX; // 0x17
-  private int _regSpritesExpandY; // 0x1D
-  private int _regSpritesMulticolorMode; // 0x1C
-  private int _regSpritesMulticolor0; // 0x15
-  private int _regSpritesMulticolor1; // 0x16
-
-  private int _regSpritesSpriteCollision; // 0x1E
-  private int _regSpritesBackgroundCollision; // 0x1F
-  private int _regSpritesBackgroundPriority; // 0x1B
-
-  // control
-  protected int _regControl1; // 0x11
-  protected int _regRaster; // read: 0x11 bit 7, 0x12
-  protected int _regRasterIRQ; // write: 0x11 bit 7, 0x12
-  protected int _regControl2; // 0x16
-
-  // base addresses
-  private int _regBase; // 0x18
-  public int _baseCharacterMode; // base address of text screen
-  private int _baseBitmapMode; // base address of bitmap screen
-  public int _baseCharacterSet; // base address of character set
-
-  // strobe
-  private int _regStrobeX; // 0x13
-  private int _regStrobeY; // 0x14
-
-  // irq register
-  private int _regInterruptRequest; // 0x19
-  private int _regInterruptMask; // 0x1A
-
-  // color register
-  protected int _regExteriorColor; // 0x20
-  protected int[] _regBackgroundColor = new int[4]; // 0x21-0x24
-
-  // C128 register
-  private int _regKeyboard; // 0x2F
-  private int _regFastMode; // 0x30
-
-  /**
-   * Logger.
-   */
-  private static final Logger _logger = Logger.getLogger(VIC.class);
 }
