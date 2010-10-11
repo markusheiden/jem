@@ -146,7 +146,7 @@ public abstract class AbstractClock<E extends ClockEntry> implements Clock
 
   /**
    * Clocked components.
-   * Unsynchronized.
+   * Not synchronized.
    */
   protected final SortedMap<Integer, E> _entryMap;
 
