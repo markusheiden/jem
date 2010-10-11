@@ -8,6 +8,16 @@ import java.util.List;
  */
 public class InputPortImpl implements InputPort
 {
+  private final List<OutputPort> _outputPorts;
+
+  private final OutputPortListener _outputListener;
+
+  private final List<InputPortListener> _inputListeners;
+
+  private int _inputData;
+
+  private int _inputMask;
+
   /**
    * Constructor.
    */
@@ -108,7 +118,7 @@ public class InputPortImpl implements InputPort
   /**
    * Update current value of input port.
    */
-  protected void updateInputPort()
+  protected final void updateInputPort()
   {
     int inputData = 0xFF;
     int inputMask = 0x00;
@@ -131,26 +141,12 @@ public class InputPortImpl implements InputPort
   /**
    * Notify all listeners.
    */
-  protected void notifyInputPortListeners()
+  protected final void notifyInputPortListeners()
   {
-    for (int i = 0; i < _inputListeners.size(); i++)
+    List<InputPortListener> listeners = _inputListeners;
+    for (int i = 0, size = listeners.size(); i < size; i++)
     {
-      _inputListeners.get(i).inputPortChanged(_inputData, _inputMask);
+      listeners.get(i).inputPortChanged(_inputData, _inputMask);
     }
   }
-
-  //
-  //
-  // private attributes
-  //
-
-  private final List<OutputPort> _outputPorts;
-
-  private final OutputPortListener _outputListener;
-
-  private final List<InputPortListener> _inputListeners;
-
-  private int _inputData;
-
-  private int _inputMask;
 }

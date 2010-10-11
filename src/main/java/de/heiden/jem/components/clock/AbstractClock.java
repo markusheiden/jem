@@ -12,6 +12,30 @@ import java.util.TreeMap;
 public abstract class AbstractClock<E extends ClockEntry> implements Clock
 {
   /**
+   * Logger.
+   */
+  private final Logger _logger = Logger.getLogger(getClass());
+
+  protected boolean _started;
+
+  /**
+   * Clocked components.
+   * Not synchronized.
+   */
+  protected final SortedMap<Integer, E> _entryMap;
+
+  /**
+   * Events.
+   */
+  protected final NavigableMap<Long, ClockEvent> _events;
+
+  /**
+   * Next event to look for.
+   * Needs not to be volatile, because only used by clock thread.
+   */
+  protected long _nextEventTick;
+
+  /**
    * Constructor.
    */
   protected AbstractClock()
@@ -137,32 +161,4 @@ public abstract class AbstractClock<E extends ClockEntry> implements Clock
   {
     _nextEventTick = _events.firstKey();
   }
-
-  //
-  // private attributes
-  //
-
-  protected boolean _started;
-
-  /**
-   * Clocked components.
-   * Not synchronized.
-   */
-  protected final SortedMap<Integer, E> _entryMap;
-
-  /**
-   * Events.
-   */
-  protected final NavigableMap<Long, ClockEvent> _events;
-
-  /**
-   * Next event to look for.
-   * Needs not to be volatile, because only used by clock thread.
-   */
-  protected long _nextEventTick;
-
-  /**
-   * Logger.
-   */
-  private static final Logger _logger = Logger.getLogger(AbstractClock.class);
 }

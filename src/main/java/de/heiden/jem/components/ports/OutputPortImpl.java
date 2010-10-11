@@ -8,6 +8,12 @@ import java.util.List;
  */
 public class OutputPortImpl implements OutputPort
 {
+  private final List<OutputPortListener> _outputListeners;
+
+  private int _outputData;
+
+  private int _outputMask;
+
   /**
    * Constructor.
    */
@@ -91,21 +97,12 @@ public class OutputPortImpl implements OutputPort
   /**
    * Notify all listeners.
    */
-  protected void notifyOutputPortListeners()
+  protected final void notifyOutputPortListeners()
   {
-    for (int i = 0; i < _outputListeners.size(); i++)
+    List<OutputPortListener> listeners = _outputListeners;
+    for (int i = 0, size = listeners.size(); i < size; i++)
     {
-      _outputListeners.get(i).outputPortChanged(_outputData, _outputMask);
+      listeners.get(i).outputPortChanged(_outputData, _outputMask);
     }
   }
-
-  //
-  // private attributes
-  //
-
-  private final List<OutputPortListener> _outputListeners;
-
-  private int _outputData;
-
-  private int _outputMask;
 }

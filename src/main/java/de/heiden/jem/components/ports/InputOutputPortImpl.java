@@ -5,6 +5,10 @@ package de.heiden.jem.components.ports;
  */
 public class InputOutputPortImpl implements InputOutputPort
 {
+  private final InputPortImpl _inputPort;
+
+  private final OutputPortImpl _outputPort;
+
   /**
    * Constructor.
    */
@@ -131,12 +135,4 @@ public class InputOutputPortImpl implements InputOutputPort
   {
     _outputPort.setOutputMask(mask);
   }
-
-  //
-  // private attributes
-  //
-
-  private final InputPortImpl _inputPort;
-
-  private final OutputPortImpl _outputPort;
 }

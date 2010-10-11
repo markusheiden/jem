@@ -5,6 +5,10 @@ package de.heiden.jem.components.clock;
  */
 public class ClockEntry
 {
+  public final ClockedComponent component;
+
+  public final Tick tick;
+
   /**
    * Constructor.
    *
@@ -21,12 +25,4 @@ public class ClockEntry
     this.component = component;
     this.tick = tick;
   }
-
-  //
-  // attributes
-  //
-
-  public final ClockedComponent component;
-
-  public final Tick tick;
 }
