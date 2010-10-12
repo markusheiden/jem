@@ -38,9 +38,11 @@ public class C64Bus implements BusDevice
 
   private final BusDevice _noBusDevice;
 
-  private BusDevice _ioMode;
-  private final BusDevice[] _ioModes;
-  private final BusDevice[] _ioMap;
+  private BusDevice[] _ioModeRead;
+  private BusDevice[] _ioModeWrite;
+
+  private final BusDevice[][] _ioModesRead;
+  private final BusDevice[][] _ioModesWrite;
 
   /**
    * Constructor.
@@ -91,12 +93,13 @@ public class C64Bus implements BusDevice
       @Override
       public final void outputPortChanged(int value, int mask)
       {
-        BusDevice oldIoMode = _ioMode;
         // TODO 2010-10-08 mh: consider signals from expansion port
         int mode = ((value << 2) | 0x03) & 0x1f;
-        BusDevice newIoMode = _ioModes[mode];
-        _ioMode = newIoMode;
-        if (_logger.isDebugEnabled() && oldIoMode != _ioMode)
+
+        BusDevice[] oldIoModeRead = _ioModeRead;
+        _ioModeRead = _ioModesRead[mode];
+        _ioModeWrite = _ioModesWrite[mode];
+        if (_logger.isDebugEnabled() && oldIoModeRead != _ioModeRead)
         {
           _logger.debug("Change bus mode to " + HexUtil.hexBytePlain(mode));
         }
@@ -117,55 +120,171 @@ public class C64Bus implements BusDevice
     _cartridgeL = new NoBusDevice(); // TODO
     _cartridgeH = new NoBusDevice(); // TODO
 
-    _ioMode = new Mode1();
-    _ioModes = new BusDevice[]
+    BusDevice[] ioModeRead01 = computeIoModeRead(_ram, _ram, _basic, null, _kernel); // io
+    BusDevice[] ioModeRead02 = computeIoModeRead(_ram, _ram, _basic, _charset, _kernel); // ram
+    BusDevice[] ioModeRead03 = computeIoModeRead(_ram, _ram, _ram, null, _ram); // io
+    BusDevice[] ioModeRead04 = computeIoModeRead(_ram, _ram, _ram, _charset, _ram); // ram
+    BusDevice[] ioModeRead05 = computeIoModeRead(_ram, _ram, _ram, _ram, _ram); // ram
+    BusDevice[] ioModeRead06 = computeIoModeRead(_ram, _ram, _ram, null, _kernel); // io
+    BusDevice[] ioModeRead07 = computeIoModeRead(_ram, _ram, _basic, _charset, _kernel); // ram
+    BusDevice[] ioModeRead08 = computeIoModeRead(_ram, _cartridgeL, _basic, null, _kernel); // io
+    BusDevice[] ioModeRead09 = computeIoModeRead(_ram, _cartridgeL, _basic, _charset, _kernel); // ram
+    BusDevice[] ioModeRead10 = computeIoModeRead(_ram, _ram, _cartridgeH, null, _kernel); // io
+    BusDevice[] ioModeRead11 = computeIoModeRead(_ram, _ram, _cartridgeH, _charset, _kernel); // ram
+    BusDevice[] ioModeRead12 = computeIoModeRead(_ram, _cartridgeL, _cartridgeH, null, _kernel); // io
+    BusDevice[] ioModeRead13 = computeIoModeRead(_ram, _cartridgeL, _cartridgeH, _charset, _kernel); // ram
+    BusDevice[] ioModeRead14 = computeIoModeRead(_ram, _cartridgeL, _ram, null, _cartridgeH); // cartridge / io
+
+    BusDevice[] ioModeWriteIo = setIo(computeIoModeWrite(_ram));
+    BusDevice[] ioModeWriteRam = computeIoModeWrite(_ram);
+    BusDevice[] ioModeWriteOpn = setIo(computeIoModeWrite(_cartridge));
+
+    _ioModeRead = ioModeRead01;
+    _ioModesRead = new BusDevice[][]
       {
-        new Mode7(),  // 00000 000x0
-        new Mode14(), // 00001 xxx01
-        new Mode7(),  // 00010 000x0
-        new Mode5(),  // 00011 x001x
-        new Mode5(),  // 00100 00100
-        new Mode14(), // 00101 xxx01
-        new Mode4(),  // 00110 0011x
-        new Mode4(),  // 00111 0011x
+        ioModeRead07, // 00000 000x0
+        ioModeRead14, // 00001 xxx01
+        ioModeRead07, // 00010 000x0
+        ioModeRead05, // 00011 x001x
+        ioModeRead05, // 00100 00100
+        ioModeRead14, // 00101 xxx01
+        ioModeRead04, // 00110 0011x
+        ioModeRead04, // 00111 0011x
 
-        new Mode11(), // 01000 01000
-        new Mode14(), // 01001 xxx01
-        new Mode7(),  // 01010 0101x
-        new Mode7(),  // 01011 0101x
-        new Mode13(), // 01100 01100 Mode13 OK?
-        new Mode14(), // 01101 xxx01
-        new Mode9(),  // 01110 01110
-        new Mode2(),  // 01111 01111
+        ioModeRead11, // 01000 01000
+        ioModeRead14, // 01001 xxx01
+        ioModeRead07, // 01010 0101x
+        ioModeRead07, // 01011 0101x
+        ioModeRead13, // 01100 01100 Mode13 OK?
+        ioModeRead14, // 01101 xxx01
+        ioModeRead09, // 01110 01110
+        ioModeRead02, // 01111 01111
 
-        new Mode6(),  // 10000 100x0
-        new Mode14(), // 10001 xxx01
-        new Mode6(),  // 10010 100x0
-        new Mode5(),  // 10011 x001x
-        new Mode3(),  // 10100 10100
-        new Mode14(), // 10101 xxx01
-        new Mode3(),  // 10110 1011x
-        new Mode3(),  // 10111 1011x
+        ioModeRead06, // 10000 100x0
+        ioModeRead14, // 10001 xxx01
+        ioModeRead06, // 10010 100x0
+        ioModeRead05, // 10011 x001x
+        ioModeRead03, // 10100 10100
+        ioModeRead14, // 10101 xxx01
+        ioModeRead03, // 10110 1011x
+        ioModeRead03, // 10111 1011x
 
-        new Mode10(), // 11000 11000
-        new Mode14(), // 11001 xxx01
-        new Mode6(),  // 11010 1101x
-        new Mode6(),  // 11011 1101x
-        new Mode12(), // 11100 11100 Mode12 OK???
-        new Mode14(), // 11101 xxx01
-        new Mode8(),  // 11110 11110
-        new Mode1(),  // 11111 11111
-
+        ioModeRead10, // 11000 11000
+        ioModeRead14, // 11001 xxx01
+        ioModeRead06, // 11010 1101x
+        ioModeRead06, // 11011 1101x
+        ioModeRead12, // 11100 11100 Mode12 OK???
+        ioModeRead14, // 11101 xxx01
+        ioModeRead08, // 11110 11110
+        ioModeRead01  // 11111 11111
       };
 
-    _ioMap = new BusDevice[]
+    _ioModeWrite = ioModeWriteIo;
+    _ioModesWrite = new BusDevice[][]
       {
-        _vic, _vic, _vic, _vic,
-        _noBusDevice, _noBusDevice, _noBusDevice, _noBusDevice,
-        _colorRam, _colorRam, _colorRam, _colorRam,
-        _cia1, _cia2,
-        _noBusDevice, _noBusDevice
+        ioModeWriteRam, // 07 00000 000x0
+        ioModeWriteOpn, // 14 00001 xxx01
+        ioModeWriteRam, // 07 00010 000x0
+        ioModeWriteRam, // 0500011 x001x
+        ioModeWriteRam, // 05 00100 00100
+        ioModeWriteOpn, // 14 00101 xxx01
+        ioModeWriteRam, // 04 00110 0011x
+        ioModeWriteRam, // 04 00111 0011x
+
+        ioModeWriteRam, // 11 01000 01000
+        ioModeWriteOpn, // 14 01001 xxx01
+        ioModeWriteRam, // 07 01010 0101x
+        ioModeWriteRam, // 07 01011 0101x
+        ioModeWriteRam, // 13 01100 01100 Mode13 OK?
+        ioModeWriteOpn, // 14 01101 xxx01
+        ioModeWriteRam, // 09 01110 01110
+        ioModeWriteRam, // 02 01111 01111
+
+        ioModeWriteIo,  // 06 10000 100x0
+        ioModeWriteOpn, // 14 10001 xxx01
+        ioModeWriteIo,  // 06 10010 100x0
+        ioModeWriteRam, // 05 10011 x001x
+        ioModeWriteIo,  // 03 10100 10100
+        ioModeWriteOpn, // 14 10101 xxx01
+        ioModeWriteIo,  // 03 10110 1011x
+        ioModeWriteIo,  // 03 10111 1011x
+
+        ioModeWriteIo,  // 10 11000 11000
+        ioModeWriteOpn, // 14 11001 xxx01
+        ioModeWriteIo,  // 06 11010 1101x
+        ioModeWriteIo,  // 06 11011 1101x
+        ioModeWriteIo,  // 12 11100 11100 Mode12 OK???
+        ioModeWriteOpn, // 14 11101 xxx01
+        ioModeWriteIo,  // 08 11110 11110
+        ioModeWriteIo,  // 01 11111 11111
       };
+  }
+
+  private BusDevice[] computeIoModeRead(BusDevice ram,
+    BusDevice x8000, BusDevice xA000, BusDevice xD000, BusDevice xE000)
+  {
+    BusDevice[] result = new BusDevice[256];
+    for (int i = 0x00; i <= 0x7F; i++)
+    {
+      result[i] = ram;
+    }
+    for (int i = 0x80; i <= 0x9F; i++)
+    {
+      result[i] = x8000;
+    }
+    for (int i = 0xA0; i <= 0xBF; i++)
+    {
+      result[i] = xA000;
+    }
+    if (xD000 != null)
+    {
+      for (int i = 0xD0; i <= 0xDF; i++)
+      {
+        result[i] = xD000;
+      }
+    }
+    else
+    {
+      setIo(result);
+    }
+    for (int i = 0xE0; i <= 0xFF; i++)
+    {
+      result[i] = xE000;
+    }
+
+    return result;
+  }
+
+  private BusDevice[] computeIoModeWrite(BusDevice ram)
+  {
+    BusDevice[] result = new BusDevice[256];
+    for (int i = 0x00; i <= 0xFF; i++)
+    {
+      result[i] = ram;
+    }
+    return result;
+  }
+
+  private BusDevice[] setIo(BusDevice[] result)
+  {
+    for (int i = 0xD0; i <= 0xD3; i++)
+    {
+      result[i] = _vic;
+    }
+    for (int i = 0xD4; i <= 0xD7; i++)
+    {
+      result[i] = _noBusDevice;
+    }
+    for (int i = 0xD8; i <= 0xDB; i++)
+    {
+      result[i] = _colorRam;
+    }
+    result[0xDC] = _cia1;
+    result[0xDD] = _cia2;
+    result[0xDE] = _noBusDevice;
+    result[0xDF] = _noBusDevice;
+
+    return result;
   }
 
   /**
@@ -189,8 +308,8 @@ public class C64Bus implements BusDevice
     _kernel = null;
     _noBusDevice = null;
 
-    _ioModes = null;
-    _ioMap = null;
+    _ioModesRead = null;
+    _ioModesWrite = null;
   }
 
   //
@@ -208,7 +327,7 @@ public class C64Bus implements BusDevice
   {
     assert address >= 0x0000 && address < 0x10000 : "address >= 0x0000 && address < 0x10000";
 
-    return _ioMode.read(address);
+    return _ioModeRead[address >> 8].read(address);
   }
 
   /**
@@ -224,453 +343,6 @@ public class C64Bus implements BusDevice
     assert value >= 0x00 && value < 0x100 : "value >= 0x00 && value < 0x100";
     assert address >= 0x0000 && address < 0x10000 : "address >= 0x0000 && address < 0x10000";
 
-    _ioMode.write(value, address);
-  }
-
-  //
-  // Inner classes for different address configurations
-  //
-
-  private abstract class IOBusDevice implements BusDevice
-  {
-    @Override
-    public final void write(int value, int address)
-    {
-      switch (address >> 12)
-      {
-        case 0x0D:
-          _ioMap[(address >> 8) & 0x0F].write(value, address);
-          break;
-        default:
-          _ram.write(value, address);
-          break;
-      }
-    }
-  }
-
-  private abstract class RAMBusDevice implements BusDevice
-  {
-    @Override
-    public final void write(int value, int address)
-    {
-      _ram.write(value, address);
-    }
-  }
-
-  /**
-   * C64 bus mode 1 "default".
-   * $1000-$1FFF: RAM
-   * $8000-$9FFF: RAM
-   * $A000-$BFFF: Basic
-   * $C000-$CFFF: RAM
-   * $D000-$DFFF: I/O
-   * $E000-$FFFF: Kernel
-   */
-  private final class Mode1 extends IOBusDevice
-  {
-    @Override
-    public final int read(int address)
-    {
-      switch (address >> 12)
-      {
-        case 0x0A:
-        case 0x0B:
-          return _basic.read(address);
-        case 0x0D:
-          return _ioMap[(address >> 8) & 0x0F].read(address);
-        case 0x0E:
-        case 0x0F:
-          return _kernel.read(address);
-        default:
-          return _ram.read(address);
-      }
-    }
-  }
-
-  /**
-   * C64 bus mode 2.
-   * $1000-$1FFF: RAM
-   * $8000-$9FFF: RAM
-   * $A000-$BFFF: Basic
-   * $C000-$CFFF: RAM
-   * $D000-$DFFF: Charset
-   * $E000-$FFFF: Kernal
-   */
-  private final class Mode2 extends RAMBusDevice
-  {
-    @Override
-    public final int read(int address)
-    {
-      switch (address >> 12)
-      {
-        case 0x0A:
-        case 0x0B:
-          return _basic.read(address);
-        case 0x0D:
-          return _charset.read(address);
-        case 0x0E:
-        case 0x0F:
-          return _kernel.read(address);
-        default:
-          return _ram.read(address);
-      }
-    }
-  }
-
-  /**
-   * C64 bus mode 3.
-   * $1000-$1FFF: RAM
-   * $8000-$9FFF: RAM
-   * $A000-$BFFF: RAM
-   * $C000-$CFFF: RAM
-   * $D000-$DFFF: I/O
-   * $E000-$FFFF: RAM
-   */
-  private final class Mode3 extends IOBusDevice
-  {
-    @Override
-    public final int read(int address)
-    {
-      switch (address >> 12)
-      {
-        case 0x0D:
-          return _ioMap[(address >> 8) & 0x0F].read(address);
-        default:
-          return _ram.read(address);
-      }
-    }
-  }
-
-
-  /**
-   * C64 bus mode 4.
-   * $1000-$1FFF: RAM
-   * $8000-$9FFF: RAM
-   * $A000-$BFFF: RAM
-   * $C000-$CFFF: RAM
-   * $D000-$DFFF: Charset
-   * $E000-$FFFF: RAM
-   */
-  private final class Mode4 extends RAMBusDevice
-  {
-    @Override
-    public final int read(int address)
-    {
-      switch (address >> 12)
-      {
-        case 0x0D:
-          return _charset.read(address);
-        default:
-          return _ram.read(address);
-      }
-    }
-  }
-
-  /**
-   * C64 bus mode 5.
-   * $1000-$1FFF: RAM
-   * $8000-$9FFF: RAM
-   * $A000-$BFFF: RAM
-   * $C000-$CFFF: RAM
-   * $D000-$DFFF: RAM
-   * $E000-$FFFF: RAM
-   */
-  private final class Mode5 extends RAMBusDevice
-  {
-    @Override
-    public final int read(int address)
-    {
-      return _ram.read(address);
-    }
-  }
-
-  /**
-   * C64 bus mode 6.
-   * $1000-$1FFF: RAM
-   * $8000-$9FFF: RAM
-   * $A000-$BFFF: RAM
-   * $C000-$CFFF: RAM
-   * $D000-$DFFF: I/O
-   * $E000-$FFFF: Kernal
-   */
-  private final class Mode6 extends IOBusDevice
-  {
-    @Override
-    public final int read(int address)
-    {
-      switch (address >> 12)
-      {
-        case 0x0D:
-          return _ioMap[(address >> 8) & 0x0F].read(address);
-        case 0x0E:
-        case 0x0F:
-          return _kernel.read(address);
-        default:
-          return _ram.read(address);
-      }
-    }
-  }
-
-  /**
-   * C64 bus mode 6.
-   * $1000-$1FFF: RAM
-   * $8000-$9FFF: RAM
-   * $A000-$BFFF: RAM
-   * $C000-$CFFF: RAM
-   * $D000-$DFFF: Charset
-   * $E000-$FFFF: Kernal
-   */
-  private final class Mode7 extends IOBusDevice
-  {
-    @Override
-    public final int read(int address)
-    {
-      switch (address >> 12)
-      {
-        case 0x0D:
-          return _charset.read(address);
-        case 0x0E:
-        case 0x0F:
-          return _kernel.read(address);
-        default:
-          return _ram.read(address);
-      }
-    }
-  }
-
-  /**
-   * C64 bus mode 8.
-   * $1000-$1FFF: RAM
-   * $8000-$9FFF: ROM L
-   * $A000-$BFFF: Basic
-   * $C000-$CFFF: RAM
-   * $D000-$DFFF: I/O
-   * $E000-$FFFF: Kernal
-   */
-  private final class Mode8 extends IOBusDevice
-  {
-    @Override
-    public final int read(int address)
-    {
-      switch (address >> 12)
-      {
-        case 0x08:
-        case 0x09:
-          return _cartridgeL.read(address);
-        case 0x0A:
-        case 0x0B:
-          return _basic.read(address);
-        case 0x0D:
-          return _ioMap[(address >> 8) & 0x0F].read(address);
-        case 0x0E:
-        case 0x0F:
-          return _kernel.read(address);
-        default:
-          return _ram.read(address);
-      }
-    }
-  }
-
-  /**
-   * C64 bus mode 9.
-   * $1000-$1FFF: RAM
-   * $8000-$9FFF: ROM L
-   * $A000-$BFFF: Basic
-   * $C000-$CFFF: RAM
-   * $D000-$DFFF: Charset
-   * $E000-$FFFF: Kernal
-   */
-  private final class Mode9 extends RAMBusDevice
-  {
-    @Override
-    public final int read(int address)
-    {
-      switch (address >> 12)
-      {
-        case 0x08:
-        case 0x09:
-          return _cartridgeL.read(address);
-        case 0x0A:
-        case 0x0B:
-          return _basic.read(address);
-        case 0x0D:
-          return _charset.read(address);
-        case 0x0E:
-        case 0x0F:
-          return _kernel.read(address);
-        default:
-          return _ram.read(address);
-      }
-    }
-  }
-
-  /**
-   * C64 bus mode 10.
-   * $1000-$1FFF: RAM
-   * $8000-$9FFF: RAM
-   * $A000-$BFFF: ROM H
-   * $C000-$CFFF: RAM
-   * $D000-$DFFF: I/O
-   * $E000-$FFFF: Kernal
-   */
-  private final class Mode10 extends IOBusDevice
-  {
-    @Override
-    public final int read(int address)
-    {
-      switch (address >> 12)
-      {
-        case 0x0A:
-        case 0x0B:
-          return _cartridgeH.read(address);
-        case 0x0D:
-          return _ioMap[(address >> 8) & 0x0F].read(address);
-        case 0x0E:
-        case 0x0F:
-          return _kernel.read(address);
-        default:
-          return _ram.read(address);
-      }
-    }
-  }
-
-  /**
-   * C64 bus mode 11.
-   * $1000-$1FFF: RAM
-   * $8000-$9FFF: RAM
-   * $A000-$BFFF: ROM H
-   * $C000-$CFFF: RAM
-   * $D000-$DFFF: Charset
-   * $E000-$FFFF: Kernal
-   */
-  private final class Mode11 extends RAMBusDevice
-  {
-    @Override
-    public final int read(int address)
-    {
-      switch (address >> 12)
-      {
-        case 0x0A:
-        case 0x0B:
-          return _cartridgeH.read(address);
-        case 0x0D:
-          return _charset.read(address);
-        case 0x0E:
-        case 0x0F:
-          return _kernel.read(address);
-        default:
-          return _ram.read(address);
-      }
-    }
-  }
-
-  /**
-   * C64 bus mode 12.
-   * $1000-$1FFF: RAM
-   * $8000-$9FFF: ROM L
-   * $A000-$BFFF: ROM H
-   * $C000-$CFFF: RAM
-   * $D000-$DFFF: I/O
-   * $E000-$FFFF: Kernal
-   */
-  private final class Mode12 extends IOBusDevice
-  {
-    @Override
-    public final int read(int address)
-    {
-      switch (address >> 12)
-      {
-        case 0x08:
-        case 0x09:
-          return _cartridgeL.read(address);
-        case 0x0A:
-        case 0x0B:
-          return _cartridgeH.read(address);
-        case 0x0D:
-          return _ioMap[(address >> 8) & 0x0F].read(address);
-        case 0x0E:
-        case 0x0F:
-          return _kernel.read(address);
-        default:
-          return _ram.read(address);
-      }
-    }
-  }
-
-  /**
-   * C64 bus mode 13.
-   * $1000-$1FFF: RAM
-   * $8000-$9FFF: ROM L
-   * $A000-$BFFF: ROM H
-   * $C000-$CFFF: RAM
-   * $D000-$DFFF: Charset
-   * $E000-$FFFF: Kernal
-   */
-  private final class Mode13 extends RAMBusDevice
-  {
-    @Override
-    public final int read(int address)
-    {
-      switch (address >> 12)
-      {
-        case 0x08:
-        case 0x09:
-          return _cartridgeL.read(address);
-        case 0x0A:
-        case 0x0B:
-          return _cartridgeH.read(address);
-        case 0x0D:
-          return _charset.read(address);
-        case 0x0E:
-        case 0x0F:
-          return _kernel.read(address);
-        default:
-          return _ram.read(address);
-      }
-    }
-  }
-
-  /**
-   * C64 bus mode 14 "open".
-   * $1000-$1FFF: open
-   * $8000-$9FFF: ROM L
-   * $A000-$BFFF: open
-   * $C000-$CFFF: open
-   * $D000-$DFFF: I/O
-   * $E000-$FFFF: ROM H
-   */
-  private final class Mode14 implements BusDevice
-  {
-    @Override
-    public final int read(int address)
-    {
-      switch (address >> 12)
-      {
-        case 0x08:
-        case 0x09:
-          return _cartridgeL.read(address);
-        case 0x0D:
-          return _ioMap[(address >> 8) & 0x0F].read(address);
-        case 0x0E:
-        case 0x0F:
-          return _cartridgeH.read(address);
-        default:
-          return _cartridge.read(address);
-      }
-    }
-
-    @Override
-    public final void write(int value, int address)
-    {
-      switch (address >> 12)
-      {
-        case 0x0D:
-          _ioMap[(address >> 8) & 0x0F].write(value, address);
-          break;
-        default:
-          _cartridge.write(value, address);
-          break;
-      }
-    }
+    _ioModeWrite[address >> 8].write(value, address);
   }
 }
