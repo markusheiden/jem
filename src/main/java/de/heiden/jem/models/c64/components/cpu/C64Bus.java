@@ -236,6 +236,10 @@ public class C64Bus implements BusDevice
     {
       result[i] = xA000;
     }
+    for (int i = 0xC0; i <= 0xCF; i++)
+    {
+      result[i] = ram;
+    }
     if (xD000 != null)
     {
       for (int i = 0xD0; i <= 0xDF; i++)
