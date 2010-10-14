@@ -142,13 +142,15 @@ public abstract class AbstractClock<E extends ClockEntry> implements Clock
    */
   protected final void executeEvent(long tick)
   {
+    assert tick == _nextEventTick : "tick == _nextEventTick";
+
     while (_nextEventTick <= tick)
     {
       ClockEvent event = _events.pollFirstEntry().getValue();
-      if (_logger.isDebugEnabled())
-      {
-        _logger.debug("execute event " + event.toString() + " at " + tick);
-      }
+//      if (_logger.isDebugEnabled())
+//      {
+//        _logger.debug("execute event " + event.toString() + " at " + tick);
+//      }
       event.execute(tick);
       updateNextEvent();
     }
