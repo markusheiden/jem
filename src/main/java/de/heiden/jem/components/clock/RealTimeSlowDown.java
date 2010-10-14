@@ -111,7 +111,10 @@ public class RealTimeSlowDown implements ClockEvent
     long nextTick = tick;
     if (_counter == 0)
     {
-      _logger.info("1 simulated second took " + (_elapsed / 1000000) + " ms");
+      if (_logger.isInfoEnabled())
+      {
+        _logger.info("1 simulated second took " + (_elapsed / 1000000) + " ms");
+      }
       _elapsed = 0;
 
       _counter = _div;
