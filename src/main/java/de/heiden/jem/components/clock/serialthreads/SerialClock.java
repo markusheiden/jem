@@ -35,13 +35,13 @@ public class SerialClock extends AbstractClock<ClockEntry>
   @Override
   protected ClockEntry createClockEntry(ClockedComponent component)
   {
-    // every components needs its own Tick instance, because the instance caches its serial thread
+    // every components needs its own Tick instance, because the instances cache its serial thread
     return new ClockEntry(component, new SerialClockTick());
   }
 
   @Override
   @Executor
-  public void run()
+  public final void run()
   {
     ChainedRunnable first = createChain()[0];
     ChainedRunnable chain = first;
