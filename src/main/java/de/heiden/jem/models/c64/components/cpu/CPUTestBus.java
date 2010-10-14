@@ -1,6 +1,8 @@
 package de.heiden.jem.models.c64.components.cpu;
 
 import de.heiden.c64dt.util.HexUtil;
+import de.heiden.jem.components.bus.BusDevice;
+import de.heiden.jem.components.ports.OutputPortImpl;
 import de.heiden.jem.models.c64.components.memory.RAM;
 
 import java.util.ArrayList;
@@ -9,8 +11,11 @@ import java.util.List;
 /**
  * C64 bus for testing purposes. This bus logs all access to it.
  */
-public class CPUTestBus extends C64Bus
+public class CPUTestBus implements BusDevice
 {
+  private BusDevice _bus;
+
+  // TODO 2010-10-12 mh: use array with cyclic pointer?
   private List<LogEntry> _log;
 
   /**
@@ -21,7 +26,7 @@ public class CPUTestBus extends C64Bus
    */
   public CPUTestBus(RAM ram)
   {
-    super(ram);
+    new C64Bus(new OutputPortImpl(), ram, ram, ram, ram, ram, ram, ram, ram);
 
     _log = new ArrayList<LogEntry>();
   }
@@ -29,18 +34,18 @@ public class CPUTestBus extends C64Bus
   /**
    * Protocol all write accesses.
    */
-  public void write(int value, int address)
+  public final void write(int value, int address)
   {
     _log.add(new LogEntry(false, address, value));
-    super.write(value, address);
+    _bus.write(value, address);
   }
 
   /**
    * Protocol all read accesses
    */
-  public int read(int address)
+  public final int read(int address)
   {
-    int value = super.read(address);
+    int value = _bus.read(address);
     _log.add(new LogEntry(true, address, value));
 
     return value;
