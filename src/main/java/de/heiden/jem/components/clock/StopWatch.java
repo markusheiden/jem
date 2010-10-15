@@ -6,7 +6,7 @@ import org.apache.log4j.Logger;
  * Stop watch for execution performance.
  * Measures time each simulated second.
  */
-public class StopWatch implements ClockEvent
+public class StopWatch extends ClockEvent
 {
   /**
    * Logger.

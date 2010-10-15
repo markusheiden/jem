@@ -5,7 +5,7 @@ import org.apache.log4j.Logger;
 /**
  * Slow down clock to real time.
  */
-public class RealTimeSlowDown implements ClockEvent
+public class RealTimeSlowDown extends ClockEvent
 {
   /**
    * Logger.
