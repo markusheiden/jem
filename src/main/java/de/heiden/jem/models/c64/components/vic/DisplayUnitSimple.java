@@ -87,15 +87,15 @@ public class DisplayUnitSimple extends AbstractDisplayUnit
       {
         int character = bus.read(screenAddress);
         int bitmap = bus.read(charsetAddress + (character << 3));
-        byte foreground = (byte) colorRam.read(colorAddress);
-        screen[ptr++] = (bitmap & 0x80) == 0 ? regBackGroundColor0 : foreground;
-        screen[ptr++] = (bitmap & 0x40) == 0 ? regBackGroundColor0 : foreground;
-        screen[ptr++] = (bitmap & 0x20) == 0 ? regBackGroundColor0 : foreground;
-        screen[ptr++] = (bitmap & 0x10) == 0 ? regBackGroundColor0 : foreground;
-        screen[ptr++] = (bitmap & 0x08) == 0 ? regBackGroundColor0 : foreground;
-        screen[ptr++] = (bitmap & 0x04) == 0 ? regBackGroundColor0 : foreground;
-        screen[ptr++] = (bitmap & 0x02) == 0 ? regBackGroundColor0 : foreground;
-        screen[ptr++] = (bitmap & 0x01) == 0 ? regBackGroundColor0 : foreground;
+        byte color = (byte) colorRam.read(colorAddress);
+        screen[ptr++] = (bitmap & 0x80) == 0 ? regBackGroundColor0 : color;
+        screen[ptr++] = (bitmap & 0x40) == 0 ? regBackGroundColor0 : color;
+        screen[ptr++] = (bitmap & 0x20) == 0 ? regBackGroundColor0 : color;
+        screen[ptr++] = (bitmap & 0x10) == 0 ? regBackGroundColor0 : color;
+        screen[ptr++] = (bitmap & 0x08) == 0 ? regBackGroundColor0 : color;
+        screen[ptr++] = (bitmap & 0x04) == 0 ? regBackGroundColor0 : color;
+        screen[ptr++] = (bitmap & 0x02) == 0 ? regBackGroundColor0 : color;
+        screen[ptr++] = (bitmap & 0x01) == 0 ? regBackGroundColor0 : color;
       }
 
       end = ptr + (pixelPerLine - left - 320);
