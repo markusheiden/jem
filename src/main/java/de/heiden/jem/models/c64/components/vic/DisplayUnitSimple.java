@@ -1,5 +1,6 @@
 package de.heiden.jem.models.c64.components.vic;
 
+import de.heiden.jem.components.bus.BusDevice;
 import de.heiden.jem.components.clock.Clock;
 import de.heiden.jem.models.c64.components.memory.ColorRAM;
 import org.serialthreads.Interruptible;
@@ -62,48 +63,78 @@ public class DisplayUnitSimple extends AbstractDisplayUnit
     int top = (linesPerScreen - 200) / 2;
     int left = (pixelPerLine - 320) / 2;
 
+    boolean bitmapMode = (_vic._regControl1 & VIC.CONTROL1_BITMAP) != 0;
+    boolean extColorMode = (_vic._regControl1 & VIC.CONTROL1_EXT_COLOR) != 0;
     byte regExteriorColor = (byte) _vic._regExteriorColor;
-    byte regBackGroundColor0 = (byte) _vic._regBackgroundColor[0];
 
-    VICBus bus = _vic._bus;
-    int screenBaseAddress = _vic._baseCharacterMode;
-    int charsetBaseAddress = _vic._baseCharacterSet;
-    ColorRAM colorRam = _vic._colorRam;
+    System.out.println("video mode: " + bitmapMode + "/" + extColorMode);
 
+    // top border
     int end = top * pixelPerLine;
     Arrays.fill(screen, 0, end, regExteriorColor);
     int ptr = end;
-    for (int y = top, row = 0, lastY = top + 200; y < lastY; row++, y++)
+
+    for (int y = 0; y < 200; y++)
     {
+      // left border
       end = ptr + left;
       Arrays.fill(screen, ptr, end, regExteriorColor);
       ptr = end;
 
-      int index = (row / 8) * 40;
-      int screenAddress = screenBaseAddress + index;
-      int charsetAddress = charsetBaseAddress + row % 8;
-      int colorAddress = index;
-      for (int x = left, lastX = left + 320; x < lastX; screenAddress++, colorAddress++, x += 8)
-      {
-        int character = bus.read(screenAddress);
-        byte color = (byte) colorRam.read(colorAddress);
-        int bitmap = bus.read(charsetAddress + (character << 3));
-        screen[ptr++] = (bitmap & 0x80) == 0 ? regBackGroundColor0 : color;
-        screen[ptr++] = (bitmap & 0x40) == 0 ? regBackGroundColor0 : color;
-        screen[ptr++] = (bitmap & 0x20) == 0 ? regBackGroundColor0 : color;
-        screen[ptr++] = (bitmap & 0x10) == 0 ? regBackGroundColor0 : color;
-        screen[ptr++] = (bitmap & 0x08) == 0 ? regBackGroundColor0 : color;
-        screen[ptr++] = (bitmap & 0x04) == 0 ? regBackGroundColor0 : color;
-        screen[ptr++] = (bitmap & 0x02) == 0 ? regBackGroundColor0 : color;
-        screen[ptr++] = (bitmap & 0x01) == 0 ? regBackGroundColor0 : color;
-      }
+      ptr = renderTextLine(screen, ptr , y);
 
+      // right border
       end = ptr + (pixelPerLine - left - 320);
       Arrays.fill(screen, ptr, end, regExteriorColor);
       ptr = end;
     }
+
+    // bottom border
     Arrays.fill(screen, ptr, screen.length, regExteriorColor);
 
     rendered(screen);
+  }
+
+  /**
+   * Render text line.
+   *
+   * @param screen screen data
+   * @param ptr current index in screen data
+   * @param y y position
+   * @return
+   */
+  private int renderTextLine(byte[] screen, int ptr, int y)
+  {
+    VICBus bus = _vic._bus;
+    BusDevice colorRam = _vic._colorRam;
+
+    int screenBaseAddress = _vic._baseCharacterMode;
+    int charsetBaseAddress = _vic._baseCharacterSet;
+
+    byte regBackGroundColor0 = (byte) _vic._regBackgroundColor[0];
+
+    // compute character row
+    int charRow = y % 8;
+    // compute text row
+    int screenRow = (y - charRow) * 5; // optimization for (y / 8) * 40
+
+    // address of row in video ram
+    int screenAddress = screenBaseAddress + screenRow;
+    // pre-add character row
+    int charsetAddress = charsetBaseAddress + charRow;
+
+    // render line
+    for (int x = 0; x < 320; screenAddress++, x += 8)
+    {
+      int character = bus.read(screenAddress);
+      byte color = (byte) colorRam.read(screenAddress);
+      int bitmap = bus.read(charsetAddress + (character << 3));
+      for (int mask = 0x80; mask != 0; mask >>= 1)
+      {
+        screen[ptr++] = (bitmap & mask) == 0 ? regBackGroundColor0 : color;
+      }
+    }
+
+    return ptr;
   }
 }

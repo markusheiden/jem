@@ -76,7 +76,7 @@ public abstract class VIC implements BusDevice
   // base addresses
   private int _regBase; // 0x18
   public int _baseCharacterMode; // base address of text screen
-  private int _baseBitmapMode; // base address of bitmap screen
+  public int _baseBitmapMode; // base address of bitmap screen
   public int _baseCharacterSet; // base address of character set
 
   // strobe
