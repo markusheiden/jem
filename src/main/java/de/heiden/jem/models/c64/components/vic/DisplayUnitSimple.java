@@ -86,8 +86,8 @@ public class DisplayUnitSimple extends AbstractDisplayUnit
       for (int x = left, lastX = left + 320; x < lastX; screenAddress++, colorAddress++, x += 8)
       {
         int character = bus.read(screenAddress);
-        int bitmap = bus.read(charsetAddress + (character << 3));
         byte color = (byte) colorRam.read(colorAddress);
+        int bitmap = bus.read(charsetAddress + (character << 3));
         screen[ptr++] = (bitmap & 0x80) == 0 ? regBackGroundColor0 : color;
         screen[ptr++] = (bitmap & 0x40) == 0 ? regBackGroundColor0 : color;
         screen[ptr++] = (bitmap & 0x20) == 0 ? regBackGroundColor0 : color;
