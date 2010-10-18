@@ -65,9 +65,10 @@ public class DisplayUnitSimple extends AbstractDisplayUnit
 
     boolean bitmapMode = (_vic._regControl1 & VIC.CONTROL1_BITMAP) != 0;
     boolean extColorMode = (_vic._regControl1 & VIC.CONTROL1_EXT_COLOR) != 0;
+    boolean multiColorMode = (_vic._regControl2 & VIC.CONTROL2_MULTI_COLOR) != 0;
     byte regExteriorColor = (byte) _vic._regExteriorColor;
 
-    System.out.println("video mode: " + bitmapMode + "/" + extColorMode);
+    System.out.println("video mode: " + bitmapMode + "/" + extColorMode + "/" + multiColorMode);
 
     // top border
     int end = top * pixelPerLine;
@@ -111,14 +112,18 @@ public class DisplayUnitSimple extends AbstractDisplayUnit
     int screenBaseAddress = _vic._baseCharacterMode;
     int charsetBaseAddress = _vic._baseCharacterSet;
 
+    boolean multiColor = (_vic._regControl2 & VIC.CONTROL2_MULTI_COLOR) != 0;
+
     byte regBackGroundColor0 = (byte) _vic._regBackgroundColor[0];
+    byte regBackGroundColor1 = (byte) _vic._regBackgroundColor[1];
+    byte regBackGroundColor2 = (byte) _vic._regBackgroundColor[2];
 
     // compute character row
     int charRow = y & 0x0007; // optimization for y % 8
     // compute text row
     int screenRow = (y & 0xFFF8) * 5; // optimization for (y / 8) * 40
-
-    // address of row in video ram
+    // address of row in vid
+    // eo ram
     int screenAddress = screenBaseAddress + screenRow;
     // pre-add character row
     int charsetAddress = charsetBaseAddress + charRow;
@@ -126,16 +131,59 @@ public class DisplayUnitSimple extends AbstractDisplayUnit
     // render line
     for (int x = 0; x < 320; screenAddress++, x += 8)
     {
-      int character = bus.read(screenAddress);
       byte color = (byte) colorRam.read(screenAddress); // color ram masks address itself
+      int character = bus.read(screenAddress);
       int bitmap = bus.read(charsetAddress + (character << 3));
-      for (int mask = 0x80; mask != 0; mask >>= 1)
+
+      if (multiColor)
       {
-        screen[ptr++] = (bitmap & mask) == 0 ? regBackGroundColor0 : color;
+        if ((color & 0x08) != 0)
+        {
+          color &= 0x07;
+          byte pixel = getMultiColor(bitmap & 0xC0 >> 6, color);
+          screen[ptr++] = pixel;
+          screen[ptr++] = pixel;
+          color = getMultiColor(bitmap & 0x30 >> 4, color);
+          screen[ptr++] = pixel;
+          screen[ptr++] = pixel;
+          color = getMultiColor(bitmap & 0x0C >> 2, color);
+          screen[ptr++] = pixel;
+          screen[ptr++] = pixel;
+          color = getMultiColor(bitmap & 0x03 >> 0, color);
+          screen[ptr++] = pixel;
+          screen[ptr++] = pixel;
+        }
+        else
+        {
+          color &= 0x07;
+          for (int mask = 0x80; mask != 0; mask >>= 1)
+          {
+            screen[ptr++] = (bitmap & mask) == 0 ? regBackGroundColor0 : color;
+          }
+        }
+      }
+      else
+      {
+        for (int mask = 0x80; mask != 0; mask >>= 1)
+        {
+          screen[ptr++] = (bitmap & mask) == 0 ? regBackGroundColor0 : color;
+        }
       }
     }
 
     return ptr;
+  }
+
+  private byte getMultiColor(int bitmap, byte color)
+  {
+    switch (bitmap)
+    {
+      case 0x00: return (byte) _vic._regBackgroundColor[0];
+      case 0x01: return (byte) _vic._regBackgroundColor[1];
+      case 0x02: return (byte) _vic._regBackgroundColor[2];
+      default: return color; // case 0x03
+    }
+
   }
 
   /**

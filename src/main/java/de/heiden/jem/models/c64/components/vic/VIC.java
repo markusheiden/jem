@@ -72,12 +72,13 @@ public abstract class VIC implements BusDevice
   protected int _regRaster; // read: 0x11 bit 7, 0x12
   protected int _regRasterIRQ; // write: 0x11 bit 7, 0x12
   protected int _regControl2; // 0x16
+  protected static final int CONTROL2_MULTI_COLOR = 1 << 4;
 
   // base addresses
   private int _regBase; // 0x18
-  public int _baseCharacterMode; // base address of text screen
-  public int _baseBitmapMode; // base address of bitmap screen
-  public int _baseCharacterSet; // base address of character set
+  protected int _baseCharacterMode; // base address of text screen
+  protected int _baseBitmapMode; // base address of bitmap screen
+  protected int _baseCharacterSet; // base address of character set
 
   // strobe
   private int _regStrobeX; // 0x13
