@@ -7,15 +7,24 @@ import de.heiden.jem.models.c64.components.memory.ROM;
 import de.heiden.jem.components.bus.BusDevice;
 
 /**
- * VIC CPUBus.
- *
- * TODO implement setting of VIC area.
+ * VIC bus.
  */
 public class VICBus implements BusDevice
 {
+  /**
+   * 64kB RAM.
+   */
+  private final BusDevice _ram;
+
+  /**
+   * Character ROM.
+   */
+  private final BusDevice _character;
+
+  /**
+   * VIC base address in cpu address space.
+   */
   private int _vicBase;
-  private final RAM _ram;
-  private final ROM _character;
 
   /**
    * Constructor.
@@ -26,9 +35,8 @@ public class VICBus implements BusDevice
    * @require cia2PortA != null
    * @require ram != null
    * @require character != null
-   * @require kernel != null
    */
-  public VICBus(OutputPort cia2PortA, RAM ram, ROM character)
+  public VICBus(OutputPort cia2PortA, BusDevice ram, BusDevice character)
   {
     assert cia2PortA != null : "cia2PortA != null";
     assert ram != null : "ram != null";
@@ -54,18 +62,12 @@ public class VICBus implements BusDevice
    * @require address >= 0x0000 && address < 0x4000
    * @ensure result >= 0x00 && result < 0x100
    */
-  public int read(int address)
+  public final int read(int address)
   {
     assert address >= 0x0000 && address < 0x4000 : "address >= 0x0000 && address < 0x4000";
 
-    switch ((_vicBase + address) >> 12)
-    {
-      case 0x01:
-      case 0x09:
-        return _character.read(address);
-      default:
-        return _ram.read(address);
-    }
+    int cpuAddress = _vicBase + address;
+    return ((cpuAddress & 0x7000) == 0x1000? _character : _ram).read(cpuAddress);
   }
 
   /**
@@ -76,7 +78,7 @@ public class VICBus implements BusDevice
    * @require value >= 0x00 && value < 0x100
    * @require address >= 0x0000 && address < 0x10000
    */
-  public void write(int value, int address)
+  public final void write(int value, int address)
   {
     assert false : "VIC does not write anything";
   }
