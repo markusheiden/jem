@@ -2,6 +2,7 @@ package de.heiden.jem.models.c64.components.vic;
 
 import de.heiden.jem.components.bus.BusDevice;
 import de.heiden.jem.components.clock.Clock;
+import org.apache.log4j.Logger;
 import org.serialthreads.Interruptible;
 
 import java.util.Arrays;
@@ -13,6 +14,11 @@ import java.util.Arrays;
  */
 public class DisplayUnitSimple extends AbstractDisplayUnit
 {
+  /**
+   * Logger.
+   */
+  private final Logger _logger = Logger.getLogger(getClass());
+
   /**
    * Hidden constructor.
    *
@@ -41,7 +47,7 @@ public class DisplayUnitSimple extends AbstractDisplayUnit
     {
       for (int line = 0; line < lines; line++)
       {
-        _vic._regRaster = line;
+        _vic.setRasterLine(line);
 
         for (int x = 0; x < lineLength; x++)
         {
@@ -63,12 +69,7 @@ public class DisplayUnitSimple extends AbstractDisplayUnit
     int top = (linesPerScreen - 200) / 2;
     int left = (pixelPerLine - 320) / 2;
 
-    boolean bitmapMode = (_vic._regControl1 & VIC.CONTROL1_BITMAP) != 0;
-    boolean extColorMode = (_vic._regControl1 & VIC.CONTROL1_EXT_COLOR) != 0;
-    boolean multiColorMode = (_vic._regControl2 & VIC.CONTROL2_MULTI_COLOR) != 0;
     byte regExteriorColor = (byte) _vic._regExteriorColor;
-
-    System.out.println("video mode: " + bitmapMode + "/" + extColorMode + "/" + multiColorMode);
 
     // top border
     int end = top * pixelPerLine;

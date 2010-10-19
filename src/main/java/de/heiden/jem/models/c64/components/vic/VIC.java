@@ -1,6 +1,8 @@
 package de.heiden.jem.models.c64.components.vic;
 
 import de.heiden.jem.components.clock.Clock;
+import de.heiden.jem.components.ports.OutputPort;
+import de.heiden.jem.components.ports.OutputPortImpl;
 import de.heiden.jem.models.c64.components.memory.ColorRAM;
 import de.heiden.jem.components.bus.BusDevice;
 import org.apache.log4j.Logger;
@@ -50,6 +52,8 @@ public abstract class VIC implements BusDevice
   public final VICBus _bus;
   public final ColorRAM _colorRam;
 
+  private final OutputPortImpl _irqPort;
+
   // sprite register
   protected Sprite[] _sprites;
 
@@ -85,9 +89,11 @@ public abstract class VIC implements BusDevice
   private int _regStrobeY; // 0x14
 
   // irq register
-  private int _regInterruptRequest; // 0x19
-  private int _regInterruptMask; // 0x1A
-
+  protected int _regInterruptRequest; // 0x19
+  protected int _regInterruptMask; // 0x1A
+  protected static final int INTERRUPT_MASK = 0x0F;
+  protected static final int INTERRUPT_RASTER = 1 << 0;
+  protected static final int INTERRUPT_ANY = 1 << 7;
   // color register
   protected int _regExteriorColor; // 0x20
   protected int[] _regBackgroundColor = new int[4]; // 0x21-0x24
@@ -148,6 +154,10 @@ public abstract class VIC implements BusDevice
 
     _logger.debug("start vic display unit");
     _displayUnit = new DisplayUnitSimple(this, clock);
+
+    _irqPort = new OutputPortImpl();
+    _irqPort.setOutputMask(0x01);
+    _irqPort.setOutputData(0x01);
   }
 
   /**
@@ -167,6 +177,14 @@ public abstract class VIC implements BusDevice
   {
     assert _mask >= 0 && _mask < 0x10000 : "result >= 0 && result < 0x10000";
     return _mask;
+  }
+
+  /**
+   * IRQ output signal.
+   */
+  public OutputPort getIRQ()
+  {
+    return _irqPort;
   }
 
   /**
@@ -276,6 +294,15 @@ public abstract class VIC implements BusDevice
         _regControl1 = value;
         // bit 7 is high bit of raster irq line
         _regRasterIRQ = _regRasterIRQ & 0xFF | (value & 0x80) << 1;
+
+        if (_logger.isDebugEnabled())
+        {
+          boolean bitmapMode = (_regControl1 & VIC.CONTROL1_BITMAP) != 0;
+          boolean extColorMode = (_regControl1 & VIC.CONTROL1_EXT_COLOR) != 0;
+          boolean multiColorMode = (_regControl2 & VIC.CONTROL2_MULTI_COLOR) != 0;
+          _logger.debug("video mode: " + bitmapMode + "/" + extColorMode + "/" + multiColorMode);
+        }
+
         break;
       }
       case 0x12:
@@ -305,6 +332,15 @@ public abstract class VIC implements BusDevice
       case 0x16:
       {
         _regControl2 = value;
+
+        if (_logger.isDebugEnabled())
+        {
+          boolean bitmapMode = (_regControl1 & VIC.CONTROL1_BITMAP) != 0;
+          boolean extColorMode = (_regControl1 & VIC.CONTROL1_EXT_COLOR) != 0;
+          boolean multiColorMode = (_regControl2 & VIC.CONTROL2_MULTI_COLOR) != 0;
+          _logger.debug("video mode: " + bitmapMode + "/" + extColorMode + "/" + multiColorMode);
+        }
+
         break;
       }
       case 0x17:
@@ -324,7 +360,17 @@ public abstract class VIC implements BusDevice
       }
       case 0x19:
       {
-        _regInterruptRequest = value;
+        // 1-bits in value disable the corresponding interrupt bits in the irq register
+        _regInterruptRequest &= ~(value & INTERRUPT_MASK);
+        if ((_regInterruptRequest & INTERRUPT_MASK) == 0)
+        {
+          // no pending irq anymore:
+
+          // clear "master" interrupt bit
+          _regInterruptRequest = 0x00;
+          // reset irq
+          _irqPort.setOutputData(0x1);
+        }
         break;
       }
       case 0x1A:
@@ -739,6 +785,26 @@ public abstract class VIC implements BusDevice
   //
   // protected
   //
+
+  /**
+   * Sets to current raster line.
+   *
+   * @param line raster line
+   */
+  protected void setRasterLine(int line)
+  {
+    _regRaster = line;
+    if (line == _regRasterIRQ && (_regInterruptMask & INTERRUPT_RASTER) != 0)
+    {
+      _regInterruptRequest |= INTERRUPT_RASTER | INTERRUPT_ANY;
+      _irqPort.setOutputData(0x0);
+
+      if (_logger.isDebugEnabled())
+      {
+        _logger.debug("Raster irq at line " + _regRaster + " at tick " + _clock.getTick());
+      }
+    }
+  }
 
   /**
    * Set base register values.

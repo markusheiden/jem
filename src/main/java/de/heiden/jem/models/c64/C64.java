@@ -87,6 +87,7 @@ public class C64
     _cpuBus = new C64Bus(_cpu.getPort(), _ram, basic, _vic, colorRam, cia1, cia2, charset, kernel);
     _cpu.connect(_cpuBus);
     _cpu.getIRQ().connect(cia1.getIRQ());
+    _cpu.getIRQ().connect(_vic.getIRQ());
     _cpu.getNMI().connect(cia2.getIRQ());
     _cpu.getNMI().connect(_keyboard.getNMI());
 
