@@ -95,8 +95,11 @@ public abstract class VIC implements BusDevice
   protected static final int INTERRUPT_RASTER = 1 << 0;
   protected static final int INTERRUPT_ANY = 1 << 7;
   // color register
-  protected int _regExteriorColor; // 0x20
-  protected int[] _regBackgroundColor = new int[4]; // 0x21-0x24
+  protected byte _regExteriorColor; // 0x20
+  protected byte _regBackgroundColor0; // 0x21
+  protected byte _regBackgroundColor1; // 0x22
+  protected byte _regBackgroundColor2; // 0x23
+  protected byte _regBackgroundColor3; // 0x24
 
   // C128 register
   private int _regKeyboard; // 0x2F
@@ -413,27 +416,27 @@ public abstract class VIC implements BusDevice
       }
       case 0x20:
       {
-        _regExteriorColor = value;
+        _regExteriorColor = (byte) (value & 0x0F);
         break;
       }
       case 0x21:
       {
-        _regBackgroundColor[0] = value;
+        _regBackgroundColor0 = (byte) (value & 0x0F);
         break;
       }
       case 0x22:
       {
-        _regBackgroundColor[1] = value;
+        _regBackgroundColor1 = (byte) (value & 0x0F);
         break;
       }
       case 0x23:
       {
-        _regBackgroundColor[2] = value;
+        _regBackgroundColor2 = (byte) (value & 0x0F);
         break;
       }
       case 0x24:
       {
-        _regBackgroundColor[3] = value;
+        _regBackgroundColor3 = (byte) (value & 0x0F);
         break;
       }
       case 0x25:
@@ -693,22 +696,22 @@ public abstract class VIC implements BusDevice
       }
       case 0x21:
       {
-        result = _regBackgroundColor[0];
+        result = _regBackgroundColor0;
         break;
       }
       case 0x22:
       {
-        result = _regBackgroundColor[1];
+        result = _regBackgroundColor1;
         break;
       }
       case 0x23:
       {
-        result = _regBackgroundColor[2];
+        result = _regBackgroundColor2;
         break;
       }
       case 0x24:
       {
-        result = _regBackgroundColor[3];
+        result = _regBackgroundColor3;
         break;
       }
       case 0x25:

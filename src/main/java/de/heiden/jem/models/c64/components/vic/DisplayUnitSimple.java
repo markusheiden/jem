@@ -129,7 +129,7 @@ public class DisplayUnitSimple extends AbstractDisplayUnit
 
     boolean multiColor = (_vic._regControl2 & VIC.CONTROL2_MULTI_COLOR) != 0;
 
-    byte regBackGroundColor0 = (byte) _vic._regBackgroundColor[0];
+    byte regBackGroundColor0 = (byte) _vic._regBackgroundColor0;
 
     // compute character row
     int charRow = y & 0x0007; // optimization for y % 8
@@ -180,9 +180,9 @@ public class DisplayUnitSimple extends AbstractDisplayUnit
   {
     switch (bitmap)
     {
-      case 0x00: return (byte) _vic._regBackgroundColor[0];
-      case 0x01: return (byte) _vic._regBackgroundColor[1];
-      case 0x02: return (byte) _vic._regBackgroundColor[2];
+      case 0x00: return _vic._regBackgroundColor0;
+      case 0x01: return _vic._regBackgroundColor1;
+      case 0x02: return _vic._regBackgroundColor2;
       default: return color; // case 0x03
     }
 
