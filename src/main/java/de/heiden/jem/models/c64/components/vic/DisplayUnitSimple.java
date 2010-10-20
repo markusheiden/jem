@@ -29,8 +29,8 @@ public class DisplayUnitSimple extends AbstractDisplayUnit
   {
     super(vic, clock,
       0,
-      vic._lastX - vic._firstVisibleX + vic._lastVisibleX, vic._linesPerScreen,
-      vic._lastX - vic._firstVisibleX + vic._lastVisibleX, vic._linesPerScreen);
+      vic._lastX - vic._firstVisibleX + vic._lastVisibleX, vic._firstVBlank - vic._lastVBlank,
+      vic._lastX - vic._firstVisibleX + vic._lastVisibleX, vic._firstVBlank - vic._lastVBlank);
   }
 
   @Override
@@ -39,62 +39,76 @@ public class DisplayUnitSimple extends AbstractDisplayUnit
   {
     _vic.reset();
 
-    int lines = _vic._linesPerScreen;
-    int lineLength = _vic._cyclesPerLine * 8;
+    final int lastX = _vic._lastX;
+    final int pixelPerLine = _vic._lastX - _vic._firstVisibleX + _vic._lastVisibleX;
 
     //noinspection InfiniteLoopStatement
     while (true)
     {
-      for (int line = 0; line < lines; line++)
-      {
-        _vic.setRasterLine(line);
+      byte[] screen = _screenRender;
+      int ptr = 0;
 
-        for (int x = 0; x < lineLength; x++)
+      int raster = 0;
+
+      // top vblank
+      for (; raster < _vic._lastVBlank; raster++)
+      {
+        _vic.setRasterLine(raster);
+        for (int x = 0; x < lastX; x++)
         {
           _tick.waitForTick();
         }
       }
-      renderScreenAtOnce();
+
+      // top border
+      for (; raster < _vic._firstLine_25; raster++)
+      {
+        _vic.setRasterLine(raster);
+        for (int x = 0; x < lastX; x++)
+        {
+          _tick.waitForTick();
+        }
+        Arrays.fill(screen, ptr, (ptr += pixelPerLine), (byte) _vic._regExteriorColor);
+      }
+
+      // visible area
+      for (int y = 0; raster < _vic._lastLine_25; raster++, y++)
+      {
+        _vic.setRasterLine(raster);
+
+        for (int x = 0; x < lastX; x++)
+        {
+          _tick.waitForTick();
+        }
+
+        Arrays.fill(screen, ptr, (ptr += lastX - _vic._firstVisibleX + _vic._firstX_25), (byte) _vic._regExteriorColor);
+        ptr = renderTextLine(screen, ptr , y);
+        Arrays.fill(screen, ptr, (ptr += _vic._lastVisibleX - _vic._lastX_25), (byte) _vic._regExteriorColor);
+      }
+
+      // bottom border
+      for (; raster < _vic._firstVBlank; raster++)
+      {
+        _vic.setRasterLine(raster);
+        for (int x = 0; x < lastX; x++)
+        {
+          _tick.waitForTick();
+        }
+        Arrays.fill(screen, ptr, (ptr += pixelPerLine), (byte) _vic._regExteriorColor);
+      }
+
+      // bottom vblank
+      for (; raster < _vic._linesPerScreen; raster++)
+      {
+        _vic.setRasterLine(raster);
+        for (int x = 0; x < lastX; x++)
+        {
+          _tick.waitForTick();
+        }
+      }
+
+      rendered(screen);
     }
-  }
-
-  public void renderScreenAtOnce()
-  {
-    byte[] screen = _screenRender;
-
-    int linesPerScreen = getHeight();
-    int pixelPerLine = getWidth();
-
-    // TODO 2010-10-18 mh: use correct border values
-    int top = (linesPerScreen - 200) / 2;
-    int left = (pixelPerLine - 320) / 2;
-
-    byte regExteriorColor = (byte) _vic._regExteriorColor;
-
-    // top border
-    int end = top * pixelPerLine;
-    Arrays.fill(screen, 0, end, regExteriorColor);
-    int ptr = end;
-
-    for (int y = 0; y < 200; y++)
-    {
-      // left border
-      end = ptr + left;
-      Arrays.fill(screen, ptr, end, regExteriorColor);
-      ptr = end;
-
-      ptr = renderTextLine(screen, ptr , y);
-
-      // right border
-      end = ptr + (pixelPerLine - left - 320);
-      Arrays.fill(screen, ptr, end, regExteriorColor);
-      ptr = end;
-    }
-
-    // bottom border
-    Arrays.fill(screen, ptr, screen.length, regExteriorColor);
-
-    rendered(screen);
   }
 
   /**
@@ -116,8 +130,6 @@ public class DisplayUnitSimple extends AbstractDisplayUnit
     boolean multiColor = (_vic._regControl2 & VIC.CONTROL2_MULTI_COLOR) != 0;
 
     byte regBackGroundColor0 = (byte) _vic._regBackgroundColor[0];
-    byte regBackGroundColor1 = (byte) _vic._regBackgroundColor[1];
-    byte regBackGroundColor2 = (byte) _vic._regBackgroundColor[2];
 
     // compute character row
     int charRow = y & 0x0007; // optimization for y % 8
@@ -141,16 +153,16 @@ public class DisplayUnitSimple extends AbstractDisplayUnit
         if ((color & 0x08) != 0)
         {
           color &= 0x07;
-          byte pixel = getMultiColor(bitmap & 0xC0 >> 6, color);
+          byte pixel = getMultiColor((bitmap & 0xC0) >> 6, color);
           screen[ptr++] = pixel;
           screen[ptr++] = pixel;
-          color = getMultiColor(bitmap & 0x30 >> 4, color);
+          pixel = getMultiColor((bitmap & 0x30) >> 4, color);
           screen[ptr++] = pixel;
           screen[ptr++] = pixel;
-          color = getMultiColor(bitmap & 0x0C >> 2, color);
+          pixel = getMultiColor((bitmap & 0x0C) >> 2, color);
           screen[ptr++] = pixel;
           screen[ptr++] = pixel;
-          color = getMultiColor(bitmap & 0x03 >> 0, color);
+          pixel = getMultiColor((bitmap & 0x03) >> 0, color);
           screen[ptr++] = pixel;
           screen[ptr++] = pixel;
         }
