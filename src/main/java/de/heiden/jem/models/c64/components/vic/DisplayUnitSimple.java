@@ -119,135 +119,125 @@ public class DisplayUnitSimple extends AbstractDisplayUnit
     VICBus bus = _vic._bus;
 
     int spritePointer = _vic._baseCharacterMode + 0x03F8 + 7;
-
     for (int i = 7; i >= 0; i--, spritePointer--)
     {
       Sprite sprite = _vic._sprites[i];
       if (sprite.enabled)
       {
         int y = sprite.y;
-        int endY = y + (sprite.expandY? 42 : 21);
-        if (y <= raster && raster < endY)
+        boolean expandY = sprite.expandY;
+        if (y <= raster && raster < y + (expandY? 42 : 21))
         {
           int spritePtr = ptr - _vic._firstX_25  + sprite.x;
           int spriteRow = raster - y;
-          if (sprite.expandY)
+          if (expandY)
           {
             spriteRow >>= 1;
           }
           int baseSprite = (bus.read(spritePointer) << 6) + spriteRow * 3;
           spritePtr = renderSpriteByte(screen, spritePtr, bus.read(baseSprite++), sprite);
           spritePtr = renderSpriteByte(screen, spritePtr, bus.read(baseSprite++), sprite);
-          spritePtr = renderSpriteByte(screen, spritePtr, bus.read(baseSprite++), sprite);
+          renderSpriteByte(screen, spritePtr, bus.read(baseSprite), sprite);
         }
       }
     }
   }
 
-  private int renderSpriteByte(byte[] screen, int spritePtr, int bitmap, Sprite sprite)
+  /**
+   * Render a single byte of sprite data.
+   *
+   * @param screen screen data
+   * @param ptr current index in screen data
+   * @param bitmap sprite data byte to render
+   * @param sprite sprite
+   * @return next index in screen data
+   */
+  private int renderSpriteByte(byte[] screen, int ptr, int bitmap, Sprite sprite)
   {
     byte color = sprite.color;
     boolean expandX = sprite.expandX;
-    int incX = expandX? 2 : 1;
 
     if (sprite.multicolor)
     {
-      incX <<= 1;
-
-      byte pixel = getSpriteColor((bitmap & 0xC0) >> 6, color);
-      if (pixel >= 0)
-      {
-        screen[spritePtr++] = pixel;
-        screen[spritePtr++] = pixel;
-        if (expandX)
-        {
-          screen[spritePtr++] = pixel;
-          screen[spritePtr++] = pixel;
-        }
-      }
-      else
-      {
-        spritePtr += incX;
-      }
-
-      pixel = getSpriteColor((bitmap & 0x30) >> 4, color);
-      if (pixel >= 0)
-      {
-        screen[spritePtr++] = pixel;
-        screen[spritePtr++] = pixel;
-        if (expandX)
-        {
-          screen[spritePtr++] = pixel;
-          screen[spritePtr++] = pixel;
-        }
-      }
-      else
-      {
-        spritePtr += incX;
-      }
-
-      pixel = getSpriteColor((bitmap & 0x0C) >> 2, color);
-      if (pixel >= 0)
-      {
-        screen[spritePtr++] = pixel;
-        screen[spritePtr++] = pixel;
-        if (expandX)
-        {
-          screen[spritePtr++] = pixel;
-          screen[spritePtr++] = pixel;
-        }
-      }
-      else
-      {
-        spritePtr += incX;
-      }
-
-      pixel = getSpriteColor((bitmap & 0x03) >> 0, color);
-      if (pixel >= 0)
-      {
-        screen[spritePtr++] = pixel;
-        screen[spritePtr++] = pixel;
-        if (expandX)
-        {
-          screen[spritePtr++] = pixel;
-          screen[spritePtr++] = pixel;
-        }
-      }
-      else
-      {
-        spritePtr += incX;
-      }
+      ptr = renderSpriteMultiColorPixel(screen, ptr, bitmap >> 6, color, expandX);
+      ptr = renderSpriteMultiColorPixel(screen, ptr, (bitmap & 0x30) >> 4, color, expandX);
+      ptr = renderSpriteMultiColorPixel(screen, ptr, (bitmap & 0x0C) >> 2, color, expandX);
+      ptr = renderSpriteMultiColorPixel(screen, ptr, bitmap & 0x03, color, expandX);
     }
     else
     {
-      for (int mask = 0x80; mask != 0; mask >>= 1)
-      {
-        if ((bitmap & mask) != 0)
-        {
-          screen[spritePtr++] = color;
-          if (expandX)
-          {
-            screen[spritePtr++] = color;
-          }
-        }
-        else
-        {
-          spritePtr += incX;
-        }
-      }
+      ptr = renderSpriteMultiColorPixel(screen, ptr, (bitmap & 0x80), color, expandX);
+      ptr = renderSpriteMultiColorPixel(screen, ptr, (bitmap & 0x40), color, expandX);
+      ptr = renderSpriteMultiColorPixel(screen, ptr, (bitmap & 0x20), color, expandX);
+      ptr = renderSpriteMultiColorPixel(screen, ptr, (bitmap & 0x10), color, expandX);
+      ptr = renderSpriteMultiColorPixel(screen, ptr, (bitmap & 0x08), color, expandX);
+      ptr = renderSpriteMultiColorPixel(screen, ptr, (bitmap & 0x04), color, expandX);
+      ptr = renderSpriteMultiColorPixel(screen, ptr, (bitmap & 0x02), color, expandX);
+      ptr = renderSpriteMultiColorPixel(screen, ptr, (bitmap & 0x01), color, expandX);
     }
 
-    return spritePtr;
+    return ptr;
   }
 
-  private byte getSpriteColor(int bitmap, byte color)
+  /**
+   * Render one pixel of a single color sprite.
+   *
+   * @param screen screen data
+   * @param ptr current index in screen data
+   * @param colorIndex index of color to set: 0: background, else: sprite color
+   * @param color sprite color
+   * @param expandX expand sprite in x?
+   * @return next index in screen data
+   */
+  private int renderSpriteSingleColorPixel(byte[] screen, int ptr, int colorIndex, byte color, boolean expandX)
   {
-    switch (bitmap)
+    screen[ptr++] = colorIndex != 0? color : screen[ptr];
+    if (expandX)
+    {
+      screen[ptr++] = colorIndex != 0? color : screen[ptr];
+    }
+
+    return ptr;
+  }
+
+  /**
+   * Render one pixel of a multi color sprite.
+   *
+   * @param screen screen data
+   * @param ptr current index in screen data
+   * @param colorIndex index of color to set: 0: background, 1: color 1, 2: sprite color, 3: color 2
+   * @param color sprite color
+   * @param expandX expand sprite in x?
+   * @return next index in screen data
+   */
+  private int renderSpriteMultiColorPixel(byte[] screen, int ptr, int colorIndex, byte color, boolean expandX)
+  {
+    screen[ptr++] = getSpriteMultiColor(colorIndex, color, screen[ptr]);
+    screen[ptr++] = getSpriteMultiColor(colorIndex, color, screen[ptr]);
+    if (expandX)
+    {
+      screen[ptr++] = getSpriteMultiColor(colorIndex, color, screen[ptr]);
+      screen[ptr++] = getSpriteMultiColor(colorIndex, color, screen[ptr]);
+    }
+
+    return ptr;
+  }
+
+  /**
+   * Get sprite color for color index.
+   *
+   * @param colorIndex index of color to set
+   * @param color sprite color
+   * @param background background color
+   */
+  private byte getSpriteMultiColor(int colorIndex, byte color, byte background)
+  {
+    switch (colorIndex)
     {
       case 0x01: return _vic._regSpritesMulticolor0;
       case 0x02: return color;
       case 0x03: return _vic._regSpritesMulticolor1;
-      default: return -1;
+      default: return background;
     }
   }
 
