@@ -68,7 +68,7 @@ public class DisplayUnitSimple extends AbstractDisplayUnit
         {
           _tick.waitForTick();
         }
-        Arrays.fill(screen, ptr, (ptr += pixelPerLine), (byte) _vic._regExteriorColor);
+        Arrays.fill(screen, ptr, (ptr += pixelPerLine), _vic._regExteriorColor);
       }
 
       // visible area
@@ -81,9 +81,9 @@ public class DisplayUnitSimple extends AbstractDisplayUnit
           _tick.waitForTick();
         }
 
-        Arrays.fill(screen, ptr, (ptr += lastX - _vic._firstVisibleX + _vic._firstX_25), (byte) _vic._regExteriorColor);
+        Arrays.fill(screen, ptr, (ptr += lastX - _vic._firstVisibleX + _vic._firstX_25), _vic._regExteriorColor);
         ptr = renderTextLine(screen, ptr , y);
-        Arrays.fill(screen, ptr, (ptr += _vic._lastVisibleX - _vic._lastX_25), (byte) _vic._regExteriorColor);
+        Arrays.fill(screen, ptr, (ptr += _vic._lastVisibleX - _vic._lastX_25), _vic._regExteriorColor);
       }
 
       // bottom border
@@ -94,7 +94,7 @@ public class DisplayUnitSimple extends AbstractDisplayUnit
         {
           _tick.waitForTick();
         }
-        Arrays.fill(screen, ptr, (ptr += pixelPerLine), (byte) _vic._regExteriorColor);
+        Arrays.fill(screen, ptr, (ptr += pixelPerLine), _vic._regExteriorColor);
       }
 
       // bottom vblank
@@ -129,14 +129,13 @@ public class DisplayUnitSimple extends AbstractDisplayUnit
 
     boolean multiColor = (_vic._regControl2 & VIC.CONTROL2_MULTI_COLOR) != 0;
 
-    byte regBackGroundColor0 = (byte) _vic._regBackgroundColor0;
+    byte regBackGroundColor0 = _vic._regBackgroundColor0;
 
     // compute character row
     int charRow = y & 0x0007; // optimization for y % 8
     // compute text row
     int screenRow = (y & 0xFFF8) * 5; // optimization for (y / 8) * 40
-    // address of row in vid
-    // eo ram
+    // address of row in video ram
     int screenAddress = screenBaseAddress + screenRow;
     // pre-add character row
     int charsetAddress = charsetBaseAddress + charRow;
