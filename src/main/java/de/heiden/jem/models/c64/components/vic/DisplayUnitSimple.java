@@ -166,14 +166,14 @@ public class DisplayUnitSimple extends AbstractDisplayUnit
     }
     else
     {
-      ptr = renderSpriteMultiColorPixel(screen, ptr, (bitmap & 0x80), color, expandX);
-      ptr = renderSpriteMultiColorPixel(screen, ptr, (bitmap & 0x40), color, expandX);
-      ptr = renderSpriteMultiColorPixel(screen, ptr, (bitmap & 0x20), color, expandX);
-      ptr = renderSpriteMultiColorPixel(screen, ptr, (bitmap & 0x10), color, expandX);
-      ptr = renderSpriteMultiColorPixel(screen, ptr, (bitmap & 0x08), color, expandX);
-      ptr = renderSpriteMultiColorPixel(screen, ptr, (bitmap & 0x04), color, expandX);
-      ptr = renderSpriteMultiColorPixel(screen, ptr, (bitmap & 0x02), color, expandX);
-      ptr = renderSpriteMultiColorPixel(screen, ptr, (bitmap & 0x01), color, expandX);
+      ptr = renderSpriteSingleColorPixel(screen, ptr, (bitmap & 0x80), color, expandX);
+      ptr = renderSpriteSingleColorPixel(screen, ptr, (bitmap & 0x40), color, expandX);
+      ptr = renderSpriteSingleColorPixel(screen, ptr, (bitmap & 0x20), color, expandX);
+      ptr = renderSpriteSingleColorPixel(screen, ptr, (bitmap & 0x10), color, expandX);
+      ptr = renderSpriteSingleColorPixel(screen, ptr, (bitmap & 0x08), color, expandX);
+      ptr = renderSpriteSingleColorPixel(screen, ptr, (bitmap & 0x04), color, expandX);
+      ptr = renderSpriteSingleColorPixel(screen, ptr, (bitmap & 0x02), color, expandX);
+      ptr = renderSpriteSingleColorPixel(screen, ptr, (bitmap & 0x01), color, expandX);
     }
 
     return ptr;
@@ -184,7 +184,7 @@ public class DisplayUnitSimple extends AbstractDisplayUnit
    *
    * @param screen screen data
    * @param ptr current index in screen data
-   * @param colorIndex index of color to set: 0: background, else: sprite color
+   * @param colorIndex index of color to set: 0: background, otherwise: sprite color
    * @param color sprite color
    * @param expandX expand sprite in x?
    * @return next index in screen data
@@ -259,7 +259,7 @@ public class DisplayUnitSimple extends AbstractDisplayUnit
 
     boolean multiColor = (_vic._regControl2 & VIC.CONTROL2_MULTI_COLOR) != 0;
 
-    byte regBackGroundColor0 = _vic._regBackgroundColor0;
+    byte backgroundColor = _vic._regBackgroundColor0;
 
     // compute character row
     int charRow = y & 0x0007; // optimization for y % 8
@@ -280,41 +280,51 @@ public class DisplayUnitSimple extends AbstractDisplayUnit
       if (multiColor && ((color & 0x08) != 0))
       {
         color &= 0x07;
-        byte pixel = getMultiColor((bitmap & 0xC0) >> 6, color);
+        byte pixel = getTextMultiColor(bitmap & 0xC0, color);
         screen[ptr++] = pixel;
         screen[ptr++] = pixel;
-        pixel = getMultiColor((bitmap & 0x30) >> 4, color);
+        pixel = getTextMultiColor((bitmap & 0x30) >> 4, color);
         screen[ptr++] = pixel;
         screen[ptr++] = pixel;
-        pixel = getMultiColor((bitmap & 0x0C) >> 2, color);
+        pixel = getTextMultiColor((bitmap & 0x0C) >> 2, color);
         screen[ptr++] = pixel;
         screen[ptr++] = pixel;
-        pixel = getMultiColor((bitmap & 0x03) >> 0, color);
+        pixel = getTextMultiColor(bitmap & 0x03, color);
         screen[ptr++] = pixel;
         screen[ptr++] = pixel;
       }
       else
       {
-        for (int mask = 0x80; mask != 0; mask >>= 1)
-        {
-          screen[ptr++] = (bitmap & mask) == 0 ? regBackGroundColor0 : color;
-        }
+        screen[ptr++] = (bitmap & 0x80) == 0? backgroundColor : color;
+        screen[ptr++] = (bitmap & 0x40) == 0? backgroundColor : color;
+        screen[ptr++] = (bitmap & 0x20) == 0? backgroundColor : color;
+        screen[ptr++] = (bitmap & 0x10) == 0? backgroundColor : color;
+        screen[ptr++] = (bitmap & 0x08) == 0? backgroundColor : color;
+        screen[ptr++] = (bitmap & 0x04) == 0? backgroundColor : color;
+        screen[ptr++] = (bitmap & 0x02) == 0? backgroundColor : color;
+        screen[ptr++] = (bitmap & 0x01) == 0? backgroundColor : color;
       }
     }
 
     return ptr;
   }
 
-  private byte getMultiColor(int bitmap, byte color)
+
+  /**
+   * Get color of multi color text pixel.
+   *
+   * @param colorIndex index of color to set
+   * @param color foreground color
+   */
+  private byte getTextMultiColor(int colorIndex, byte color)
   {
-    switch (bitmap)
+    switch (colorIndex)
     {
       case 0x00: return _vic._regBackgroundColor0;
       case 0x01: return _vic._regBackgroundColor1;
       case 0x02: return _vic._regBackgroundColor2;
       default: return color; // case 0x03
     }
-
   }
 
   /**
