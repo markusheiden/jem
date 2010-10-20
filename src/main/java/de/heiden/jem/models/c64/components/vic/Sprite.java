@@ -17,9 +17,9 @@ public class Sprite
   public boolean expandY;
 
   public boolean multicolor;
-  public int color;
-  public int multicolor1;
-  public int multicolor2;
+  public byte color;
+  public byte multicolor1;
+  public byte multicolor2;
 
   /**
    * Constructor.

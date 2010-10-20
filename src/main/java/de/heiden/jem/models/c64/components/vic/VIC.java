@@ -62,8 +62,8 @@ public abstract class VIC implements BusDevice
   private int _regSpritesExpandX; // 0x17
   private int _regSpritesExpandY; // 0x1D
   private int _regSpritesMulticolorMode; // 0x1C
-  private int _regSpritesMulticolor0; // 0x15
-  private int _regSpritesMulticolor1; // 0x16
+  protected byte _regSpritesMulticolor0; // 0x15
+  protected byte _regSpritesMulticolor1; // 0x16
 
   private int _regSpritesSpriteCollision; // 0x1E
   private int _regSpritesBackgroundCollision; // 0x1F
@@ -441,60 +441,62 @@ public abstract class VIC implements BusDevice
       }
       case 0x25:
       {
-        _regSpritesMulticolor0 = value;
+        byte color = (byte) (value & 0x0F);
+        _regSpritesMulticolor0 = color;
         for (Sprite sprite : _sprites)
         {
-          sprite.multicolor1 = value;
+          sprite.multicolor1 = color;
         }
         break;
       }
       case 0x26:
       {
-        _regSpritesMulticolor1 = value;
+        byte color = (byte) (value & 0x0F);
+        _regSpritesMulticolor1 = color;
         for (Sprite sprite : _sprites)
         {
-          sprite.multicolor2 = value;
+          sprite.multicolor2 = color;
         }
         break;
       }
       case 0x27:
       {
-        _sprites[0].color = value;
+        _sprites[0].color = (byte) (value & 0x0F);
         break;
       }
       case 0x28:
       {
-        _sprites[1].color = value;
+        _sprites[1].color = (byte) (value & 0x0F);
         break;
       }
       case 0x29:
       {
-        _sprites[2].color = value;
+        _sprites[2].color = (byte) (value & 0x0F);
         break;
       }
       case 0x2A:
       {
-        _sprites[3].color = value;
+        _sprites[3].color = (byte) (value & 0x0F);
         break;
       }
       case 0x2B:
       {
-        _sprites[4].color = value;
+        _sprites[4].color = (byte) (value & 0x0F);
         break;
       }
       case 0x2C:
       {
-        _sprites[5].color = value;
+        _sprites[5].color = (byte) (value & 0x0F);
         break;
       }
       case 0x2D:
       {
-        _sprites[6].color = value;
+        _sprites[6].color = (byte) (value & 0x0F);
         break;
       }
       case 0x2E:
       {
-        _sprites[7].color = value;
+        _sprites[7].color = (byte) (value & 0x0F);
         break;
       }
       case 0x2F:

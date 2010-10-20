@@ -2,7 +2,6 @@ package de.heiden.jem.models.c64.components.vic;
 
 import de.heiden.jem.components.bus.BusDevice;
 import de.heiden.jem.components.clock.Clock;
-import org.apache.log4j.Logger;
 import org.serialthreads.Interruptible;
 
 import java.util.Arrays;
@@ -14,11 +13,6 @@ import java.util.Arrays;
  */
 public class DisplayUnitSimple extends AbstractDisplayUnit
 {
-  /**
-   * Logger.
-   */
-  private final Logger _logger = Logger.getLogger(getClass());
-
   /**
    * Hidden constructor.
    *
@@ -82,7 +76,9 @@ public class DisplayUnitSimple extends AbstractDisplayUnit
         }
 
         Arrays.fill(screen, ptr, (ptr += lastX - _vic._firstVisibleX + _vic._firstX_25), _vic._regExteriorColor);
-        ptr = renderTextLine(screen, ptr , y);
+        int newPtr = renderTextLine(screen, ptr , y);
+        renderSprites(screen, ptr, raster);
+        ptr = newPtr;
         Arrays.fill(screen, ptr, (ptr += _vic._lastVisibleX - _vic._lastX_25), _vic._regExteriorColor);
       }
 
@@ -108,6 +104,150 @@ public class DisplayUnitSimple extends AbstractDisplayUnit
       }
 
       rendered(screen);
+    }
+  }
+
+  /**
+   * Render sprites for the given line.
+   *
+   * @param screen screen data
+   * @param ptr current index in screen data
+   * @param raster raster line
+   */
+  private void renderSprites(byte[] screen, int ptr, int raster)
+  {
+    VICBus bus = _vic._bus;
+
+    int spritePointer = _vic._baseCharacterMode + 0x03F8 + 7;
+
+    for (int i = 7; i >= 0; i--, spritePointer--)
+    {
+      Sprite sprite = _vic._sprites[i];
+      if (sprite.enabled)
+      {
+        int y = sprite.y;
+        int endY = y + (sprite.expandY? 42 : 21);
+        if (y <= raster && raster < endY)
+        {
+          int spritePtr = ptr - _vic._firstX_25  + sprite.x;
+          int spriteRow = raster - y;
+          if (sprite.expandY)
+          {
+            spriteRow >>= 1;
+          }
+          int baseSprite = (bus.read(spritePointer) << 6) + spriteRow * 3;
+          spritePtr = renderSpriteByte(screen, spritePtr, bus.read(baseSprite++), sprite);
+          spritePtr = renderSpriteByte(screen, spritePtr, bus.read(baseSprite++), sprite);
+          spritePtr = renderSpriteByte(screen, spritePtr, bus.read(baseSprite++), sprite);
+        }
+      }
+    }
+  }
+
+  private int renderSpriteByte(byte[] screen, int spritePtr, int bitmap, Sprite sprite)
+  {
+    byte color = sprite.color;
+    boolean expandX = sprite.expandX;
+    int incX = expandX? 2 : 1;
+
+    if (sprite.multicolor)
+    {
+      incX <<= 1;
+
+      byte pixel = getSpriteColor((bitmap & 0xC0) >> 6, color);
+      if (pixel >= 0)
+      {
+        screen[spritePtr++] = pixel;
+        screen[spritePtr++] = pixel;
+        if (expandX)
+        {
+          screen[spritePtr++] = pixel;
+          screen[spritePtr++] = pixel;
+        }
+      }
+      else
+      {
+        spritePtr += incX;
+      }
+
+      pixel = getSpriteColor((bitmap & 0x30) >> 4, color);
+      if (pixel >= 0)
+      {
+        screen[spritePtr++] = pixel;
+        screen[spritePtr++] = pixel;
+        if (expandX)
+        {
+          screen[spritePtr++] = pixel;
+          screen[spritePtr++] = pixel;
+        }
+      }
+      else
+      {
+        spritePtr += incX;
+      }
+
+      pixel = getSpriteColor((bitmap & 0x0C) >> 2, color);
+      if (pixel >= 0)
+      {
+        screen[spritePtr++] = pixel;
+        screen[spritePtr++] = pixel;
+        if (expandX)
+        {
+          screen[spritePtr++] = pixel;
+          screen[spritePtr++] = pixel;
+        }
+      }
+      else
+      {
+        spritePtr += incX;
+      }
+
+      pixel = getSpriteColor((bitmap & 0x03) >> 0, color);
+      if (pixel >= 0)
+      {
+        screen[spritePtr++] = pixel;
+        screen[spritePtr++] = pixel;
+        if (expandX)
+        {
+          screen[spritePtr++] = pixel;
+          screen[spritePtr++] = pixel;
+        }
+      }
+      else
+      {
+        spritePtr += incX;
+      }
+    }
+    else
+    {
+      for (int mask = 0x80; mask != 0; mask >>= 1)
+      {
+        if ((bitmap & mask) != 0)
+        {
+          screen[spritePtr++] = color;
+          if (expandX)
+          {
+            screen[spritePtr++] = color;
+          }
+        }
+        else
+        {
+          spritePtr += incX;
+        }
+      }
+    }
+
+    return spritePtr;
+  }
+
+  private byte getSpriteColor(int bitmap, byte color)
+  {
+    switch (bitmap)
+    {
+      case 0x01: return _vic._regSpritesMulticolor0;
+      case 0x02: return color;
+      case 0x03: return _vic._regSpritesMulticolor1;
+      default: return -1;
     }
   }
 
