@@ -148,32 +148,21 @@ public class DisplayUnitSimple extends AbstractDisplayUnit
       int character = bus.read(screenAddress);
       int bitmap = bus.read(charsetAddress + (character << 3));
 
-      if (multiColor)
+      if (multiColor && ((color & 0x08) != 0))
       {
-        if ((color & 0x08) != 0)
-        {
-          color &= 0x07;
-          byte pixel = getMultiColor((bitmap & 0xC0) >> 6, color);
-          screen[ptr++] = pixel;
-          screen[ptr++] = pixel;
-          pixel = getMultiColor((bitmap & 0x30) >> 4, color);
-          screen[ptr++] = pixel;
-          screen[ptr++] = pixel;
-          pixel = getMultiColor((bitmap & 0x0C) >> 2, color);
-          screen[ptr++] = pixel;
-          screen[ptr++] = pixel;
-          pixel = getMultiColor((bitmap & 0x03) >> 0, color);
-          screen[ptr++] = pixel;
-          screen[ptr++] = pixel;
-        }
-        else
-        {
-          color &= 0x07;
-          for (int mask = 0x80; mask != 0; mask >>= 1)
-          {
-            screen[ptr++] = (bitmap & mask) == 0 ? regBackGroundColor0 : color;
-          }
-        }
+        color &= 0x07;
+        byte pixel = getMultiColor((bitmap & 0xC0) >> 6, color);
+        screen[ptr++] = pixel;
+        screen[ptr++] = pixel;
+        pixel = getMultiColor((bitmap & 0x30) >> 4, color);
+        screen[ptr++] = pixel;
+        screen[ptr++] = pixel;
+        pixel = getMultiColor((bitmap & 0x0C) >> 2, color);
+        screen[ptr++] = pixel;
+        screen[ptr++] = pixel;
+        pixel = getMultiColor((bitmap & 0x03) >> 0, color);
+        screen[ptr++] = pixel;
+        screen[ptr++] = pixel;
       }
       else
       {
