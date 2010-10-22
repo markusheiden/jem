@@ -778,7 +778,7 @@ public abstract class VIC implements BusDevice
       }
       default:
       {
-        result = 0xFF; // TODO correct?
+        result = 0xFF;
         break;
       }
     }
