@@ -20,6 +20,7 @@ class MemAccessUnit implements ClockedComponent
   protected int y;
   protected final int[] characters;
   protected final int[] colors;
+  protected final boolean[] spritesDMA;
   protected final int[][] sprites;
 
   /**
@@ -38,6 +39,7 @@ class MemAccessUnit implements ClockedComponent
     y = 0;
     characters = new int[40];
     colors = new int[40];
+    spritesDMA = new boolean[8];
     sprites = new int[][] {
       new int[3], new int[3], new int[3], new int[3], new int[3], new int[3], new int[3], new int[3]
     };
