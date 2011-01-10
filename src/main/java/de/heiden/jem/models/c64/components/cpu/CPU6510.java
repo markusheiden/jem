@@ -809,7 +809,7 @@ public class CPU6510 implements ClockedComponent
       {
         @Override
         @Interruptible
-        public final void execute() // §3A: *NOP (2)
+        public final void execute() // $3A: *NOP (2)
         {
           nop2();
         }
