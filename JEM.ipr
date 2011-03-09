@@ -385,7 +385,7 @@
   </component>
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/../C64DT/C64DT.iml" filepath="$PROJECT_DIR$/../C64DT/C64DT.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../c64dt/C64DT.iml" filepath="$PROJECT_DIR$/../c64dt/C64DT.iml" />
       <module fileurl="file://$PROJECT_DIR$/JEM.iml" filepath="$PROJECT_DIR$/JEM.iml" />
       <module fileurl="file://$PROJECT_DIR$/../serialthreads/SerialThreads.iml" filepath="$PROJECT_DIR$/../serialthreads/SerialThreads.iml" />
     </modules>
@@ -393,8 +393,8 @@
   <component name="ProjectResources">
     <default-html-doctype>http://www.w3.org/1999/xhtml</default-html-doctype>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_6" assert-keyword="true" jdk-15="true" project-jdk-name="1.6" project-jdk-type="JavaSDK">
-    <output url="file://$PROJECT_DIR$/build/idea" />
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_6" assert-keyword="true" jdk-15="true" project-jdk-name="1.7" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/target/idea" />
   </component>
   <component name="ProjectRunConfigurationManager">
     <configuration default="false" name="StartupAgent" type="Application" factoryName="Application">
