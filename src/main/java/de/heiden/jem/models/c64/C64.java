@@ -112,26 +112,23 @@ public class C64
       _cpuBus.write(i & 0x0F, 0xD800 + i);
     }
 
-    int[] autoload = ResourceLoader.load("commando.prg");
-    int start = autoload[0] + (autoload[1] << 8);
-    for (int i = 2; i < autoload.length; i++)
-    {
-      _cpuBus.write(autoload[i], start + i - 2);
-    }
+
 
     show(_vic, _keyboard.getKeyListener());
 
     _logger.debug("start");
-    final int ticks = 1000000;
-    while (true)
-    {
-      long time = System.currentTimeMillis();
-      _clock.run(ticks);
-      time = System.currentTimeMillis() - time;
-      _logger.debug("executed " + ticks + " in " + time + " ms");
-    }
+    _clock.run();
 
-//    clock.dispose();
+//    final int ticks = 1000000;
+//    while (true)
+//    {
+//      long time = System.currentTimeMillis();
+//      _clock.run(ticks);
+//      time = System.currentTimeMillis() - time;
+//      _logger.debug("executed " + ticks + " in " + time + " ms");
+//    }
+
+    _clock.dispose();
   }
 
   public void stop()
