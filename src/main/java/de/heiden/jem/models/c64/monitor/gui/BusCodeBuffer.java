@@ -18,7 +18,7 @@ public class BusCodeBuffer extends AbstractCodeBuffer
    */
   public BusCodeBuffer(int position, BusDevice bus)
   {
-    super(0x0000, 0x10000);
+    super(0x10000);
 
     this.position = position;
     this._bus = bus;
