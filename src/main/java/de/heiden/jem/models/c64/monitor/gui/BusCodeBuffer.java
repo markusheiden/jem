@@ -13,20 +13,20 @@ public class BusCodeBuffer extends AbstractCodeBuffer
   /**
    * Constructor.
    *
-   * @param position start address of the code disassemble
+   * @param index start address of the code to disassemble
    * @param bus bus
    */
-  public BusCodeBuffer(int position, BusDevice bus)
+  public BusCodeBuffer(int index, BusDevice bus)
   {
     super(0x10000);
 
-    this.position = position;
     this._bus = bus;
+    setCurrentIndex(index);
   }
 
   @Override
-  public int readByte()
+  protected int readByteAt(int index)
   {
-    return _bus.read(position++);
+    return _bus.read(index);
   }
 }
