@@ -11,6 +11,15 @@
       <properties />
     </buildFile>
   </component>
+  <component name="ArtifactManager">
+    <artifact type="jar" build-on-make="true" name="serialthreads:jar">
+      <output-path>$PROJECT_DIR$/../serialthreads/target</output-path>
+      <root id="archive" name="serialthreads.jar">
+        <element id="module-output" name="SerialThreads" />
+        <element id="dir-copy" path="$PROJECT_DIR$/../serialthreads/src/main/resources" />
+      </root>
+    </artifact>
+  </component>
   <component name="BuildJarProjectSettings">
     <option name="BUILD_JARS_ON_MAKE" value="false" />
   </component>
