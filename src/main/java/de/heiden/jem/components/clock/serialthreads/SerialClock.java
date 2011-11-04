@@ -43,7 +43,7 @@ public class SerialClock extends AbstractClock<ClockEntry>
   @Executor
   public final void run()
   {
-    ChainedRunnable first = createChain()[0];
+    final ChainedRunnable first = createChain()[0];
     ChainedRunnable chain = first;
     long tick = _tick;
 
@@ -65,8 +65,7 @@ public class SerialClock extends AbstractClock<ClockEntry>
           chain = chain.next;
         } while (chain != first);
 
-        tick++;
-        _tick = tick;
+        _tick = ++tick;
       }
     }
     catch (ThreadFinishedException e)
