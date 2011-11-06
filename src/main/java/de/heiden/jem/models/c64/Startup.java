@@ -18,7 +18,7 @@ public class Startup
 
   public Startup()
   {
-    _classLoader = new TransformingClassLoader(Startup.class.getClassLoader(), Strategies.FREQUENT3, "de.heiden.jem");
+    _classLoader = new TransformingClassLoader(Startup.class.getClassLoader(), Strategies.DEFAULT, "de.heiden.jem");
   }
 
   public void start()
