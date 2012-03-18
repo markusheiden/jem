@@ -1,7 +1,5 @@
 package de.heiden.jem.models.c64.components.cpu;
 
-import static de.heiden.c64dt.assembler.Opcode.OPCODES;
-
 import de.heiden.c64dt.assembler.Opcode;
 import de.heiden.jem.components.clock.Clock;
 import de.heiden.jem.models.c64.monitor.Monitor;
@@ -10,6 +8,8 @@ import org.serialthreads.Interruptible;
 
 import java.util.HashSet;
 import java.util.Set;
+
+import static de.heiden.c64dt.assembler.Opcode.OPCODES;
 
 /**
  * CPU variant which support debugging.
@@ -122,7 +122,7 @@ public class CPU6510Debugger extends CPU6510
     {
       _currentTrace = 0;
     }
-    
+
     int pc = _state.PC;
     trace.address = pc;
 
@@ -247,6 +247,16 @@ public class CPU6510Debugger extends CPU6510
     {
       _breakpoints.add(addr);
     }
+  }
+
+  public int getTracePoint()
+  {
+    return _tracePoint;
+  }
+
+  public Trace[] getTraces()
+  {
+    return _traces;
   }
 
   @Override

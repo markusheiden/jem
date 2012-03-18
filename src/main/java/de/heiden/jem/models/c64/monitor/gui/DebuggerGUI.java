@@ -1,16 +1,15 @@
 package de.heiden.jem.models.c64.monitor.gui;
 
-import de.heiden.jem.models.c64.C64;
 import de.heiden.jem.components.bus.BusDevice;
+import de.heiden.jem.models.c64.C64;
 import de.heiden.jem.models.c64.components.cpu.CPU6510Debugger;
 import de.heiden.jem.models.c64.components.cpu.DebuggerExit;
 import org.apache.log4j.Logger;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.List;
 
 /**
  * Main Monitor frame.
@@ -31,6 +30,7 @@ public class DebuggerGUI extends JPanel
   private final JButton _refreshButton;
 
   private StateGUI _state;
+  private TraceGUI _trace;
   private DisassemblerGUI _disassembler;
   private final MemDumpGUI _memDump;
 
@@ -62,9 +62,9 @@ public class DebuggerGUI extends JPanel
     JSplitPane top = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
     topBottom.setTopComponent(top);
 
-    JPanel stack = new JPanel();
-    top.setLeftComponent(stack);
-    stack.add(new JLabel("TOP/LEFT"));
+    _trace = new TraceGUI();
+    top.setLeftComponent(_trace);
+
     _state = new StateGUI();
     top.setRightComponent(_state);
 
@@ -74,6 +74,7 @@ public class DebuggerGUI extends JPanel
     _disassembler = new DisassemblerGUI();
     _disassembler.setAddress(0xE000);
     bottom.setLeftComponent(_disassembler);
+
     _memDump = new MemDumpGUI();
     _memDump.setAddress(0xE000);
     bottom.setRightComponent(_memDump);
@@ -157,6 +158,7 @@ public class DebuggerGUI extends JPanel
       _cpu = (CPU6510Debugger) _c64.getCpu();
       _bus = _c64.getCpuBus();
 
+      _trace.setCpu(_cpu);
       _state.setCpu(_cpu);
       _disassembler.setBus(_bus);
       _memDump.setBus(_bus);
@@ -312,7 +314,8 @@ public class DebuggerGUI extends JPanel
   private void updateComponents()
   {
     updateButtons();
-    
+
+    _trace.stateChanged();
     _state.stateChanged();
     _disassembler.setAddress(_cpu.getState().PC);
     _disassembler.codeChanged();
