@@ -5,11 +5,11 @@ import de.heiden.c64dt.util.HexUtil;
 import de.heiden.jem.models.c64.components.cpu.CPU6510;
 import de.heiden.jem.models.c64.components.cpu.CPU6510State;
 
-import javax.swing.JPanel;
-import java.awt.BorderLayout;
+import javax.swing.*;
+import java.awt.*;
 
 /**
- * State of the processor.
+ * GUI for showing the state of the processor.
  */
 public class StateGUI extends JPanel
 {
@@ -58,15 +58,15 @@ public class StateGUI extends JPanel
       _text.setText(0, 4, "Y =" + HexUtil.hexByte(state.Y));
       _text.setText(0, 5, "P =");
       int c = 3;
-      _text.setText(c++, 5, state.N ? "N" : "n");
-      _text.setText(c++, 5, state.V ? "V" : "v");
+      _text.setText(c++, 5, state.N? "N" : "n");
+      _text.setText(c++, 5, state.V? "V" : "v");
       _text.setText(c++, 5, "1");
-      _text.setText(c++, 5, state.B ? "B" : "b");
-      _text.setText(c++, 5, state.D ? "D" : "d");
-      _text.setText(c++, 5, state.I ? "I" : "i");
-      _text.setText(c++, 5, state.Z ? "Z" : "z");
-      _text.setText(c++, 5, state.C ? "C" : "c");
-      _text.setText(0, 6, (state.NMI ? "NMI" : "") + (state.IRQ ? " IRQ" : ""));
+      _text.setText(c++, 5, state.B? "B" : "b");
+      _text.setText(c++, 5, state.D? "D" : "d");
+      _text.setText(c++, 5, state.I? "I" : "i");
+      _text.setText(c++, 5, state.Z? "Z" : "z");
+      _text.setText(c++, 5, state.C? "C" : "c");
+      _text.setText(0, 6, (state.NMI? "NMI" : "") + (state.IRQ? " IRQ" : ""));
     }
 
     repaint();
