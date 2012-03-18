@@ -52,18 +52,25 @@ public class TraceGUI extends JPanel {
     _text.clear();
     if (_cpu != null) {
       try {
-        Trace[] traces = _cpu.getTraces();
         int currentTrace = _cpu.getCurrentTrace();
+        Trace[] traces = _cpu.getTraces();
         for (int i = 9; i >= 0; i--) {
-          currentTrace = (currentTrace + 1) % traces.length;
+          currentTrace--;
+          if (currentTrace < 0) {
+            currentTrace = traces.length - 1;
+          }
           Trace trace = traces[currentTrace];
 
           StringWriter output = new StringWriter(20);
-          byte[] bytes = {(byte) trace.opcode.getOpcode(), ((byte) (trace.argument & 0xFF)), ((byte) (trace.argument >> 8))};
+          byte[] bytes = new byte[3];
+          for (int j = 0; j < trace.bytes.length; j++) {
+            bytes[j] = (byte) trace.bytes[j];
+          }
           CodeBuffer code = new CodeBuffer(trace.address, bytes);
           _disassembler.disassemble(code, output);
 
           _text.setText(0, i, output.toString());
+
         }
       } catch (IOException e) {
         // ignore
