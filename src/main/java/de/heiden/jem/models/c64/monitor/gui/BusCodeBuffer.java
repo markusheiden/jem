@@ -6,8 +6,7 @@ import de.heiden.jem.components.bus.BusDevice;
 /**
  * Code buffer based on a bus.
  */
-public class BusCodeBuffer extends AbstractCodeBuffer
-{
+public class BusCodeBuffer extends AbstractCodeBuffer {
   private final BusDevice _bus;
 
   /**
@@ -16,17 +15,15 @@ public class BusCodeBuffer extends AbstractCodeBuffer
    * @param index start address of the code to disassemble
    * @param bus bus
    */
-  public BusCodeBuffer(int index, BusDevice bus)
-  {
-    super(0x10000);
+  public BusCodeBuffer(int index, BusDevice bus) {
+    super(0x0000, 0x10000);
 
     this._bus = bus;
     setCurrentIndex(index);
   }
 
   @Override
-  protected int readByteAt(int index)
-  {
+  protected int readByteAt(int index) {
     return _bus.read(index);
   }
 }
