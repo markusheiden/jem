@@ -10,7 +10,7 @@ import de.heiden.jem.models.c64.monitor.Monitor;
 public class Trace
 {
   public int address;
-  public Opcode opcode;
+  public Opcode opcode = Opcode.OPCODE_02;
   public int argument;
 
   public String toString()

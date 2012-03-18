@@ -249,9 +249,9 @@ public class CPU6510Debugger extends CPU6510
     }
   }
 
-  public int getTracePoint()
+  public int getCurrentTrace()
   {
-    return _tracePoint;
+    return _currentTrace;
   }
 
   public Trace[] getTraces()
