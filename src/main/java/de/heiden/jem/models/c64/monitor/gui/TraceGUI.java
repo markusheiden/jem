@@ -1,6 +1,5 @@
 package de.heiden.jem.models.c64.monitor.gui;
 
-import de.heiden.c64dt.assembler.CodeBuffer;
 import de.heiden.c64dt.assembler.Disassembler;
 import de.heiden.c64dt.gui.JC64TextArea;
 import de.heiden.jem.models.c64.components.cpu.CPU6510Debugger;
@@ -62,12 +61,7 @@ public class TraceGUI extends JPanel {
           Trace trace = traces[currentTrace];
 
           StringWriter output = new StringWriter(20);
-          byte[] bytes = new byte[3];
-          for (int j = 0; j < trace.bytes.length; j++) {
-            bytes[j] = (byte) trace.bytes[j];
-          }
-          CodeBuffer code = new CodeBuffer(trace.address, bytes);
-          _disassembler.disassemble(code, output);
+          _disassembler.disassemble(trace.toCodeBuffer(), output);
 
           _text.setText(0, i, output.toString());
 

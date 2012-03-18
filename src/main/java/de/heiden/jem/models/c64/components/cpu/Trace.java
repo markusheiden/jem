@@ -1,36 +1,46 @@
 package de.heiden.jem.models.c64.components.cpu;
 
+import de.heiden.c64dt.assembler.CodeBuffer;
+import de.heiden.c64dt.assembler.ICodeBuffer;
 import de.heiden.c64dt.assembler.Opcode;
 import de.heiden.jem.components.bus.BusDevice;
-import de.heiden.jem.models.c64.monitor.Monitor;
 
 import static de.heiden.c64dt.assembler.Opcode.OPCODES;
 
 /**
- * Data for a single exceuted opcode for execution tracing.
- * Simple data bean, which can be easily reused
+ * Data of a single executed opcode for execution tracing.
+ * Simple data bean, which can be easily reused.
  */
 public class Trace {
+  /**
+   * Address of opcode.
+   */
   public int address;
-  public int[] bytes = new int[3];
-  public Opcode opcode = Opcode.OPCODE_02;
-  public int argument;
 
-  public void read(int pc, BusDevice bus) {
+  /**
+   * Byte representation of opcode incl. argument.
+   */
+  public final byte[] bytes = new byte[3];
+
+  /**
+   * Read trace data from bus.
+   *
+   * @param pc PC, address to read from
+   * @param bus Bus
+   */
+  public final void read(int pc, BusDevice bus) {
     address = pc;
 
-    opcode = OPCODES[bus.read(pc++)];
-    bytes[0] = opcode.getOpcode();
-
-    argument = 0;
-    for (int i = 0; i < opcode.getMode().getSize(); i++) {
-      int b = bus.read(pc++);
-      bytes[i + 1] = b;
-      argument += b << (i * 8);
+    Opcode opcode = OPCODES[bus.read(pc)];
+    for (int i = 0; i < opcode.getSize(); i++) {
+      bytes[i] = (byte) bus.read(pc++);
     }
   }
 
-  public String toString() {
-    return Monitor.disassemble(address, bytes, opcode, argument);
+  /**
+   * Return opcode representation as CodeBuffer.
+   */
+  public ICodeBuffer toCodeBuffer() {
+    return new CodeBuffer(address, bytes);
   }
 }
