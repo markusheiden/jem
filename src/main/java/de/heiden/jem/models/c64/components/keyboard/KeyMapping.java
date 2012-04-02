@@ -7,18 +7,16 @@ import java.util.Map;
 /**
  * Mapping virtual keys <-> C64 keyboard matrix.
  */
-public abstract class KeyMapping
-{
+public abstract class KeyMapping {
   protected final Map<Character, Key[]> _chars;
   protected final Map<Integer, Key[]> _keys;
 
   /**
    * Constructor.
    */
-  public KeyMapping()
-  {
-    _chars = new HashMap<Character, Key[]>();
-    _keys = new HashMap<Integer, Key[]>();
+  public KeyMapping() {
+    _chars = new HashMap<>();
+    _keys = new HashMap<>();
 
     generateKeyMapping();
   }
@@ -29,11 +27,9 @@ public abstract class KeyMapping
    * @param e Key(Event)
    * @return Key or null if key is not mapped
    */
-  public Key[] getKeys(KeyEvent e)
-  {
+  public Key[] getKeys(KeyEvent e) {
     Key[] result = _chars.get(e.getKeyChar());
-    if (result == null)
-    {
+    if (result == null) {
       result = _keys.get(keyID(e.getKeyLocation(), e.getKeyCode()));
     }
 
@@ -46,33 +42,25 @@ public abstract class KeyMapping
    * @param e Key(Event)
    * @return description of virtual key
    */
-  public static String toString(KeyEvent e)
-  {
+  public static String toString(KeyEvent e) {
     String result = KeyEvent.getKeyText(e.getKeyCode());
-    switch (e.getKeyLocation())
-    {
-      case KeyEvent.KEY_LOCATION_STANDARD:
-      {
+    switch (e.getKeyLocation()) {
+      case KeyEvent.KEY_LOCATION_STANDARD: {
         return result + " (standard)";
       }
-      case KeyEvent.KEY_LOCATION_LEFT:
-      {
+      case KeyEvent.KEY_LOCATION_LEFT: {
         return result + " (left)";
       }
-      case KeyEvent.KEY_LOCATION_RIGHT:
-      {
+      case KeyEvent.KEY_LOCATION_RIGHT: {
         return result + " (right)";
       }
-      case KeyEvent.KEY_LOCATION_NUMPAD:
-      {
+      case KeyEvent.KEY_LOCATION_NUMPAD: {
         return result + " (numpad)";
       }
-      case KeyEvent.KEY_LOCATION_UNKNOWN:
-      {
+      case KeyEvent.KEY_LOCATION_UNKNOWN: {
         return result + " (unknown)";
       }
-      default:
-      {
+      default: {
         return result + " (???)";
       }
     }
@@ -85,8 +73,7 @@ public abstract class KeyMapping
   /**
    * Key location / key code to int.
    */
-  protected final int keyID(int location, int key)
-  {
+  protected final int keyID(int location, int key) {
     return location << 16 | key;
   }
 

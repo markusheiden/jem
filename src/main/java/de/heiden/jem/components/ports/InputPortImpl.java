@@ -6,8 +6,7 @@ import java.util.List;
 /**
  * Input port implementation.
  */
-public class InputPortImpl implements InputPort
-{
+public class InputPortImpl implements InputPort {
   private final List<OutputPort> _outputPorts;
 
   private final OutputPortListener _outputListener;
@@ -21,20 +20,17 @@ public class InputPortImpl implements InputPort
   /**
    * Constructor.
    */
-  public InputPortImpl()
-  {
-    _outputPorts = new ArrayList<OutputPort>();
-    _outputListener = new OutputPortListener()
-    {
+  public InputPortImpl() {
+    _outputPorts = new ArrayList<>();
+    _outputListener = new OutputPortListener() {
       /**
        * Output port changed.
        */
-      public void outputPortChanged(int value, int mask)
-      {
+      public void outputPortChanged(int value, int mask) {
         updateInputPort();
       }
     };
-    _inputListeners = new ArrayList<InputPortListener>();
+    _inputListeners = new ArrayList<>();
     _inputData = 0xFF;
     _inputMask = 0xFF;
   }
@@ -45,8 +41,7 @@ public class InputPortImpl implements InputPort
    * @param port output port to connect to.
    * @require port != null
    */
-  public void connect(OutputPort port)
-  {
+  public void connect(OutputPort port) {
     assert port != null : "port != null";
 
     _outputPorts.add(port);
@@ -61,8 +56,7 @@ public class InputPortImpl implements InputPort
    * @param port output port to disconnect.
    * @require port != null
    */
-  public void disconnect(OutputPort port)
-  {
+  public void disconnect(OutputPort port) {
     _outputPorts.remove(port);
     port.removeOutputPortListener(_outputListener);
     updateInputPort();
@@ -74,8 +68,7 @@ public class InputPortImpl implements InputPort
    * @param listener port listener
    * @require listener != null
    */
-  public void addInputPortListener(InputPortListener listener)
-  {
+  public void addInputPortListener(InputPortListener listener) {
     assert listener != null : "listener != null";
 
     _inputListeners.add(listener);
@@ -87,8 +80,7 @@ public class InputPortImpl implements InputPort
    * @param listener port listener
    * @require listener != null
    */
-  public void removeInputPortListener(InputPortListener listener)
-  {
+  public void removeInputPortListener(InputPortListener listener) {
     assert listener != null : "listener != null";
 
     _inputListeners.remove(listener);
@@ -97,8 +89,7 @@ public class InputPortImpl implements InputPort
   /**
    * Data of this input port.
    */
-  public int inputData()
-  {
+  public int inputData() {
     return _inputData;
   }
 
@@ -106,8 +97,7 @@ public class InputPortImpl implements InputPort
    * Mask of this input port.
    * Set bit means port bit is driven. Cleared bit means port bit is not driven.
    */
-  public int inputMask()
-  {
+  public int inputMask() {
     return _inputMask;
   }
 
@@ -118,20 +108,16 @@ public class InputPortImpl implements InputPort
   /**
    * Update current value of input port.
    */
-  protected final void updateInputPort()
-  {
+  protected final void updateInputPort() {
     int inputData = 0xFF;
     int inputMask = 0x00;
-    for (int i = 0; i < _outputPorts.size(); i++)
-    {
-      OutputPort port = _outputPorts.get(i);
+    for (OutputPort port : _outputPorts) {
       inputData &= port.outputData();
       inputMask |= port.outputMask();
     }
     inputData |= 0xFF - inputMask;
 
-    if (inputData != _inputData || inputMask != _inputMask)
-    {
+    if (inputData != _inputData || inputMask != _inputMask) {
       _inputData = inputData;
       _inputMask = inputMask;
       notifyInputPortListeners();
@@ -141,12 +127,10 @@ public class InputPortImpl implements InputPort
   /**
    * Notify all listeners.
    */
-  protected final void notifyInputPortListeners()
-  {
+  protected final void notifyInputPortListeners() {
     List<InputPortListener> listeners = _inputListeners;
-    for (int i = 0, size = listeners.size(); i < size; i++)
-    {
-      listeners.get(i).inputPortChanged(_inputData, _inputMask);
+    for (InputPortListener listener : listeners) {
+      listener.inputPortChanged(_inputData, _inputMask);
     }
   }
 }

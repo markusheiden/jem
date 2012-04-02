@@ -2,15 +2,13 @@ package de.heiden.jem.components.clock;
 
 import org.apache.log4j.Logger;
 
-import java.util.NavigableMap;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
 /**
  * Base implementation for all clocks.
  */
-public abstract class AbstractClock<E extends ClockEntry> implements Clock
-{
+public abstract class AbstractClock<E extends ClockEntry> implements Clock {
   /**
    * Logger.
    */
@@ -40,17 +38,14 @@ public abstract class AbstractClock<E extends ClockEntry> implements Clock
   /**
    * Constructor.
    */
-  protected AbstractClock()
-  {
+  protected AbstractClock() {
     _started = false;
 
-    _entryMap = new TreeMap<Integer, E>();
+    _entryMap = new TreeMap<>();
 
-    _events = new ClockEvent()
-    {
+    _events = new ClockEvent() {
       @Override
-      public void execute(long tick)
-      {
+      public void execute(long tick) {
         throw new IllegalArgumentException("Dummy event may never be executed");
       }
     };
@@ -60,16 +55,14 @@ public abstract class AbstractClock<E extends ClockEntry> implements Clock
   }
 
   @Override
-  public void dispose()
-  {
+  public void dispose() {
     // overwrite, if needed
   }
 
   /**
    * Has the clock been started?.
    */
-  public boolean isStarted()
-  {
+  public boolean isStarted() {
     return _started;
   }
 
@@ -82,8 +75,7 @@ public abstract class AbstractClock<E extends ClockEntry> implements Clock
    * @require component != null
    * @ensure result != null
    */
-  public synchronized Tick addClockedComponent(int position, ClockedComponent component)
-  {
+  public synchronized Tick addClockedComponent(int position, ClockedComponent component) {
     assert component != null : "Precondition: component != null";
     assert position >= 0 : "Precondition: position >= 0";
     assert !isStarted() : "Precondition: !isStarted()";
@@ -110,8 +102,7 @@ public abstract class AbstractClock<E extends ClockEntry> implements Clock
    * @require tick > getTick()
    * @require newEvent != null
    */
-  public void addClockEvent(long tick, ClockEvent newEvent)
-  {
+  public void addClockEvent(long tick, ClockEvent newEvent) {
     assert tick > getTick() : "tick > getTick()";
     assert newEvent != null : "newEvent != null";
     assert newEvent.next == null : "newEvent.next == null";
@@ -124,16 +115,12 @@ public abstract class AbstractClock<E extends ClockEntry> implements Clock
     newEvent.tick = tick;
 
     ClockEvent event = _events;
-    if (tick <= _nextEventTick)
-    {
+    if (tick <= _nextEventTick) {
       newEvent.next = event;
       _events = newEvent;
-    }
-    else
-    {
+    } else {
       ClockEvent next;
-      while ((next = event.next).tick < tick)
-      {
+      while ((next = event.next).tick < tick) {
         event = next;
       }
       newEvent.next = event.next;
@@ -148,8 +135,7 @@ public abstract class AbstractClock<E extends ClockEntry> implements Clock
    * @param oldEvent event to remove
    * @require oldEvent != null
    */
-  public void removeClockEvent(ClockEvent oldEvent)
-  {
+  public void removeClockEvent(ClockEvent oldEvent) {
     assert oldEvent != null : "oldEvent != null";
 
 //    if (_logger.isDebugEnabled())
@@ -158,15 +144,11 @@ public abstract class AbstractClock<E extends ClockEntry> implements Clock
 //    }
 
     ClockEvent event = _events;
-    if (event == oldEvent)
-    {
+    if (event == oldEvent) {
       _events = oldEvent.next;
-    }
-    else
-    {
+    } else {
       ClockEvent next;
-      while ((next = event.next) != oldEvent)
-      {
+      while ((next = event.next) != oldEvent) {
         event = next;
       }
       event.next = oldEvent.next;
@@ -177,17 +159,15 @@ public abstract class AbstractClock<E extends ClockEntry> implements Clock
 
   /**
    * Execute current event, if any.
-   *
+   * <p/>
    * TODO 2010-10-14 mh: removed tick parameter, because it always has to be _nextEventTick...
-   * 
+   *
    * @param tick current clock tick
    */
-  protected final void executeEvent(long tick)
-  {
+  protected final void executeEvent(long tick) {
     assert tick == _nextEventTick : "tick == _nextEventTick";
 
-    while (_nextEventTick == tick)
-    {
+    while (_nextEventTick == tick) {
       // get current event
       ClockEvent event = _events;
 
@@ -209,8 +189,7 @@ public abstract class AbstractClock<E extends ClockEntry> implements Clock
   /**
    * Update _nextEventTick.
    */
-  protected final void updateNextEvent()
-  {
+  protected final void updateNextEvent() {
     _nextEventTick = _events.tick;
   }
 }

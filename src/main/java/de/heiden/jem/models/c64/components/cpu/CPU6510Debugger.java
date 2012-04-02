@@ -61,7 +61,7 @@ public class CPU6510Debugger extends CPU6510 {
       _traces[i] = new Trace();
     }
 
-    _breakpoints = new HashSet<Integer>();
+    _breakpoints = new HashSet<>();
 
     _state = getState();
   }

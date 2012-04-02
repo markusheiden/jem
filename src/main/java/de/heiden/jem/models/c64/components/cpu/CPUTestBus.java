@@ -11,8 +11,7 @@ import java.util.List;
 /**
  * C64 bus for testing purposes. This bus logs all access to it.
  */
-public class CPUTestBus implements BusDevice
-{
+public class CPUTestBus implements BusDevice {
   private BusDevice _bus;
 
   // TODO 2010-10-12 mh: use array with cyclic pointer?
@@ -24,18 +23,16 @@ public class CPUTestBus implements BusDevice
    * @param ram ram
    * @require ram != null
    */
-  public CPUTestBus(RAM ram)
-  {
+  public CPUTestBus(RAM ram) {
     new C64Bus(new OutputPortImpl(), ram, ram, ram, ram, ram, ram, ram, ram);
 
-    _log = new ArrayList<LogEntry>();
+    _log = new ArrayList<>();
   }
 
   /**
    * Protocol all write accesses.
    */
-  public final void write(int value, int address)
-  {
+  public final void write(int value, int address) {
     _log.add(new LogEntry(false, address, value));
     _bus.write(value, address);
   }
@@ -43,8 +40,7 @@ public class CPUTestBus implements BusDevice
   /**
    * Protocol all read accesses
    */
-  public final int read(int address)
-  {
+  public final int read(int address) {
     int value = _bus.read(address);
     _log.add(new LogEntry(true, address, value));
 
@@ -57,8 +53,7 @@ public class CPUTestBus implements BusDevice
    * @require getLog().length > 0
    * @ensure result != null
    */
-  public LogEntry getLastLogEntry()
-  {
+  public LogEntry getLastLogEntry() {
     assert getLog().length > 0 : "Precondition: getLog().length > 0";
 
     LogEntry result = _log.get(_log.size() - 1);
@@ -70,8 +65,7 @@ public class CPUTestBus implements BusDevice
   /**
    * Get log.
    */
-  public LogEntry[] getLog()
-  {
+  public LogEntry[] getLog() {
     return _log.toArray(new LogEntry[_log.size()]);
   }
 
@@ -80,8 +74,7 @@ public class CPUTestBus implements BusDevice
    *
    * @ensure getLog().length == 0
    */
-  public void resetLog()
-  {
+  public void resetLog() {
     _log.clear();
 
     assert getLog().length == 0 : "Postcondition: getLog().length == 0";
@@ -94,8 +87,7 @@ public class CPUTestBus implements BusDevice
   /**
    * LogEntry represents an single access to the bus.
    */
-  public static class LogEntry
-  {
+  public static class LogEntry {
     private final boolean _read;
     private final int _address;
     private final int _value;
@@ -107,8 +99,7 @@ public class CPUTestBus implements BusDevice
      * @param address accessed address.
      * @param value value which has been written / read.
      */
-    public LogEntry(boolean read, int address, int value)
-    {
+    public LogEntry(boolean read, int address, int value) {
       _read = read;
       _address = address;
       _value = value;
@@ -117,32 +108,28 @@ public class CPUTestBus implements BusDevice
     /**
      * Is access a read access?.
      */
-    public boolean isReadAccess()
-    {
+    public boolean isReadAccess() {
       return _read;
     }
 
     /**
      * Get accessed address.
      */
-    public int getAddress()
-    {
+    public int getAddress() {
       return _address;
     }
 
     /**
      * Get value which has been writen / read.
      */
-    public int getValue()
-    {
+    public int getValue() {
       return _value;
     }
 
     /**
      * toString.
      */
-    public String toString()
-    {
+    public String toString() {
       return (_read ? "read from " : "write to ") + HexUtil.hexWord(_address) +
         " value " + HexUtil.hexByte(_value);
 

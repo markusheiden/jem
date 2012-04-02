@@ -1,24 +1,21 @@
 package de.heiden.jem.models.c64.components.vic;
 
 import de.heiden.jem.components.clock.Clock;
-import org.apache.log4j.Logger;
 import org.serialthreads.Interruptible;
 
 /**
  * Display unit of vic.
- *
+ * <p/>
  * TODO refactor dependencies
  */
-public class DisplayUnit extends AbstractDisplayUnit
-{
+public class DisplayUnit extends AbstractDisplayUnit {
   /**
    * Hidden constructor.
    *
    * @param vic vic this display unit belongs to
    * @param clock clock
    */
-  DisplayUnit(VIC vic, Clock clock)
-  {
+  DisplayUnit(VIC vic, Clock clock) {
     super(vic, clock,
       (vic._lastVBlank + 1) * vic._cyclesPerLine * 8,
       vic._cyclesPerLine * 8, vic._linesPerScreen,
@@ -27,13 +24,11 @@ public class DisplayUnit extends AbstractDisplayUnit
 
   @Override
   @Interruptible
-  public final void run()
-  {
+  public final void run() {
     _vic.reset();
 
     //noinspection InfiniteLoopStatement
-    while (true)
-    {
+    while (true) {
       byte[] screen = _screenRender;
 
       int linesPerScreen = _vic._linesPerScreen;
@@ -44,35 +39,24 @@ public class DisplayUnit extends AbstractDisplayUnit
 
       // first left part of first line is not available, because there is no previous line
       int ptr = _vic._lastX - _vic._firstVisibleX;
-      for (int line = 0; line < linesPerScreen; line++)
-      {
+      for (int line = 0; line < linesPerScreen; line++) {
         // turn y border on / off
-        if (line == _vic._firstLine_25)
-        {
+        if (line == _vic._firstLine_25) {
           borderY = false;
-        }
-        else if (line == _vic._lastLine_25)
-        {
+        } else if (line == _vic._lastLine_25) {
           borderY = true;
         }
 
-        for (int column = 0; column < cyclesPerLine * 8; column++)
-        {
-          if (column == _vic._firstX_25)
-          {
+        for (int column = 0; column < cyclesPerLine * 8; column++) {
+          if (column == _vic._firstX_25) {
             borderX = false;
-          }
-          else if (column == _vic._lastX_25)
-          {
+          } else if (column == _vic._lastX_25) {
             borderX = true;
           }
 
-          if (borderY || borderX)
-          {
-            screen[ptr++] = (byte) _vic._regExteriorColor;
-          }
-          else
-          {
+          if (borderY || borderX) {
+            screen[ptr++] = _vic._regExteriorColor;
+          } else {
             screen[ptr++] = 1;
           }
 
@@ -106,14 +90,12 @@ public class DisplayUnit extends AbstractDisplayUnit
   }
 
   @Interruptible
-  private void readLine()
-  {
+  private void readLine() {
 
   }
 
   @Interruptible
-  private void readSprite(int i)
-  {
+  private void readSprite(int i) {
     // TODO 2010-03-15 mh: sprite pointer access
     _tick.waitForTick();
     // TODO 2010-03-15 mh: 3 sprite data access / idle access
