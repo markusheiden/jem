@@ -52,7 +52,7 @@ public class DisplayUnitSimple extends AbstractDisplayUnit {
         }
 
         final int pixelPerLine = _vic._lastX - _vic._firstVisibleX + _vic._lastVisibleX;
-        Arrays.fill(_screenRender, ptr, (ptr += pixelPerLine), _vic._regExteriorColor);
+        Arrays.fill(_screenRender, ptr, ptr += pixelPerLine, _vic._regExteriorColor);
       }
 
       // visible area
@@ -80,7 +80,7 @@ public class DisplayUnitSimple extends AbstractDisplayUnit {
         }
 
         final int pixelPerLine = _vic._lastX - _vic._firstVisibleX + _vic._lastVisibleX;
-        Arrays.fill(_screenRender, ptr, (ptr += pixelPerLine), _vic._regExteriorColor);
+        Arrays.fill(_screenRender, ptr, ptr += pixelPerLine, _vic._regExteriorColor);
       }
 
       // bottom vblank
