@@ -41,7 +41,7 @@ public class DisplayUnitSimple extends AbstractDisplayUnit {
       int raster = 0;
 
       // top vblank
-      for (int lastVBlank = _vic._lastVBlank; raster < lastVBlank; raster++) {
+      for (; raster < _vic._lastVBlank; raster++) {
         _vic.setRasterLine(raster);
         for (int x = 0; x < lastX; x++) {
           _tick.waitForTick();
@@ -49,7 +49,7 @@ public class DisplayUnitSimple extends AbstractDisplayUnit {
       }
 
       // top border
-      for (int firstLine_25 = _vic._firstLine_25; raster < firstLine_25; raster++) {
+      for (; raster < _vic._firstLine_25; raster++) {
         _vic.setRasterLine(raster);
         for (int x = 0; x < lastX; x++) {
           _tick.waitForTick();
@@ -58,7 +58,7 @@ public class DisplayUnitSimple extends AbstractDisplayUnit {
       }
 
       // visible area
-      for (int y = 0, lastLine_25 = _vic._lastLine_25; raster < lastLine_25; raster++, y++) {
+      for (int y = 0; raster < _vic._lastLine_25; raster++, y++) {
         _vic.setRasterLine(raster);
 
         for (int x = 0; x < lastX; x++) {
@@ -73,7 +73,7 @@ public class DisplayUnitSimple extends AbstractDisplayUnit {
       }
 
       // bottom border
-      for (int firstVBlank = _vic._firstVBlank; raster < firstVBlank; raster++) {
+      for (; raster < _vic._firstVBlank; raster++) {
         _vic.setRasterLine(raster);
         for (int x = 0; x < lastX; x++) {
           _tick.waitForTick();
@@ -82,7 +82,7 @@ public class DisplayUnitSimple extends AbstractDisplayUnit {
       }
 
       // bottom vblank
-      for (int linesPerScreen = _vic._linesPerScreen; raster < _vic._linesPerScreen; raster++) {
+      for (; raster < _vic._linesPerScreen; raster++) {
         _vic.setRasterLine(raster);
         for (int x = 0; x < lastX; x++) {
           _tick.waitForTick();
