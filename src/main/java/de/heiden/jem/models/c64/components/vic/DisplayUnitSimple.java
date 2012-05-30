@@ -30,8 +30,6 @@ public class DisplayUnitSimple extends AbstractDisplayUnit {
   public final void run() {
     _vic.reset();
 
-    final int pixelPerLine = _vic._lastX - _vic._firstVisibleX + _vic._lastVisibleX;
-
     //noinspection InfiniteLoopStatement
     while (true) {
       int ptr = 0;
@@ -52,6 +50,8 @@ public class DisplayUnitSimple extends AbstractDisplayUnit {
         for (int x = 0; x < _vic._lastX; x++) {
           _tick.waitForTick();
         }
+
+        final int pixelPerLine = _vic._lastX - _vic._firstVisibleX + _vic._lastVisibleX;
         Arrays.fill(_screenRender, ptr, (ptr += pixelPerLine), _vic._regExteriorColor);
       }
 
@@ -63,11 +63,13 @@ public class DisplayUnitSimple extends AbstractDisplayUnit {
           _tick.waitForTick();
         }
 
-        Arrays.fill(_screenRender, ptr, (ptr += _vic._lastX - _vic._firstVisibleX + _vic._firstX_25), _vic._regExteriorColor);
+        final int leftBorder = _vic._lastX - _vic._firstVisibleX + _vic._firstX_25;
+        Arrays.fill(_screenRender, ptr, ptr += leftBorder, _vic._regExteriorColor);
         int newPtr = renderTextLine(_screenRender, ptr, y);
         renderSprites(_screenRender, ptr, raster);
         ptr = newPtr;
-        Arrays.fill(_screenRender, ptr, (ptr += _vic._lastVisibleX - _vic._lastX_25), _vic._regExteriorColor);
+        final int rightBorder = _vic._lastVisibleX - _vic._lastX_25;
+        Arrays.fill(_screenRender, ptr, ptr += rightBorder, _vic._regExteriorColor);
       }
 
       // bottom border
@@ -76,6 +78,8 @@ public class DisplayUnitSimple extends AbstractDisplayUnit {
         for (int x = 0; x < _vic._lastX; x++) {
           _tick.waitForTick();
         }
+
+        final int pixelPerLine = _vic._lastX - _vic._firstVisibleX + _vic._lastVisibleX;
         Arrays.fill(_screenRender, ptr, (ptr += pixelPerLine), _vic._regExteriorColor);
       }
 
