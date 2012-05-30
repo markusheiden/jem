@@ -30,7 +30,6 @@ public class DisplayUnitSimple extends AbstractDisplayUnit {
   public final void run() {
     _vic.reset();
 
-    final int lastX = _vic._lastX;
     final int pixelPerLine = _vic._lastX - _vic._firstVisibleX + _vic._lastVisibleX;
 
     //noinspection InfiniteLoopStatement
@@ -42,7 +41,7 @@ public class DisplayUnitSimple extends AbstractDisplayUnit {
       // top vblank
       for (; raster < _vic._lastVBlank; raster++) {
         _vic.setRasterLine(raster);
-        for (int x = 0; x < lastX; x++) {
+        for (int x = 0; x < _vic._lastX; x++) {
           _tick.waitForTick();
         }
       }
@@ -50,7 +49,7 @@ public class DisplayUnitSimple extends AbstractDisplayUnit {
       // top border
       for (; raster < _vic._firstLine_25; raster++) {
         _vic.setRasterLine(raster);
-        for (int x = 0; x < lastX; x++) {
+        for (int x = 0; x < _vic._lastX; x++) {
           _tick.waitForTick();
         }
         Arrays.fill(_screenRender, ptr, (ptr += pixelPerLine), _vic._regExteriorColor);
@@ -60,11 +59,11 @@ public class DisplayUnitSimple extends AbstractDisplayUnit {
       for (int y = 0; raster < _vic._lastLine_25; raster++, y++) {
         _vic.setRasterLine(raster);
 
-        for (int x = 0; x < lastX; x++) {
+        for (int x = 0; x < _vic._lastX; x++) {
           _tick.waitForTick();
         }
 
-        Arrays.fill(_screenRender, ptr, (ptr += lastX - _vic._firstVisibleX + _vic._firstX_25), _vic._regExteriorColor);
+        Arrays.fill(_screenRender, ptr, (ptr += _vic._lastX - _vic._firstVisibleX + _vic._firstX_25), _vic._regExteriorColor);
         int newPtr = renderTextLine(_screenRender, ptr, y);
         renderSprites(_screenRender, ptr, raster);
         ptr = newPtr;
@@ -74,7 +73,7 @@ public class DisplayUnitSimple extends AbstractDisplayUnit {
       // bottom border
       for (; raster < _vic._firstVBlank; raster++) {
         _vic.setRasterLine(raster);
-        for (int x = 0; x < lastX; x++) {
+        for (int x = 0; x < _vic._lastX; x++) {
           _tick.waitForTick();
         }
         Arrays.fill(_screenRender, ptr, (ptr += pixelPerLine), _vic._regExteriorColor);
@@ -83,7 +82,7 @@ public class DisplayUnitSimple extends AbstractDisplayUnit {
       // bottom vblank
       for (; raster < _vic._linesPerScreen; raster++) {
         _vic.setRasterLine(raster);
-        for (int x = 0; x < lastX; x++) {
+        for (int x = 0; x < _vic._lastX; x++) {
           _tick.waitForTick();
         }
       }
