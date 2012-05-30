@@ -8,19 +8,17 @@ import java.util.Arrays;
 
 /**
  * Display unit of vic.
- *
+ * <p/>
  * TODO refactor dependencies
  */
-public class DisplayUnitSimple extends AbstractDisplayUnit
-{
+public class DisplayUnitSimple extends AbstractDisplayUnit {
   /**
    * Hidden constructor.
    *
    * @param vic vic this display unit belongs to
    * @param clock clock
    */
-  DisplayUnitSimple(VIC vic, Clock clock)
-  {
+  DisplayUnitSimple(VIC vic, Clock clock) {
     super(vic, clock,
       0,
       vic._lastX - vic._firstVisibleX + vic._lastVisibleX, vic._firstVBlank - vic._lastVBlank,
@@ -29,76 +27,64 @@ public class DisplayUnitSimple extends AbstractDisplayUnit
 
   @Override
   @Interruptible
-  public final void run()
-  {
+  public final void run() {
     _vic.reset();
 
     final int lastX = _vic._lastX;
     final int pixelPerLine = _vic._lastX - _vic._firstVisibleX + _vic._lastVisibleX;
 
     //noinspection InfiniteLoopStatement
-    while (true)
-    {
+    while (true) {
       byte[] screen = _screenRender;
       int ptr = 0;
 
       int raster = 0;
 
       // top vblank
-      for (; raster < _vic._lastVBlank; raster++)
-      {
+      for (int lastVBlank = _vic._lastVBlank; raster < lastVBlank; raster++) {
         _vic.setRasterLine(raster);
-        for (int x = 0; x < lastX; x++)
-        {
+        for (int x = 0; x < lastX; x++) {
           _tick.waitForTick();
         }
       }
 
       // top border
-      for (; raster < _vic._firstLine_25; raster++)
-      {
+      for (int firstLine_25 = _vic._firstLine_25; raster < firstLine_25; raster++) {
         _vic.setRasterLine(raster);
-        for (int x = 0; x < lastX; x++)
-        {
+        for (int x = 0; x < lastX; x++) {
           _tick.waitForTick();
         }
         Arrays.fill(screen, ptr, (ptr += pixelPerLine), _vic._regExteriorColor);
       }
 
       // visible area
-      for (int y = 0; raster < _vic._lastLine_25; raster++, y++)
-      {
+      for (int y = 0, lastLine_25 = _vic._lastLine_25; raster < lastLine_25; raster++, y++) {
         _vic.setRasterLine(raster);
 
-        for (int x = 0; x < lastX; x++)
-        {
+        for (int x = 0; x < lastX; x++) {
           _tick.waitForTick();
         }
 
         Arrays.fill(screen, ptr, (ptr += lastX - _vic._firstVisibleX + _vic._firstX_25), _vic._regExteriorColor);
-        int newPtr = renderTextLine(screen, ptr , y);
+        int newPtr = renderTextLine(screen, ptr, y);
         renderSprites(screen, ptr, raster);
         ptr = newPtr;
         Arrays.fill(screen, ptr, (ptr += _vic._lastVisibleX - _vic._lastX_25), _vic._regExteriorColor);
       }
 
       // bottom border
-      for (; raster < _vic._firstVBlank; raster++)
-      {
+      for (int firstVBlank = _vic._firstVBlank; raster < firstVBlank; raster++) {
         _vic.setRasterLine(raster);
-        for (int x = 0; x < lastX; x++)
-        {
+        for (int x = 0; x < lastX; x++) {
           _tick.waitForTick();
         }
         Arrays.fill(screen, ptr, (ptr += pixelPerLine), _vic._regExteriorColor);
       }
 
       // bottom vblank
-      for (; raster < _vic._linesPerScreen; raster++)
-      {
+      for (int linesPerScreen = _vic._linesPerScreen; raster < _vic._linesPerScreen; raster++) {
         _vic.setRasterLine(raster);
-        for (int x = 0; x < lastX; x++)
-        {
+        for (int x = 0; x < lastX; x++) {
           _tick.waitForTick();
         }
       }
@@ -114,24 +100,19 @@ public class DisplayUnitSimple extends AbstractDisplayUnit
    * @param ptr current index in screen data
    * @param raster raster line
    */
-  private void renderSprites(byte[] screen, int ptr, int raster)
-  {
+  private void renderSprites(byte[] screen, int ptr, int raster) {
     VICBus bus = _vic._bus;
 
     int spritePointer = _vic._baseCharacterMode + 0x03F8 + 7;
-    for (int i = 7; i >= 0; i--, spritePointer--)
-    {
+    for (int i = 7; i >= 0; i--, spritePointer--) {
       Sprite sprite = _vic._sprites[i];
-      if (sprite.enabled)
-      {
+      if (sprite.enabled) {
         int y = sprite.y;
         boolean expandY = sprite.expandY;
-        if (y <= raster && raster < y + (expandY? 42 : 21))
-        {
-          int spritePtr = ptr - _vic._firstX_25  + sprite.x;
+        if (y <= raster && raster < y + (expandY ? 42 : 21)) {
+          int spritePtr = ptr - _vic._firstX_25 + sprite.x;
           int spriteRow = raster - y;
-          if (expandY)
-          {
+          if (expandY) {
             spriteRow >>= 1;
           }
           int baseSprite = (bus.read(spritePointer) << 6) + spriteRow * 3;
@@ -152,20 +133,16 @@ public class DisplayUnitSimple extends AbstractDisplayUnit
    * @param sprite sprite
    * @return next index in screen data
    */
-  private int renderSpriteByte(byte[] screen, int ptr, int bitmap, Sprite sprite)
-  {
+  private int renderSpriteByte(byte[] screen, int ptr, int bitmap, Sprite sprite) {
     byte color = sprite.color;
     boolean expandX = sprite.expandX;
 
-    if (sprite.multicolor)
-    {
+    if (sprite.multicolor) {
       ptr = renderSpriteMultiColorPixel(screen, ptr, bitmap >> 6, color, expandX);
       ptr = renderSpriteMultiColorPixel(screen, ptr, (bitmap & 0x30) >> 4, color, expandX);
       ptr = renderSpriteMultiColorPixel(screen, ptr, (bitmap & 0x0C) >> 2, color, expandX);
       ptr = renderSpriteMultiColorPixel(screen, ptr, bitmap & 0x03, color, expandX);
-    }
-    else
-    {
+    } else {
       ptr = renderSpriteSingleColorPixel(screen, ptr, (bitmap & 0x80), color, expandX);
       ptr = renderSpriteSingleColorPixel(screen, ptr, (bitmap & 0x40), color, expandX);
       ptr = renderSpriteSingleColorPixel(screen, ptr, (bitmap & 0x20), color, expandX);
@@ -189,12 +166,10 @@ public class DisplayUnitSimple extends AbstractDisplayUnit
    * @param expandX expand sprite in x?
    * @return next index in screen data
    */
-  private int renderSpriteSingleColorPixel(byte[] screen, int ptr, int colorIndex, byte color, boolean expandX)
-  {
-    screen[ptr++] = colorIndex != 0? color : screen[ptr];
-    if (expandX)
-    {
-      screen[ptr++] = colorIndex != 0? color : screen[ptr];
+  private int renderSpriteSingleColorPixel(byte[] screen, int ptr, int colorIndex, byte color, boolean expandX) {
+    screen[ptr++] = colorIndex != 0 ? color : screen[ptr];
+    if (expandX) {
+      screen[ptr++] = colorIndex != 0 ? color : screen[ptr];
     }
 
     return ptr;
@@ -210,12 +185,10 @@ public class DisplayUnitSimple extends AbstractDisplayUnit
    * @param expandX expand sprite in x?
    * @return next index in screen data
    */
-  private int renderSpriteMultiColorPixel(byte[] screen, int ptr, int colorIndex, byte color, boolean expandX)
-  {
+  private int renderSpriteMultiColorPixel(byte[] screen, int ptr, int colorIndex, byte color, boolean expandX) {
     screen[ptr++] = getSpriteMultiColor(colorIndex, color, screen[ptr]);
     screen[ptr++] = getSpriteMultiColor(colorIndex, color, screen[ptr]);
-    if (expandX)
-    {
+    if (expandX) {
       screen[ptr++] = getSpriteMultiColor(colorIndex, color, screen[ptr]);
       screen[ptr++] = getSpriteMultiColor(colorIndex, color, screen[ptr]);
     }
@@ -230,14 +203,16 @@ public class DisplayUnitSimple extends AbstractDisplayUnit
    * @param color sprite color
    * @param background background color
    */
-  private byte getSpriteMultiColor(int colorIndex, byte color, byte background)
-  {
-    switch (colorIndex)
-    {
-      case 0x01: return _vic._regSpritesMulticolor0;
-      case 0x02: return color;
-      case 0x03: return _vic._regSpritesMulticolor1;
-      default: return background;
+  private byte getSpriteMultiColor(int colorIndex, byte color, byte background) {
+    switch (colorIndex) {
+      case 0x01:
+        return _vic._regSpritesMulticolor0;
+      case 0x02:
+        return color;
+      case 0x03:
+        return _vic._regSpritesMulticolor1;
+      default:
+        return background;
     }
   }
 
@@ -249,8 +224,7 @@ public class DisplayUnitSimple extends AbstractDisplayUnit
    * @param y y position in visible screen area
    * @return next index in screen data
    */
-  private int renderTextLine(byte[] screen, int ptr, int y)
-  {
+  private int renderTextLine(byte[] screen, int ptr, int y) {
     VICBus bus = _vic._bus;
     BusDevice colorRam = _vic._colorRam;
 
@@ -271,14 +245,12 @@ public class DisplayUnitSimple extends AbstractDisplayUnit
     int charsetAddress = charsetBaseAddress + charRow;
 
     // render line
-    for (int x = 0; x < 320; screenAddress++, x += 8)
-    {
+    for (int x = 0; x < 320; screenAddress++, x += 8) {
       byte color = (byte) colorRam.read(screenAddress); // color ram masks address itself
       int character = bus.read(screenAddress);
       int bitmap = bus.read(charsetAddress + (character << 3));
 
-      if (multiColor && ((color & 0x08) != 0))
-      {
+      if (multiColor && ((color & 0x08) != 0)) {
         color &= 0x07;
         byte pixel = getTextMultiColor(bitmap & 0xC0, color);
         screen[ptr++] = pixel;
@@ -292,17 +264,15 @@ public class DisplayUnitSimple extends AbstractDisplayUnit
         pixel = getTextMultiColor(bitmap & 0x03, color);
         screen[ptr++] = pixel;
         screen[ptr++] = pixel;
-      }
-      else
-      {
-        screen[ptr++] = (bitmap & 0x80) == 0? backgroundColor : color;
-        screen[ptr++] = (bitmap & 0x40) == 0? backgroundColor : color;
-        screen[ptr++] = (bitmap & 0x20) == 0? backgroundColor : color;
-        screen[ptr++] = (bitmap & 0x10) == 0? backgroundColor : color;
-        screen[ptr++] = (bitmap & 0x08) == 0? backgroundColor : color;
-        screen[ptr++] = (bitmap & 0x04) == 0? backgroundColor : color;
-        screen[ptr++] = (bitmap & 0x02) == 0? backgroundColor : color;
-        screen[ptr++] = (bitmap & 0x01) == 0? backgroundColor : color;
+      } else {
+        screen[ptr++] = (bitmap & 0x80) == 0 ? backgroundColor : color;
+        screen[ptr++] = (bitmap & 0x40) == 0 ? backgroundColor : color;
+        screen[ptr++] = (bitmap & 0x20) == 0 ? backgroundColor : color;
+        screen[ptr++] = (bitmap & 0x10) == 0 ? backgroundColor : color;
+        screen[ptr++] = (bitmap & 0x08) == 0 ? backgroundColor : color;
+        screen[ptr++] = (bitmap & 0x04) == 0 ? backgroundColor : color;
+        screen[ptr++] = (bitmap & 0x02) == 0 ? backgroundColor : color;
+        screen[ptr++] = (bitmap & 0x01) == 0 ? backgroundColor : color;
       }
     }
 
@@ -316,14 +286,16 @@ public class DisplayUnitSimple extends AbstractDisplayUnit
    * @param colorIndex index of color to set
    * @param color foreground color
    */
-  private byte getTextMultiColor(int colorIndex, byte color)
-  {
-    switch (colorIndex)
-    {
-      case 0x00: return _vic._regBackgroundColor0;
-      case 0x01: return _vic._regBackgroundColor1;
-      case 0x02: return _vic._regBackgroundColor2;
-      default: return color; // case 0x03
+  private byte getTextMultiColor(int colorIndex, byte color) {
+    switch (colorIndex) {
+      case 0x00:
+        return _vic._regBackgroundColor0;
+      case 0x01:
+        return _vic._regBackgroundColor1;
+      case 0x02:
+        return _vic._regBackgroundColor2;
+      default:
+        return color; // case 0x03
     }
   }
 
@@ -335,8 +307,7 @@ public class DisplayUnitSimple extends AbstractDisplayUnit
    * @param y y position in visible screen area
    * @return next index in screen data
    */
-  private int renderBitmapLine(byte[] screen, int ptr, int y)
-  {
+  private int renderBitmapLine(byte[] screen, int ptr, int y) {
     VICBus bus = _vic._bus;
 
     int screenBaseAddress = _vic._baseCharacterMode;
@@ -353,14 +324,12 @@ public class DisplayUnitSimple extends AbstractDisplayUnit
     int bitmapAddress = bitmapBaseAddress + (y & 0xFFF8) * 40 + charRow;
 
     // render line
-    for (int x = 0; x < 320; screenAddress++, x += 8)
-    {
+    for (int x = 0; x < 320; screenAddress++, x += 8) {
       int character = bus.read(screenAddress);
       byte foreground = (byte) (character >> 4);
       byte background = (byte) (character & 0x0F);
       int bitmap = bus.read(bitmapAddress + x);
-      for (int mask = 0x80; mask != 0; mask >>= 1)
-      {
+      for (int mask = 0x80; mask != 0; mask >>= 1) {
         screen[ptr++] = (bitmap & mask) == 0 ? background : foreground;
       }
     }
