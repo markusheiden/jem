@@ -169,10 +169,12 @@
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="true" />
         <module name="C64DT" />
+        <module name="JEM" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="C64DT" target="1.7" />
+      <module name="JEM" target="1.7" />
       <module name="SerialThreads" target="1.7" />
     </bytecodeTargetLevel>
   </component>
@@ -199,6 +201,8 @@
   <component name="Encoding" useUTFGuessing="true" native2AsciiForPropertiesFiles="false">
     <file url="file://$PROJECT_DIR$/../c64dt" charset="windows-1252" />
     <file url="file://$PROJECT_DIR$/../c64dt/pom.xml" charset="windows-1252" />
+    <file url="file://$PROJECT_DIR$" charset="windows-1252" />
+    <file url="file://$PROJECT_DIR$/pom.xml" charset="windows-1252" />
     <file url="file://$PROJECT_DIR$/../serialthreads" charset="windows-1252" />
   </component>
   <component name="EntryPointsManager">
@@ -281,6 +285,7 @@
       <list>
         <option value="$PROJECT_DIR$/../serialthreads/pom.xml" />
         <option value="$PROJECT_DIR$/../c64dt/pom.xml" />
+        <option value="$PROJECT_DIR$/pom.xml" />
       </list>
     </option>
   </component>
