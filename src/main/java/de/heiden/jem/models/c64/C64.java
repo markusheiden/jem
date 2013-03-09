@@ -1,31 +1,29 @@
 package de.heiden.jem.models.c64;
 
-import de.heiden.c64dt.util.ResourceLoader;
 import de.heiden.jem.components.clock.Clock;
 import de.heiden.jem.components.clock.RealTimeSlowDown;
 import de.heiden.jem.components.clock.serialthreads.SerialClock;
 import de.heiden.jem.models.c64.components.CIA6526;
-import de.heiden.jem.models.c64.components.memory.ColorRAM;
-import de.heiden.jem.models.c64.components.memory.RAM;
-import de.heiden.jem.models.c64.components.memory.ROM;
 import de.heiden.jem.models.c64.components.cpu.C64Bus;
 import de.heiden.jem.models.c64.components.cpu.CPU6510;
 import de.heiden.jem.models.c64.components.cpu.CPU6510Debugger;
 import de.heiden.jem.models.c64.components.keyboard.Keyboard;
+import de.heiden.jem.models.c64.components.memory.ColorRAM;
+import de.heiden.jem.models.c64.components.memory.RAM;
+import de.heiden.jem.models.c64.components.memory.ROM;
 import de.heiden.jem.models.c64.components.vic.VIC6569PAL;
 import de.heiden.jem.models.c64.components.vic.VICBus;
 import de.heiden.jem.models.c64.gui.VICScreen;
 import de.heiden.jem.models.c64.util.ROMLoader;
 import org.apache.log4j.Logger;
 
-import javax.swing.JFrame;
+import javax.swing.*;
 import java.awt.event.KeyListener;
 
 /**
  * C64.
  */
-public class C64
-{
+public class C64 {
   /**
    * Logger.
    */
@@ -44,8 +42,7 @@ public class C64
   /**
    * Constructor.
    */
-  public C64() throws Exception
-  {
+  public C64() throws Exception {
     this(false);
   }
 
@@ -54,8 +51,7 @@ public class C64
    *
    * @param debug use debugger cpu?
    */
-  public C64(boolean debug) throws Exception
-  {
+  public C64(boolean debug) throws Exception {
     this(new SerialClock(), debug);
   }
 
@@ -65,8 +61,7 @@ public class C64
    * @param clock clock
    * @param debug use debugger cpu?
    */
-  private C64(Clock clock, boolean debug) throws Exception
-  {
+  private C64(Clock clock, boolean debug) throws Exception {
     _clock = clock;
 
     RAM _ram = new RAM(0x10000);
@@ -96,22 +91,25 @@ public class C64
     new RealTimeSlowDown(clock, 985248, 100);
   }
 
-  public void start() throws Exception
-  {
+  public void start() throws Exception {
     // init RAM with 0x02 (crash) to easier detect wrong behaviour
     // TODO 2010-06-22 mh: realistic init?
-    for (int addr = 0; addr < 0x10000; addr++)
-    {
+    for (int addr = 0; addr < 0x10000; addr++) {
       _cpuBus.write(0x02, addr);
     }
 
     // fill screen with complete character set
-    for (int i = 0; i < 0x400; i++)
-    {
+    for (int i = 0; i < 0x400; i++) {
       _cpuBus.write(i & 0xFF, 0x400 + i);
       _cpuBus.write(i & 0x0F, 0xD800 + i);
     }
 
+//    FileInputStream is = new FileInputStream("/Users/markus/Workspaces/jem-projects/jem/commando.prg");
+//    int addr = ByteUtil.toWord(is.read(), is.read());
+//    for (int b; (b = is.read()) >= 0; addr++)
+//    {
+//      _cpuBus.write(b, addr);
+//    }
 
 
     show(_vic, _keyboard.getKeyListener());
@@ -131,8 +129,7 @@ public class C64
     _clock.dispose();
   }
 
-  public void stop()
-  {
+  public void stop() {
     _frame.setVisible(false);
     _frame.dispose();
     _frame = null;
@@ -141,8 +138,7 @@ public class C64
   /**
    * For testing purposes only!
    */
-  public JFrame show(VIC6569PAL vic, KeyListener keyListener)
-  {
+  public JFrame show(VIC6569PAL vic, KeyListener keyListener) {
     _frame = new JFrame("C64");
     _frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -162,16 +158,14 @@ public class C64
   // Expose components, e.g. for debugger
   //
 
-  public C64Bus getCpuBus()
-  {
+  public C64Bus getCpuBus() {
     return _cpuBus;
   }
 
   /**
    * Get cpu.
    */
-  public CPU6510 getCpu()
-  {
+  public CPU6510 getCpu() {
     return _cpu;
   }
 }
