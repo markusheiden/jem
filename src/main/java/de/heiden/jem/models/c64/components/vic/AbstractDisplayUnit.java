@@ -3,13 +3,11 @@ package de.heiden.jem.models.c64.components.vic;
 import de.heiden.jem.components.clock.Clock;
 import de.heiden.jem.components.clock.ClockedComponent;
 import de.heiden.jem.components.clock.Tick;
-import org.apache.log4j.Logger;
 
 /**
  * Display unit of vic.
  */
-public abstract class AbstractDisplayUnit implements ClockedComponent
-{
+public abstract class AbstractDisplayUnit implements ClockedComponent {
   protected final VIC _vic;
   protected final Tick _tick;
 
@@ -45,8 +43,7 @@ public abstract class AbstractDisplayUnit implements ClockedComponent
    * @param clock clock
    */
   AbstractDisplayUnit(VIC vic, Clock clock,
-    int offset, int lineLength, int lines, int width, int height)
-  {
+                      int offset, int lineLength, int lines, int width, int height) {
     _vic = vic;
     _tick = clock.addClockedComponent(Clock.VIC_DISPLAY, this);
 
@@ -65,8 +62,7 @@ public abstract class AbstractDisplayUnit implements ClockedComponent
   }
 
   @Override
-  public String getName()
-  {
+  public String getName() {
     return _vic.getClass().getSimpleName() + " display";
   }
 
@@ -75,22 +71,17 @@ public abstract class AbstractDisplayUnit implements ClockedComponent
    *
    * @param screen new rendered screen
    */
-  protected final synchronized void rendered(byte[] screen)
-  {
-    if (_screenToDisplay == _screenDisplaying)
-    {
+  protected final synchronized void rendered(byte[] screen) {
+    if (_screenToDisplay == _screenDisplaying) {
       _screenRender = _screenSpare;
       _screenSpare = _screenToDisplay;
-    }
-    else
-    {
+    } else {
       _screenRender = _screenToDisplay;
       // spare may not be changed, because it is currently displayed
     }
     _screenToDisplay = screen;
 
-    if (_listener != null)
-    {
+    if (_listener != null) {
       _listener.newScreenRendered();
     }
   }
@@ -100,8 +91,7 @@ public abstract class AbstractDisplayUnit implements ClockedComponent
    *
    * @return screen to display next
    */
-  public final synchronized byte[] display()
-  {
+  public final synchronized byte[] display() {
     _screenDisplaying = _screenToDisplay;
     return _screenDisplaying;
   }
@@ -111,24 +101,21 @@ public abstract class AbstractDisplayUnit implements ClockedComponent
    *
    * @param listener Listener
    */
-  public void setScreenListener(IScreenListener listener)
-  {
+  public void setScreenListener(IScreenListener listener) {
     _listener = listener;
   }
 
   /**
    * Offset of first pixel in screen.
    */
-  public int getOffset()
-  {
+  public int getOffset() {
     return _offset;
   }
 
   /**
    * Total number of pixel/bytes per line.
    */
-  public int getLineLength()
-  {
+  public int getLineLength() {
     return _lineLength;
   }
 
@@ -136,8 +123,7 @@ public abstract class AbstractDisplayUnit implements ClockedComponent
   /**
    * Total number of lines.
    */
-  public int getLines()
-  {
+  public int getLines() {
     return _lines;
   }
 
@@ -145,8 +131,7 @@ public abstract class AbstractDisplayUnit implements ClockedComponent
   /**
    * Number of visible pixel/bytes per line.
    */
-  public int getWidth()
-  {
+  public int getWidth() {
     return _width;
   }
 
@@ -154,8 +139,7 @@ public abstract class AbstractDisplayUnit implements ClockedComponent
   /**
    * Number of visible lines per screen.
    */
-  public int getHeight()
-  {
+  public int getHeight() {
     return _height;
   }
 }

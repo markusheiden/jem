@@ -1,32 +1,27 @@
 package de.heiden.jem.models.c64;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * C64 Startup with byte code transformation by an agent.
  */
-public class StartupAgent
-{
+public class StartupAgent {
   /**
    * Logger.
    */
-  private final Logger _logger = Logger.getLogger(getClass());
+  private final Log logger = LogFactory.getLog(getClass());
 
-  public void start()
-  {
-    try
-    {
-      _logger.debug("Starting c64");
+  public void start() {
+    try {
+      logger.debug("Starting c64");
       new C64().start();
-    }
-    catch (Exception e)
-    {
-      _logger.error("Unable to startup", e);
+    } catch (Exception e) {
+      logger.error("Unable to startup", e);
     }
   }
 
-  public static void main(String[] args)
-  {
+  public static void main(String[] args) {
     new StartupAgent().start();
   }
 }

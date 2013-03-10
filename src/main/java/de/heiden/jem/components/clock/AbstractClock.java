@@ -1,6 +1,7 @@
 package de.heiden.jem.components.clock;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -12,7 +13,7 @@ public abstract class AbstractClock<E extends ClockEntry> implements Clock {
   /**
    * Logger.
    */
-  private final Logger _logger = Logger.getLogger(getClass());
+  private final Log logger = LogFactory.getLog(getClass());
 
   /**
    * Has the clock been started?.
@@ -80,7 +81,7 @@ public abstract class AbstractClock<E extends ClockEntry> implements Clock {
     assert position >= 0 : "Precondition: position >= 0";
     assert !isStarted() : "Precondition: !isStarted()";
 
-    _logger.debug("add component " + component.getName());
+    logger.debug("add component " + component.getName());
     E entry = createClockEntry(component);
     ClockEntry removed = _entryMap.put(position, entry);
     assert removed == null : "Check: no duplicate positions";

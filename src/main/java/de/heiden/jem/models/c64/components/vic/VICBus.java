@@ -1,16 +1,13 @@
 package de.heiden.jem.models.c64.components.vic;
 
+import de.heiden.jem.components.bus.BusDevice;
 import de.heiden.jem.components.ports.OutputPort;
 import de.heiden.jem.components.ports.OutputPortListener;
-import de.heiden.jem.models.c64.components.memory.RAM;
-import de.heiden.jem.models.c64.components.memory.ROM;
-import de.heiden.jem.components.bus.BusDevice;
 
 /**
  * VIC bus.
  */
-public class VICBus implements BusDevice
-{
+public class VICBus implements BusDevice {
   /**
    * 64kB RAM.
    */
@@ -36,8 +33,7 @@ public class VICBus implements BusDevice
    * @require ram != null
    * @require character != null
    */
-  public VICBus(OutputPort cia2PortA, BusDevice ram, BusDevice character)
-  {
+  public VICBus(OutputPort cia2PortA, BusDevice ram, BusDevice character) {
     assert cia2PortA != null : "cia2PortA != null";
     assert ram != null : "ram != null";
     assert character != null : "character != null";
@@ -45,11 +41,9 @@ public class VICBus implements BusDevice
     _ram = ram;
     _character = character;
 
-    cia2PortA.addOutputPortListener(new OutputPortListener()
-    {
+    cia2PortA.addOutputPortListener(new OutputPortListener() {
       @Override
-      public void outputPortChanged(int value, int mask)
-      {
+      public void outputPortChanged(int value, int mask) {
         _vicBase = ((value ^ 0xFF) & 0x03) << 14;
       }
     });
@@ -62,12 +56,11 @@ public class VICBus implements BusDevice
    * @require address >= 0x0000 && address < 0x4000
    * @ensure result >= 0x00 && result < 0x100
    */
-  public final int read(int address)
-  {
+  public final int read(int address) {
     assert address >= 0x0000 && address < 0x4000 : "address >= 0x0000 && address < 0x4000";
 
     int cpuAddress = _vicBase + address;
-    return ((cpuAddress & 0x7000) == 0x1000? _character : _ram).read(cpuAddress);
+    return ((cpuAddress & 0x7000) == 0x1000 ? _character : _ram).read(cpuAddress);
   }
 
   /**
@@ -78,8 +71,7 @@ public class VICBus implements BusDevice
    * @require value >= 0x00 && value < 0x100
    * @require address >= 0x0000 && address < 0x10000
    */
-  public final void write(int value, int address)
-  {
+  public final void write(int value, int address) {
     assert false : "VIC does not write anything";
   }
 }

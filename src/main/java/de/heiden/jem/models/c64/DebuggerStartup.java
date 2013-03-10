@@ -1,25 +1,22 @@
 package de.heiden.jem.models.c64;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
-import javax.swing.JFrame;
-import java.awt.BorderLayout;
-import java.awt.Component;
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * C64 Startup.
  */
-public class DebuggerStartup extends Startup
-{
+public class DebuggerStartup extends Startup {
   /**
    * Logger.
    */
-  private final Logger _logger = Logger.getLogger(getClass());
+  private final Log logger = LogFactory.getLog(getClass());
 
-  public void start()
-  {
-    try
-    {
+  public void start() {
+    try {
       Class<?> clazz = loadClass("de.heiden.jem.models.c64.monitor.gui.DebuggerGUI");
       Object debugger = clazz.newInstance();
 
@@ -31,15 +28,12 @@ public class DebuggerStartup extends Startup
 
       frame.pack();
       frame.setVisible(true);
-    }
-    catch (Exception e)
-    {
-      _logger.error("Unable to startup", e);
+    } catch (Exception e) {
+      logger.error("Unable to startup", e);
     }
   }
 
-  public static void main(String[] args)
-  {
+  public static void main(String[] args) {
     new DebuggerStartup().start();
   }
 }

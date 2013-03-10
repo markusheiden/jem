@@ -1,21 +1,21 @@
 package de.heiden.jem.models.c64.components.vic;
 
+import de.heiden.jem.components.bus.BusDevice;
 import de.heiden.jem.components.clock.Clock;
 import de.heiden.jem.components.ports.OutputPort;
 import de.heiden.jem.components.ports.OutputPortImpl;
 import de.heiden.jem.models.c64.components.memory.ColorRAM;
-import de.heiden.jem.components.bus.BusDevice;
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * VIC.
  */
-public abstract class VIC implements BusDevice
-{
+public abstract class VIC implements BusDevice {
   /**
    * Logger.
    */
-  private final Logger _logger = Logger.getLogger(getClass());
+  private final Log logger = LogFactory.getLog(getClass());
 
   /**
    * VIC parameters.
@@ -123,9 +123,8 @@ public abstract class VIC implements BusDevice
    * @require colorRam != null
    */
   public VIC(Clock clock, VICBus bus, ColorRAM colorRam,
-    int cyclesPerLine, int linesPerScreen, int firstVBlank, int lastVBlank,
-    int firstVisibleX, int lastVisibleX, int lastX)
-  {
+             int cyclesPerLine, int linesPerScreen, int firstVBlank, int lastVBlank,
+             int firstVisibleX, int lastVisibleX, int lastX) {
     assert clock != null : "clock != null";
     assert bus != null : "bus != null";
     assert colorRam != null : "colorRam != null";
@@ -147,15 +146,14 @@ public abstract class VIC implements BusDevice
 
     // prepare sprites
     _sprites = new Sprite[8];
-    for (int i = 0; i < _sprites.length; i++)
-    {
+    for (int i = 0; i < _sprites.length; i++) {
       _sprites[i] = new Sprite(i);
     }
 
-    _logger.debug("start vic mem access unit");
+    logger.debug("start vic mem access unit");
     _memAccessUnit = new MemAccessUnit(this, clock);
 
-    _logger.debug("start vic display unit");
+    logger.debug("start vic display unit");
     _displayUnit = new DisplayUnitSimple(this, clock);
 
     _irqPort = new OutputPortImpl();
@@ -166,8 +164,7 @@ public abstract class VIC implements BusDevice
   /**
    * Reset VIC.
    */
-  public void reset()
-  {
+  public void reset() {
     // TODO what to init?
   }
 
@@ -176,8 +173,7 @@ public abstract class VIC implements BusDevice
    *
    * @ensure result >= 0 && result < 0x10000
    */
-  public int mask()
-  {
+  public int mask() {
     assert _mask >= 0 && _mask < 0x10000 : "result >= 0 && result < 0x10000";
     return _mask;
   }
@@ -185,8 +181,7 @@ public abstract class VIC implements BusDevice
   /**
    * IRQ output signal.
    */
-  public OutputPort getIRQ()
-  {
+  public OutputPort getIRQ() {
     return _irqPort;
   }
 
@@ -197,176 +192,142 @@ public abstract class VIC implements BusDevice
    * @param address address to write byte to
    * @require value >= 0 && value < 0x100
    */
-  public void write(int value, int address)
-  {
+  public void write(int value, int address) {
     assert value >= 0 && value < 0x100 : "value >= 0 && value < 0x100";
 
-    switch (address & _mask)
-    {
-      case 0x00:
-      {
+    switch (address & _mask) {
+      case 0x00: {
         _sprites[0].setXLSB(value);
         break;
       }
-      case 0x01:
-      {
+      case 0x01: {
         _sprites[0].y = value;
         break;
       }
-      case 0x02:
-      {
+      case 0x02: {
         _sprites[1].setXLSB(value);
         break;
       }
-      case 0x03:
-      {
+      case 0x03: {
         _sprites[1].y = value;
         break;
       }
-      case 0x04:
-      {
+      case 0x04: {
         _sprites[2].setXLSB(value);
         break;
       }
-      case 0x05:
-      {
+      case 0x05: {
         _sprites[2].y = value;
         break;
       }
-      case 0x06:
-      {
+      case 0x06: {
         _sprites[3].setXLSB(value);
         break;
       }
-      case 0x07:
-      {
+      case 0x07: {
         _sprites[3].y = value;
         break;
       }
-      case 0x08:
-      {
+      case 0x08: {
         _sprites[4].setXLSB(value);
         break;
       }
-      case 0x09:
-      {
+      case 0x09: {
         _sprites[4].y = value;
         break;
       }
-      case 0x0A:
-      {
+      case 0x0A: {
         _sprites[5].setXLSB(value);
         break;
       }
-      case 0x0B:
-      {
+      case 0x0B: {
         _sprites[5].y = value;
         break;
       }
-      case 0x0C:
-      {
+      case 0x0C: {
         _sprites[6].setXLSB(value);
         break;
       }
-      case 0x0D:
-      {
+      case 0x0D: {
         _sprites[6].y = value;
         break;
       }
-      case 0x0E:
-      {
+      case 0x0E: {
         _sprites[7].setXLSB(value);
         break;
       }
-      case 0x0F:
-      {
+      case 0x0F: {
         _sprites[7].y = value;
         break;
       }
-      case 0x10:
-      {
+      case 0x10: {
         _regSpritesMSBX = value;
-        for (Sprite sprite : _sprites)
-        {
+        for (Sprite sprite : _sprites) {
           sprite.setXMSB(value);
         }
         break;
       }
-      case 0x11:
-      {
+      case 0x11: {
         _regControl1 = value;
         // bit 7 is high bit of raster irq line
         _regRasterIRQ = _regRasterIRQ & 0xFF | (value & 0x80) << 1;
 
-        if (_logger.isDebugEnabled())
-        {
+        if (logger.isDebugEnabled()) {
           boolean bitmapMode = (_regControl1 & VIC.CONTROL1_BITMAP) != 0;
           boolean extColorMode = (_regControl1 & VIC.CONTROL1_EXT_COLOR) != 0;
           boolean multiColorMode = (_regControl2 & VIC.CONTROL2_MULTI_COLOR) != 0;
-          _logger.debug("bitmap: " + bitmapMode + ", extended color: " + extColorMode + ", multi color: " + multiColorMode);
+          logger.debug("bitmap: " + bitmapMode + ", extended color: " + extColorMode + ", multi color: " + multiColorMode);
         }
 
         break;
       }
-      case 0x12:
-      {
+      case 0x12: {
         _regRasterIRQ = _regRasterIRQ & 0x0100 | value;
         break;
       }
-      case 0x13:
-      {
+      case 0x13: {
         _regStrobeX = value;
         break;
       }
-      case 0x14:
-      {
+      case 0x14: {
         _regStrobeY = value;
         break;
       }
-      case 0x15:
-      {
+      case 0x15: {
         _regSpritesEnable = value;
-        for (Sprite sprite : _sprites)
-        {
+        for (Sprite sprite : _sprites) {
           sprite.enable(value);
         }
         break;
       }
-      case 0x16:
-      {
+      case 0x16: {
         _regControl2 = value;
 
-        if (_logger.isDebugEnabled())
-        {
+        if (logger.isDebugEnabled()) {
           boolean bitmapMode = (_regControl1 & VIC.CONTROL1_BITMAP) != 0;
           boolean extColorMode = (_regControl1 & VIC.CONTROL1_EXT_COLOR) != 0;
           boolean multiColorMode = (_regControl2 & VIC.CONTROL2_MULTI_COLOR) != 0;
-          _logger.debug("bitmap: " + bitmapMode + ", extended color: " + extColorMode + ", multi color: " + multiColorMode);
+          logger.debug("bitmap: " + bitmapMode + ", extended color: " + extColorMode + ", multi color: " + multiColorMode);
         }
 
         break;
       }
-      case 0x17:
-      {
+      case 0x17: {
         _regSpritesExpandX = value;
-        for (Sprite sprite : _sprites)
-        {
+        for (Sprite sprite : _sprites) {
           sprite.setExpandX(value);
         }
         break;
       }
-      case 0x18:
-      {
+      case 0x18: {
         _regBase = value | 0x01; // set unused bits to 1;
         updateBaseAddresses();
         break;
       }
-      case 0x19:
-      {
+      case 0x19: {
         // 1-bits in value disable the corresponding interrupt bits in the irq register
         _regInterruptRequest &= ~(value & INTERRUPT_MASK);
-        if ((_regInterruptRequest & INTERRUPT_MASK) == 0)
-        {
+        if ((_regInterruptRequest & INTERRUPT_MASK) == 0) {
           // no pending irq anymore:
 
           // clear "master" interrupt bit
@@ -376,141 +337,113 @@ public abstract class VIC implements BusDevice
         }
         break;
       }
-      case 0x1A:
-      {
+      case 0x1A: {
         _regInterruptMask = value;
         break;
       }
-      case 0x1B:
-      {
+      case 0x1B: {
         _regSpritesBackgroundPriority = value;
         break;
       }
-      case 0x1C:
-      {
+      case 0x1C: {
         _regSpritesMulticolorMode = value;
-        for (Sprite sprite : _sprites)
-        {
+        for (Sprite sprite : _sprites) {
           sprite.setMulticolor(value);
         }
         break;
       }
-      case 0x1D:
-      {
+      case 0x1D: {
         _regSpritesExpandY = value;
-        for (Sprite sprite : _sprites)
-        {
+        for (Sprite sprite : _sprites) {
           sprite.setExpandY(value);
         }
         break;
       }
-      case 0x1E:
-      {
+      case 0x1E: {
         _regSpritesSpriteCollision = value;
         break;
       }
-      case 0x1F:
-      {
+      case 0x1F: {
         _regSpritesBackgroundCollision = value;
         break;
       }
-      case 0x20:
-      {
+      case 0x20: {
         _regExteriorColor = (byte) (value & 0x0F);
         break;
       }
-      case 0x21:
-      {
+      case 0x21: {
         _regBackgroundColor0 = (byte) (value & 0x0F);
         break;
       }
-      case 0x22:
-      {
+      case 0x22: {
         _regBackgroundColor1 = (byte) (value & 0x0F);
         break;
       }
-      case 0x23:
-      {
+      case 0x23: {
         _regBackgroundColor2 = (byte) (value & 0x0F);
         break;
       }
-      case 0x24:
-      {
+      case 0x24: {
         _regBackgroundColor3 = (byte) (value & 0x0F);
         break;
       }
-      case 0x25:
-      {
+      case 0x25: {
         byte color = (byte) (value & 0x0F);
         _regSpritesMulticolor0 = color;
-        for (Sprite sprite : _sprites)
-        {
+        for (Sprite sprite : _sprites) {
           sprite.multicolor1 = color;
         }
         break;
       }
-      case 0x26:
-      {
+      case 0x26: {
         byte color = (byte) (value & 0x0F);
         _regSpritesMulticolor1 = color;
-        for (Sprite sprite : _sprites)
-        {
+        for (Sprite sprite : _sprites) {
           sprite.multicolor2 = color;
         }
         break;
       }
-      case 0x27:
-      {
+      case 0x27: {
         _sprites[0].color = (byte) (value & 0x0F);
         break;
       }
-      case 0x28:
-      {
+      case 0x28: {
         _sprites[1].color = (byte) (value & 0x0F);
         break;
       }
-      case 0x29:
-      {
+      case 0x29: {
         _sprites[2].color = (byte) (value & 0x0F);
         break;
       }
-      case 0x2A:
-      {
+      case 0x2A: {
         _sprites[3].color = (byte) (value & 0x0F);
         break;
       }
-      case 0x2B:
-      {
+      case 0x2B: {
         _sprites[4].color = (byte) (value & 0x0F);
         break;
       }
-      case 0x2C:
-      {
+      case 0x2C: {
         _sprites[5].color = (byte) (value & 0x0F);
         break;
       }
-      case 0x2D:
-      {
+      case 0x2D: {
         _sprites[6].color = (byte) (value & 0x0F);
         break;
       }
-      case 0x2E:
-      {
+      case 0x2E: {
         _sprites[7].color = (byte) (value & 0x0F);
         break;
       }
-      case 0x2F:
-      {
+      case 0x2F: {
         _regKeyboard = value;
         break;
       }
-      case 0x30:
-      {
+      case 0x30: {
         _regFastMode = value;
         break;
       }
-      default:
-      {
+      default: {
         // ignore
         break;
       }
@@ -523,261 +456,209 @@ public abstract class VIC implements BusDevice
    * @param address address to read byte from
    * @ensure result >= 0 && result < 0x100
    */
-  public int read(int address)
-  {
+  public int read(int address) {
     int result;
-    switch (address & _mask)
-    {
-      case 0x00:
-      {
+    switch (address & _mask) {
+      case 0x00: {
         result = _sprites[0].getXLSB();
         break;
       }
-      case 0x01:
-      {
+      case 0x01: {
         result = _sprites[0].y;
         break;
       }
-      case 0x02:
-      {
+      case 0x02: {
         result = _sprites[1].getXLSB();
         break;
       }
-      case 0x03:
-      {
+      case 0x03: {
         result = _sprites[1].y;
         break;
       }
-      case 0x04:
-      {
+      case 0x04: {
         result = _sprites[2].getXLSB();
         break;
       }
-      case 0x05:
-      {
+      case 0x05: {
         result = _sprites[2].y;
         break;
       }
-      case 0x06:
-      {
+      case 0x06: {
         result = _sprites[3].getXLSB();
         break;
       }
-      case 0x07:
-      {
+      case 0x07: {
         result = _sprites[3].y;
         break;
       }
-      case 0x08:
-      {
+      case 0x08: {
         result = _sprites[4].getXLSB();
         break;
       }
-      case 0x09:
-      {
+      case 0x09: {
         result = _sprites[4].y;
         break;
       }
-      case 0x0A:
-      {
+      case 0x0A: {
         result = _sprites[5].getXLSB();
         break;
       }
-      case 0x0B:
-      {
+      case 0x0B: {
         result = _sprites[5].y;
         break;
       }
-      case 0x0C:
-      {
+      case 0x0C: {
         result = _sprites[6].getXLSB();
         break;
       }
-      case 0x0D:
-      {
+      case 0x0D: {
         result = _sprites[6].y;
         break;
       }
-      case 0x0E:
-      {
+      case 0x0E: {
         result = _sprites[7].getXLSB();
         break;
       }
-      case 0x0F:
-      {
+      case 0x0F: {
         result = _sprites[7].y;
         break;
       }
-      case 0x10:
-      {
+      case 0x10: {
         result = _regSpritesMSBX;
         break;
       }
-      case 0x11:
-      {
+      case 0x11: {
         // TODO 2010-03-17 mh: correct?
         result = _regControl1 & 0x7F;
         // bit 7 is high bit of current raster line
         result |= (_regRaster & 0x0100) >> 1;
         break;
       }
-      case 0x12:
-      {
+      case 0x12: {
         result = _regRaster & 0xFF;
         break;
       }
-      case 0x13:
-      {
+      case 0x13: {
         result = _regStrobeX;
         break;
       }
-      case 0x14:
-      {
+      case 0x14: {
         result = _regStrobeY;
         break;
       }
-      case 0x15:
-      {
+      case 0x15: {
         result = _regSpritesEnable;
         break;
       }
-      case 0x16:
-      {
+      case 0x16: {
         result = _regControl2;
         break;
       }
-      case 0x17:
-      {
+      case 0x17: {
         result = _regSpritesExpandX;
         break;
       }
-      case 0x18:
-      {
+      case 0x18: {
         result = _regBase;
         break;
       }
-      case 0x19:
-      {
+      case 0x19: {
         result = _regInterruptRequest;
         break;
       }
-      case 0x1A:
-      {
+      case 0x1A: {
         result = _regInterruptMask;
         break;
       }
-      case 0x1B:
-      {
+      case 0x1B: {
         result = _regSpritesBackgroundPriority;
         break;
       }
-      case 0x1C:
-      {
+      case 0x1C: {
         result = _regSpritesMulticolorMode;
         break;
       }
-      case 0x1D:
-      {
+      case 0x1D: {
         result = _regSpritesExpandY;
         break;
       }
-      case 0x1E:
-      {
+      case 0x1E: {
         result = _regSpritesSpriteCollision;
         break;
       }
-      case 0x1F:
-      {
+      case 0x1F: {
         result = _regSpritesBackgroundCollision;
         break;
       }
-      case 0x20:
-      {
+      case 0x20: {
         result = _regExteriorColor;
         break;
       }
-      case 0x21:
-      {
+      case 0x21: {
         result = _regBackgroundColor0;
         break;
       }
-      case 0x22:
-      {
+      case 0x22: {
         result = _regBackgroundColor1;
         break;
       }
-      case 0x23:
-      {
+      case 0x23: {
         result = _regBackgroundColor2;
         break;
       }
-      case 0x24:
-      {
+      case 0x24: {
         result = _regBackgroundColor3;
         break;
       }
-      case 0x25:
-      {
+      case 0x25: {
         result = _regSpritesMulticolor0;
         break;
       }
-      case 0x26:
-      {
+      case 0x26: {
         result = _regSpritesMulticolor1;
         break;
       }
-      case 0x27:
-      {
+      case 0x27: {
         result = _sprites[0].color;
         break;
       }
-      case 0x28:
-      {
+      case 0x28: {
         result = _sprites[1].color;
         break;
       }
-      case 0x29:
-      {
+      case 0x29: {
         result = _sprites[2].color;
         break;
       }
-      case 0x2A:
-      {
+      case 0x2A: {
         result = _sprites[3].color;
         break;
       }
-      case 0x2B:
-      {
+      case 0x2B: {
         result = _sprites[4].color;
         break;
       }
-      case 0x2C:
-      {
+      case 0x2C: {
         result = _sprites[5].color;
         break;
       }
-      case 0x2D:
-      {
+      case 0x2D: {
         result = _sprites[6].color;
         break;
       }
-      case 0x2E:
-      {
+      case 0x2E: {
         result = _sprites[7].color;
         break;
       }
-      case 0x2F:
-      {
+      case 0x2F: {
         result = _regKeyboard;
         break;
       }
-      case 0x30:
-      {
+      case 0x30: {
         result = _regFastMode;
         break;
       }
-      default:
-      {
+      default: {
         result = 0xFF;
         break;
       }
@@ -796,17 +677,14 @@ public abstract class VIC implements BusDevice
    *
    * @param line raster line
    */
-  protected void setRasterLine(int line)
-  {
+  protected void setRasterLine(int line) {
     _regRaster = line;
-    if (line == _regRasterIRQ && (_regInterruptMask & INTERRUPT_RASTER) != 0)
-    {
+    if (line == _regRasterIRQ && (_regInterruptMask & INTERRUPT_RASTER) != 0) {
       _regInterruptRequest |= INTERRUPT_RASTER | INTERRUPT_ANY;
       _irqPort.setOutputData(0x0);
 
-      if (_logger.isDebugEnabled())
-      {
-        _logger.debug("Raster irq at line " + _regRaster + " at tick " + _clock.getTick());
+      if (logger.isDebugEnabled()) {
+        logger.debug("Raster irq at line " + _regRaster + " at tick " + _clock.getTick());
       }
     }
   }
@@ -814,8 +692,7 @@ public abstract class VIC implements BusDevice
   /**
    * Set base register values.
    */
-  protected void updateBaseAddresses()
-  {
+  protected void updateBaseAddresses() {
     _baseCharacterMode = (_regBase & 0xF0) << 6;
     _baseBitmapMode = (_regBase & 0x04) << 10;
     _baseCharacterSet = (_regBase & 0x0E) << 10; // TODO what about bit 1?

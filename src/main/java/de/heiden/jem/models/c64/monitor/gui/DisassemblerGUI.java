@@ -1,13 +1,11 @@
 package de.heiden.jem.models.c64.monitor.gui;
 
-import de.heiden.c64dt.assembler.CodeBuffer;
 import de.heiden.c64dt.assembler.Disassembler;
 import de.heiden.c64dt.assembler.ICodeBuffer;
 import de.heiden.c64dt.gui.JC64TextArea;
 import de.heiden.jem.components.bus.BusDevice;
 
-import javax.swing.JPanel;
-import javax.swing.JScrollBar;
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
@@ -16,8 +14,7 @@ import java.io.StringWriter;
 /**
  * GUI for showing the disassembled code.
  */
-public class DisassemblerGUI extends JPanel
-{
+public class DisassemblerGUI extends JPanel {
   private static final int BYTES_PER_LINE = 1;
 
   private final JC64TextArea _text;
@@ -27,8 +24,7 @@ public class DisassemblerGUI extends JPanel
 
   private BusDevice _bus;
 
-  public DisassemblerGUI()
-  {
+  public DisassemblerGUI() {
     setLayout(new BorderLayout());
 
     _text = new JC64TextArea(26, 25, 2, true);
@@ -47,11 +43,9 @@ public class DisassemblerGUI extends JPanel
     _disassembler = new Disassembler();
 
     // Update scroll bar on containing component change
-    _text.addComponentListener(new ComponentAdapter()
-    {
+    _text.addComponentListener(new ComponentAdapter() {
       @Override
-      public void componentResized(ComponentEvent e)
-      {
+      public void componentResized(ComponentEvent e) {
         _scrollBar.setVisibleAmount(_text.getRows());
         _scrollBar.setBlockIncrement(_text.getRows());
         codeChanged();
@@ -59,21 +53,17 @@ public class DisassemblerGUI extends JPanel
     });
 
     // Update model on scroll bar change
-    _scrollBar.addAdjustmentListener(new AdjustmentListener()
-    {
+    _scrollBar.addAdjustmentListener(new AdjustmentListener() {
       @Override
-      public void adjustmentValueChanged(AdjustmentEvent e)
-      {
+      public void adjustmentValueChanged(AdjustmentEvent e) {
         setAddress(e.getValue());
       }
     });
 
     // React on mouse wheel
-    addMouseWheelListener(new MouseWheelListener()
-    {
+    addMouseWheelListener(new MouseWheelListener() {
       @Override
-      public void mouseWheelMoved(MouseWheelEvent e)
-      {
+      public void mouseWheelMoved(MouseWheelEvent e) {
         _scrollBar.setValue(_scrollBar.getValue() + e.getUnitsToScroll());
       }
     });
@@ -86,8 +76,7 @@ public class DisassemblerGUI extends JPanel
   /**
    * Set address to display.
    */
-  public void setAddress(int addr)
-  {
+  public void setAddress(int addr) {
     _scrollBar.setValue(addr);
     codeChanged();
   }
@@ -97,8 +86,7 @@ public class DisassemblerGUI extends JPanel
    *
    * @param bus model
    */
-  public void setBus(BusDevice bus)
-  {
+  public void setBus(BusDevice bus) {
     _bus = bus;
     codeChanged();
   }
@@ -110,24 +98,18 @@ public class DisassemblerGUI extends JPanel
   /**
    * The memory changed, so update image.
    */
-  public void codeChanged()
-  {
+  public void codeChanged() {
     // update text
     _text.clear();
-    if (_bus != null)
-    {
-      try
-      {
+    if (_bus != null) {
+      try {
         StringWriter output = new StringWriter();
         ICodeBuffer code = new BusCodeBuffer(_scrollBar.getValue(), _bus);
-        for (int i = 0; i < _text.getRows() && code.has(1); i++)
-        {
+        for (int i = 0; i < _text.getRows() && code.has(1); i++) {
           _disassembler.disassemble(code, output);
         }
         _text.setText(0, 0, output.toString());
-      }
-      catch (IOException e)
-      {
+      } catch (IOException e) {
         // ignore
       }
     }

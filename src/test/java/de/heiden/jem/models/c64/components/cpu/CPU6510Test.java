@@ -1,16 +1,15 @@
 package de.heiden.jem.models.c64.components.cpu;
 
 import de.heiden.jem.components.clock.synchronization.SerializedClock;
-import de.heiden.jem.models.c64.components.memory.RAM;
 import de.heiden.jem.models.c64.components.cpu.CPUTestBus.LogEntry;
+import de.heiden.jem.models.c64.components.memory.RAM;
 import junit.framework.TestCase;
 import org.apache.log4j.Logger;
 
 /**
  * Test.
  */
-public class CPU6510Test extends TestCase
-{
+public class CPU6510Test extends TestCase {
   private final Logger _logger = Logger.getLogger(getClass());
 
   private SerializedClock _clock;
@@ -21,8 +20,7 @@ public class CPU6510Test extends TestCase
   /**
    * Test opcode 0x00: BRK.
    */
-  public void test0x00()
-  {
+  public void test0x00() {
     // TODO check cpu state!
 
     _logger.debug("test 0x00");
@@ -67,8 +65,7 @@ public class CPU6510Test extends TestCase
    * Creates CPU test environment with 0x1000 bytes of RAM starting ab 0x0000.
    * PC is set to 0x300.
    */
-  protected void setUp() throws Exception
-  {
+  protected void setUp() throws Exception {
     super.setUp();
 
     _logger.debug("set up");
@@ -85,10 +82,9 @@ public class CPU6510Test extends TestCase
   /**
    * Tear down.
    *
-   * @throws Exception
+   * @exception Exception
    */
-  protected void tearDown() throws Exception
-  {
+  protected void tearDown() throws Exception {
     _logger.debug("tear down");
 
     _clock.dispose();
@@ -102,8 +98,7 @@ public class CPU6510Test extends TestCase
    * @param expectedState expected state after execution.
    * @param expectedLog expected bus activity
    */
-  private void executeOneTick(CPU6510State expectedState, LogEntry expectedLog)
-  {
+  private void executeOneTick(CPU6510State expectedState, LogEntry expectedLog) {
     _clock.run(1);
     assertEquals(expectedState, _cpu.getState());
     assertEquals(expectedLog, _bus.getLastLogEntry());

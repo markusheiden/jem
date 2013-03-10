@@ -3,15 +3,13 @@ package de.heiden.jem.models.c64.gui;
 import de.heiden.c64dt.gui.JC64ScreenComponent;
 import de.heiden.jem.models.c64.components.vic.AbstractDisplayUnit;
 import de.heiden.jem.models.c64.components.vic.IScreenListener;
-import org.apache.log4j.Logger;
 
-import java.awt.Graphics;
+import java.awt.*;
 
 /**
  * VIC screen display component.
  */
-public class VICScreen extends JC64ScreenComponent implements IScreenListener
-{
+public class VICScreen extends JC64ScreenComponent implements IScreenListener {
   private final AbstractDisplayUnit _displayUnit;
 
   /**
@@ -20,8 +18,7 @@ public class VICScreen extends JC64ScreenComponent implements IScreenListener
    * @param displayUnit display unit to display
    * @require displayUnit != null
    */
-  public VICScreen(AbstractDisplayUnit displayUnit)
-  {
+  public VICScreen(AbstractDisplayUnit displayUnit) {
     super(displayUnit.getOffset(), displayUnit.getWidth(), displayUnit.getLineLength(), displayUnit.getHeight(), 2);
 
     _displayUnit = displayUnit;
@@ -29,8 +26,7 @@ public class VICScreen extends JC64ScreenComponent implements IScreenListener
   }
 
   @Override
-  public void newScreenRendered()
-  {
+  public void newScreenRendered() {
     repaint();
     Thread.yield();
   }
@@ -42,15 +38,13 @@ public class VICScreen extends JC64ScreenComponent implements IScreenListener
    * @param g graphics
    */
   @Override
-  public void doPaintComponent(Graphics g)
-  {
+  public void doPaintComponent(Graphics g) {
     // write screen to image source
     updateImageData(_displayUnit.display());
   }
 
   @Override
-  protected void drawImage(Graphics g)
-  {
+  protected void drawImage(Graphics g) {
     drawImageResized(g);
   }
 }

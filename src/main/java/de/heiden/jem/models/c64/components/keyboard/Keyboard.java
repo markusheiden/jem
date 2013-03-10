@@ -4,7 +4,8 @@ import de.heiden.jem.components.ports.InputOutputPort;
 import de.heiden.jem.components.ports.OutputPort;
 import de.heiden.jem.components.ports.OutputPortImpl;
 import de.heiden.jem.components.ports.OutputPortListener;
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -14,16 +15,15 @@ import static de.heiden.jem.models.c64.components.keyboard.Key.RESTORE;
 
 /**
  * Keyboard.
- *
+ * <p/>
  * TODO mapping of @, :, /, arrow up, ;, *, pound, commodore, run stop, arrow left
  * TODO C64 like mapping of -, +, home, shift lock, control?
  */
-public class Keyboard extends KeyAdapter
-{
+public class Keyboard extends KeyAdapter {
   /**
    * Logger.
    */
-  private final Logger _logger = Logger.getLogger(getClass());
+  private final Log logger = LogFactory.getLog(getClass());
 
   /**
    * Ports for key matrix.
@@ -53,31 +53,26 @@ public class Keyboard extends KeyAdapter
    * @require port0 != null
    * @require port1 != null
    */
-  public Keyboard(InputOutputPort port0, InputOutputPort port1)
-  {
+  public Keyboard(InputOutputPort port0, InputOutputPort port1) {
     assert port0 != null : "port0 != null";
     assert port1 != null : "port1 != null";
 
     // connect to input ports
     _port0 = port0;
-    _port0.addOutputPortListener(new OutputPortListener()
-    {
+    _port0.addOutputPortListener(new OutputPortListener() {
       /**
        * Output port changed.
        */
-      public void outputPortChanged(int value, int mask)
-      {
+      public void outputPortChanged(int value, int mask) {
         updatePorts();
       }
     });
     _port1 = port1;
-    _port1.addOutputPortListener(new OutputPortListener()
-    {
+    _port1.addOutputPortListener(new OutputPortListener() {
       /**
        * Output port changed.
        */
-      public void outputPortChanged(int value, int mask)
-      {
+      public void outputPortChanged(int value, int mask) {
         updatePorts();
       }
     });
@@ -100,8 +95,7 @@ public class Keyboard extends KeyAdapter
   /**
    * NMI output.
    */
-  public OutputPort getNMI()
-  {
+  public OutputPort getNMI() {
     assert _nmi != null : "Postcondition: result != null";
     return _nmi;
   }
@@ -111,8 +105,7 @@ public class Keyboard extends KeyAdapter
    *
    * @ensure result != null
    */
-  public KeyListener getKeyListener()
-  {
+  public KeyListener getKeyListener() {
     return this;
   }
 
@@ -120,18 +113,15 @@ public class Keyboard extends KeyAdapter
   // protected
   //
 
-  public void keyPressed(KeyEvent e)
-  {
-    _logger.debug("pressed " + KeyMapping.toString(e));
+  public void keyPressed(KeyEvent e) {
+    logger.debug("pressed " + KeyMapping.toString(e));
 
     Key[] keys = _keyMapping.getKeys(e);
-    if (keys != null)
-    {
-      for (Key key : keys)
-      {
+    if (keys != null) {
+      for (Key key : keys) {
         press(key);
       }
-      _logger.trace(keyMatrixToString());
+      logger.trace(keyMatrixToString());
       updatePorts();
     }
   }
@@ -141,31 +131,24 @@ public class Keyboard extends KeyAdapter
    *
    * @param key key
    */
-  private void press(Key key)
-  {
-    if (key == RESTORE)
-    {
+  private void press(Key key) {
+    if (key == RESTORE) {
       // low active
       _nmi.setOutputData(0x0);
-    }
-    else
-    {
+    } else {
       _matrix[key.getRow()] |= 1 << key.getColumn();
     }
   }
 
-  public void keyReleased(KeyEvent e)
-  {
-    _logger.debug("released " + KeyMapping.toString(e));
+  public void keyReleased(KeyEvent e) {
+    logger.debug("released " + KeyMapping.toString(e));
 
     Key[] keys = _keyMapping.getKeys(e);
-    if (keys != null)
-    {
-      for (Key key : keys)
-      {
+    if (keys != null) {
+      for (Key key : keys) {
         release(key);
       }
-      _logger.trace(keyMatrixToString());
+      logger.trace(keyMatrixToString());
       updatePorts();
     }
   }
@@ -175,15 +158,11 @@ public class Keyboard extends KeyAdapter
    *
    * @param key key
    */
-  private void release(Key key)
-  {
-    if (key == RESTORE)
-    {
+  private void release(Key key) {
+    if (key == RESTORE) {
       // low active
       _nmi.setOutputData(0x1);
-    }
-    else
-    {
+    } else {
       _matrix[key.getRow()] &= 0xFF - (1 << key.getColumn());
     }
   }
@@ -194,8 +173,7 @@ public class Keyboard extends KeyAdapter
    * Assuming low is stronger than hi.
    * Assuming pull ups.
    */
-  protected void updatePorts()
-  {
+  protected void updatePorts() {
     int port1InMask = _port1.outputMask();
     int port1InDataInv = 0xFF - _port1.outputData();
     int port0OutMask = 0x00;
@@ -207,25 +185,20 @@ public class Keyboard extends KeyAdapter
     int port1OutData = 0xFF;
 
     int bit = 0x01;
-    for (int i = 0; i < _matrix.length; i++, bit <<= 1)
-    {
+    for (int i = 0; i < _matrix.length; i++, bit <<= 1) {
       final int matrix = _matrix[i];
       final int bitmask = port1InMask & matrix; // 1: driven bits
-      if (bitmask != 0)
-      {
+      if (bitmask != 0) {
         port0OutMask |= bit; // bit is driven!
-        if ((port1InDataInv & bitmask) != 0)
-        {
+        if ((port1InDataInv & bitmask) != 0) {
           port0OutData &= 0xFF - bit; // save 0 bits. 0 is stronger than 1.
         }
       }
 
-      if ((port0InMask & bit) != 0)
-      {
+      if ((port0InMask & bit) != 0) {
         // line is driven
         port1OutMask |= matrix;
-        if ((port0InData & bit) == 0)
-        {
+        if ((port0InData & bit) == 0) {
           // line is 0
           port1OutData &= 0xFF - matrix;
         }
@@ -241,14 +214,11 @@ public class Keyboard extends KeyAdapter
   /**
    * Print key matrix.
    */
-  protected String keyMatrixToString()
-  {
+  protected String keyMatrixToString() {
     StringBuilder result = new StringBuilder(128);
     result.append("key matrix:\n");
-    for (int row : _matrix)
-    {
-      for (int i = 7; i >= 0; i--)
-      {
+    for (int row : _matrix) {
+      for (int i = 7; i >= 0; i--) {
         result.append((row & (1 << i)) != 0 ? "X" : "+");
       }
       result.append("\n");

@@ -5,7 +5,8 @@ import de.heiden.jem.components.bus.BusDevice;
 import de.heiden.jem.components.bus.NoBusDevice;
 import de.heiden.jem.components.ports.OutputPort;
 import de.heiden.jem.components.ports.OutputPortListener;
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * C64 bus.
@@ -13,12 +14,11 @@ import org.apache.log4j.Logger;
  * TODO evaluate loram, hiram, charen, game, exrom
  * TODO SID, IO1, IO2
  */
-public class C64Bus implements BusDevice
-{
+public class C64Bus implements BusDevice {
   /**
    * Logger.
    */
-  private final Logger _logger = Logger.getLogger(getClass());
+  private final Log logger = LogFactory.getLog(getClass());
 
   private final OutputPort _cpu;
 
@@ -74,8 +74,7 @@ public class C64Bus implements BusDevice
     BusDevice cia1,
     BusDevice cia2,
     BusDevice charset,
-    BusDevice kernel)
-  {
+    BusDevice kernel) {
     assert cpu != null : "cpu != null";
     assert ram != null : "ram != null";
     assert basic != null : "basic != null";
@@ -87,20 +86,17 @@ public class C64Bus implements BusDevice
     assert kernel != null : "kernel != null";
 
     _cpu = cpu;
-    _cpu.addOutputPortListener(new OutputPortListener()
-    {
+    _cpu.addOutputPortListener(new OutputPortListener() {
       @Override
-      public final void outputPortChanged(int value, int mask)
-      {
+      public final void outputPortChanged(int value, int mask) {
         // TODO 2010-10-08 mh: consider signals from expansion port
         int mode = ((value << 2) | 0x03) & 0x1f;
 
         BusDevice[] oldIoModeRead = _ioModeRead;
         _ioModeRead = _ioModesRead[mode];
         _ioModeWrite = _ioModesWrite[mode];
-        if (_logger.isDebugEnabled() && oldIoModeRead != _ioModeRead)
-        {
-          _logger.debug("Changed bus mode to " + HexUtil.hexBytePlain(mode));
+        if (logger.isDebugEnabled() && oldIoModeRead != _ioModeRead) {
+          logger.debug("Changed bus mode to " + HexUtil.hexBytePlain(mode));
         }
       }
     });
@@ -134,8 +130,8 @@ public class C64Bus implements BusDevice
     BusDevice[] ioModeRead13 = computeIoModeRead(_ram, _cartridgeL, _cartridgeH, _charset, _kernel); // ram
     BusDevice[] ioModeRead14 = computeIoModeRead(_ram, _cartridgeL, _ram, null, _cartridgeH); // cartridge / io
 
-    BusDevice[] ioModeWriteIo   = computeIoModeWrite(_ram, true);
-    BusDevice[] ioModeWriteRam  = computeIoModeWrite(_ram, false);
+    BusDevice[] ioModeWriteIo = computeIoModeWrite(_ram, true);
+    BusDevice[] ioModeWriteRam = computeIoModeWrite(_ram, false);
     BusDevice[] ioModeWriteOpen = computeIoModeWrite(_cartridge, true);
 
     _ioModeRead = ioModeRead01;
@@ -220,70 +216,53 @@ public class C64Bus implements BusDevice
   }
 
   private BusDevice[] computeIoModeRead(BusDevice ram,
-    BusDevice x8000, BusDevice xA000, BusDevice xD000, BusDevice xE000)
-  {
+                                        BusDevice x8000, BusDevice xA000, BusDevice xD000, BusDevice xE000) {
     BusDevice[] result = new BusDevice[256];
-    for (int i = 0x00; i <= 0x7F; i++)
-    {
+    for (int i = 0x00; i <= 0x7F; i++) {
       result[i] = ram;
     }
-    for (int i = 0x80; i <= 0x9F; i++)
-    {
+    for (int i = 0x80; i <= 0x9F; i++) {
       result[i] = x8000;
     }
-    for (int i = 0xA0; i <= 0xBF; i++)
-    {
+    for (int i = 0xA0; i <= 0xBF; i++) {
       result[i] = xA000;
     }
-    for (int i = 0xC0; i <= 0xCF; i++)
-    {
+    for (int i = 0xC0; i <= 0xCF; i++) {
       result[i] = ram;
     }
-    if (xD000 != null)
-    {
-      for (int i = 0xD0; i <= 0xDF; i++)
-      {
+    if (xD000 != null) {
+      for (int i = 0xD0; i <= 0xDF; i++) {
         result[i] = xD000;
       }
-    }
-    else
-    {
+    } else {
       setIo(result);
     }
-    for (int i = 0xE0; i <= 0xFF; i++)
-    {
+    for (int i = 0xE0; i <= 0xFF; i++) {
       result[i] = xE000;
     }
 
     return result;
   }
 
-  private BusDevice[] computeIoModeWrite(BusDevice ram, boolean io)
-  {
+  private BusDevice[] computeIoModeWrite(BusDevice ram, boolean io) {
     BusDevice[] result = new BusDevice[256];
-    for (int i = 0x00; i <= 0xFF; i++)
-    {
+    for (int i = 0x00; i <= 0xFF; i++) {
       result[i] = ram;
     }
-    if (io)
-    {
+    if (io) {
       setIo(result);
     }
     return result;
   }
 
-  private void setIo(BusDevice[] result)
-  {
-    for (int i = 0xD0; i <= 0xD3; i++)
-    {
+  private void setIo(BusDevice[] result) {
+    for (int i = 0xD0; i <= 0xD3; i++) {
       result[i] = _vic;
     }
-    for (int i = 0xD4; i <= 0xD7; i++)
-    {
+    for (int i = 0xD4; i <= 0xD7; i++) {
       result[i] = _noBusDevice;
     }
-    for (int i = 0xD8; i <= 0xDB; i++)
-    {
+    for (int i = 0xD8; i <= 0xDB; i++) {
       result[i] = _colorRam;
     }
     result[0xDC] = _cia1;
@@ -303,8 +282,7 @@ public class C64Bus implements BusDevice
    * @require address >= 0x0000 && address < 0x10000
    * @ensure result >= 0x00 && result < 0x100
    */
-  public final int read(int address)
-  {
+  public final int read(int address) {
     assert address >= 0x0000 && address < 0x10000 : "address >= 0x0000 && address < 0x10000";
 
     return _ioModeRead[address >> 8].read(address);
@@ -318,8 +296,7 @@ public class C64Bus implements BusDevice
    * @require value >= 0x00 && value < 0x100
    * @require address >= 0x0000 && address < 0x10000
    */
-  public final void write(int value, int address)
-  {
+  public final void write(int value, int address) {
     assert value >= 0x00 && value < 0x100 : "value >= 0x00 && value < 0x100";
     assert address >= 0x0000 && address < 0x10000 : "address >= 0x0000 && address < 0x10000";
 

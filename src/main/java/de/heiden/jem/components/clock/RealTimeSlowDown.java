@@ -1,16 +1,16 @@
 package de.heiden.jem.components.clock;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Slow down clock to real time.
  */
-public class RealTimeSlowDown extends ClockEvent
-{
+public class RealTimeSlowDown extends ClockEvent {
   /**
    * Logger.
    */
-  private final Logger _logger = Logger.getLogger(getClass());
+  private final Log logger = LogFactory.getLog(getClass());
 
   /**
    * Clock to slow down.
@@ -65,8 +65,7 @@ public class RealTimeSlowDown extends ClockEvent
    * @param freq Frequency in Hz (clock ticks per second)
    * @param div How often per second should the clock speed be adjusted?
    */
-  public RealTimeSlowDown(Clock clock, long freq, int div)
-  {
+  public RealTimeSlowDown(Clock clock, long freq, int div) {
     assert clock != null : "Precondition: clock != null";
     assert freq > 0 : "Precondition: freq > 0";
     assert div > 0 : "Precondition: div > 0";
@@ -82,11 +81,9 @@ public class RealTimeSlowDown extends ClockEvent
     _incrementTime0 = 1000000000 - (div - 1) * _incrementTime;
 
     // Initial clock event
-    _clock.addClockEvent(0, new ClockEvent()
-    {
+    _clock.addClockEvent(0, new ClockEvent() {
       @Override
-      public void execute(long tick)
-      {
+      public void execute(long tick) {
         long now = System.nanoTime();
         _elapsed = 0;
 
@@ -100,8 +97,7 @@ public class RealTimeSlowDown extends ClockEvent
   }
 
   @Override
-  public void execute(long tick)
-  {
+  public void execute(long tick) {
     // Save the current timestamp as the end of the last processing cycle
     long now = System.nanoTime();
     // Compute duration of the last processing cycle and add it to the duration of processing 1 second
@@ -109,20 +105,16 @@ public class RealTimeSlowDown extends ClockEvent
 
     long next = _next;
     long nextTick = tick;
-    if (_counter == 0)
-    {
-      if (_logger.isInfoEnabled())
-      {
-        _logger.info("1 simulated second took " + (_elapsed / 1000000) + " ms");
+    if (_counter == 0) {
+      if (logger.isInfoEnabled()) {
+        logger.info("1 simulated second took " + (_elapsed / 1000000) + " ms");
       }
       _elapsed = 0;
 
       _counter = _div;
       next += _incrementTime0;
       nextTick += _incrementFreq0;
-    }
-    else
-    {
+    } else {
       _counter--;
       next += _incrementTime;
       nextTick += _incrementFreq;
@@ -133,26 +125,22 @@ public class RealTimeSlowDown extends ClockEvent
     _clock.addClockEvent(nextTick, this);
 
     // debug slow down
-    if (_logger.isDebugEnabled())
-    {
-      _logger.debug(String.format("tick      : %,11d", tick));
-      _logger.debug(String.format("next tick : %,11d", nextTick));
-      _logger.debug(String.format("elapsed   : %,11d ns", now - _last));
-      _logger.debug(String.format("remainder : %,11d ns", _next - now));
-      _logger.debug(String.format("real time : %,11d ns", _incrementTime));
+    if (logger.isDebugEnabled()) {
+      logger.debug(String.format("tick      : %,11d", tick));
+      logger.debug(String.format("next tick : %,11d", nextTick));
+      logger.debug(String.format("elapsed   : %,11d ns", now - _last));
+      logger.debug(String.format("remainder : %,11d ns", _next - now));
+      logger.debug(String.format("real time : %,11d ns", _incrementTime));
     }
 
     // Wait until next
     long remainder;
     while ((remainder = (next - now) / 1000000) > 0) // 1 milli second precision
     {
-      try
-      {
+      try {
         Thread.sleep(remainder);
         now = System.nanoTime();
-      }
-      catch (InterruptedException e)
-      {
+      } catch (InterruptedException e) {
         // stop slowing down, if thread has been interrupted
         now = System.nanoTime();
         break;

@@ -4,16 +4,14 @@ import de.heiden.c64dt.gui.JC64TextArea;
 import de.heiden.c64dt.util.HexUtil;
 import de.heiden.jem.components.bus.BusDevice;
 
-import javax.swing.JPanel;
-import javax.swing.JScrollBar;
-import java.awt.BorderLayout;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.*;
 
 /**
  * GUI for showing a memory dump.
  */
-public class MemDumpGUI extends JPanel
-{
+public class MemDumpGUI extends JPanel {
   private static final int BYTES_PER_LINE = 8;
 
   private final JC64TextArea _text;
@@ -24,8 +22,7 @@ public class MemDumpGUI extends JPanel
   /**
    * Constructor.
    */
-  public MemDumpGUI()
-  {
+  public MemDumpGUI() {
     setLayout(new BorderLayout());
 
     _text = new JC64TextArea(39, 25, 2, true);
@@ -41,11 +38,9 @@ public class MemDumpGUI extends JPanel
     add(_scrollBar, BorderLayout.EAST);
 
     // Update scroll bar on containing component change
-    _text.addComponentListener(new ComponentAdapter()
-    {
+    _text.addComponentListener(new ComponentAdapter() {
       @Override
-      public void componentResized(ComponentEvent e)
-      {
+      public void componentResized(ComponentEvent e) {
         _scrollBar.setVisibleAmount(_text.getRows());
         _scrollBar.setBlockIncrement(_text.getRows());
         memoryChanged();
@@ -53,21 +48,17 @@ public class MemDumpGUI extends JPanel
     });
 
     // Update model on scroll bar change
-    _scrollBar.addAdjustmentListener(new AdjustmentListener()
-    {
+    _scrollBar.addAdjustmentListener(new AdjustmentListener() {
       @Override
-      public void adjustmentValueChanged(AdjustmentEvent e)
-      {
+      public void adjustmentValueChanged(AdjustmentEvent e) {
         setAddress(e.getValue());
       }
     });
 
     // React on mouse wheel
-    addMouseWheelListener(new MouseWheelListener()
-    {
+    addMouseWheelListener(new MouseWheelListener() {
       @Override
-      public void mouseWheelMoved(MouseWheelEvent e)
-      {
+      public void mouseWheelMoved(MouseWheelEvent e) {
         _scrollBar.setValue(_scrollBar.getValue() + e.getUnitsToScroll() * BYTES_PER_LINE);
       }
     });
@@ -76,8 +67,7 @@ public class MemDumpGUI extends JPanel
   /**
    * Set address to display.
    */
-  public void setAddress(int addr)
-  {
+  public void setAddress(int addr) {
     _scrollBar.setValue(addr);
     memoryChanged();
   }
@@ -87,8 +77,7 @@ public class MemDumpGUI extends JPanel
    *
    * @param bus model
    */
-  public void setBus(BusDevice bus)
-  {
+  public void setBus(BusDevice bus) {
     _bus = bus;
     memoryChanged();
   }
@@ -100,15 +89,12 @@ public class MemDumpGUI extends JPanel
   /**
    * The memory changed, so update image.
    */
-  public void memoryChanged()
-  {
+  public void memoryChanged() {
     // update text
     _text.clear();
-    if (_bus != null)
-    {
+    if (_bus != null) {
       int addr = _scrollBar.getValue();
-      for (int i = 0; i < _text.getRows(); i++, addr += 8)
-      {
+      for (int i = 0; i < _text.getRows(); i++, addr += 8) {
         dumpLine(addr, i);
       }
     }
@@ -122,17 +108,14 @@ public class MemDumpGUI extends JPanel
    * @param addr address to dump
    * @param row row to draw dump to
    */
-  protected void dumpLine(int addr, int row)
-  {
+  protected void dumpLine(int addr, int row) {
     _text.setText(0, row, HexUtil.hexWordPlain(addr));
 
-    for (int i = 0, c = 0; i < 8; i++, c++)
-    {
+    for (int i = 0, c = 0; i < 8; i++, c++) {
       _text.setText(6 + i * 3, row, HexUtil.hexBytePlain(_bus.read(addr + i) & 0xFF));
     }
 
-    for (int i = 0, c = 0; i < 8; i++, c++)
-    {
+    for (int i = 0, c = 0; i < 8; i++, c++) {
       _text.setText(30 + i, row, (byte) _bus.read(addr + i));
     }
   }

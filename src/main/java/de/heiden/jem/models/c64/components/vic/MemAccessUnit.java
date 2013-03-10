@@ -3,16 +3,14 @@ package de.heiden.jem.models.c64.components.vic;
 import de.heiden.jem.components.clock.Clock;
 import de.heiden.jem.components.clock.ClockedComponent;
 import de.heiden.jem.components.clock.Tick;
-import org.apache.log4j.Logger;
 import org.serialthreads.Interruptible;
 
 /**
  * Memory access unit of vic.
- *
+ * <p/>
  * TODO refactor dependencies
  */
-class MemAccessUnit implements ClockedComponent
-{
+class MemAccessUnit implements ClockedComponent {
   private final VIC _vic;
   private final Tick _tick;
 
@@ -29,8 +27,7 @@ class MemAccessUnit implements ClockedComponent
    * @param vic vic this mem access unit belongs to
    * @param clock clock
    */
-  MemAccessUnit(VIC vic, Clock clock)
-  {
+  MemAccessUnit(VIC vic, Clock clock) {
     _vic = vic;
 
     _tick = clock.addClockedComponent(Clock.VIC_MEM, this);
@@ -40,26 +37,23 @@ class MemAccessUnit implements ClockedComponent
     characters = new int[40];
     colors = new int[40];
     spritesDMA = new boolean[8];
-    sprites = new int[][] {
+    sprites = new int[][]{
       new int[3], new int[3], new int[3], new int[3], new int[3], new int[3], new int[3], new int[3]
     };
   }
 
   @Override
   @Interruptible
-  public final void run()
-  {
+  public final void run() {
     _vic.reset();
 
-    while (true)
-    {
+    while (true) {
       loadScreen();
     }
   }
 
   @Override
-  public String getName()
-  {
+  public String getName() {
     return _vic.getClass().getSimpleName() + " mem access";
   }
 
@@ -68,11 +62,9 @@ class MemAccessUnit implements ClockedComponent
    * Implementation: CPU cycles belong to next VIC cycle.
    */
   @Interruptible
-  public final void loadScreen()
-  {
+  public final void loadScreen() {
     final int linesPerScreen = _vic._linesPerScreen;
-    for (int line = 0; line < linesPerScreen; line++)
-    {
+    for (int line = 0; line < linesPerScreen; line++) {
       boolean badline = false;
       int row = 0; // 0-7
 
@@ -86,10 +78,8 @@ class MemAccessUnit implements ClockedComponent
       // cycle 16-55
       int characterAddress = 0; // TODO
       int colorAddress = 0; // TODO
-      for (int column = 0; column < 40; column++)
-      {
-        if (badline)
-        {
+      for (int column = 0; column < 40; column++) {
+        if (badline) {
           int character = _vic._bus.read(characterAddress++);
           int color = _vic._colorRam.read(colorAddress++);
         }
@@ -115,14 +105,12 @@ class MemAccessUnit implements ClockedComponent
    * @require number >= 0 && number < 8
    */
   @Interruptible
-  protected final void readSprite(int number)
-  {
+  protected final void readSprite(int number) {
     // TODO BA for next sprites
     int pointer = _vic._bus.read(0); // VIC cycle part
     int address = 0 + pointer << 6 + 0; // TODO base and row
     waitForTick();
-    if (_vic._sprites[number].enabled)
-    {
+    if (_vic._sprites[number].enabled) {
       // fetch sprite data
       int data = _vic._bus.read(address++) & 0xFF; // CPU cycle part
       data <<= 8;
@@ -130,9 +118,7 @@ class MemAccessUnit implements ClockedComponent
       data <<= 8;
       waitForTick();
       data |= _vic._bus.read(address++) & 0xFF; // CPU cycle part
-    }
-    else
-    {
+    } else {
       // idle access
       waitForTick();
     }
@@ -142,8 +128,7 @@ class MemAccessUnit implements ClockedComponent
    * DRAM refresh.
    */
   @Interruptible
-  protected final void refresh()
-  {
+  protected final void refresh() {
     // TODO BA for badline
     // TODO speed up? (5)
     waitForTick();
@@ -157,18 +142,15 @@ class MemAccessUnit implements ClockedComponent
    * Idle cycles.
    */
   @Interruptible
-  protected final void idle()
-  {
+  protected final void idle() {
     // TODO BA for next sprites
     // TODO speed up? (65 - cycles per line + 2)
     waitForTick();
     waitForTick();
-    if (_vic._cyclesPerLine > 63)
-    {
+    if (_vic._cyclesPerLine > 63) {
       waitForTick();
     }
-    if (_vic._cyclesPerLine > 64)
-    {
+    if (_vic._cyclesPerLine > 64) {
       waitForTick();
     }
   }
@@ -177,8 +159,7 @@ class MemAccessUnit implements ClockedComponent
    * Wait for 1 clock tick.
    */
   @Interruptible
-  protected final void waitForTick()
-  {
+  protected final void waitForTick() {
     _tick.waitForTick();
     x += 8;
   }

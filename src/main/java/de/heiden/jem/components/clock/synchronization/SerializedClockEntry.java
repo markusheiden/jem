@@ -3,13 +3,22 @@ package de.heiden.jem.components.clock.synchronization;
 import de.heiden.jem.components.clock.ClockEntry;
 import de.heiden.jem.components.clock.ClockedComponent;
 import de.heiden.jem.components.clock.Tick;
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Bean holding registration information for one clocked component.
  */
-public class SerializedClockEntry extends ClockEntry
-{
+public class SerializedClockEntry extends ClockEntry {
+  /**
+   * Logger.
+   */
+  private final Log logger = LogFactory.getLog(getClass());
+
+  private final Thread _thread;
+
+  public final Lock lock;
+
   /**
    * Constructor.
    *
@@ -18,63 +27,41 @@ public class SerializedClockEntry extends ClockEntry
    * @require component != null
    * @require tick != null
    */
-  public SerializedClockEntry(final ClockedComponent component, Tick tick)
-  {
+  public SerializedClockEntry(final ClockedComponent component, Tick tick) {
     super(component, tick);
 
-    _thread = new Thread(new Runnable()
-    {
+    _thread = new Thread(new Runnable() {
       @Override
-      public void run()
-      {
+      public void run() {
         component.run();
       }
     }, component.getName());
     this.lock = new Lock(component.getName());
   }
 
-  public void run()
-  {
-    try
-    {
-      _logger.debug("wait for start of clock");
+  public void run() {
+    try {
+      logger.debug("wait for start of clock");
       lock.setTicksToSleep(1);
       lock.sleep();
 
       component.run();
-    }
-    catch (InterruptedException e)
-    {
-      _logger.debug("interrupted");
+    } catch (InterruptedException e) {
+      logger.debug("interrupted");
     }
   }
 
   /**
    * Start associated thread.
    */
-  public void start()
-  {
+  public void start() {
     _thread.start();
   }
 
   /**
    * Dispose.
    */
-  public void dispose()
-  {
+  public void dispose() {
     _thread.interrupt();
   }
-
-  //
-  // attributes
-  //
-
-  private final Thread _thread;
-
-  public final Lock lock;
-
-  /**
-   * Logger.
-   */
-  private static final Logger _logger = Logger.getLogger(SerializedClockEntry.class);
 }

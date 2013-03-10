@@ -2,7 +2,8 @@ package de.heiden.jem.models.c64.components.cpu;
 
 import de.heiden.jem.components.clock.Clock;
 import de.heiden.jem.models.c64.monitor.Monitor;
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.serialthreads.Interruptible;
 
 import java.util.HashSet;
@@ -15,7 +16,7 @@ public class CPU6510Debugger extends CPU6510 {
   /**
    * Logger.
    */
-  private final Logger _logger = Logger.getLogger(getClass());
+  private final Log logger = LogFactory.getLog(getClass());
 
   /**
    * PC to start tracing at.
@@ -86,12 +87,12 @@ public class CPU6510Debugger extends CPU6510 {
       _trace = true;
     }
 
-    if (_trace && _logger.isDebugEnabled()) {
+    if (_trace && logger.isDebugEnabled()) {
       if (_state.NMI || _state.IRQ && !_state.I) {
-        _logger.debug(Monitor.state(_state));
+        logger.debug(Monitor.state(_state));
       } else {
-        _logger.debug(Monitor.state(_state));
-        _logger.debug(Monitor.disassemble(_state.PC, _bus));
+        logger.debug(Monitor.state(_state));
+        logger.debug(Monitor.disassemble(_state.PC, _bus));
       }
       if (_count-- == 0) {
         // dummy statement to set java breakpoint at

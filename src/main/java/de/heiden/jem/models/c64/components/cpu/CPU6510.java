@@ -5,24 +5,20 @@ import de.heiden.jem.components.bus.BusDevice;
 import de.heiden.jem.components.clock.Clock;
 import de.heiden.jem.components.clock.ClockedComponent;
 import de.heiden.jem.components.clock.Tick;
-import de.heiden.jem.components.ports.InputOutputPort;
-import de.heiden.jem.components.ports.InputOutputPortImpl;
-import de.heiden.jem.components.ports.InputPort;
-import de.heiden.jem.components.ports.InputPortImpl;
-import de.heiden.jem.components.ports.InputPortListener;
+import de.heiden.jem.components.ports.*;
 import de.heiden.jem.models.c64.monitor.Monitor;
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.serialthreads.Interruptible;
 
 /**
  * CPU.
  */
-public class CPU6510 implements ClockedComponent
-{
+public class CPU6510 implements ClockedComponent {
   /**
    * Logger.
    */
-  private final Logger _logger = Logger.getLogger(getClass());
+  private final Log logger = LogFactory.getLog(getClass());
 
   protected static final boolean DEBUG = true;
 
@@ -43,8 +39,7 @@ public class CPU6510 implements ClockedComponent
    * @param clock system clock
    * @require clock != null
    */
-  public CPU6510(Clock clock)
-  {
+  public CPU6510(Clock clock) {
     assert clock != null : "clock != null";
 
     _state = new CPU6510State();
@@ -52,21 +47,16 @@ public class CPU6510 implements ClockedComponent
     _port = new InputOutputPortImpl();
 
     _irq = new InputPortImpl();
-    _irq.addInputPortListener(new InputPortListener()
-    {
+    _irq.addInputPortListener(new InputPortListener() {
       private boolean _irq = false;
 
       @Override
-      public void inputPortChanged(int value, int mask)
-      {
+      public void inputPortChanged(int value, int mask) {
         // irq is low active
         boolean irq = (value & 0x01) == 0;
-        if (irq && !_irq)
-        {
+        if (irq && !_irq) {
           _state.IRQ = true;
-        }
-        else if (!irq)
-        {
+        } else if (!irq) {
           // normally irq will be reset when it is about to be executed,
           // but if the irq is not being handled due to the I flag,
           // then it will be reset when the interrupt request is cleared
@@ -77,21 +67,16 @@ public class CPU6510 implements ClockedComponent
     });
 
     _nmi = new InputPortImpl();
-    _nmi.addInputPortListener(new InputPortListener()
-    {
+    _nmi.addInputPortListener(new InputPortListener() {
       private boolean _nmi = false;
 
       @Override
-      public void inputPortChanged(int value, int mask)
-      {
+      public void inputPortChanged(int value, int mask) {
         // nmi is low active
         boolean nmi = (value & 0x01) == 0;
-        if (nmi && !_nmi)
-        {
+        if (nmi && !_nmi) {
           _state.NMI = true;
-        }
-        else if (!nmi)
-        {
+        } else if (!nmi) {
           _state.NMI = false;
         }
         _nmi = nmi;
@@ -100,7 +85,7 @@ public class CPU6510 implements ClockedComponent
 
     _tick = clock.addClockedComponent(Clock.CPU, this);
 
-    _logger.debug("start cpu");
+    logger.debug("start cpu");
   }
 
   /**
@@ -109,10 +94,9 @@ public class CPU6510 implements ClockedComponent
    * @param bus cpu bus
    * @require bus != null
    */
-  public void connect(BusDevice bus)
-  {
+  public void connect(BusDevice bus) {
     assert bus != null : "bus != null";
-    
+
     _bus = bus;
   }
 
@@ -122,9 +106,8 @@ public class CPU6510 implements ClockedComponent
    * TODO should be protected?
    */
   @Interruptible
-  public void reset()
-  {
-    _logger.debug("reset");
+  public void reset() {
+    logger.debug("reset");
 
     // TODO init something else?
     _state.S = 0x01FF;
@@ -133,56 +116,45 @@ public class CPU6510 implements ClockedComponent
   }
 
   @Override
-  public String getName()
-  {
+  public String getName() {
     return getClass().getSimpleName();
   }
 
   /**
    * CPU port.
    */
-  public InputOutputPort getPort()
-  {
+  public InputOutputPort getPort() {
     return _port;
   }
 
   /**
    * IRQ input signal.
    */
-  public InputPort getIRQ()
-  {
+  public InputPort getIRQ() {
     return _irq;
   }
 
   /**
    * NMI input signal.
    */
-  public InputPort getNMI()
-  {
+  public InputPort getNMI() {
     return _nmi;
   }
 
   @Interruptible
-  public void run()
-  {
+  public void run() {
     reset();
 
     final CPU6510State state = _state;
     final Opcode[] opcodes = OPCODES;
-    while (true)
-    {
-      if (state.NMI)
-      {
+    while (true) {
+      if (state.NMI) {
         state.NMI = false;
         interrupt(0xFFFA);
-      }
-      else if (state.IRQ && !state.I)
-      {
+      } else if (state.IRQ && !state.I) {
         state.IRQ = false;
         interrupt(0xFFFE);
-      }
-      else
-      {
+      } else {
         preExecute();
 //        int b = readBytePC();
 //        Opcode opcode = opcodes[b];
@@ -192,14 +164,12 @@ public class CPU6510 implements ClockedComponent
     }
   }
 
-  protected void preExecute()
-  {
+  protected void preExecute() {
   }
 
   private final Opcode[] OPCODES =
     {
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $00: BRK (7)
@@ -209,8 +179,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $01: ORA ($XX,X) (6)
@@ -219,8 +188,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $02: *KIL (*)
@@ -229,8 +197,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $03: *SLO ($XX,X) (8)
@@ -239,8 +206,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $04: *NOP (3)
@@ -249,8 +215,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $05: ORA $XX (3)
@@ -259,8 +224,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $06: ASL $XX (5)
@@ -270,8 +234,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $07: *SLO $XX (5)
@@ -280,8 +243,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $08: PHP (3)
@@ -290,8 +252,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $09: ORA #$XX (2)
@@ -300,8 +261,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $0A: ASL (2)
@@ -311,8 +271,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $0B:
@@ -322,8 +281,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $0C: *NOP (4)
@@ -332,8 +290,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $0D: ORA $XXXX (4)
@@ -342,8 +299,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $0E: ASL $XXXX (6)
@@ -353,8 +309,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $0F: *SLO $XXXX (6)
@@ -363,8 +318,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $10: BPL $XXXX (2/3)
@@ -373,8 +327,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $11: ORA ($XX),Y (5)
@@ -383,8 +336,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $12: *KIL (*)
@@ -393,8 +345,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $13: *SLO ($XX),Y (8)
@@ -404,8 +355,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $14: *NOP (4)
@@ -414,8 +364,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $15: ORA $XX,X (4)
@@ -424,8 +373,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $16: ASL $XX,X (6)
@@ -436,8 +384,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $17: *SLO $XX,X (6)
@@ -447,8 +394,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $18: CLC (2)
@@ -458,8 +404,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $19: ORA $XXXX,Y (4)
@@ -468,8 +413,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $1A: *NOP (2)
@@ -478,8 +422,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $1B: *SLO $XXXX,Y (7)
@@ -489,8 +432,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $1C: *NOP (5)
@@ -499,8 +441,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $1D: ORA $XXXX,X (4)
@@ -509,8 +450,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $1E: ASL $XXXX,X (7)
@@ -521,8 +461,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $1F: *SLO $XXXX,X (7)
@@ -532,8 +471,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $20: JSR $XXXX (6) (TODO rework: see AAY64)
@@ -546,8 +484,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $21: AND ($XX,X) (6)
@@ -556,8 +493,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $22: *KIL (*)
@@ -566,8 +502,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $23: *RLA ($XX,X) (8)
@@ -576,8 +511,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $24: BIT $XX (4)
@@ -586,8 +520,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $25: AND $XX (3)
@@ -596,8 +529,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $26: ROL $XX (5)
@@ -607,8 +539,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $27: *RLA $XX (5)
@@ -617,8 +548,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $28: PLP (4)
@@ -627,8 +557,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $29: AND #$XX (2)
@@ -637,8 +566,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $2A: ROL (2)
@@ -648,8 +576,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $2B:
@@ -659,8 +586,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $2C: BIT $XXXX (4)
@@ -669,8 +595,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $2D: AND $XXXX (4)
@@ -679,8 +604,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $2E: ROL $XXXX (6)
@@ -690,8 +614,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $2F: *RLA $XXXX (6)
@@ -700,8 +623,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $30: BMI $XXXX (2/3)
@@ -710,8 +632,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $31: AND ($XX),Y (5)
@@ -720,8 +641,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $32: *KIL (*)
@@ -730,8 +650,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $33: *RLA ($XX),Y (8)
@@ -741,8 +660,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $34: *NOP (4)
@@ -751,8 +669,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $35:
@@ -762,8 +679,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $36: ROL $XX,X (6)
@@ -774,8 +690,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $37: *RLA $XX,X (6)
@@ -784,8 +699,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $38: SEC (2)
@@ -795,8 +709,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $39: AND $XXXX,Y (4)
@@ -805,8 +718,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $3A: *NOP (2)
@@ -815,8 +727,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $3B: *RLA $XXXX,Y (7)
@@ -826,8 +737,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $3C: *NOP (5)
@@ -836,8 +746,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $3D: AND $XXXX,X (4)
@@ -846,8 +755,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $3E: ROL $XXXX,X (7)
@@ -858,8 +766,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $3F: *RLA $XXXX,X (7)
@@ -869,8 +776,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $40: RTI (6)
@@ -881,8 +787,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $41: EOR ($XX,X) (6)
@@ -891,8 +796,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $42: *KIL (*)
@@ -901,8 +805,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $43:
@@ -912,8 +815,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $44: *NOP (3)
@@ -922,8 +824,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $45: EOR $XX (3)
@@ -932,8 +833,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $46: LSR $XX (5)
@@ -943,8 +843,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $47:
@@ -954,8 +853,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $48: PHA (3)
@@ -964,8 +862,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $49: EOR #$XX (2)
@@ -974,8 +871,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $4A: LSR (2)
@@ -985,8 +881,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $4B:
@@ -996,8 +891,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $4C: JMP $XXXX (3) (AAY64)
@@ -1006,8 +900,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $4D: EOR $XXXX (4)
@@ -1016,8 +909,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $4E: LSR $XXXX (6)
@@ -1027,8 +919,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $4F:
@@ -1038,8 +929,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $50: BVC $XXXX (2/3)
@@ -1048,8 +938,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $51: EOR ($XX),Y (5)
@@ -1058,8 +947,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $52: *KIL (*)
@@ -1068,8 +956,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $53:
@@ -1079,8 +966,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $54: *NOP (4)
@@ -1089,8 +975,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $55: EOR $XX,X (4)
@@ -1099,8 +984,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $56: LSR $XX,X (6)
@@ -1111,8 +995,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $57:
@@ -1122,8 +1005,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $58: CLI (2)
@@ -1133,8 +1015,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $59: EOR $XXXX,Y (4)
@@ -1143,8 +1024,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $5A: *NOP (2)
@@ -1153,8 +1033,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $5B:
@@ -1164,8 +1043,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $5C: *NOP (5)
@@ -1174,8 +1052,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $5D: EOR $XXXX,X (4)
@@ -1184,8 +1061,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $5E: LSR $XXXX,X (7)
@@ -1196,8 +1072,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $5F:
@@ -1207,8 +1082,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $60: RTS (6)
@@ -1218,8 +1092,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $61: ADC ($XX,X) (6)
@@ -1228,8 +1101,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $62: *KIL (*)
@@ -1238,8 +1110,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $63:
@@ -1249,8 +1120,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $64: *NOP (3)
@@ -1259,8 +1129,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $65: ADC $XX (3)
@@ -1269,8 +1138,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $66: ROR $XX (5)
@@ -1280,8 +1148,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $67:
@@ -1291,8 +1158,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $68: PLA (4)
@@ -1303,8 +1169,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $69: ADC #$XX (2)
@@ -1313,8 +1178,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $6A: ROR (2)
@@ -1324,8 +1188,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $6B:
@@ -1335,8 +1198,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $6C: JMP ($XXXX) (5)
@@ -1345,8 +1207,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $6D: ADC $XXXX (4)
@@ -1355,8 +1216,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $6E: ROR $XXXX (6)
@@ -1366,8 +1226,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $6F:
@@ -1377,8 +1236,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $70: BVS $XXXX (2/3)
@@ -1387,8 +1245,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $71: ADC ($XX),Y (4)
@@ -1397,8 +1254,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $72: *KIL (*)
@@ -1407,8 +1263,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $73:
@@ -1418,8 +1273,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $74: *NOP (4)
@@ -1428,8 +1282,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $75: ADC $XX,X (4)
@@ -1439,8 +1292,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $76: ROR $XX,X (6)
@@ -1451,8 +1303,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $77:
@@ -1462,8 +1313,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $78: SEI (2)
@@ -1473,8 +1323,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $79: ADC $XXXX,Y (5)
@@ -1483,8 +1332,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $7A: *NOP (2)
@@ -1493,8 +1341,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $7B:
@@ -1504,8 +1351,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $7C: *NOP (5)2
@@ -1514,8 +1360,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $7D: ADC $XXXX,X (4)
@@ -1524,8 +1369,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $7E: ROR $XXXX,X (7)
@@ -1536,8 +1380,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $7F:
@@ -1547,8 +1390,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $80: *NOP (2)
@@ -1557,8 +1399,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $81: STA ($XX,X) (6)
@@ -1567,8 +1408,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $82: *NOP (2)
@@ -1577,8 +1417,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $83:
@@ -1588,8 +1427,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $84: STY $XX (3)
@@ -1598,8 +1436,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $85: STA $XX (3)
@@ -1608,8 +1445,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $86: STX $XX (3)
@@ -1618,8 +1454,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $87:
@@ -1629,8 +1464,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $88: DEY (2)
@@ -1640,8 +1474,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $89: *NOP (2)
@@ -1650,8 +1483,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $8A: TXA (2)
@@ -1661,8 +1493,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $8B:
@@ -1672,8 +1503,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $8C: STY $XXXX (4)
@@ -1682,8 +1512,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $8D: STA $XXXX (4)
@@ -1692,8 +1521,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $8E: STX $XXXX (4)
@@ -1702,8 +1530,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $8F:
@@ -1713,8 +1540,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $90: BCC $XXXX (2/3)
@@ -1723,8 +1549,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $91: STA ($XX),Y (6)
@@ -1733,8 +1558,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $92: *KIL (*)
@@ -1743,8 +1567,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $93:
@@ -1754,8 +1577,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $94: STY $XX,X (4)
@@ -1765,8 +1587,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $95: STA $XX,X (4)
@@ -1776,8 +1597,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $96: STX $XX,Y (4)
@@ -1787,8 +1607,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $97:
@@ -1798,8 +1617,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $98: TYA (2)
@@ -1809,8 +1627,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $99: STA $XXXX,Y (5)
@@ -1820,8 +1637,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $9A: TXS (2)
@@ -1831,8 +1647,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $9B:
@@ -1842,8 +1657,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $9C:
@@ -1853,8 +1667,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $9D: STA $XXXX,X (5)
@@ -1863,8 +1676,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $9E:
@@ -1874,8 +1686,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $9F:
@@ -1885,8 +1696,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $A0: LDY #$XX (2)
@@ -1895,8 +1705,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $A1: LDA ($XX,X) (6)
@@ -1905,8 +1714,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $A2: LDX #$XX (2)
@@ -1915,8 +1723,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $A3:
@@ -1926,8 +1733,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $A4: LDY $XX (3)
@@ -1936,8 +1742,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $A5: LDA $XX (3)
@@ -1946,8 +1751,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $A6: LDX $XX (3)
@@ -1956,8 +1760,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $A7:
@@ -1967,8 +1770,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $A8: TAY (2)
@@ -1978,8 +1780,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $A9: LDA #$XX (2)
@@ -1988,8 +1789,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $AA: TAX (2)
@@ -1999,8 +1799,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $AB:
@@ -2010,8 +1809,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $AC: LDY $XXXX (4)
@@ -2020,8 +1818,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $AD: LDA $XXXX (4)
@@ -2030,8 +1827,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $AE: LDX $XXXX (4)
@@ -2040,8 +1836,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $AF:
@@ -2051,8 +1846,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $B0: BCS $XXXX (2/3)
@@ -2061,8 +1855,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $B1: LDA ($XX),Y (5)
@@ -2071,8 +1864,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $B2: *KIL (*)
@@ -2081,8 +1873,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $B3:
@@ -2092,8 +1883,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $B4: LDY $XX,X (4)
@@ -2103,8 +1893,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $B5: LDA $XX,X (4)
@@ -2114,8 +1903,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $B6: LDX $XX,Y (4)
@@ -2125,8 +1913,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $B7:
@@ -2136,8 +1923,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $B8: CLV (2)
@@ -2147,8 +1933,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $B9: LDA $XXXX,Y (4)
@@ -2157,8 +1942,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $BA: TSX (2)
@@ -2168,8 +1952,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $BB:
@@ -2179,8 +1962,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $BC: LDY $XXXX,X (4)
@@ -2189,8 +1971,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $BD: LDA $XXXX,X (4)
@@ -2199,8 +1980,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $BE: LDX $XXXX,Y (4)
@@ -2209,8 +1989,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $BF:
@@ -2220,8 +1999,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $C0: CPY #$XX (2)
@@ -2230,8 +2008,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $C1: CMP ($XX,X) (6)
@@ -2240,8 +2017,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $C2: *NOP (2)
@@ -2250,8 +2026,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $C3:
@@ -2261,8 +2036,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $C4: CPY $XX (3)
@@ -2271,8 +2045,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $C5: CMP $XX (3)
@@ -2281,8 +2054,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $C6: DEC $XX (5)
@@ -2292,8 +2064,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $C7:
@@ -2303,8 +2074,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $C8: INY (2)
@@ -2314,8 +2084,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $C9: CMP #$XX (2)
@@ -2324,8 +2093,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $CA: DEX (2)
@@ -2335,8 +2103,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $CB:
@@ -2346,8 +2113,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $CC: CPY $XXXX (4)
@@ -2356,8 +2122,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $CD: CMP $XXXX (4)
@@ -2366,8 +2131,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $CE: DEC $XXXX (6)
@@ -2377,8 +2141,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $CF:
@@ -2388,8 +2151,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $D0: BNE $XXXX (2/3)
@@ -2398,8 +2160,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $D1: CMP ($XX),Y (5)
@@ -2408,8 +2169,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $D2: *KIL (*)
@@ -2418,8 +2178,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $D3:
@@ -2429,8 +2188,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $D4: *NOP (4)
@@ -2439,8 +2197,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $D5: CMP $XX,X (4)
@@ -2450,8 +2207,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $D6: DEC $XX,X (6)
@@ -2462,8 +2218,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $D7:
@@ -2473,8 +2228,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $D8: CLD (2)
@@ -2484,8 +2238,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $D9: CMP $XXXX,Y (4)
@@ -2494,8 +2247,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $DA: *NOP (2)
@@ -2504,8 +2256,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $DB:
@@ -2515,8 +2266,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $DC: *NOP (5)
@@ -2525,8 +2275,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $DD: CMP $XXXX,X (4)
@@ -2535,8 +2284,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $DE: DEC $XXXX,X (7)
@@ -2547,8 +2295,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $DF:
@@ -2558,8 +2305,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $E0: CPX #$XX (2)
@@ -2568,8 +2314,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $E1: SBC ($XX,X) (6)
@@ -2578,8 +2323,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $E2: *NOP (2)
@@ -2588,8 +2332,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $E3:
@@ -2599,8 +2342,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $E4: CPX $XX (3)
@@ -2609,8 +2351,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $E5: SBC $XX (3)
@@ -2619,8 +2360,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $E6: INC $XX (5)
@@ -2630,8 +2370,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $E7:
@@ -2641,8 +2380,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $E8: INX (2)
@@ -2652,8 +2390,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $E9: SBC #$XX (2)
@@ -2662,8 +2399,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $EA: NOP (2)
@@ -2672,8 +2408,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $EB:
@@ -2683,8 +2418,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $EC: CPX $XXXX (4)
@@ -2693,8 +2427,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $ED: SBC $XXXX (4)
@@ -2703,8 +2436,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $EE: INC $XXXX (6)
@@ -2714,8 +2446,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $EF:
@@ -2725,8 +2456,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $F0: BEQ $XXXX (2/3)
@@ -2735,8 +2465,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $F1: SBC ($XX),Y (5)
@@ -2745,8 +2474,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $F2: *KIL (*)
@@ -2755,8 +2483,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $F3:
@@ -2766,8 +2493,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $F4: *NOP (4)
@@ -2776,8 +2502,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $F5: SBC $XX,X (4)
@@ -2786,8 +2511,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $F6: INC $XX,X (6)
@@ -2798,8 +2522,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $F7:
@@ -2809,8 +2532,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $F8: SED (2)
@@ -2820,8 +2542,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $F9: SBC $XXXX,Y (4)
@@ -2830,8 +2551,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $FA: *NOP (2)
@@ -2840,8 +2560,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $FB:
@@ -2851,8 +2570,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $FC: *NOP (5)
@@ -2861,8 +2579,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $FD: SBC $XXXX,X (4)
@@ -2871,8 +2588,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $FE: INC $XXXX,X (7)
@@ -2883,8 +2599,7 @@ public class CPU6510 implements ClockedComponent
         }
       },
 
-      new Opcode()
-      {
+      new Opcode() {
         @Override
         @Interruptible
         public final void execute() // $FF:
@@ -2895,14 +2610,11 @@ public class CPU6510 implements ClockedComponent
       }
     };
 
-  private void notImplementedYet()
-  {
-    if (_logger.isDebugEnabled())
-    {
-      _logger.debug("Not implemented yet");
+  private void notImplementedYet() {
+    if (logger.isDebugEnabled()) {
+      logger.debug("Not implemented yet");
     }
-    if (DEBUG)
-    {
+    if (DEBUG) {
       throw new UnsupportedOperationException();
     }
   }
@@ -2917,8 +2629,7 @@ public class CPU6510 implements ClockedComponent
    * @param addr interrupt vector
    */
   @Interruptible
-  protected final void interrupt(int addr)
-  {
+  protected final void interrupt(int addr) {
     // TODO ticks?
     int returnAddr = _state.PC;
     pushWord(returnAddr);
@@ -2931,8 +2642,7 @@ public class CPU6510 implements ClockedComponent
    *
    * @param value value
    */
-  protected final int shiftLeft(int value)
-  {
+  protected final int shiftLeft(int value) {
     int result = value << 1;
     _state.setCarryZeroNegativeP(result, (result & 0x100) != 0);
     return result & 0xFF;
@@ -2943,8 +2653,7 @@ public class CPU6510 implements ClockedComponent
    *
    * @param value value
    */
-  protected final int shiftRight(int value)
-  {
+  protected final int shiftRight(int value) {
     int result = value >> 1;
     _state.setCarryZeroNegativeP(result, (value & 0x01) != 0);
     return result;
@@ -2955,11 +2664,9 @@ public class CPU6510 implements ClockedComponent
    *
    * @param value value
    */
-  protected final int rotateLeft(int value)
-  {
+  protected final int rotateLeft(int value) {
     int result = value << 1;
-    if (_state.C)
-    {
+    if (_state.C) {
       result |= 0x01;
     }
     _state.setCarryZeroNegativeP(result, (result & 0x100) != 0);
@@ -2971,11 +2678,9 @@ public class CPU6510 implements ClockedComponent
    *
    * @param value value
    */
-  protected final int rotateRight(int value)
-  {
+  protected final int rotateRight(int value) {
     int result = value >> 1;
-    if (_state.C)
-    {
+    if (_state.C) {
       result |= 0x80;
     }
     _state.setCarryZeroNegativeP(result, (value & 0x01) != 0);
@@ -2987,8 +2692,7 @@ public class CPU6510 implements ClockedComponent
    *
    * @param value value
    */
-  protected final void bit(int value)
-  {
+  protected final void bit(int value) {
     _state.setZeroOverflowNegativeP(value, (_state.A & value) == 0);
   }
 
@@ -2997,8 +2701,7 @@ public class CPU6510 implements ClockedComponent
    *
    * @param value value
    */
-  protected final void and(int value)
-  {
+  protected final void and(int value) {
     int a = _state.A & value;
     _state.setZeroNegativeP(a);
     _state.A = a;
@@ -3009,8 +2712,7 @@ public class CPU6510 implements ClockedComponent
    *
    * @param value value
    */
-  protected final void or(int value)
-  {
+  protected final void or(int value) {
     int a = _state.A | value;
     _state.setZeroNegativeP(a);
     _state.A = a;
@@ -3021,8 +2723,7 @@ public class CPU6510 implements ClockedComponent
    *
    * @param value value
    */
-  protected final void xor(int value)
-  {
+  protected final void xor(int value) {
     int a = _state.A ^ value;
     _state.setZeroNegativeP(a);
     _state.A = a;
@@ -3033,11 +2734,9 @@ public class CPU6510 implements ClockedComponent
    *
    * @param value value
    */
-  protected final void add(int value)
-  {
+  protected final void add(int value) {
     int a = _state.A + value;
-    if (_state.C)
-    {
+    if (_state.C) {
       a++;
     }
     _state.setCarryZeroOverflowNegativeP(_state.A, a, a >= 0x100);
@@ -3049,11 +2748,9 @@ public class CPU6510 implements ClockedComponent
    *
    * @param value value
    */
-  protected final void subtract(int value)
-  {
+  protected final void subtract(int value) {
     int a = _state.A - value;
-    if (!_state.C)
-    {
+    if (!_state.C) {
       a--;
     }
     _state.setCarryZeroOverflowNegativeP(_state.A, a, a >= 0);
@@ -3065,8 +2762,7 @@ public class CPU6510 implements ClockedComponent
    *
    * @param value value
    */
-  protected final int load(int value)
-  {
+  protected final int load(int value) {
     _state.setZeroNegativeP(value);
     return value;
   }
@@ -3076,8 +2772,7 @@ public class CPU6510 implements ClockedComponent
    *
    * @param value value
    */
-  protected final int decrement(int value)
-  {
+  protected final int decrement(int value) {
     int result = (value - 1) & 0xFF;
     _state.setZeroNegativeP(result);
     return result;
@@ -3088,8 +2783,7 @@ public class CPU6510 implements ClockedComponent
    *
    * @param value value
    */
-  protected final int increment(int value)
-  {
+  protected final int increment(int value) {
     int result = (value + 1) & 0xFF;
     _state.setZeroNegativeP(result);
     return result;
@@ -3099,8 +2793,7 @@ public class CPU6510 implements ClockedComponent
    * Compare value with value at addr.
    * (0)
    */
-  protected final void compare(int value, int value2)
-  {
+  protected final void compare(int value, int value2) {
     int result = value - value2;
     _state.setCarryZeroNegativeP(result, result >= 0);
   }
@@ -3112,11 +2805,9 @@ public class CPU6510 implements ClockedComponent
    * @param condition condition to branch
    */
   @Interruptible
-  protected final void branchIf(boolean condition)
-  {
+  protected final void branchIf(boolean condition) {
     int addr = readRelativeAddressPC();
-    if (condition)
-    {
+    if (condition) {
       _state.PC = addr;
       _tick.waitForTick();
     }
@@ -3126,15 +2817,12 @@ public class CPU6510 implements ClockedComponent
    * Push byte onto stack.
    */
   @Interruptible
-  protected final void pushByte(int value)
-  {
+  protected final void pushByte(int value) {
     int s = _state.S;
     write(value, s);
     s--;
-    if (s < STACK)
-    {
-      if (DEBUG)
-      {
+    if (s < STACK) {
+      if (DEBUG) {
         throw new IllegalArgumentException("Stack overflow");
       }
       s = STACK + 0xFF; // TODO overflow OK?
@@ -3146,25 +2834,20 @@ public class CPU6510 implements ClockedComponent
    * Push word onto stack.
    */
   @Interruptible
-  protected final void pushWord(int value)
-  {
+  protected final void pushWord(int value) {
     int s = _state.S;
     write(value >> 8, s);
     s--;
-    if (s < STACK)
-    {
-      if (DEBUG)
-      {
+    if (s < STACK) {
+      if (DEBUG) {
         throw new IllegalArgumentException("Stack overflow");
       }
       s = STACK + 0xFF; // TODO overflow OK?
     }
     write(value & 0xFF, s);
     s--;
-    if (s < STACK)
-    {
-      if (DEBUG)
-      {
+    if (s < STACK) {
+      if (DEBUG) {
         throw new IllegalArgumentException("Stack overflow");
       }
       s = STACK + 0xFF; // TODO overflow OK?
@@ -3176,13 +2859,10 @@ public class CPU6510 implements ClockedComponent
    * Pop byte from stack.
    */
   @Interruptible
-  protected final int popByte()
-  {
+  protected final int popByte() {
     int s = _state.S + 1;
-    if (s >= STACK + 0x0100)
-    {
-      if (DEBUG)
-      {
+    if (s >= STACK + 0x0100) {
+      if (DEBUG) {
         throw new IllegalArgumentException("Stack underflow");
       }
       s = STACK; // TODO underflow OK?
@@ -3195,23 +2875,18 @@ public class CPU6510 implements ClockedComponent
    * Pop word from stack.
    */
   @Interruptible
-  protected final int popWord()
-  {
+  protected final int popWord() {
     int s = _state.S + 1;
-    if (s >= STACK + 0x0100)
-    {
-      if (DEBUG)
-      {
+    if (s >= STACK + 0x0100) {
+      if (DEBUG) {
         throw new IllegalArgumentException("Stack underflow");
       }
       s = STACK; // TODO underflow OK?
     }
     int result = read(s);
     s++;
-    if (s >= STACK + 0x0100)
-    {
-      if (DEBUG)
-      {
+    if (s >= STACK + 0x0100) {
+      if (DEBUG) {
         throw new IllegalArgumentException("Stack underflow");
       }
       s = STACK; // TODO underflow OK?
@@ -3227,12 +2902,10 @@ public class CPU6510 implements ClockedComponent
   /**
    * Report illegal opcode.
    */
-  protected final void reportIllegalOpcode()
-  {
-    if (_logger.isDebugEnabled())
-    {
-      _logger.debug(Monitor.state(_state));
-      _logger.debug(Monitor.disassemble(_state.PC, _bus));
+  protected final void reportIllegalOpcode() {
+    if (logger.isDebugEnabled()) {
+      logger.debug(Monitor.state(_state));
+      logger.debug(Monitor.disassemble(_state.PC, _bus));
     }
     int pc = (_state.PC - 1) & 0xFFFF;
     throw new IllegalArgumentException("Illegal opcode " + HexUtil.hexByte(_bus.read(pc)) + " at " + HexUtil.hexWord(pc));
@@ -3242,14 +2915,11 @@ public class CPU6510 implements ClockedComponent
    * Crash.
    */
   @Interruptible
-  protected final void crash()
-  {
-    if (DEBUG)
-    {
+  protected final void crash() {
+    if (DEBUG) {
       reportIllegalOpcode();
     }
-    while (true)
-    {
+    while (true) {
       _tick.waitForTick();
     }
   }
@@ -3259,10 +2929,8 @@ public class CPU6510 implements ClockedComponent
    * (1)
    */
   @Interruptible
-  protected final void nop2()
-  {
-    if (DEBUG)
-    {
+  protected final void nop2() {
+    if (DEBUG) {
       reportIllegalOpcode();
     }
     _tick.waitForTick();
@@ -3273,10 +2941,8 @@ public class CPU6510 implements ClockedComponent
    * (1)
    */
   @Interruptible
-  protected final void nop12()
-  {
-    if (DEBUG)
-    {
+  protected final void nop12() {
+    if (DEBUG) {
       reportIllegalOpcode();
     }
     _state.PC = (_state.PC + 1) & 0xFFFF; // TODO read?
@@ -3288,10 +2954,8 @@ public class CPU6510 implements ClockedComponent
    * (2)
    */
   @Interruptible
-  protected final void nop13()
-  {
-    if (DEBUG)
-    {
+  protected final void nop13() {
+    if (DEBUG) {
       reportIllegalOpcode();
     }
     _state.PC = (_state.PC + 1) & 0xFFFF; // TODO read?
@@ -3304,10 +2968,8 @@ public class CPU6510 implements ClockedComponent
    * (3)
    */
   @Interruptible
-  protected final void nop14()
-  {
-    if (DEBUG)
-    {
+  protected final void nop14() {
+    if (DEBUG) {
       reportIllegalOpcode();
     }
     _state.PC = (_state.PC + 1) & 0xFFFF; // TODO read?
@@ -3321,10 +2983,8 @@ public class CPU6510 implements ClockedComponent
    * (3)
    */
   @Interruptible
-  protected final void nop24()
-  {
-    if (DEBUG)
-    {
+  protected final void nop24() {
+    if (DEBUG) {
       reportIllegalOpcode();
     }
     _state.PC = (_state.PC + 2) & 0xFFFF; // TODO read?
@@ -3338,10 +2998,8 @@ public class CPU6510 implements ClockedComponent
    * (4)
    */
   @Interruptible
-  protected final void nop25()
-  {
-    if (DEBUG)
-    {
+  protected final void nop25() {
+    if (DEBUG) {
       reportIllegalOpcode();
     }
     _state.PC = (_state.PC + 2) & 0xFFFF; // TODO read?
@@ -3358,10 +3016,8 @@ public class CPU6510 implements ClockedComponent
    * @param addr address
    */
   @Interruptible
-  protected final void shiftLeftOr(int addr)
-  {
-    if (DEBUG)
-    {
+  protected final void shiftLeftOr(int addr) {
+    if (DEBUG) {
       reportIllegalOpcode();
     }
     int value = read(addr) << 1;
@@ -3380,10 +3036,8 @@ public class CPU6510 implements ClockedComponent
    * @param addr address
    */
   @Interruptible
-  public final void rotateLeftAnd(int addr)
-  {
-    if (DEBUG)
-    {
+  public final void rotateLeftAnd(int addr) {
+    if (DEBUG) {
       reportIllegalOpcode();
     }
     int value = (read(addr) << 1) | (_state.C ? 1 : 0);
@@ -3404,8 +3058,7 @@ public class CPU6510 implements ClockedComponent
    * (1)
    */
   @Interruptible
-  protected final int readImmediatePC()
-  {
+  protected final int readImmediatePC() {
     return readBytePC();
   }
 
@@ -3414,8 +3067,7 @@ public class CPU6510 implements ClockedComponent
    * (1)
    */
   @Interruptible
-  protected final int readRelativeAddressPC()
-  {
+  protected final int readRelativeAddressPC() {
     return ((byte) readBytePC() + _state.PC) & 0xFFFF;
   }
 
@@ -3424,8 +3076,7 @@ public class CPU6510 implements ClockedComponent
    * (1)
    */
   @Interruptible
-  protected final int readAbsoluteZeropageAddressPC()
-  {
+  protected final int readAbsoluteZeropageAddressPC() {
     return readBytePC();
   }
 
@@ -3434,8 +3085,7 @@ public class CPU6510 implements ClockedComponent
    * (1)
    */
   @Interruptible
-  protected final int readAbsoluteZeropageAddressPC(int index)
-  {
+  protected final int readAbsoluteZeropageAddressPC(int index) {
     return (readBytePC() + index) & 0xFF;
   }
 
@@ -3444,8 +3094,7 @@ public class CPU6510 implements ClockedComponent
    * (2)
    */
   @Interruptible
-  protected final int readAbsoluteAddressPC()
-  {
+  protected final int readAbsoluteAddressPC() {
     return readWordPC();
   }
 
@@ -3454,8 +3103,7 @@ public class CPU6510 implements ClockedComponent
    * (2)
    */
   @Interruptible
-  protected final int readAbsoluteAddressPC(int index)
-  {
+  protected final int readAbsoluteAddressPC(int index) {
     return (readWordPC() + index) & 0xFFFF;
   }
 
@@ -3466,8 +3114,7 @@ public class CPU6510 implements ClockedComponent
    * @param addr address
    */
   @Interruptible
-  protected final int readAbsoluteAddress(int addr)
-  {
+  protected final int readAbsoluteAddress(int addr) {
     return read(addr) + (read((addr + 1) & 0xFFFF) << 8);
   }
 
@@ -3476,8 +3123,7 @@ public class CPU6510 implements ClockedComponent
    * (4)
    */
   @Interruptible
-  protected final int readZeropageIndirectXAddressPC()
-  {
+  protected final int readZeropageIndirectXAddressPC() {
     _tick.waitForTick(); // + X needs 1 tick, TODO read address first?
     return readAbsoluteAddress((readAbsoluteZeropageAddressPC() + _state.X) & 0xFF);
   }
@@ -3487,8 +3133,7 @@ public class CPU6510 implements ClockedComponent
    * (3)
    */
   @Interruptible
-  protected final int readZeropageIndirectYAddressPC()
-  {
+  protected final int readZeropageIndirectYAddressPC() {
     return (readAbsoluteAddress(readAbsoluteZeropageAddressPC()) + _state.Y) & 0xFFFF;
   }
 
@@ -3497,8 +3142,7 @@ public class CPU6510 implements ClockedComponent
    * (4)
    */
   @Interruptible
-  protected final int readIndirectAddress()
-  {
+  protected final int readIndirectAddress() {
     return readAbsoluteAddress(readAbsoluteAddressPC());
   }
 
@@ -3511,8 +3155,7 @@ public class CPU6510 implements ClockedComponent
    * (1)
    */
   @Interruptible
-  protected final int readBytePC()
-  {
+  protected final int readBytePC() {
     int pc = _state.PC;
     int result = read(pc++);
     _state.PC = pc & 0xFFFF;
@@ -3525,8 +3168,7 @@ public class CPU6510 implements ClockedComponent
    * (1)
    */
   @Interruptible
-  protected final int readWordPC()
-  {
+  protected final int readWordPC() {
     int pc = _state.PC;
     int result = read(pc++);
     pc = pc & 0xFFFF;
@@ -3544,12 +3186,10 @@ public class CPU6510 implements ClockedComponent
    * @param addr address
    */
   @Interruptible
-  protected final void write(int value, int addr)
-  {
+  protected final void write(int value, int addr) {
     // always write to bus!
     _bus.write(value, addr);
-    if (addr <= 1)
-    {
+    if (addr <= 1) {
       writePort(value, addr);
     }
     _tick.waitForTick();
@@ -3561,18 +3201,12 @@ public class CPU6510 implements ClockedComponent
    * @param value value
    * @param addr port address (0 or 1)
    */
-  private void writePort(int value, int addr)
-  {
-    if (addr == 0)
-    {
+  private void writePort(int value, int addr) {
+    if (addr == 0) {
       _port.setOutputMask(value);
-    }
-    else if (addr == 1)
-    {
+    } else if (addr == 1) {
       _port.setOutputData(value);
-    }
-    else
-    {
+    } else {
       throw new IllegalArgumentException("unreachable code");
     }
   }
@@ -3585,12 +3219,10 @@ public class CPU6510 implements ClockedComponent
    * @return byte from bus
    */
   @Interruptible
-  protected final int read(int addr)
-  {
+  protected final int read(int addr) {
     // always read from bus!
     int result = _bus.read(addr);
-    if (addr <= 1)
-    {
+    if (addr <= 1) {
       result = readPort(addr);
     }
     _tick.waitForTick();
@@ -3604,18 +3236,12 @@ public class CPU6510 implements ClockedComponent
    * @param addr
    * @return byte from port
    */
-  private int readPort(int addr)
-  {
-    if (addr == 0)
-    {
+  private int readPort(int addr) {
+    if (addr == 0) {
       return _port.outputMask();
-    }
-    else if (addr == 1)
-    {
+    } else if (addr == 1) {
       return _port.inputData();
-    }
-    else
-    {
+    } else {
       throw new IllegalArgumentException("unreachable code");
     }
   }
@@ -3627,8 +3253,7 @@ public class CPU6510 implements ClockedComponent
   /**
    * Get cpu state.
    */
-  public synchronized CPU6510State getState()
-  {
+  public synchronized CPU6510State getState() {
     return _state;
   }
 
@@ -3639,8 +3264,7 @@ public class CPU6510 implements ClockedComponent
   /**
    * Interface for opcode implementations.
    */
-  private static interface Opcode
-  {
+  private static interface Opcode {
     @Interruptible
     public void execute();
   }

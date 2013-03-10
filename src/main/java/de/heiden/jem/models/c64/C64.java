@@ -15,7 +15,8 @@ import de.heiden.jem.models.c64.components.vic.VIC6569PAL;
 import de.heiden.jem.models.c64.components.vic.VICBus;
 import de.heiden.jem.models.c64.gui.VICScreen;
 import de.heiden.jem.models.c64.util.ROMLoader;
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import javax.swing.*;
 import java.awt.event.KeyListener;
@@ -27,7 +28,7 @@ public class C64 {
   /**
    * Logger.
    */
-  private final Logger _logger = Logger.getLogger(getClass());
+  private final Log logger = LogFactory.getLog(getClass());
 
   private JFrame _frame;
 
@@ -114,7 +115,7 @@ public class C64 {
 
     show(_vic, _keyboard.getKeyListener());
 
-    _logger.debug("start");
+    logger.debug("start");
     _clock.run();
 
 //    final int ticks = 1000000;

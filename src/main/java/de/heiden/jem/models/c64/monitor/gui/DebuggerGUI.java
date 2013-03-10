@@ -4,7 +4,8 @@ import de.heiden.jem.components.bus.BusDevice;
 import de.heiden.jem.models.c64.C64;
 import de.heiden.jem.models.c64.components.cpu.CPU6510Debugger;
 import de.heiden.jem.models.c64.components.cpu.DebuggerExit;
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,9 +15,8 @@ import java.awt.event.ActionListener;
 /**
  * Main Monitor frame.
  */
-public class DebuggerGUI extends JPanel
-{
-  private final Logger _logger = Logger.getLogger(getClass());
+public class DebuggerGUI extends JPanel {
+  private final Log logger = LogFactory.getLog(getClass());
 
   private Thread _thread;
   private C64 _c64;
@@ -37,8 +37,7 @@ public class DebuggerGUI extends JPanel
   /**
    * Constructor.
    */
-  public DebuggerGUI()
-  {
+  public DebuggerGUI() {
     setLayout(new BorderLayout());
 
     _runButton = new JButton(new ImageIcon(getClass().getResource("/icons/enabled/run_exc.gif"), "Run"));
@@ -81,60 +80,45 @@ public class DebuggerGUI extends JPanel
 
     add(topBottom);
 
-    _runButton.addActionListener(new ActionListener()
-    {
+    _runButton.addActionListener(new ActionListener() {
       @Override
-      public void actionPerformed(ActionEvent e)
-      {
-        if (_thread == null)
-        {
+      public void actionPerformed(ActionEvent e) {
+        if (_thread == null) {
           run();
         }
       }
     });
 
-    _suspendButton.addActionListener(new ActionListener()
-    {
+    _suspendButton.addActionListener(new ActionListener() {
       @Override
-      public void actionPerformed(ActionEvent e)
-      {
-        if (_thread != null)
-        {
+      public void actionPerformed(ActionEvent e) {
+        if (_thread != null) {
           suspend();
         }
       }
     });
-    _resumeButton.addActionListener(new ActionListener()
-    {
+    _resumeButton.addActionListener(new ActionListener() {
       @Override
-      public void actionPerformed(ActionEvent e)
-      {
-        if (_thread != null)
-        {
+      public void actionPerformed(ActionEvent e) {
+        if (_thread != null) {
           resume();
         }
       }
     });
 
-    _stopButton.addActionListener(new ActionListener()
-    {
+    _stopButton.addActionListener(new ActionListener() {
       @Override
-      public void actionPerformed(ActionEvent e)
-      {
-        if (_thread != null)
-        {
+      public void actionPerformed(ActionEvent e) {
+        if (_thread != null) {
           stop();
         }
       }
     });
 
-    _refreshButton.addActionListener(new ActionListener()
-    {
+    _refreshButton.addActionListener(new ActionListener() {
       @Override
-      public void actionPerformed(ActionEvent e)
-      {
-        if (_thread != null)
-        {
+      public void actionPerformed(ActionEvent e) {
+        if (_thread != null) {
           updateComponents();
         }
       }
@@ -150,10 +134,8 @@ public class DebuggerGUI extends JPanel
   /**
    * Run C64.
    */
-  private void run()
-  {
-    try
-    {
+  private void run() {
+    try {
       _c64 = new C64(true);
       _cpu = (CPU6510Debugger) _c64.getCpu();
       _bus = _c64.getCpuBus();
@@ -163,26 +145,17 @@ public class DebuggerGUI extends JPanel
       _disassembler.setBus(_bus);
       _memDump.setBus(_bus);
 
-      _thread = new Thread(new Runnable()
-      {
+      _thread = new Thread(new Runnable() {
         @Override
-        public void run()
-        {
-          try
-          {
-            _logger.info("C64 has been started");
+        public void run() {
+          try {
+            logger.info("C64 has been started");
             _c64.start();
-          }
-          catch (DebuggerExit e)
-          {
-            _logger.info(e.getMessage());
-          }
-          catch (Exception e)
-          {
-            _logger.error("C64 terminated abnormally", e);
-          }
-          finally
-          {
+          } catch (DebuggerExit e) {
+            logger.info(e.getMessage());
+          } catch (Exception e) {
+            logger.error("C64 terminated abnormally", e);
+          } finally {
             _c64 = null;
             _cpu = null;
             _bus = null;
@@ -192,29 +165,21 @@ public class DebuggerGUI extends JPanel
       _thread.start();
 
       updateComponents();
-    }
-    catch (Exception e)
-    {
-      _logger.error("Failed to start C64", e);
+    } catch (Exception e) {
+      logger.error("Failed to start C64", e);
     }
   }
 
   /**
    * Suspend C64.
    */
-  private void suspend()
-  {
-    new SwingWorker<Object, Object>()
-    {
+  private void suspend() {
+    new SwingWorker<Object, Object>() {
       @Override
-      protected Object doInBackground() throws Exception
-      {
-        try
-        {
+      protected Object doInBackground() throws Exception {
+        try {
           _cpu.suspendAndWait();
-        }
-        catch (DebuggerExit e)
-        {
+        } catch (DebuggerExit e) {
           _thread.interrupt();
           _thread = null;
         }
@@ -223,8 +188,7 @@ public class DebuggerGUI extends JPanel
       }
 
       @Override
-      protected void done()
-      {
+      protected void done() {
         updateComponents();
       }
     }.execute();
@@ -233,19 +197,13 @@ public class DebuggerGUI extends JPanel
   /**
    * Resume C64.
    */
-  private void resume()
-  {
-    new SwingWorker<Object, Object>()
-    {
+  private void resume() {
+    new SwingWorker<Object, Object>() {
       @Override
-      protected Object doInBackground() throws Exception
-      {
-        try
-        {
+      protected Object doInBackground() throws Exception {
+        try {
           _cpu.resume();
-        }
-        catch (DebuggerExit e)
-        {
+        } catch (DebuggerExit e) {
           _thread.interrupt();
           _thread = null;
         }
@@ -254,8 +212,7 @@ public class DebuggerGUI extends JPanel
       }
 
       @Override
-      protected void done()
-      {
+      protected void done() {
         updateButtons();
       }
     }.execute();
@@ -264,24 +221,16 @@ public class DebuggerGUI extends JPanel
   /**
    * Stop C64.
    */
-  private void stop()
-  {
-    new SwingWorker<Object, Object>()
-    {
+  private void stop() {
+    new SwingWorker<Object, Object>() {
       @Override
-      protected Object doInBackground() throws Exception
-      {
-        try
-        {
+      protected Object doInBackground() throws Exception {
+        try {
           _cpu.stop();
           _thread.join();
-        }
-        catch (InterruptedException e)
-        {
+        } catch (InterruptedException e) {
           // ignore
-        }
-        finally
-        {
+        } finally {
           _thread = null;
         }
 
@@ -289,8 +238,7 @@ public class DebuggerGUI extends JPanel
       }
 
       @Override
-      protected void done()
-      {
+      protected void done() {
         updateButtons();
       }
     }.execute();
@@ -299,8 +247,7 @@ public class DebuggerGUI extends JPanel
   /**
    * Update state of buttons.
    */
-  private void updateButtons()
-  {
+  private void updateButtons() {
     _runButton.setEnabled(_thread == null);
     _suspendButton.setEnabled(_thread != null && !_cpu.isSuspended());
     _resumeButton.setEnabled(_thread != null && _cpu.isSuspended());
@@ -311,8 +258,7 @@ public class DebuggerGUI extends JPanel
   /**
    * Notify gui to display current values.
    */
-  private void updateComponents()
-  {
+  private void updateComponents() {
     updateButtons();
 
     _trace.stateChanged();
