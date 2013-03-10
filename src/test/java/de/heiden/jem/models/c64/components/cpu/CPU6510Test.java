@@ -4,13 +4,17 @@ import de.heiden.jem.components.clock.synchronization.SerializedClock;
 import de.heiden.jem.models.c64.components.cpu.CPUTestBus.LogEntry;
 import de.heiden.jem.models.c64.components.memory.RAM;
 import junit.framework.TestCase;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Test.
  */
 public class CPU6510Test extends TestCase {
-  private final Logger _logger = Logger.getLogger(getClass());
+  /**
+   * Logger.
+   */
+  private final Logger logger = LoggerFactory.getLogger(getClass());
 
   private SerializedClock _clock;
   private RAM _ram;
@@ -23,7 +27,7 @@ public class CPU6510Test extends TestCase {
   public void test0x00() {
     // TODO check cpu state!
 
-    _logger.debug("test 0x00");
+    logger.debug("test 0x00");
 
     _ram.write(0x00, 0x0300); // BRK
     _ram.write(0xA5, 0x0301); // dummy
@@ -68,7 +72,7 @@ public class CPU6510Test extends TestCase {
   protected void setUp() throws Exception {
     super.setUp();
 
-    _logger.debug("set up");
+    logger.debug("set up");
 
     _clock = new SerializedClock();
     _ram = new RAM(0x10000);
@@ -85,7 +89,7 @@ public class CPU6510Test extends TestCase {
    * @exception Exception
    */
   protected void tearDown() throws Exception {
-    _logger.debug("tear down");
+    logger.debug("tear down");
 
     _clock.dispose();
 

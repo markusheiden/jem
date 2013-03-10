@@ -4,8 +4,8 @@ import de.heiden.jem.components.ports.InputOutputPort;
 import de.heiden.jem.components.ports.OutputPort;
 import de.heiden.jem.components.ports.OutputPortImpl;
 import de.heiden.jem.components.ports.OutputPortListener;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -23,7 +23,7 @@ public class Keyboard extends KeyAdapter {
   /**
    * Logger.
    */
-  private final Log logger = LogFactory.getLog(getClass());
+  private final Logger logger = LoggerFactory.getLogger(getClass());
 
   /**
    * Ports for key matrix.

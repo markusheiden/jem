@@ -3,8 +3,8 @@ package de.heiden.jem.components.clock.synchronization;
 import de.heiden.jem.components.clock.ClockEntry;
 import de.heiden.jem.components.clock.ClockedComponent;
 import de.heiden.jem.components.clock.Tick;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Bean holding registration information for one clocked component.
@@ -13,7 +13,7 @@ public class SerializedClockEntry extends ClockEntry {
   /**
    * Logger.
    */
-  private final Log logger = LogFactory.getLog(getClass());
+  private final Logger logger = LoggerFactory.getLogger(getClass());
 
   private final Thread _thread;
 

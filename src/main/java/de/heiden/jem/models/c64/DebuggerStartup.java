@@ -1,7 +1,7 @@
 package de.heiden.jem.models.c64;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,7 +13,7 @@ public class DebuggerStartup extends Startup {
   /**
    * Logger.
    */
-  private final Log logger = LogFactory.getLog(getClass());
+  private final Logger logger = LoggerFactory.getLogger(getClass());
 
   public void start() {
     try {

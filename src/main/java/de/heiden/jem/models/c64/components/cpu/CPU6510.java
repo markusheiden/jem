@@ -7,9 +7,9 @@ import de.heiden.jem.components.clock.ClockedComponent;
 import de.heiden.jem.components.clock.Tick;
 import de.heiden.jem.components.ports.*;
 import de.heiden.jem.models.c64.monitor.Monitor;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.serialthreads.Interruptible;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * CPU.
@@ -18,7 +18,7 @@ public class CPU6510 implements ClockedComponent {
   /**
    * Logger.
    */
-  private final Log logger = LogFactory.getLog(getClass());
+  private final Logger logger = LoggerFactory.getLogger(getClass());
 
   protected static final boolean DEBUG = true;
 

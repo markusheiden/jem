@@ -1,7 +1,7 @@
 package de.heiden.jem.components.clock;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Stop watch for execution performance.
@@ -11,7 +11,7 @@ public class StopWatch extends ClockEvent {
   /**
    * Logger.
    */
-  private final Log logger = LogFactory.getLog(getClass());
+  private final Logger logger = LoggerFactory.getLogger(getClass());
 
   private final Clock _clock;
   private final long _freq;

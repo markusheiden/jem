@@ -1,7 +1,7 @@
 package de.heiden.jem.components.clock;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -13,7 +13,7 @@ public abstract class AbstractClock<E extends ClockEntry> implements Clock {
   /**
    * Logger.
    */
-  private final Log logger = LogFactory.getLog(getClass());
+  private final Logger logger = LoggerFactory.getLogger(getClass());
 
   /**
    * Has the clock been started?.

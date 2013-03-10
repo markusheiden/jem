@@ -4,8 +4,8 @@ import de.heiden.jem.components.bus.BusDevice;
 import de.heiden.jem.models.c64.C64;
 import de.heiden.jem.models.c64.components.cpu.CPU6510Debugger;
 import de.heiden.jem.models.c64.components.cpu.DebuggerExit;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -16,7 +16,10 @@ import java.awt.event.ActionListener;
  * Main Monitor frame.
  */
 public class DebuggerGUI extends JPanel {
-  private final Log logger = LogFactory.getLog(getClass());
+  /**
+   * Logger.
+   */
+  private final Logger logger = LoggerFactory.getLogger(getClass());
 
   private Thread _thread;
   private C64 _c64;

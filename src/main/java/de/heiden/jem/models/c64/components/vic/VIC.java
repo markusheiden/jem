@@ -5,8 +5,8 @@ import de.heiden.jem.components.clock.Clock;
 import de.heiden.jem.components.ports.OutputPort;
 import de.heiden.jem.components.ports.OutputPortImpl;
 import de.heiden.jem.models.c64.components.memory.ColorRAM;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * VIC.
@@ -15,7 +15,7 @@ public abstract class VIC implements BusDevice {
   /**
    * Logger.
    */
-  private final Log logger = LogFactory.getLog(getClass());
+  private final Logger logger = LoggerFactory.getLogger(getClass());
 
   /**
    * VIC parameters.

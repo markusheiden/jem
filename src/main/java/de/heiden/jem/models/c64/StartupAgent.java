@@ -1,7 +1,7 @@
 package de.heiden.jem.models.c64;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * C64 Startup with byte code transformation by an agent.
@@ -10,7 +10,7 @@ public class StartupAgent {
   /**
    * Logger.
    */
-  private final Log logger = LogFactory.getLog(getClass());
+  private final Logger logger = LoggerFactory.getLogger(getClass());
 
   public void start() {
     try {

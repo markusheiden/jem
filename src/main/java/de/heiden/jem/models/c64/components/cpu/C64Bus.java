@@ -5,8 +5,8 @@ import de.heiden.jem.components.bus.BusDevice;
 import de.heiden.jem.components.bus.NoBusDevice;
 import de.heiden.jem.components.ports.OutputPort;
 import de.heiden.jem.components.ports.OutputPortListener;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * C64 bus.
@@ -18,7 +18,7 @@ public class C64Bus implements BusDevice {
   /**
    * Logger.
    */
-  private final Log logger = LogFactory.getLog(getClass());
+  private final Logger logger = LoggerFactory.getLogger(getClass());
 
   private final OutputPort _cpu;
 

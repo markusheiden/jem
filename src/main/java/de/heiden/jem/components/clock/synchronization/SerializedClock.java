@@ -2,8 +2,8 @@ package de.heiden.jem.components.clock.synchronization;
 
 import de.heiden.jem.components.clock.ClockedComponent;
 import de.heiden.jem.components.clock.Tick;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Clock implemented with synchronization.
@@ -16,7 +16,7 @@ public class SerializedClock
   /**
    * Logger.
    */
-  private final Log logger = LogFactory.getLog(getClass());
+  private final Logger logger = LoggerFactory.getLogger(getClass());
 
   /**
    * All clocked components sorted by their position.
