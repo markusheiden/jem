@@ -1457,10 +1457,10 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $87:
+        public final void execute() // $87: SAX $XX
         {
-          // TODO implement opcode
-          notImplementedYet();
+          _tick.waitForTick(); // minimum operation time: 1 tick
+          write(_state.A & _state.X, readBytePC());
         }
       },
 
