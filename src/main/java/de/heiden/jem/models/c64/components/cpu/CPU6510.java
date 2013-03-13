@@ -1459,8 +1459,12 @@ public class CPU6510 implements ClockedComponent {
         @Interruptible
         public final void execute() // $87: SAX $XX
         {
+          if (DEBUG) {
+            reportIllegalOpcode();
+          }
           _tick.waitForTick(); // minimum operation time: 1 tick
           write(_state.A & _state.X, readBytePC());
+          // no state change!
         }
       },
 
@@ -2373,10 +2377,15 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $E7:
+        public final void execute() // $E7: ISC $XX [INC $XX / A -= $XX]
         {
-          // TODO implement opcode
-          notImplementedYet();
+          if (DEBUG) {
+            reportIllegalOpcode();
+          }
+          int addr = readAbsoluteZeropageAddressPC();
+          int value = read(addr);
+          write(increment(value), addr);
+          subtract(value); // TODO correct?
         }
       },
 
