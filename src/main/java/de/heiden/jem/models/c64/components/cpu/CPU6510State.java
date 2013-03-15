@@ -78,7 +78,7 @@ public class CPU6510State {
     Z = (p & Z_BIT) != 0;
     I = (p & I_BIT) != 0;
     D = (p & D_BIT) != 0;
-    B = (p & B_BIT) == 0;
+    B = true;
     V = (p & V_BIT) != 0;
     N = (p & N_BIT) != 0;
   }
@@ -100,7 +100,7 @@ public class CPU6510State {
     if (D) {
       p |= D_BIT;
     }
-    if (!B) {
+    if (B) {
       p |= B_BIT;
     }
     if (V) {

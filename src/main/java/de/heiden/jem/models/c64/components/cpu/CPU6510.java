@@ -151,9 +151,12 @@ public class CPU6510 implements ClockedComponent {
       if (state.NMI) {
         state.NMI = false;
         interrupt(0xFFFA);
+
       } else if (state.IRQ && !state.I) {
         state.IRQ = false;
+        _state.B = false;
         interrupt(0xFFFE);
+
       } else {
         preExecute();
 //        int b = readBytePC();
@@ -174,12 +177,15 @@ public class CPU6510 implements ClockedComponent {
         @Interruptible
         public final void execute() // $00: BRK (7)
         {
-          readBytePC(); // dummy read
-          _state.B = true;
-          pushWord(_state.PC);
-          pushByte(_state.getP());
-          _state.I = true;
-          _state.PC = readAbsoluteAddress(0xFFFE);
+          readBytePC();
+          if (!_state.I) // TODO correct?
+          {
+            pushWord(_state.PC);
+            _state.B = true;
+            pushByte(_state.getP());
+            _state.I = true;
+            _state.PC = readAbsoluteAddress(0xFFFE);
+          }
         }
       },
 
@@ -2624,9 +2630,9 @@ public class CPU6510 implements ClockedComponent {
   @Interruptible
   protected final void interrupt(int addr) {
     // TODO ticks?
-    int returnAddr = _state.PC;
-    pushWord(returnAddr);
+    pushWord(_state.PC);
     pushByte(_state.getP());
+    _state.I = true;
     _state.PC = readAbsoluteAddress(addr);
   }
 
