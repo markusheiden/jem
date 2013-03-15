@@ -5,8 +5,7 @@ import de.heiden.c64dt.util.HexUtil;
 /**
  * State of CPU.
  */
-public class CPU6510State
-{
+public class CPU6510State {
   public static final int N_BIT = 1 << 7;
   public static final int V_BIT = 1 << 6;
   public static final int U_BIT = 1 << 5; // bit 5 is unused: always 1
@@ -41,16 +40,14 @@ public class CPU6510State
   /**
    * Constructor.
    */
-  public CPU6510State()
-  {
+  public CPU6510State() {
     this(0, 0x01FF, 0, 0, 0, 0, false, false);
   }
 
   /**
    * Constructor.
    */
-  public CPU6510State(int PC, int S, int P, int A, int X, int Y, boolean IRQ, boolean NMI)
-  {
+  public CPU6510State(int PC, int S, int P, int A, int X, int Y, boolean IRQ, boolean NMI) {
     assert PC >= 0 && PC < 0x10000 : "Precondition: PC >= 0 && PC < 0x10000";
     assert S >= 0x0100 && S < 0x0200 : "Precondition: S >= 0x0100 && S < 0x0200";
     assert P >= 0 && P < 0x100 : "Precondition: P >= 0 && P < 0x100";
@@ -74,15 +71,14 @@ public class CPU6510State
    *
    * @param p new value for p
    */
-  public final void setP(int p)
-  {
+  public final void setP(int p) {
     assert p >= 0 && p < 0x100 : "Precondition: p >= 0 && p < 0x100";
 
     C = (p & C_BIT) != 0;
     Z = (p & Z_BIT) != 0;
     I = (p & I_BIT) != 0;
     D = (p & D_BIT) != 0;
-    B = (p & B_BIT) != 0;
+    B = (p & B_BIT) == 0;
     V = (p & V_BIT) != 0;
     N = (p & N_BIT) != 0;
   }
@@ -90,35 +86,27 @@ public class CPU6510State
   /**
    * Calculates status register P from flags.
    */
-  public final int getP()
-  {
+  public final int getP() {
     int p = U_BIT;
-    if (C)
-    {
+    if (C) {
       p |= C_BIT;
     }
-    if (Z)
-    {
+    if (Z) {
       p |= Z_BIT;
     }
-    if (I)
-    {
+    if (I) {
       p |= I_BIT;
     }
-    if (D)
-    {
+    if (D) {
       p |= D_BIT;
     }
-    if (B)
-    {
+    if (!B) {
       p |= B_BIT;
     }
-    if (V)
-    {
+    if (V) {
       p |= V_BIT;
     }
-    if (N)
-    {
+    if (N) {
       p |= N_BIT;
     }
 
@@ -133,8 +121,7 @@ public class CPU6510State
    * Set N and Z of P for value.
    * Used for LDA etc.
    */
-  public final void setZeroNegativeP(int value)
-  {
+  public final void setZeroNegativeP(int value) {
     assert value >= 0 && value <= 0x100 : "Precondition: value >= 0 && value <= 0x100";
 
     Z = value == 0;
@@ -145,8 +132,7 @@ public class CPU6510State
    * Set Z, V and N of P for value.
    * Used for BIT.
    */
-  public final void setZeroOverflowNegativeP(int value, boolean z)
-  {
+  public final void setZeroOverflowNegativeP(int value, boolean z) {
     assert value >= 0 && value <= 0x100 : "Precondition: value >= 0 && value <= 0x100";
 
     Z = z;
@@ -158,8 +144,7 @@ public class CPU6510State
    * Set N, Z and C of P for value.
    * Used for ROL etc.
    */
-  public final void setCarryZeroNegativeP(int value, boolean c)
-  {
+  public final void setCarryZeroNegativeP(int value, boolean c) {
     C = c;
     Z = (value & 0xFF) == 0;
     N = (value & 0x80) != 0;
@@ -169,8 +154,7 @@ public class CPU6510State
    * Set N, V, Z and C of P for value.
    * Used for ADC and SBC.
    */
-  public final void setCarryZeroOverflowNegativeP(int oldValue, int value, boolean c)
-  {
+  public final void setCarryZeroOverflowNegativeP(int oldValue, int value, boolean c) {
     C = c;
     Z = (value & 0xFF) == 0;
     V = ((oldValue ^ value) & 0x80) != 0; // TODO correct?
@@ -184,16 +168,14 @@ public class CPU6510State
   /**
    * Copy cpu state.
    */
-  public CPU6510State copy()
-  {
+  public CPU6510State copy() {
     return new CPU6510State(PC, S, getP(), A, X, Y, IRQ, NMI);
   }
 
   /**
    * toString.
    */
-  public String toString()
-  {
+  public String toString() {
     return
       "PC=" + HexUtil.hexWord(PC) +
         ", S=" + HexUtil.hexWord(0x100 + S) +
@@ -208,11 +190,9 @@ public class CPU6510State
   /**
    * equals.
    */
-  public boolean equals(Object o)
-  {
+  public boolean equals(Object o) {
     boolean result = o instanceof CPU6510State;
-    if (result)
-    {
+    if (result) {
       CPU6510State state = (CPU6510State) o;
       result = PC == state.PC && S == state.S && getP() == state.getP() && A == state.A && X == state.X && Y == state.Y && IRQ == state.IRQ && NMI == state.NMI;
     }
@@ -223,8 +203,7 @@ public class CPU6510State
   /**
    * hashCode
    */
-  public int hashCode()
-  {
+  public int hashCode() {
     return PC;
   }
 }

@@ -174,8 +174,12 @@ public class CPU6510 implements ClockedComponent {
         @Interruptible
         public final void execute() // $00: BRK (7)
         {
+          readBytePC(); // dummy read
           _state.B = true;
-          interrupt(0xFFFA);
+          pushWord(_state.PC);
+          pushByte(_state.getP());
+          _state.I = true;
+          _state.PC = readAbsoluteAddress(0xFFFE);
         }
       },
 
