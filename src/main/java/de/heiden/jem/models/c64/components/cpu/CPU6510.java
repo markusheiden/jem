@@ -2608,6 +2608,16 @@ public class CPU6510 implements ClockedComponent {
         {
           incrementSubtract(readAbsoluteAddressPC(_state.X));
         }
+      },
+
+      new Opcode() {
+        @Override
+        @Interruptible
+        public final void execute() // $100: Escaped emulation, execute java code
+        {
+          System.out.println("escaped");
+          throw new IllegalArgumentException("escaped");
+        }
       }
     };
 

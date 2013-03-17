@@ -3,16 +3,14 @@ package de.heiden.jem.models.c64.components.memory;
 /**
  * 8 Bit-ROM.
  */
-public class ROM extends AbstractMemory
-{
+public final class ROM extends AbstractMemory {
   /**
    * Constructor.
    *
    * @param content ROM content
    * @require content.length >= 0 && content.length <= 0x10000
    */
-  public ROM(byte[] content)
-  {
+  public ROM(byte[] content) {
     super(content);
   }
 
@@ -22,10 +20,8 @@ public class ROM extends AbstractMemory
    * @param value byte to write
    * @param address address to write byte to
    * @require value >= 0x00 && value < 0x100
-   * @require address >= base() && address - base() < size()
    */
-  public final void write(int value, int address)
-  {
+  public void write(int value, int address) {
     assert false : "Write to ROM not possible";
   }
 
@@ -34,26 +30,25 @@ public class ROM extends AbstractMemory
    *
    * @param value byte to write
    * @param address address to write byte to
-   * @require value >= 0x00 && value < 0x100
-   * @require address >= base() && address - base() < size()
+   * @require value >= 0x00 && value <= 0x100
    */
-  public void patch(int value, int address)
-  {
-    assert value >= 0 && value < 0x100 : "value >= 0 && value < 0x100";
+  public void patch(int value, int address) {
+    // 0x100 is used to escape emulation in the cpu
+    assert value >= 0 && value <= 0x100 : "value >= 0 && value <= 0x100";
 
-    _memory[address & _mask] = (byte) value;
+    _memory[address & _mask] = value;
   }
 
   /**
    * Read byte from ROM.
    *
    * @param address address to read byte from
-   * @ensure result >= 0x00 && result < 0x100
+   * @ensure result >= 0x00 && result <= 0x100
    */
-  public final int read(int address)
-  {
-    int result = _memory[address & _mask] & 0xFF;
-    // assert  result >= 0x00 && result < 0x100: "result >= 0x00 && result < 0x100";
+  public int read(int address) {
+    int result = _memory[address & _mask];
+    // 0x100 is used to escape emulation in the cpu
+    assert result >= 0x00 && result <= 0x100 : "result >= 0x00 && result <= 0x100";
     return result;
   }
 }
