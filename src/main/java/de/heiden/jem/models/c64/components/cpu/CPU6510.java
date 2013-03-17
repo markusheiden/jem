@@ -2609,7 +2609,10 @@ public class CPU6510 implements ClockedComponent {
       }
     };
 
-  private void notImplementedYet() {
+  /**
+   * Handling of not yet implemented opcodes.
+   */
+  protected final void notImplementedYet() {
     if (logger.isDebugEnabled()) {
       logger.debug("Not implemented yet");
     }
@@ -3035,7 +3038,7 @@ public class CPU6510 implements ClockedComponent {
    * @param addr address
    */
   @Interruptible
-  public final void rotateLeftAnd(int addr) {
+  protected final void rotateLeftAnd(int addr) {
     if (DEBUG) {
       reportIllegalOpcode();
     }
@@ -3055,7 +3058,7 @@ public class CPU6510 implements ClockedComponent {
    * @param addr address
    */
   @Interruptible
-  public final void andAX(int addr) {
+  protected final void andAX(int addr) {
     if (DEBUG) {
       reportIllegalOpcode();
     }
@@ -3070,7 +3073,7 @@ public class CPU6510 implements ClockedComponent {
    * @param addr address
    */
   @Interruptible
-  public final void incrementSubtract(int addr) {
+  protected final void incrementSubtract(int addr) {
     if (DEBUG) {
       reportIllegalOpcode();
     }
