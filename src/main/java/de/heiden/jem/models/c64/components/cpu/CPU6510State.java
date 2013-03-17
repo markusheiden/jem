@@ -178,7 +178,7 @@ public class CPU6510State {
   public String toString() {
     return
       "PC=" + HexUtil.hexWord(PC) +
-        ", S=" + HexUtil.hexWord(0x100 + S) +
+        ", S=" + HexUtil.hexWord(S) +
         ", A=" + HexUtil.hexByte(A) +
         ", X=" + HexUtil.hexByte(X) +
         ", Y=" + HexUtil.hexByte(Y) +
