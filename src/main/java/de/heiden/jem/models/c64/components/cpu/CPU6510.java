@@ -170,6 +170,8 @@ public class CPU6510 implements ClockedComponent {
   protected void preExecute() {
   }
 
+  // <editor-fold desc="Opcodes">
+
   private final Opcode[] OPCODES =
     {
       new Opcode() {
@@ -2608,6 +2610,8 @@ public class CPU6510 implements ClockedComponent {
         }
       }
     };
+
+  // </editor-fold>
 
   /**
    * Handling of not yet implemented opcodes.
