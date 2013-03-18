@@ -33,6 +33,8 @@ public class CPU6510State {
 
   public int Y; // index y
 
+  public boolean interrupt;
+
   public boolean IRQ;
 
   public boolean NMI;
@@ -62,8 +64,29 @@ public class CPU6510State {
     this.Y = Y;
     this.IRQ = IRQ;
     this.NMI = NMI;
+    interrupt = IRQ || NMI;
 
     setP(P);
+  }
+
+  public void triggerIRQ() {
+    IRQ = true;
+    interrupt = true;
+  }
+
+  public void resetIRQ() {
+    IRQ = false;
+    interrupt = NMI;
+  }
+
+  public void triggerNMI() {
+    NMI = true;
+    interrupt = true;
+  }
+
+  public void resetNMI() {
+    NMI = false;
+    interrupt = IRQ;
   }
 
   /**

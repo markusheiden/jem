@@ -55,12 +55,12 @@ public class CPU6510 implements ClockedComponent {
         // irq is low active
         boolean irq = (value & 0x01) == 0;
         if (irq && !_irq) {
-          _state.IRQ = true;
+          _state.triggerIRQ();
         } else if (!irq) {
           // normally irq will be reset when it is about to be executed,
           // but if the irq is not being handled due to the I flag,
           // then it will be reset when the interrupt request is cleared
-          _state.IRQ = false;
+          _state.resetIRQ();
         }
         _irq = irq;
       }
@@ -75,9 +75,9 @@ public class CPU6510 implements ClockedComponent {
         // nmi is low active
         boolean nmi = (value & 0x01) == 0;
         if (nmi && !_nmi) {
-          _state.NMI = true;
+          _state.triggerNMI();
         } else if (!nmi) {
-          _state.NMI = false;
+          _state.resetNMI();
         }
         _nmi = nmi;
       }
@@ -146,25 +146,43 @@ public class CPU6510 implements ClockedComponent {
     reset();
 
     final CPU6510State state = _state;
-    final Opcode[] opcodes = OPCODES;
     while (true) {
-      if (state.NMI) {
-        state.NMI = false;
-        interrupt(0xFFFA);
+      if (state.interrupt) {
+        if (state.NMI) {
+          nmi();
+          continue;
 
-      } else if (state.IRQ && !state.I) {
-        state.IRQ = false;
-        _state.B = false;
-        interrupt(0xFFFE);
-
-      } else {
-        preExecute();
-//        int b = readBytePC();
-//        Opcode opcode = opcodes[b];
-//        opcode.execute();
-        opcodes[readBytePC()].execute();
+        } else if (state.IRQ && !state.I) {
+          irq();
+          continue;
+        }
       }
+
+      preExecute();
+//      int b = readBytePC();
+//      Opcode opcode = opcodes[b];
+//      opcode.execute();
+      OPCODES[readBytePC()].execute();
     }
+  }
+
+  /**
+   * NMI ausführen.
+   */
+  @Interruptible
+  private void nmi() {
+    _state.resetNMI();
+    interrupt(0xFFFA);
+  }
+
+  /**
+   * IRQ ausführen.
+   */
+  @Interruptible
+  private void irq() {
+    _state.resetIRQ();
+    _state.B = false;
+    interrupt(0xFFFE);
   }
 
   protected void preExecute() {
