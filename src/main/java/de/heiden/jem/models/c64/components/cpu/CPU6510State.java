@@ -21,6 +21,11 @@ public class CPU6510State {
 
   public boolean C; // status P: carry
   public boolean Z; // status P: zero
+  /**
+   * Interrupt inhibit flag.
+   * Read only access from outside.
+   * Use {@link #sei()} or {@link #cli()} to modify.
+   */
   public boolean I; // status P: interrupt
   public boolean D; // status P: decimal
   public boolean B; // status P: break
@@ -35,8 +40,18 @@ public class CPU6510State {
 
   public boolean interrupt;
 
+  /**
+   * Interrupt Request.
+   * Read only access from outside.
+   * Use {@link #triggerIRQ()} or {@link #resetIRQ()} to modify.
+   */
   public boolean IRQ;
 
+  /**
+   * Non maskable interrupt.
+   * Read only access from outside.
+   * Use {@link #triggerNMI()} or {@link #resetNMI()} to modify.
+   */
   public boolean NMI;
 
   /**
@@ -69,9 +84,19 @@ public class CPU6510State {
     setP(P);
   }
 
+  public void sei() {
+    I = true;
+    interrupt = NMI;
+  }
+
+  public void cli() {
+    I = false;
+    interrupt = NMI || IRQ;
+  }
+
   public void triggerIRQ() {
     IRQ = true;
-    interrupt = true;
+    interrupt = NMI || !I;
   }
 
   public void resetIRQ() {
@@ -86,7 +111,7 @@ public class CPU6510State {
 
   public void resetNMI() {
     NMI = false;
-    interrupt = IRQ;
+    interrupt = IRQ && !I;
   }
 
   /**

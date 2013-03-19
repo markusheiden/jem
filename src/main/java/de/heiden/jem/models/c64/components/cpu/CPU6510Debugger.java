@@ -78,7 +78,8 @@ public class CPU6510Debugger extends CPU6510 {
   }
 
   @Override
-  protected final void preExecute() {
+  @Interruptible
+  protected final void execute() {
     //
     // Support for manual tracing per java breakpoint
     //
@@ -122,6 +123,8 @@ public class CPU6510Debugger extends CPU6510 {
         waitForResume();
       }
     }
+
+    super.execute();
   }
 
   private void waitForResume() {

@@ -147,22 +147,15 @@ public class CPU6510 implements ClockedComponent {
 
     final CPU6510State state = _state;
     while (true) {
-      if (state.interrupt) {
-        if (state.NMI) {
-          nmi();
-          continue;
+      if (!state.interrupt) {
+        execute();
 
-        } else if (state.IRQ && !state.I) {
-          irq();
-          continue;
-        }
+      } else if (state.NMI) {
+        nmi();
+
+      } else /* if (state.IRQ && !state.I) */ {
+        irq();
       }
-
-      preExecute();
-//      int b = readBytePC();
-//      Opcode opcode = opcodes[b];
-//      opcode.execute();
-      OPCODES[readBytePC()].execute();
     }
   }
 
@@ -185,7 +178,12 @@ public class CPU6510 implements ClockedComponent {
     interrupt(0xFFFE);
   }
 
-  protected void preExecute() {
+  @Interruptible
+  protected void execute() {
+//      int b = readBytePC();
+//      Opcode opcode = opcodes[b];
+//      opcode.execute();
+    OPCODES[readBytePC()].execute();
   }
 
   // <editor-fold desc="Opcodes">
