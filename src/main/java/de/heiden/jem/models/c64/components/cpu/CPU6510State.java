@@ -5,7 +5,7 @@ import de.heiden.c64dt.util.HexUtil;
 /**
  * State of CPU.
  */
-public class CPU6510State {
+public final class CPU6510State {
   public static final int N_BIT = 1 << 7;
   public static final int V_BIT = 1 << 6;
   public static final int U_BIT = 1 << 5; // bit 5 is unused: always 1
@@ -38,6 +38,10 @@ public class CPU6510State {
 
   public int Y; // index y
 
+  /**
+   * Interrupt.
+   * Interrupt request with I flag cleared.
+   */
   public boolean interrupt;
 
   /**
@@ -49,8 +53,6 @@ public class CPU6510State {
 
   /**
    * Non maskable interrupt.
-   * Read only access from outside.
-   * Use {@link #triggerNMI()} or {@link #resetNMI()} to modify.
    */
   public boolean NMI;
 
@@ -77,41 +79,31 @@ public class CPU6510State {
     this.A = A;
     this.X = X;
     this.Y = Y;
+    interrupt = false;
     this.IRQ = IRQ;
     this.NMI = NMI;
-    interrupt = IRQ || NMI;
 
     setP(P);
   }
 
   public void sei() {
     I = true;
-    interrupt = NMI;
+    interrupt = false;
   }
 
   public void cli() {
     I = false;
-    interrupt = NMI || IRQ;
+    interrupt = IRQ;
   }
 
   public void triggerIRQ() {
     IRQ = true;
-    interrupt = NMI || !I;
+    interrupt = !I;
   }
 
   public void resetIRQ() {
     IRQ = false;
-    interrupt = NMI;
-  }
-
-  public void triggerNMI() {
-    NMI = true;
-    interrupt = true;
-  }
-
-  public void resetNMI() {
-    NMI = false;
-    interrupt = IRQ && !I;
+    interrupt = false;
   }
 
   /**
@@ -143,6 +135,7 @@ public class CPU6510State {
       p |= Z_BIT;
     }
     if (I) {
+      interrupt = false;
       p |= I_BIT;
     }
     if (D) {

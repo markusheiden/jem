@@ -75,9 +75,9 @@ public class CPU6510 implements ClockedComponent {
         // nmi is low active
         boolean nmi = (value & 0x01) == 0;
         if (nmi && !_nmi) {
-          _state.triggerNMI();
+          _state.NMI = true;
         } else if (!nmi) {
-          _state.resetNMI();
+          _state.NMI = false;
         }
         _nmi = nmi;
       }
@@ -142,19 +142,19 @@ public class CPU6510 implements ClockedComponent {
   }
 
   @Interruptible
-  public void run() {
+  public final void run() {
     reset();
 
     final CPU6510State state = _state;
     while (true) {
-      if (!state.interrupt) {
-        execute();
-
-      } else if (state.NMI) {
+      if (state.NMI) {
         nmi();
 
-      } else /* if (state.IRQ && !state.I) */ {
+      } else if (state.interrupt) {
         irq();
+
+      } else {
+        execute();
       }
     }
   }
@@ -164,7 +164,7 @@ public class CPU6510 implements ClockedComponent {
    */
   @Interruptible
   private void nmi() {
-    _state.resetNMI();
+    _state.NMI = false;
     interrupt(0xFFFA);
   }
 
@@ -201,7 +201,7 @@ public class CPU6510 implements ClockedComponent {
             pushWord(_state.PC);
             _state.B = true;
             pushByte(_state.getP());
-            _state.I = true;
+            _state.triggerIRQ();
             _state.PC = readAbsoluteAddress(0xFFFE);
           }
         }
@@ -1039,7 +1039,7 @@ public class CPU6510 implements ClockedComponent {
         public final void execute() // $58: CLI (2)
         {
           _tick.waitForTick(); // minimum operation time: 1 tick
-          _state.I = false;
+          _state.cli();
         }
       },
 
@@ -1347,7 +1347,7 @@ public class CPU6510 implements ClockedComponent {
         public final void execute() // $78: SEI (2)
         {
           _tick.waitForTick(); // minimum operation time: 1 tick
-          _state.I = true;
+          _state.sei();
         }
       },
 
