@@ -71,6 +71,9 @@ public class C64 {
     ROM kernel = ROMLoader.kernel(ROMLoader.DEFAULT_KERNEL);
     ROM charset = ROMLoader.character(ROMLoader.DEFAULT_CHARACTER);
 
+    // Patch file read routine to be executed in java
+//    kernel.patch(0x100, 0xF4A5);
+
     CIA6526 cia1 = new CIA6526(clock);
     CIA6526 cia2 = new CIA6526(clock);
 
@@ -105,13 +108,8 @@ public class C64 {
       _cpuBus.write(i & 0x0F, 0xD800 + i);
     }
 
-//    FileInputStream is = new FileInputStream("/Users/markus/Workspaces/jem-projects/jem/commando.prg");
-//    int addr = ByteUtil.toWord(is.read(), is.read());
-//    for (int b; (b = is.read()) >= 0; addr++)
-//    {
-//      _cpuBus.write(b, addr);
-//    }
-
+//    FileUtil.read(new File("/Users/markus/Workspaces/jem-projects/jem/bluemax.prg"), _cpuBus);
+//    FileUtil.read(new File("/Users/markus/Downloads/C64/tsuit215/ldab.prg"), _cpuBus);
 
     show(_vic, _keyboard.getKeyListener());
 
