@@ -1,5 +1,6 @@
 package de.heiden.jem.models.c64.components.cpu;
 
+import de.heiden.c64dt.util.ByteUtil;
 import de.heiden.c64dt.util.HexUtil;
 import de.heiden.jem.components.bus.BusDevice;
 import de.heiden.jem.components.clock.Clock;
@@ -7,9 +8,15 @@ import de.heiden.jem.components.clock.ClockedComponent;
 import de.heiden.jem.components.clock.Tick;
 import de.heiden.jem.components.ports.*;
 import de.heiden.jem.models.c64.monitor.Monitor;
+import de.heiden.jem.models.c64.util.BusUtil;
+import de.heiden.jem.models.c64.util.FileUtil;
+import de.heiden.jem.models.c64.util.StringUtil;
 import org.serialthreads.Interruptible;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.IOException;
 
 /**
  * CPU.
@@ -2631,8 +2638,22 @@ public class CPU6510 implements ClockedComponent {
         @Interruptible
         public final void execute() // $100: Escaped emulation, execute java code
         {
-          System.out.println("escaped");
-          throw new IllegalArgumentException("escaped");
+          String filename = StringUtil.read(_bus, BusUtil.readWord(0xBB, _bus), _bus.read(0xB7));
+          try {
+            File file = new File("/Users/markus/Downloads/C64/tsuit215", filename.toLowerCase() + ".prg");
+
+            int endAddress = _bus.read(0xB9) == 0 ?
+              FileUtil.read(file, BusUtil.readWord(0xC3, _bus), _bus) :
+              FileUtil.read(file, _bus);
+            BusUtil.writeWord(0xAE, endAddress, _bus);
+            _state.C = false;
+            _state.X = ByteUtil.lo(endAddress);
+            _state.Y = ByteUtil.hi(endAddress);
+          } catch (IOException e) {
+            logger.error("Failed to load " + filename, e);
+          }
+//          OPCODES[0x60].execute(); // rts
+          _state.PC = 2070;
         }
       }
     };

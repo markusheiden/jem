@@ -30,4 +30,25 @@ public class FileUtil {
       return addr;
     }
   }
+
+  /**
+   * Read file and write it to memory.
+   *
+   * @param file File
+   * @param addr Start address
+   * @param bus Bus with memory
+   * @return End address
+   */
+  public static int read(File file, int addr, BusDevice bus) throws IOException {
+    assert file != null : "file != null";
+    assert bus != null : "bus != null";
+
+    try (InputStream is = new BufferedInputStream(new FileInputStream(file))) {
+      for (int b; (b = is.read()) >= 0; addr++) {
+        bus.write(b, addr);
+      }
+
+      return addr;
+    }
+  }
 }
