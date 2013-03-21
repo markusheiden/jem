@@ -33,6 +33,7 @@ public class FileUtil {
 
   /**
    * Read file and write it to memory.
+   * Ignores the first word.
    *
    * @param file File
    * @param addr Start address
@@ -44,6 +45,8 @@ public class FileUtil {
     assert bus != null : "bus != null";
 
     try (InputStream is = new BufferedInputStream(new FileInputStream(file))) {
+      is.read();
+      is.read();
       for (int b; (b = is.read()) >= 0; addr++) {
         bus.write(b, addr);
       }
