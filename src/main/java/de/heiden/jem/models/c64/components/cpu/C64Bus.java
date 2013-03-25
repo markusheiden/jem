@@ -5,6 +5,7 @@ import de.heiden.jem.components.bus.BusDevice;
 import de.heiden.jem.components.bus.NoBusDevice;
 import de.heiden.jem.components.ports.OutputPort;
 import de.heiden.jem.components.ports.OutputPortListener;
+import de.heiden.jem.models.c64.components.memory.Patchable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,7 +15,7 @@ import org.slf4j.LoggerFactory;
  * TODO evaluate loram, hiram, charen, game, exrom
  * TODO SID, IO1, IO2
  */
-public class C64Bus implements BusDevice {
+public class C64Bus implements BusDevice, Patchable {
   /**
    * Logger.
    */
@@ -286,6 +287,20 @@ public class C64Bus implements BusDevice {
     assert address >= 0x0000 && address < 0x10000 : "address >= 0x0000 && address < 0x10000";
 
     return _ioModeRead[address >> 8].read(address);
+  }
+
+  /**
+   * Patch byte in ROM.
+   *
+   * @param value byte to write
+   * @param address address to write byte to
+   * @require value >= 0x00 && value < 0x100
+   */
+  public void patch(int value, int address) {
+    // 0x100 is used to escape emulation in the cpu
+    assert value >= 0 && value < 0x100 : "value >= 0 && value < 0x100";
+
+    ((Patchable) _ioModeRead[address >> 8]).patch(value, address);
   }
 
   /**

@@ -3,7 +3,7 @@ package de.heiden.jem.models.c64.components.memory;
 /**
  * 8 Bit-ROM.
  */
-public final class ROM extends AbstractMemory {
+public final class ROM extends AbstractMemory implements Patchable {
   /**
    * Constructor.
    *
@@ -23,6 +23,21 @@ public final class ROM extends AbstractMemory {
    */
   public void write(int value, int address) {
     assert false : "Write to ROM not possible";
+  }
+
+  /**
+   * Patch byte in ROM.
+   *
+   * @param value byte to write
+   * @param address address to write byte to
+   * @require value >= 0x00 && value < 0x100
+   */
+  @Override
+  public void patch(int value, int address) {
+    // 0x100 is used to escape emulation in the cpu
+    assert value >= 0 && value < 0x100 : "value >= 0 && value < 0x100";
+
+    _memory[address & _mask] = value;
   }
 
   /**
