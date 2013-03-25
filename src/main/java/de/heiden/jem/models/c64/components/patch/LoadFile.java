@@ -8,6 +8,8 @@ import de.heiden.jem.models.c64.util.BusUtil;
 import de.heiden.jem.models.c64.util.FileUtil;
 import de.heiden.jem.models.c64.util.StringUtil;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -21,11 +23,9 @@ public class LoadFile extends Patch {
   private final String basePackage;
 
   /**
-   * Constructor.
+   * Base directory to load files from.
    */
-  public LoadFile() {
-    this("");
-  }
+  private final File baseDir;
 
   /**
    * Constructor.
@@ -36,15 +36,32 @@ public class LoadFile extends Patch {
     super(0xF4A5);
 
     this.basePackage = basePackage;
+    this.baseDir = null;
+  }
+
+  /**
+   * Constructor.
+   *
+   * @param baseDirectory Base directory to load files from
+   */
+  public LoadFile(File baseDirectory) {
+    super(0xF4A5);
+
+    this.basePackage = null;
+    this.baseDir = baseDirectory;
   }
 
   @Override
   protected int execute(CPU6510State state, BusDevice bus) {
     String filename = StringUtil.read(bus, BusUtil.readWord(0xBB, bus), bus.read(0xB7));
+    filename = filename.toLowerCase() + ".prg";
+
     try {
-      String path = basePackage + "/" + filename.toLowerCase() + ".prg";
-      InputStream file = getClass().getResourceAsStream(path);
-      assert file != null : "file " + path + " exists";
+
+      InputStream file = baseDir != null ?
+        new FileInputStream(new File(baseDir, filename)) :
+        getClass().getResourceAsStream(basePackage + "/" + filename);
+      assert file != null : "file " + filename + " exists";
 
       int endAddress = bus.read(0xB9) == 0 ?
         FileUtil.read(file, BusUtil.readWord(0xC3, bus), bus) :

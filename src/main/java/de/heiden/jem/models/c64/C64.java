@@ -91,8 +91,6 @@ public class C64 {
     _cpu.getNMI().connect(cia2.getIRQ());
     _cpu.getNMI().connect(_keyboard.getNMI());
 
-    _cpu.add(new LoadFile());
-
     // real time measurement
     // TODO 2010-03-14 mh: NTSC: 1022700 Hz
     new RealTimeSlowDown(clock, 985248, 100);
@@ -112,6 +110,7 @@ public class C64 {
     }
 
     _cpu.add(new SystemOut());
+    _cpu.add(new LoadFile(new File("/Users/markus/Workspaces/jem-projects/jem/src/test/resources/testsuite2.15")));
 //    FileUtil.read(new File("/Users/markus/Workspaces/jem-projects/jem/bluemax.prg"), _cpuBus);
     FileUtil.read(new File("/Users/markus/Workspaces/jem-projects/jem/src/test/resources/testsuite2.15/ldab.prg"), _cpuBus);
 
