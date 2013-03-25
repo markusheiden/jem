@@ -7,6 +7,7 @@ import de.heiden.jem.models.c64.components.CIA6526;
 import de.heiden.jem.models.c64.components.cpu.C64Bus;
 import de.heiden.jem.models.c64.components.cpu.CPU6510;
 import de.heiden.jem.models.c64.components.cpu.CPU6510Debugger;
+import de.heiden.jem.models.c64.components.cpu.patch.LoadFile;
 import de.heiden.jem.models.c64.components.keyboard.Keyboard;
 import de.heiden.jem.models.c64.components.memory.ColorRAM;
 import de.heiden.jem.models.c64.components.memory.RAM;
@@ -14,12 +15,14 @@ import de.heiden.jem.models.c64.components.memory.ROM;
 import de.heiden.jem.models.c64.components.vic.VIC6569PAL;
 import de.heiden.jem.models.c64.components.vic.VICBus;
 import de.heiden.jem.models.c64.gui.VICScreen;
+import de.heiden.jem.models.c64.util.FileUtil;
 import de.heiden.jem.models.c64.util.ROMLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.event.KeyListener;
+import java.io.File;
 
 /**
  * C64.
@@ -71,9 +74,6 @@ public class C64 {
     ROM kernel = ROMLoader.kernel(ROMLoader.DEFAULT_KERNEL);
     ROM charset = ROMLoader.character(ROMLoader.DEFAULT_CHARACTER);
 
-    // Patch file read routine to be executed in java
-//    kernel.patch(0x100, 0xF4A5);
-
     CIA6526 cia1 = new CIA6526(clock);
     CIA6526 cia2 = new CIA6526(clock);
 
@@ -89,6 +89,8 @@ public class C64 {
     _cpu.getIRQ().connect(_vic.getIRQ());
     _cpu.getNMI().connect(cia2.getIRQ());
     _cpu.getNMI().connect(_keyboard.getNMI());
+
+    _cpu.add(new LoadFile());
 
     // real time measurement
     // TODO 2010-03-14 mh: NTSC: 1022700 Hz
@@ -109,7 +111,7 @@ public class C64 {
     }
 
 //    FileUtil.read(new File("/Users/markus/Workspaces/jem-projects/jem/bluemax.prg"), _cpuBus);
-//    FileUtil.read(new File("/Users/markus/Downloads/C64/tsuit215/ldab.prg"), _cpuBus);
+    FileUtil.read(new File("/Users/markus/Downloads/C64/tsuit215/ldab.prg"), _cpuBus);
 
     show(_vic, _keyboard.getKeyListener());
 

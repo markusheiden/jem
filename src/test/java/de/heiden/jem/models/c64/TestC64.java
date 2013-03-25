@@ -5,6 +5,7 @@ import de.heiden.jem.components.clock.serialthreads.SerialClock;
 import de.heiden.jem.models.c64.components.CIA6526;
 import de.heiden.jem.models.c64.components.cpu.C64Bus;
 import de.heiden.jem.models.c64.components.cpu.CPU6510;
+import de.heiden.jem.models.c64.components.cpu.patch.LoadFile;
 import de.heiden.jem.models.c64.components.keyboard.Keyboard;
 import de.heiden.jem.models.c64.components.memory.ColorRAM;
 import de.heiden.jem.models.c64.components.memory.RAM;
@@ -44,9 +45,6 @@ public class TestC64 {
     ROM kernel = ROMLoader.kernel(ROMLoader.DEFAULT_KERNEL);
     ROM charset = ROMLoader.character(ROMLoader.DEFAULT_CHARACTER);
 
-    // Patch file read routine to be executed in java
-    kernel.patch(0x100, 0xF4A5);
-
     CIA6526 cia1 = new CIA6526(_clock);
     CIA6526 cia2 = new CIA6526(_clock);
 
@@ -66,6 +64,8 @@ public class TestC64 {
     //
     // ROM patches
     //
+
+    _cpu.add(new LoadFile());
   }
 
 }

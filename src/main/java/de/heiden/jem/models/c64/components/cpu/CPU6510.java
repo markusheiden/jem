@@ -17,6 +17,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * CPU.
@@ -27,18 +29,50 @@ public class CPU6510 implements ClockedComponent {
    */
   private final Logger logger = LoggerFactory.getLogger(getClass());
 
+  /**
+   * Enable debug features.
+   */
   protected static final boolean DEBUG = true;
 
-  // stack
+  /**
+   * Stack base address.
+   */
   protected static final int STACK = 0x0100;
 
+  /**
+   * State.
+   */
   protected final CPU6510State _state;
 
+  /**
+   * Clock.
+   */
   protected final Tick _tick;
+
+  /**
+   * Bus.
+   */
   protected BusDevice _bus;
+
+  /**
+   * Port at address $0000/$0001.
+   */
   private final InputOutputPortImpl _port;
+
+  /**
+   * Port for interrupt.
+   */
   private final InputPort _irq;
+
+  /**
+   * Port for nmi.
+   */
   private final InputPort _nmi;
+
+  /**
+   * Address -> Patch.
+   */
+  private final Map<Integer, Patch> patches = new HashMap<>();
 
   /**
    * Constructor.
@@ -105,6 +139,19 @@ public class CPU6510 implements ClockedComponent {
     assert bus != null : "bus != null";
 
     _bus = bus;
+  }
+
+  /**
+   * Add a patch.
+   *
+   * @param patch Patch
+   */
+  public void add(Patch patch) {
+    assert patch != null : "patch != null";
+
+    patches.put(patch.getAddress(), patch);
+    writePort(0xFF, 0x0001); // standard memory layout
+    _bus.write(0x02, patch.getAddress()); // add breakpoint
   }
 
   /**
@@ -228,7 +275,18 @@ public class CPU6510 implements ClockedComponent {
         @Interruptible
         public final void execute() // $02: *KIL (*)
         {
-          crash();
+          // Use opcode $02 as escape
+          Patch patch = patches.get(_state.PC - 1);
+          if (patch != null) {
+            boolean rts = patch.execute(_state, _bus);
+            if (rts) {
+              rts();
+            }
+
+          } else {
+            // no patch -> standard behaviour: crash
+            crash();
+          }
         }
       },
 
@@ -1122,8 +1180,7 @@ public class CPU6510 implements ClockedComponent {
         @Interruptible
         public final void execute() // $60: RTS (6)
         {
-          // TODO 3 ticks
-          _state.PC = (popWord() + 1) & 0xFFFF;
+          rts();
         }
       },
 
@@ -2946,6 +3003,15 @@ public class CPU6510 implements ClockedComponent {
     }
     _state.S = s;
     return result | read(s) << 8;
+  }
+
+  /**
+   * RTS.
+   */
+  @Interruptible
+  protected final void rts() {
+    // TODO 3 ticks
+    _state.PC = (popWord() + 1) & 0xFFFF;
   }
 
   //
