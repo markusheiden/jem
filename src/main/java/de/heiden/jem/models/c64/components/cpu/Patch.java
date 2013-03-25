@@ -19,6 +19,11 @@ public abstract class Patch {
   private final int addr;
 
   /**
+   * Replaced opcode.
+   */
+  protected int replaced;
+
+  /**
    * Constructor.
    *
    * @param addr Address to patch
@@ -39,7 +44,7 @@ public abstract class Patch {
    *
    * @param state CPU state
    * @param bus C64 bus
-   * @return Execute rts after execution of patch
+   * @return Opcode to execute after execution of patch or -1
    */
-  protected abstract boolean execute(CPU6510State state, BusDevice bus);
+  protected abstract int execute(CPU6510State state, BusDevice bus);
 }

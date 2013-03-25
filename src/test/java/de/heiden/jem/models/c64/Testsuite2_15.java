@@ -1,13 +1,14 @@
 package de.heiden.jem.models.c64;
 
-import java.net.URL;
+import org.junit.Test;
 
 /**
  * Testsuite 2.15.
  */
 public class Testsuite2_15 {
-  public static void main(String[] args) {
-    URL start = Testsuite2_15.class.getResource("/testsuite2.15/ start.prg");
-    System.out.println(start);
+  @Test
+  public void test() throws Exception {
+    TestC64 c64 = new TestC64();
+
   }
 }

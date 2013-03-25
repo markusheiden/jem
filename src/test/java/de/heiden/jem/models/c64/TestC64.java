@@ -10,6 +10,7 @@ import de.heiden.jem.models.c64.components.memory.ColorRAM;
 import de.heiden.jem.models.c64.components.memory.RAM;
 import de.heiden.jem.models.c64.components.memory.ROM;
 import de.heiden.jem.models.c64.components.patch.LoadFile;
+import de.heiden.jem.models.c64.components.patch.SystemOut;
 import de.heiden.jem.models.c64.components.vic.VIC6569PAL;
 import de.heiden.jem.models.c64.components.vic.VICBus;
 import de.heiden.jem.models.c64.util.ROMLoader;
@@ -65,7 +66,8 @@ public class TestC64 {
     // ROM patches
     //
 
-    _cpu.add(new LoadFile());
+    _cpu.add(new SystemOut());
+    _cpu.add(new LoadFile("testsuite2.15"));
   }
 
 }

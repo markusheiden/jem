@@ -39,7 +39,7 @@ public class LoadFile extends Patch {
   }
 
   @Override
-  protected boolean execute(CPU6510State state, BusDevice bus) {
+  protected int execute(CPU6510State state, BusDevice bus) {
     String filename = StringUtil.read(bus, BusUtil.readWord(0xBB, bus), bus.read(0xB7));
     try {
       String path = basePackage + "/" + filename.toLowerCase() + ".prg";
@@ -57,7 +57,7 @@ public class LoadFile extends Patch {
       logger.error("Failed to load " + filename, e);
     }
 
-    state.PC = 2070;
-    return false;
+//    state.PC = 2070;
+    return 0x60;
   }
 }

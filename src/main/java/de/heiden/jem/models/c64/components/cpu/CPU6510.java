@@ -146,6 +146,7 @@ public class CPU6510 implements ClockedComponent {
 
     patches.put(patch.getAddress(), patch);
     writePort(0xFF, 0x0001); // standard memory layout
+    patch.replaced = _bus.read(patch.getAddress());
     ((Patchable) _bus).patch(0x02, patch.getAddress()); // add breakpoint
   }
 
@@ -273,11 +274,10 @@ public class CPU6510 implements ClockedComponent {
           // Use opcode $02 as escape
           Patch patch = patches.get(_state.PC - 1);
           if (patch != null) {
-            boolean rts = patch.execute(_state, _bus);
-            if (rts) {
-              rts();
+            int opcode = patch.execute(_state, _bus);
+            if (opcode >= 0) {
+              OPCODES[opcode].execute();
             }
-
           } else {
             // no patch -> standard behaviour: crash
             crash();
