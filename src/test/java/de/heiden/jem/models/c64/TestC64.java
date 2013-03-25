@@ -70,4 +70,16 @@ public class TestC64 {
     _cpu.add(new LoadFile("testsuite2.15"));
   }
 
+  /**
+   * Start emulation.
+   */
+  public void start() throws Exception {
+    // init RAM with 0x02 (crash) to easier detect wrong behaviour
+    for (int addr = 0; addr < 0x10000; addr++) {
+      _cpuBus.write(0x02, addr);
+    }
+
+    _clock.run();
+    _clock.dispose();
+  }
 }
