@@ -53,6 +53,7 @@ public class LoadFile extends Patch {
 
   @Override
   protected int execute(CPU6510State state, BusDevice bus) {
+    // Read filename from ($BB), length ($B7)
     String filename = StringUtil.read(bus, BusUtil.readWord(0xBB, bus), bus.read(0xB7));
     filename = filename.toLowerCase() + ".prg";
 
@@ -65,8 +66,10 @@ public class LoadFile extends Patch {
       int endAddress = bus.read(0xB9) == 0 ?
         FileUtil.read(file, BusUtil.readWord(0xC3, bus), bus) :
         FileUtil.read(file, bus);
+
       BusUtil.writeWord(0xAE, endAddress, bus);
-      state.C = false;
+
+      state.C = false; // OK
       state.X = ByteUtil.lo(endAddress);
       state.Y = ByteUtil.hi(endAddress);
 
@@ -74,8 +77,6 @@ public class LoadFile extends Patch {
       logger.error("Failed to load " + filename, e);
     }
 
-    state.PC = 2070;
-    return -1;
-//    return 0x60; // rts
+    return 0x60; // rts
   }
 }
