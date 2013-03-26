@@ -33,7 +33,7 @@ public class LoadFile extends Patch {
    * @param basePackage Base package to load files from
    */
   public LoadFile(String basePackage) {
-    super(0xF4A5);
+    super(0xF4C4);
 
     this.basePackage = basePackage;
     this.baseDir = null;
@@ -57,7 +57,6 @@ public class LoadFile extends Patch {
     filename = filename.toLowerCase() + ".prg";
 
     try {
-
       InputStream file = baseDir != null ?
         new FileInputStream(new File(baseDir, filename)) :
         getClass().getResourceAsStream(basePackage + "/" + filename);
@@ -70,11 +69,13 @@ public class LoadFile extends Patch {
       state.C = false;
       state.X = ByteUtil.lo(endAddress);
       state.Y = ByteUtil.hi(endAddress);
+
     } catch (IOException e) {
       logger.error("Failed to load " + filename, e);
     }
 
-//    state.PC = 2070;
-    return 0x60;
+    state.PC = 2070;
+    return -1;
+//    return 0x60; // rts
   }
 }

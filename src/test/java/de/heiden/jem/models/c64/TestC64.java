@@ -17,6 +17,8 @@ import de.heiden.jem.models.c64.util.ROMLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.StringWriter;
+
 /**
  * Modified C64 for better testability.
  */
@@ -33,6 +35,11 @@ public class TestC64 {
 
   private Keyboard _keyboard;
   private final VIC6569PAL _vic;
+
+  /**
+   * Buffer for capturing console output.
+   */
+  private StringWriter systemOut = new StringWriter(256);
 
   /**
    * Constructor.
@@ -66,7 +73,7 @@ public class TestC64 {
     // ROM patches
     //
 
-    _cpu.add(new SystemOut());
+    _cpu.add(new SystemOut(systemOut));
     _cpu.add(new LoadFile("testsuite2.15"));
   }
 
