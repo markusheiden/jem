@@ -11,6 +11,9 @@ import org.junit.runners.Parameterized.Parameters;
 import org.serialthreads.agent.TransformingClassLoader;
 import org.serialthreads.transformer.Strategies;
 
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.net.URL;
@@ -50,6 +53,11 @@ public class Testsuite2_15 {
   private StringBuffer systemOut;
 
   /**
+   * Keyboard input for test C64.
+   */
+  private KeyListener systemIn;
+
+  /**
    * Thread to run test C64.
    */
   private Thread thread;
@@ -64,6 +72,7 @@ public class Testsuite2_15 {
   public void setUp() throws Exception {
     c64 = c64Class.getConstructor(File.class).newInstance(program);
     systemOut = (StringBuffer) c64Class.getMethod("getSystemOut").invoke(c64);
+    systemIn = (KeyListener) c64Class.getMethod("getSystemIn").invoke(c64);
 
     thread = new Thread(new Runnable() {
       @Override
@@ -75,19 +84,6 @@ public class Testsuite2_15 {
         }
       }
     }, filename);
-  }
-
-  @After
-  public void tearDown() {
-    thread.interrupt();
-  }
-
-  @Test
-  public void test() throws Exception {
-    thread.start();
-    Thread.sleep(2000);
-
-    System.out.println(systemOut.toString());
   }
 
   @Parameters(name = "{1}")
@@ -107,5 +103,52 @@ public class Testsuite2_15 {
     }
 
     return result;
+  }
+
+  @After
+  public void tearDown() {
+    thread.interrupt();
+  }
+
+  @Test
+  public void test() throws Exception {
+    thread.start();
+
+    waitFor("READY.");
+
+    type("SYS2070\n");
+
+    Thread.sleep(2000);
+
+    System.out.println(systemOut.toString());
+  }
+
+  /**
+   * Wait for string in output.
+   *
+   * @param s String
+   */
+  private void waitFor(String s) throws Exception {
+    while (systemOut.indexOf(s) < 0) {
+      Thread.yield();
+    }
+    Thread.sleep(100);
+
+//    systemOut.setLength(0);
+  }
+
+  /**
+   * Type string to keyboard.
+   *
+   * @param s String
+   */
+  private void type(String s) throws Exception {
+    for (char c : s.toCharArray()) {
+      KeyEvent event = new KeyEvent(new Button(), 0, 0, 0, 0, c, 0);
+      systemIn.keyPressed(event);
+      Thread.sleep(100);
+      systemIn.keyReleased(event);
+      Thread.sleep(100);
+    }
   }
 }

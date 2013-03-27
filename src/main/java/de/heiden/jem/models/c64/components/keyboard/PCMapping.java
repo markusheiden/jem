@@ -7,10 +7,8 @@ import static de.heiden.jem.models.c64.components.keyboard.Key.*;
 /**
  * Key mapping using the default pc keys.
  */
-public class PCMapping extends KeyMapping
-{
-  protected final void generateKeyMapping()
-  {
+public class PCMapping extends KeyMapping {
+  protected final void generateKeyMapping() {
     _chars.put(' ', new Key[]{SPACE});
 
     _chars.put('1', new Key[]{NUMBER_1});
@@ -106,6 +104,7 @@ public class PCMapping extends KeyMapping
     _chars.put('*', new Key[]{ASTERISK});
     // TODO how to map UP_ARROW?
     _chars.put('^', new Key[]{UP_ARROW});
+    _chars.put('\n', new Key[]{ENTER});
 
     _keys.put(keyID(KeyEvent.KEY_LOCATION_STANDARD, KeyEvent.VK_ENTER), new Key[]{ENTER});
     _keys.put(keyID(KeyEvent.KEY_LOCATION_STANDARD, KeyEvent.VK_BACK_SPACE), new Key[]{DEL});

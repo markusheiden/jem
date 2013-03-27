@@ -9,7 +9,6 @@ import de.heiden.jem.models.c64.components.keyboard.Keyboard;
 import de.heiden.jem.models.c64.components.memory.ColorRAM;
 import de.heiden.jem.models.c64.components.memory.RAM;
 import de.heiden.jem.models.c64.components.memory.ROM;
-import de.heiden.jem.models.c64.components.patch.LoadFile;
 import de.heiden.jem.models.c64.components.patch.SystemOut;
 import de.heiden.jem.models.c64.components.vic.VIC6569PAL;
 import de.heiden.jem.models.c64.components.vic.VICBus;
@@ -18,6 +17,7 @@ import de.heiden.jem.models.c64.util.ROMLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.awt.event.KeyListener;
 import java.io.File;
 import java.io.StringWriter;
 
@@ -82,12 +82,16 @@ public class TestC64 {
     _cpu.getNMI().connect(cia2.getIRQ());
     _cpu.getNMI().connect(_keyboard.getNMI());
 
+    // init RAM with 0x02 (crash) to easier detect wrong behaviour
+    for (int addr = 0; addr < 0x10000; addr++) {
+      _cpuBus.write(0x02, addr);
+    }
+
     //
     // ROM patches
     //
 
     _cpu.add(new SystemOut(systemOut));
-    _cpu.add(new LoadFile("testsuite2.15"));
   }
 
   /**
@@ -97,15 +101,14 @@ public class TestC64 {
     return systemOut.getBuffer();
   }
 
+  public KeyListener getSystemIn() {
+    return _keyboard.getKeyListener();
+  }
+
   /**
    * Start emulation.
    */
   public void start() throws Exception {
-    // init RAM with 0x02 (crash) to easier detect wrong behaviour
-    for (int addr = 0; addr < 0x10000; addr++) {
-      _cpuBus.write(0x02, addr);
-    }
-
     _clock.run();
     _clock.dispose();
   }
