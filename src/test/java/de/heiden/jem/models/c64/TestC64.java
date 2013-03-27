@@ -13,10 +13,12 @@ import de.heiden.jem.models.c64.components.patch.LoadFile;
 import de.heiden.jem.models.c64.components.patch.SystemOut;
 import de.heiden.jem.models.c64.components.vic.VIC6569PAL;
 import de.heiden.jem.models.c64.components.vic.VICBus;
+import de.heiden.jem.models.c64.util.FileUtil;
 import de.heiden.jem.models.c64.util.ROMLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.StringWriter;
 
 /**
@@ -40,6 +42,17 @@ public class TestC64 {
    * Buffer for capturing console output.
    */
   private StringWriter systemOut = new StringWriter(256);
+
+  /**
+   * Constructor.
+   *
+   * @param program Program to load
+   */
+  public TestC64(File program) throws Exception {
+    this();
+
+    FileUtil.read(program, _cpuBus);
+  }
 
   /**
    * Constructor.
@@ -75,6 +88,13 @@ public class TestC64 {
 
     _cpu.add(new SystemOut(systemOut));
     _cpu.add(new LoadFile("testsuite2.15"));
+  }
+
+  /**
+   * StringWriter with screen output.
+   */
+  public StringBuffer getSystemOut() {
+    return systemOut.getBuffer();
   }
 
   /**
