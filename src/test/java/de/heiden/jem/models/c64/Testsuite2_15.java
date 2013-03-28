@@ -116,7 +116,7 @@ public class Testsuite2_15 {
 
     waitFor("READY.");
 
-    type("SYS2070\n");
+    type("sys2070\n");
 
     Thread.sleep(2000);
 
