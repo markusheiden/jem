@@ -16,6 +16,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.OutputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -50,7 +51,7 @@ public class Testsuite2_15 {
   /**
    * Screen output of test C64.
    */
-  private StringBuffer systemOut;
+  private ScreenBuffer screen;
 
   /**
    * Keyboard input for test C64.
@@ -62,6 +63,11 @@ public class Testsuite2_15 {
    */
   private Thread thread;
 
+  /**
+   * Exception.
+   */
+  private transient Exception exception;
+
   @BeforeClass
   public static void setUpClass() throws Exception {
     ClassLoader classLoader = new TransformingClassLoader(Testsuite2_15.class.getClassLoader(), Strategies.DEFAULT, "de.heiden.jem");
@@ -70,8 +76,10 @@ public class Testsuite2_15 {
 
   @Before
   public void setUp() throws Exception {
+    screen = new ScreenBuffer();
+
     c64 = c64Class.getConstructor(File.class).newInstance(program);
-    systemOut = (StringBuffer) c64Class.getMethod("getSystemOut").invoke(c64);
+    c64Class.getMethod("setSystemOut", OutputStream.class).invoke(c64, screen);
     systemIn = (KeyListener) c64Class.getMethod("getSystemIn").invoke(c64);
 
     thread = new Thread(new Runnable() {
@@ -80,7 +88,7 @@ public class Testsuite2_15 {
         try {
           c64Class.getMethod("start").invoke(c64);
         } catch (ReflectiveOperationException e) {
-          e.printStackTrace();
+          Testsuite2_15.this.exception = e;
         }
       }
     }, filename);
@@ -114,27 +122,11 @@ public class Testsuite2_15 {
   public void test() throws Exception {
     thread.start();
 
-    waitFor("READY.");
+    screen.waitFor("READY.");
 
     type("sys2070\n");
 
     Thread.sleep(2000);
-
-    System.out.println(systemOut.toString());
-  }
-
-  /**
-   * Wait for string in output.
-   *
-   * @param s String
-   */
-  private void waitFor(String s) throws Exception {
-    while (systemOut.indexOf(s) < 0) {
-      Thread.yield();
-    }
-    Thread.sleep(100);
-
-//    systemOut.setLength(0);
   }
 
   /**

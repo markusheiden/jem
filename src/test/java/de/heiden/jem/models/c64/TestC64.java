@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import java.awt.event.KeyListener;
 import java.io.File;
-import java.io.StringWriter;
+import java.io.OutputStream;
 
 /**
  * Modified C64 for better testability.
@@ -41,7 +41,7 @@ public class TestC64 {
   /**
    * Buffer for capturing console output.
    */
-  private StringWriter systemOut = new StringWriter(256);
+  private final SystemOut systemOut = new SystemOut();
 
   /**
    * Constructor.
@@ -91,14 +91,14 @@ public class TestC64 {
     // ROM patches
     //
 
-    _cpu.add(new SystemOut(systemOut));
+    _cpu.add(systemOut);
   }
 
   /**
-   * StringWriter with screen output.
+   * Set stream for screen output.
    */
-  public StringBuffer getSystemOut() {
-    return systemOut.getBuffer();
+  public void setSystemOut(OutputStream systemOut) {
+    this.systemOut.setStream(systemOut);
   }
 
   public KeyListener getSystemIn() {
