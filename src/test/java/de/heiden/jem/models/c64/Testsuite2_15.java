@@ -135,8 +135,10 @@ public class Testsuite2_15 {
     waitFor(2000000, "READY.");
     screen.clear();
 
+    screen.setLower(true);
     type("poke2,1:sys2070\n");
-    int event = waitFor(30000000, "- OK", "RIGHT", "ERROR");
+    int event = waitFor(30000000, "- ok", "right", "error");
+    waitCycles(1000);
 
     // Assert that test program exits with "OK" message.
     // Consider everything else (timeout, error messages) as a test failure.
