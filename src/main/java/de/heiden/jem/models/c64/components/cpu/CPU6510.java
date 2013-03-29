@@ -2821,7 +2821,7 @@ public class CPU6510 implements ClockedComponent {
     if (_state.C) {
       a++;
     }
-    _state.setCarryZeroOverflowNegativeP(_state.A, a, a >= 0x100);
+    _state.setCarryZeroOverflowNegativeP(_state.A, value, a);
     _state.A = a & 0xFF;
   }
 
@@ -2831,11 +2831,11 @@ public class CPU6510 implements ClockedComponent {
    * @param value value
    */
   protected final void subtract(int value) {
-    int a = _state.A - value;
+    int a = 0x100 + _state.A - value;
     if (!_state.C) {
       a--;
     }
-    _state.setCarryZeroOverflowNegativeP(_state.A, a, a >= 0);
+    _state.setCarryZeroOverflowNegativeP(_state.A, value, a);
     _state.A = a & 0xFF;
   }
 

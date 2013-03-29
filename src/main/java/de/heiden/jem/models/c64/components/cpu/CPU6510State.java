@@ -194,12 +194,16 @@ public final class CPU6510State {
   /**
    * Set N, V, Z and C of P for value.
    * Used for ADC and SBC.
+   *
+   * @param s1 Summand 1
+   * @param s2 Summand 2
+   * @param sum Sum
    */
-  public final void setCarryZeroOverflowNegativeP(int oldValue, int value, boolean c) {
-    C = c;
-    Z = (value & 0xFF) == 0;
-    V = ((oldValue ^ value) & 0x80) != 0; // TODO correct?
-    N = (value & 0x80) != 0;
+  public final void setCarryZeroOverflowNegativeP(int s1, int s2, int sum) {
+    C = (sum & 0x100) != 0;
+    Z = (sum & 0xFF) == 0;
+    V = ((s1 ^ sum) & (s2 ^ sum) & 0x80) != 0;
+    N = (sum & 0x80) != 0;
   }
 
   //
