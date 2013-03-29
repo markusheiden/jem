@@ -21,8 +21,12 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import static org.junit.Assert.assertEquals;
+
 /**
  * Testsuite 2.15.
+ * <p/>
+ * TODO time should be simulated time or cycles instead of real time
  */
 @RunWith(Parameterized.class)
 public class Testsuite2_15 {
@@ -121,12 +125,14 @@ public class Testsuite2_15 {
   @Test
   public void test() throws Exception {
     thread.start();
-
-    screen.waitFor("READY.");
+    screen.waitFor(2000, "READY.");
 
     type("sys2070\n");
+    int event = screen.waitFor(10000, "OK", "BEFORE", "ERROR");
 
-    Thread.sleep(2000);
+    // Assert that test programm exits with "OK" message.
+    // Consider everything else (timeout, error messages) as a test failure.
+    assertEquals(0, event);
   }
 
   /**
@@ -138,9 +144,9 @@ public class Testsuite2_15 {
     for (char c : s.toCharArray()) {
       KeyEvent event = new KeyEvent(new Button(), 0, 0, 0, 0, c, 0);
       systemIn.keyPressed(event);
-      Thread.sleep(21);
+      Thread.sleep(21); // wait at least one interrupt
       systemIn.keyReleased(event);
-      Thread.sleep(21);
+      Thread.sleep(21); // wait at least one interrupt
     }
   }
 }

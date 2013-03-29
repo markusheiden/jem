@@ -72,10 +72,13 @@ public class ScreenBuffer extends OutputStream {
   /**
    * Wait for a string to appear on screen.
    *
+   * @param maxWait Max milliseconds to wait
    * @param strings Strings
-   * @return Index of string that appeared on screen
+   * @return Index of string that appeared on screen or -1, if timeout
    */
-  public int waitFor(String... strings) throws Exception {
+  public int waitFor(long maxWait, String... strings) throws Exception {
+    long end = System.currentTimeMillis() + maxWait;
+
     while (true) {
       for (int i = 0; i < strings.length; i++) {
         if (contains(strings[i])) {
@@ -83,8 +86,14 @@ public class ScreenBuffer extends OutputStream {
         }
       }
 
+      long toWait = end - System.currentTimeMillis();
+      if (toWait <= 0) {
+        // Timeout -> exit with -1
+        return -1;
+      }
+
       synchronized (screen) {
-        screen.wait();
+        screen.wait(toWait);
       }
     }
   }
