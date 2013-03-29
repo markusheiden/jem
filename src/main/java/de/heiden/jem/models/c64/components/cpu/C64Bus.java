@@ -283,6 +283,7 @@ public class C64Bus implements BusDevice, Patchable {
    * @require address >= 0x0000 && address < 0x10000
    * @ensure result >= 0x00 && result < 0x100
    */
+  @Override
   public final int read(int address) {
     assert address >= 0x0000 && address < 0x10000 : "address >= 0x0000 && address < 0x10000";
 
@@ -296,6 +297,7 @@ public class C64Bus implements BusDevice, Patchable {
    * @param address address to write byte to
    * @require value >= 0x00 && value < 0x100
    */
+  @Override
   public void patch(int value, int address) {
     // 0x100 is used to escape emulation in the cpu
     assert value >= 0 && value < 0x100 : "value >= 0 && value < 0x100";
@@ -311,6 +313,7 @@ public class C64Bus implements BusDevice, Patchable {
    * @require value >= 0x00 && value < 0x100
    * @require address >= 0x0000 && address < 0x10000
    */
+  @Override
   public final void write(int value, int address) {
     assert value >= 0x00 && value < 0x100 : "value >= 0x00 && value < 0x100";
     assert address >= 0x0000 && address < 0x10000 : "address >= 0x0000 && address < 0x10000";

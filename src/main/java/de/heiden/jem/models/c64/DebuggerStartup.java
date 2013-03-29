@@ -15,6 +15,7 @@ public class DebuggerStartup extends Startup {
    */
   private final Logger logger = LoggerFactory.getLogger(getClass());
 
+  @Override
   public void start() {
     try {
       Class<?> clazz = loadClass("de.heiden.jem.models.c64.monitor.gui.DebuggerGUI");

@@ -68,6 +68,7 @@ public class ParallelClock
     }
   }
 
+  @Override
   public final void waitForTick() {
     assert isStarted() : "Precondition: isStarted()";
 
@@ -120,6 +121,7 @@ public class ParallelClock
     _lock.notifyAll();
   }
 
+  @Override
   public void run() {
     logger.debug("run clock");
 
@@ -157,6 +159,7 @@ public class ParallelClock
     tick();
   }
 
+  @Override
   public void run(int ticks) {
     logger.debug("run clock for " + ticks + " ticks");
 

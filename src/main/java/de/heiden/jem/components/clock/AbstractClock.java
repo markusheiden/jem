@@ -63,6 +63,7 @@ public abstract class AbstractClock<E extends ClockEntry> implements Clock {
   /**
    * Has the clock been started?.
    */
+  @Override
   public boolean isStarted() {
     return _started;
   }
@@ -76,6 +77,7 @@ public abstract class AbstractClock<E extends ClockEntry> implements Clock {
    * @require component != null
    * @ensure result != null
    */
+  @Override
   public synchronized Tick addClockedComponent(int position, ClockedComponent component) {
     assert component != null : "Precondition: component != null";
     assert position >= 0 : "Precondition: position >= 0";
@@ -103,6 +105,7 @@ public abstract class AbstractClock<E extends ClockEntry> implements Clock {
    * @require tick > getTick()
    * @require newEvent != null
    */
+  @Override
   public void addClockEvent(long tick, ClockEvent newEvent) {
     assert tick > getTick() : "tick > getTick()";
     assert newEvent != null : "newEvent != null";
@@ -136,6 +139,7 @@ public abstract class AbstractClock<E extends ClockEntry> implements Clock {
    * @param oldEvent event to remove
    * @require oldEvent != null
    */
+  @Override
   public void removeClockEvent(ClockEvent oldEvent) {
     assert oldEvent != null : "oldEvent != null";
 

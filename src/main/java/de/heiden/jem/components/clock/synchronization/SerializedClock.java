@@ -62,6 +62,7 @@ public class SerializedClock
   /**
    * Wait for next tick. Called by clocked components.
    */
+  @Override
   public void waitForTick() {
     waitForTick(1);
   }
@@ -104,6 +105,7 @@ public class SerializedClock
   /**
    * Run this clock as master clock.
    */
+  @Override
   public void run() {
     logger.debug("run clock");
 
@@ -124,6 +126,7 @@ public class SerializedClock
    *
    * @param ticks number of ticks to execute.
    */
+  @Override
   public void run(int ticks) {
     logger.debug("run clock for " + ticks + " ticks");
 

@@ -118,6 +118,7 @@ public class CIA6526 implements BusDevice {
 
     // event for timer a finished clock counting
     _timerAUnderflowEvent = new ClockEvent() {
+      @Override
       public void execute(long tick) {
         timerAUnderflow();
         _timerABase = tick;
@@ -135,6 +136,7 @@ public class CIA6526 implements BusDevice {
 
     // event for timer b finished clock counting
     _timerBUnderflowEvent = new ClockEvent() {
+      @Override
       public void execute(long tick) {
         timerBUnderflow();
         _timerBBase = tick;
@@ -248,6 +250,7 @@ public class CIA6526 implements BusDevice {
    * @param address address to write byte to
    * @require value >= 0 && value < 0x100
    */
+  @Override
   public void write(int value, int address) {
     assert value >= 0 && value < 0x100 : "value >= 0 && value < 0x100";
 
@@ -368,6 +371,7 @@ public class CIA6526 implements BusDevice {
    * @param address address to read byte from
    * @ensure result >= 0 && result < 0x100
    */
+  @Override
   public int read(int address) {
     int result;
     switch (address & _mask) {

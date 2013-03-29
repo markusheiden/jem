@@ -32,6 +32,7 @@ public class CPUTestBus implements BusDevice {
   /**
    * Protocol all write accesses.
    */
+  @Override
   public final void write(int value, int address) {
     _log.add(new LogEntry(false, address, value));
     _bus.write(value, address);
@@ -40,6 +41,7 @@ public class CPUTestBus implements BusDevice {
   /**
    * Protocol all read accesses
    */
+  @Override
   public final int read(int address) {
     int value = _bus.read(address);
     _log.add(new LogEntry(true, address, value));

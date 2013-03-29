@@ -69,6 +69,7 @@ public class CPU6510Test extends TestCase {
    * Creates CPU test environment with 0x1000 bytes of RAM starting ab 0x0000.
    * PC is set to 0x300.
    */
+  @Override
   protected void setUp() throws Exception {
     super.setUp();
 
@@ -88,6 +89,7 @@ public class CPU6510Test extends TestCase {
    *
    * @exception Exception
    */
+  @Override
   protected void tearDown() throws Exception {
     logger.debug("tear down");
 

@@ -8,6 +8,7 @@ import static de.heiden.jem.models.c64.components.keyboard.Key.*;
  * Key mapping using the default pc keys.
  */
 public class PCMapping extends KeyMapping {
+  @Override
   protected final void generateKeyMapping() {
     _chars.put(' ', new Key[]{SPACE});
 

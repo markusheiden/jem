@@ -191,6 +191,7 @@ public class CPU6510 implements ClockedComponent {
     return _nmi;
   }
 
+  @Override
   @Interruptible
   public final void run() {
     reset();

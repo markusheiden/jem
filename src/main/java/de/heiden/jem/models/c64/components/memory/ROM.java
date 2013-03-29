@@ -21,6 +21,7 @@ public final class ROM extends AbstractMemory implements Patchable {
    * @param address address to write byte to
    * @require value >= 0x00 && value < 0x100
    */
+  @Override
   public void write(int value, int address) {
     assert false : "Write to ROM not possible";
   }
@@ -46,6 +47,7 @@ public final class ROM extends AbstractMemory implements Patchable {
    * @param address address to read byte from
    * @ensure result >= 0x00 && result < 0x100
    */
+  @Override
   public int read(int address) {
     int result = _memory[address & _mask];
     // 0x100 is used to escape emulation in the cpu

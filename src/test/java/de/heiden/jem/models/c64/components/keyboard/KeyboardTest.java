@@ -8,8 +8,7 @@ import java.awt.event.KeyEvent;
 /**
  * Test.
  */
-public class KeyboardTest extends TestCase
-{
+public class KeyboardTest extends TestCase {
   private InputOutputPortImpl _port0;
   private InputOutputPortImpl _port1;
   private Keyboard _keyboard;
@@ -17,8 +16,7 @@ public class KeyboardTest extends TestCase
   /**
    * Test single key presses.
    */
-  public void testSingleKey()
-  {
+  public void testSingleKey() {
     KeyEvent a = new KeyEvent(null, 0, 0, 0, KeyEvent.VK_A, 'a', KeyEvent.KEY_LOCATION_STANDARD);
     _keyboard.keyPressed(a);
     _port1.setOutputData(0x00); // port 1 is input
@@ -67,8 +65,7 @@ public class KeyboardTest extends TestCase
   /**
    * Test double key presses one on column or row.
    */
-  public void testDoubleKey()
-  {
+  public void testDoubleKey() {
     // TODO not implemented yet...
 /*
     _keyboard.pressed(KeyEvent.VK_2, KeyEvent.KEY_LOCATION_STANDARD);
@@ -99,8 +96,8 @@ public class KeyboardTest extends TestCase
   /**
    * Setup.
    */
-  protected void setUp() throws Exception
-  {
+  @Override
+  protected void setUp() throws Exception {
     super.setUp();
     // TODO create port instances
     _port0 = new InputOutputPortImpl();

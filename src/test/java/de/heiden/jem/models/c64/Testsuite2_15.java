@@ -138,9 +138,9 @@ public class Testsuite2_15 {
     for (char c : s.toCharArray()) {
       KeyEvent event = new KeyEvent(new Button(), 0, 0, 0, 0, c, 0);
       systemIn.keyPressed(event);
-      Thread.sleep(100);
+      Thread.sleep(21);
       systemIn.keyReleased(event);
-      Thread.sleep(100);
+      Thread.sleep(21);
     }
   }
 }

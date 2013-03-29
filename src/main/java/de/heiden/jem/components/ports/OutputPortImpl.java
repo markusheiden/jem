@@ -25,6 +25,7 @@ public final class OutputPortImpl implements OutputPort {
    * @param newListener port listener
    * @require listener != null
    */
+  @Override
   public void addOutputPortListener(OutputPortListener newListener) {
     assert newListener != null : "newListener != null";
     assert newListener.next == null : "newListener.next == null";
@@ -46,6 +47,7 @@ public final class OutputPortImpl implements OutputPort {
    * @param oldListener port listener
    * @require listener != null
    */
+  @Override
   public void removeOutputPortListener(OutputPortListener oldListener) {
     assert oldListener != null : "oldListener != null";
 
@@ -64,6 +66,7 @@ public final class OutputPortImpl implements OutputPort {
   /**
    * Port output data.
    */
+  @Override
   public int outputData() {
     return _outputData;
   }
@@ -72,6 +75,7 @@ public final class OutputPortImpl implements OutputPort {
    * Port output mask.
    * Set bit means port bit is output. Cleared bit means port bit is not driven.
    */
+  @Override
   public int outputMask() {
     return _outputMask;
   }

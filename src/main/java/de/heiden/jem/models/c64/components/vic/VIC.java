@@ -192,6 +192,7 @@ public abstract class VIC implements BusDevice {
    * @param address address to write byte to
    * @require value >= 0 && value < 0x100
    */
+  @Override
   public void write(int value, int address) {
     assert value >= 0 && value < 0x100 : "value >= 0 && value < 0x100";
 
@@ -456,6 +457,7 @@ public abstract class VIC implements BusDevice {
    * @param address address to read byte from
    * @ensure result >= 0 && result < 0x100
    */
+  @Override
   public int read(int address) {
     int result;
     switch (address & _mask) {

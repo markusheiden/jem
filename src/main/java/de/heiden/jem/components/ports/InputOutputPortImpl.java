@@ -20,6 +20,7 @@ public final class InputOutputPortImpl implements InputOutputPort {
    * @param port output port to connect to.
    * @require port != null
    */
+  @Override
   public void connect(OutputPort port) {
     _inputPort.connect(port);
   }
@@ -30,6 +31,7 @@ public final class InputOutputPortImpl implements InputOutputPort {
    * @param port output port to disconnect.
    * @require port != null
    */
+  @Override
   public void disconnect(OutputPort port) {
     _inputPort.disconnect(port);
   }
@@ -40,6 +42,7 @@ public final class InputOutputPortImpl implements InputOutputPort {
    * @param listener port listener
    * @require listener != null
    */
+  @Override
   public void addInputPortListener(InputPortListener listener) {
     _inputPort.addInputPortListener(listener);
   }
@@ -50,6 +53,7 @@ public final class InputOutputPortImpl implements InputOutputPort {
    * @param listener port listener
    * @require listener != null
    */
+  @Override
   public void removeInputPortListener(InputPortListener listener) {
     _inputPort.removeInputPortListener(listener);
   }
@@ -57,6 +61,7 @@ public final class InputOutputPortImpl implements InputOutputPort {
   /**
    * Data of this input port.
    */
+  @Override
   public int inputData() {
     return _inputPort.inputData();
   }
@@ -65,6 +70,7 @@ public final class InputOutputPortImpl implements InputOutputPort {
    * Mask of this input port.
    * Set bit means port bit is driven. Cleared bit means port bit is not driven.
    */
+  @Override
   public int inputMask() {
     return _inputPort.inputMask();
   }
@@ -75,6 +81,7 @@ public final class InputOutputPortImpl implements InputOutputPort {
    * @param listener port listener
    * @require listener != null
    */
+  @Override
   public void addOutputPortListener(OutputPortListener listener) {
     _outputPort.addOutputPortListener(listener);
   }
@@ -85,6 +92,7 @@ public final class InputOutputPortImpl implements InputOutputPort {
    * @param listener port listener
    * @require listener != null
    */
+  @Override
   public void removeOutputPortListener(OutputPortListener listener) {
     _outputPort.removeOutputPortListener(listener);
   }
@@ -92,6 +100,7 @@ public final class InputOutputPortImpl implements InputOutputPort {
   /**
    * Port output data.
    */
+  @Override
   public int outputData() {
     int mask = _outputPort.outputMask();
     return _outputPort.outputData() & mask | _inputPort.inputData() & (0xFF - mask);
@@ -101,6 +110,7 @@ public final class InputOutputPortImpl implements InputOutputPort {
    * Port output mask.
    * Set bit means port bit is output. Cleared bit means port bit is not driven.
    */
+  @Override
   public int outputMask() {
     return _outputPort.outputMask();
   }

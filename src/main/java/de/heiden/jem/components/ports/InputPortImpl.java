@@ -38,6 +38,7 @@ public final class InputPortImpl implements InputPort {
    * @param port output port to connect to.
    * @require port != null
    */
+  @Override
   public void connect(OutputPort port) {
     assert port != null : "port != null";
 
@@ -45,6 +46,7 @@ public final class InputPortImpl implements InputPort {
       /**
        * Output port changed.
        */
+      @Override
       public final void outputPortChanged(int value, int mask) {
         updateInputPort();
       }
@@ -62,6 +64,7 @@ public final class InputPortImpl implements InputPort {
    * @param port output port to disconnect.
    * @require port != null
    */
+  @Override
   public void disconnect(OutputPort port) {
     OutputPortListener listener = _outputPortListeners.remove(port);
     _outputPorts = _outputPortListeners.keySet().toArray(new OutputPort[_outputPortListeners.size()]);
@@ -75,6 +78,7 @@ public final class InputPortImpl implements InputPort {
    * @param newListener port listener
    * @require listener != null
    */
+  @Override
   public void addInputPortListener(InputPortListener newListener) {
     assert newListener != null : "newListener != null";
     assert newListener.next == null : "newListener.next == null";
@@ -96,6 +100,7 @@ public final class InputPortImpl implements InputPort {
    * @param oldListener port listener
    * @require listener != null
    */
+  @Override
   public void removeInputPortListener(InputPortListener oldListener) {
     assert oldListener != null : "oldListener != null";
 
@@ -114,6 +119,7 @@ public final class InputPortImpl implements InputPort {
   /**
    * Data of this input port.
    */
+  @Override
   public int inputData() {
     return _inputData;
   }
@@ -122,6 +128,7 @@ public final class InputPortImpl implements InputPort {
    * Mask of this input port.
    * Set bit means port bit is driven. Cleared bit means port bit is not driven.
    */
+  @Override
   public int inputMask() {
     return _inputMask;
   }

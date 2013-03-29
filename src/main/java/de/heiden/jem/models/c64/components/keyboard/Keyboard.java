@@ -63,6 +63,7 @@ public class Keyboard extends KeyAdapter {
       /**
        * Output port changed.
        */
+      @Override
       public void outputPortChanged(int value, int mask) {
         updatePorts();
       }
@@ -72,6 +73,7 @@ public class Keyboard extends KeyAdapter {
       /**
        * Output port changed.
        */
+      @Override
       public void outputPortChanged(int value, int mask) {
         updatePorts();
       }

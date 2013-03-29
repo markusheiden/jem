@@ -56,6 +56,7 @@ public class VICBus implements BusDevice {
    * @require address >= 0x0000 && address < 0x4000
    * @ensure result >= 0x00 && result < 0x100
    */
+  @Override
   public final int read(int address) {
     assert address >= 0x0000 && address < 0x4000 : "address >= 0x0000 && address < 0x4000";
 
@@ -71,6 +72,7 @@ public class VICBus implements BusDevice {
    * @require value >= 0x00 && value < 0x100
    * @require address >= 0x0000 && address < 0x10000
    */
+  @Override
   public final void write(int value, int address) {
     assert false : "VIC does not write anything";
   }
