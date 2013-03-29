@@ -113,6 +113,7 @@ public class Keyboard extends KeyAdapter {
   // protected
   //
 
+  @Override
   public void keyPressed(KeyEvent e) {
     logger.debug("pressed " + KeyMapping.toString(e));
 
@@ -122,7 +123,6 @@ public class Keyboard extends KeyAdapter {
         press(key);
       }
       logger.trace(keyMatrixToString());
-      updatePorts();
     }
   }
 
@@ -137,9 +137,11 @@ public class Keyboard extends KeyAdapter {
       _nmi.setOutputData(0x0);
     } else {
       _matrix[key.getRow()] |= 1 << key.getColumn();
+      updatePorts();
     }
   }
 
+  @Override
   public void keyReleased(KeyEvent e) {
     logger.debug("released " + KeyMapping.toString(e));
 
@@ -149,7 +151,6 @@ public class Keyboard extends KeyAdapter {
         release(key);
       }
       logger.trace(keyMatrixToString());
-      updatePorts();
     }
   }
 
@@ -164,6 +165,7 @@ public class Keyboard extends KeyAdapter {
       _nmi.setOutputData(0x1);
     } else {
       _matrix[key.getRow()] &= 0xFF - (1 << key.getColumn());
+      updatePorts();
     }
   }
 
@@ -173,7 +175,7 @@ public class Keyboard extends KeyAdapter {
    * Assuming low is stronger than hi.
    * Assuming pull ups.
    */
-  protected void updatePorts() {
+  protected final void updatePorts() {
     int port1InMask = _port1.outputMask();
     int port1InDataInv = 0xFF - _port1.outputData();
     int port0OutMask = 0x00;
@@ -211,12 +213,17 @@ public class Keyboard extends KeyAdapter {
     _matrixPort1.setOutputMask(port1OutMask);
   }
 
+  @Override
+  public String toString() {
+    return keyMatrixToString();
+  }
+
   /**
    * Print key matrix.
    */
   protected String keyMatrixToString() {
     StringBuilder result = new StringBuilder(128);
-    result.append("key matrix:\n");
+    result.append("Keyboard:\n");
     for (int row : _matrix) {
       for (int i = 7; i >= 0; i--) {
         result.append((row & (1 << i)) != 0 ? "X" : "+");
