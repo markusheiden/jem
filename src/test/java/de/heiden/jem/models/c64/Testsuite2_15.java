@@ -70,7 +70,7 @@ public class Testsuite2_15 {
   /**
    * Exception.
    */
-  private transient Exception exception;
+  private volatile Exception exception;
 
   @BeforeClass
   public static void setUpClass() throws Exception {
@@ -126,11 +126,13 @@ public class Testsuite2_15 {
   public void test() throws Exception {
     thread.start();
     screen.waitFor(2000, "READY.");
+    screen.clear();
 
-    type("sys2070\n");
-    int event = screen.waitFor(10000, "OK", "BEFORE", "ERROR");
+    System.out.println("Test:");
+    type("poke2,0:sys2070\n");
+    int event = screen.waitFor(10000, " OK", "RIGHT", "ERROR");
 
-    // Assert that test programm exits with "OK" message.
+    // Assert that test program exits with "OK" message.
     // Consider everything else (timeout, error messages) as a test failure.
     assertEquals(0, event);
   }

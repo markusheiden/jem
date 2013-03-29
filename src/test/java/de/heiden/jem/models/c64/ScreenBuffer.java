@@ -67,6 +67,9 @@ public class ScreenBuffer extends OutputStream {
    */
   public void clear() {
     screen.setLength(0);
+
+    System.out.println();
+    System.out.flush();
   }
 
   /**
@@ -82,6 +85,7 @@ public class ScreenBuffer extends OutputStream {
     while (true) {
       for (int i = 0; i < strings.length; i++) {
         if (contains(strings[i])) {
+          System.out.flush();
           return i;
         }
       }
@@ -89,6 +93,7 @@ public class ScreenBuffer extends OutputStream {
       long toWait = end - System.currentTimeMillis();
       if (toWait <= 0) {
         // Timeout -> exit with -1
+        System.out.flush();
         return -1;
       }
 
