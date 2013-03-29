@@ -3,16 +3,13 @@ package de.heiden.jem.models.c64.components;
 import de.heiden.jem.components.bus.BusDevice;
 import de.heiden.jem.components.clock.Clock;
 import de.heiden.jem.components.clock.ClockEvent;
-import de.heiden.jem.components.ports.InputOutputPort;
-import de.heiden.jem.components.ports.InputOutputPortImpl;
-import de.heiden.jem.components.ports.OutputPort;
-import de.heiden.jem.components.ports.OutputPortImpl;
+import de.heiden.jem.components.ports.*;
 
 /**
  * CIA 6526.
  * <p/>
  * TODO PC handling for port a & b
- * TODO serial port handling
+ * TODO serial port handling!
  */
 public class CIA6526 implements BusDevice {
   public static final int PB6 = 0x40;
@@ -65,7 +62,6 @@ public class CIA6526 implements BusDevice {
 
   // serial shift reg
   private int _sdr; // 0x0C
-  private int _portSValue; // current value
   private InputOutputPortImpl _portSerial;
 
   // timer A
@@ -162,39 +158,19 @@ public class CIA6526 implements BusDevice {
     _portB = new InputOutputPortImpl();
     // TODO add listener for events
 
-    _portSerial = new InputOutputPortImpl() {
-      /**
-       * Write to input port.
-       *
-       * @param value value to write to port
-       * @param mask set bit means bit is driven, cleared bit means bit is not driven
-       */
-      public void write(int value, int mask) {
+    _portSerial = new InputOutputPortImpl();
+    _portSerial.addInputPortListener(new InputPortListener() {
+      @Override
+      public void inputPortChanged(int value, int mask) {
         // receiveSerial(value);
-        if (_timerACNT) {
+        if (_timerACNT) { // TODO check for raising edge of cnt
           countTimerA();
         }
-        if (_timerBCNT) {
+        if (_timerBCNT) { // TODO check for raising edge of cnt
           countTimerA();
         }
       }
-
-      /**
-       * Read port.
-       */
-      public int data() {
-        return _portSValue;
-      }
-
-      /**
-       * Get port mask.
-       * Set bit means port bit is output. Cleared bit means port bit is not driven.
-       */
-      public int mask() {
-        // TODO return correct output mask
-        return 0;
-      }
-    };
+    });
 
     _irqPort = new OutputPortImpl();
     _irqPort.setOutputMask(0x01);
@@ -602,7 +578,7 @@ public class CIA6526 implements BusDevice {
     // trigger timer B
     if ((_controlB & CRA_SP_OUTPUT) != 0) {
       // count or count if CNT == 1
-      if ((_controlB & (1 << 5)) == 0 || (_portSValue & PORTS_CNT) != 0) {
+      if ((_controlB & (1 << 5)) == 0 || (_portSerial.inputData() & PORTS_CNT) != 0) {
         countTimerB();
       }
     }

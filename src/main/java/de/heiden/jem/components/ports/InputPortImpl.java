@@ -6,16 +6,31 @@ import java.util.List;
 /**
  * Input port implementation.
  */
-public class InputPortImpl implements InputPort {
+public final class InputPortImpl implements InputPort {
+  /**
+   * Output ports driving this port.
+   */
   private final List<OutputPort> _outputPorts;
 
+  /**
+   * Output listener.
+   */
   private final OutputPortListener _outputListener;
 
+  /**
+   * Input listeners.
+   */
   private final List<InputPortListener> _inputListeners;
 
-  private int _inputData;
+  /**
+   * Port data.
+   */
+  private int _inputData = 0xFF;
 
-  private int _inputMask;
+  /**
+   * Input mask: bit == 1 -> line is input.
+   */
+  private int _inputMask = 0xFF;
 
   /**
    * Constructor.

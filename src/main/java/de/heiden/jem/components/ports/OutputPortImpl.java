@@ -3,23 +3,21 @@ package de.heiden.jem.components.ports;
 /**
  * Output port abstract implementation
  */
-public class OutputPortImpl implements OutputPort
-{
+public final class OutputPortImpl implements OutputPort {
+  /**
+   * Listeners
+   */
   private OutputPortListener _outputListeners;
 
-  private int _outputData;
-
-  private int _outputMask;
+  /**
+   * Port data.
+   */
+  private volatile int _outputData = 0xFF;
 
   /**
-   * Constructor.
+   * Output mask: bit == 1 -> line is output.
    */
-  public OutputPortImpl()
-  {
-    _outputListeners = null;
-    _outputData = 0xFF;
-    _outputMask = 0x00;
-  }
+  private volatile int _outputMask = 0x00;
 
   /**
    * Add port listener.
@@ -27,21 +25,16 @@ public class OutputPortImpl implements OutputPort
    * @param newListener port listener
    * @require listener != null
    */
-  public void addOutputPortListener(OutputPortListener newListener)
-  {
+  public void addOutputPortListener(OutputPortListener newListener) {
     assert newListener != null : "newListener != null";
     assert newListener.next == null : "newListener.next == null";
 
     OutputPortListener listener = _outputListeners;
-    if (listener == null)
-    {
+    if (listener == null) {
       _outputListeners = newListener;
-    }
-    else
-    {
+    } else {
       OutputPortListener next;
-      while ((next = listener.next) != null)
-      {
+      while ((next = listener.next) != null) {
         listener = next;
       }
       listener.next = newListener;
@@ -54,20 +47,15 @@ public class OutputPortImpl implements OutputPort
    * @param oldListener port listener
    * @require listener != null
    */
-  public void removeOutputPortListener(OutputPortListener oldListener)
-  {
+  public void removeOutputPortListener(OutputPortListener oldListener) {
     assert oldListener != null : "oldListener != null";
 
     OutputPortListener listener = _outputListeners;
-    if (listener == oldListener)
-    {
+    if (listener == oldListener) {
       _outputListeners = oldListener.next;
-    }
-    else
-    {
+    } else {
       OutputPortListener next;
-      while ((next = listener.next) != oldListener)
-      {
+      while ((next = listener.next) != oldListener) {
         listener = next;
       }
       listener.next = oldListener.next;
@@ -78,8 +66,7 @@ public class OutputPortImpl implements OutputPort
   /**
    * Port output data.
    */
-  public int outputData()
-  {
+  public int outputData() {
     return _outputData;
   }
 
@@ -87,8 +74,7 @@ public class OutputPortImpl implements OutputPort
    * Port output mask.
    * Set bit means port bit is output. Cleared bit means port bit is not driven.
    */
-  public int outputMask()
-  {
+  public int outputMask() {
     return _outputMask;
   }
 
@@ -97,8 +83,7 @@ public class OutputPortImpl implements OutputPort
    *
    * @param data new output value
    */
-  public void setOutputData(int data)
-  {
+  public void setOutputData(int data) {
     _outputData = data;
     notifyOutputPortListeners();
   }
@@ -109,8 +94,7 @@ public class OutputPortImpl implements OutputPort
    *
    * @param mask driven bits
    */
-  public void setOutputMask(int mask)
-  {
+  public void setOutputMask(int mask) {
     _outputMask = mask;
     notifyOutputPortListeners();
   }
@@ -122,12 +106,12 @@ public class OutputPortImpl implements OutputPort
   /**
    * Notify all listeners.
    */
-  protected final void notifyOutputPortListeners()
-  {
+  protected final void notifyOutputPortListeners() {
     OutputPortListener listener = _outputListeners;
-    while (listener != null)
-    {
-      listener.outputPortChanged(_outputData, _outputMask);
+    final int outputData = _outputData;
+    final int outputMask = _outputMask;
+    while (listener != null) {
+      listener.outputPortChanged(outputData, outputMask);
       listener = listener.next;
     }
   }

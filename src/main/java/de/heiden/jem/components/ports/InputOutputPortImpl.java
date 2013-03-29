@@ -1,22 +1,18 @@
 package de.heiden.jem.components.ports;
 
 /**
- * Input / output port abstract implementation.
+ * Input / output port implementation.
  */
-public class InputOutputPortImpl implements InputOutputPort
-{
-  private final InputPortImpl _inputPort;
-
-  private final OutputPortImpl _outputPort;
+public final class InputOutputPortImpl implements InputOutputPort {
+  /**
+   * Input port.
+   */
+  private final InputPortImpl _inputPort = new InputPortImpl();
 
   /**
-   * Constructor.
+   * Output port.
    */
-  public InputOutputPortImpl ()
-  {
-    _inputPort = new InputPortImpl();
-    _outputPort = new OutputPortImpl();
-  }
+  private final OutputPortImpl _outputPort = new OutputPortImpl();
 
   /**
    * Connect output port to this input port.
@@ -24,8 +20,7 @@ public class InputOutputPortImpl implements InputOutputPort
    * @param port output port to connect to.
    * @require port != null
    */
-  public void connect (OutputPort port)
-  {
+  public void connect(OutputPort port) {
     _inputPort.connect(port);
   }
 
@@ -35,8 +30,7 @@ public class InputOutputPortImpl implements InputOutputPort
    * @param port output port to disconnect.
    * @require port != null
    */
-  public void disconnect (OutputPort port)
-  {
+  public void disconnect(OutputPort port) {
     _inputPort.disconnect(port);
   }
 
@@ -46,8 +40,7 @@ public class InputOutputPortImpl implements InputOutputPort
    * @param listener port listener
    * @require listener != null
    */
-  public void addInputPortListener (InputPortListener listener)
-  {
+  public void addInputPortListener(InputPortListener listener) {
     _inputPort.addInputPortListener(listener);
   }
 
@@ -57,16 +50,14 @@ public class InputOutputPortImpl implements InputOutputPort
    * @param listener port listener
    * @require listener != null
    */
-  public void removeInputPortListener (InputPortListener listener)
-  {
+  public void removeInputPortListener(InputPortListener listener) {
     _inputPort.removeInputPortListener(listener);
   }
 
   /**
    * Data of this input port.
    */
-  public int inputData ()
-  {
+  public int inputData() {
     return _inputPort.inputData();
   }
 
@@ -74,8 +65,7 @@ public class InputOutputPortImpl implements InputOutputPort
    * Mask of this input port.
    * Set bit means port bit is driven. Cleared bit means port bit is not driven.
    */
-  public int inputMask ()
-  {
+  public int inputMask() {
     return _inputPort.inputMask();
   }
 
@@ -85,8 +75,7 @@ public class InputOutputPortImpl implements InputOutputPort
    * @param listener port listener
    * @require listener != null
    */
-  public void addOutputPortListener (OutputPortListener listener)
-  {
+  public void addOutputPortListener(OutputPortListener listener) {
     _outputPort.addOutputPortListener(listener);
   }
 
@@ -96,16 +85,14 @@ public class InputOutputPortImpl implements InputOutputPort
    * @param listener port listener
    * @require listener != null
    */
-  public void removeOutputPortListener (OutputPortListener listener)
-  {
+  public void removeOutputPortListener(OutputPortListener listener) {
     _outputPort.removeOutputPortListener(listener);
   }
 
   /**
    * Port output data.
    */
-  public int outputData ()
-  {
+  public int outputData() {
     int mask = _outputPort.outputMask();
     return _outputPort.outputData() & mask | _inputPort.inputData() & (0xFF - mask);
   }
@@ -114,16 +101,14 @@ public class InputOutputPortImpl implements InputOutputPort
    * Port output mask.
    * Set bit means port bit is output. Cleared bit means port bit is not driven.
    */
-  public int outputMask ()
-  {
+  public int outputMask() {
     return _outputPort.outputMask();
   }
 
   /**
    * Set port output data.
    */
-  public void setOutputData (int data)
-  {
+  public void setOutputData(int data) {
     _outputPort.setOutputData(data);
   }
 
@@ -131,8 +116,7 @@ public class InputOutputPortImpl implements InputOutputPort
    * Set port output mask.
    * Set bit means port bit is output. Cleared bit means port bit is not driven.
    */
-  public void setOutputMask (int mask)
-  {
+  public void setOutputMask(int mask) {
     _outputPort.setOutputMask(mask);
   }
 }
