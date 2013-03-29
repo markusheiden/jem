@@ -53,6 +53,11 @@ public class Testsuite2_15 {
   private static Object c64;
 
   /**
+   * C64 clock.
+   */
+  private Object clock;
+
+  /**
    * Screen output of test C64.
    */
   private ScreenBuffer screen;
@@ -83,6 +88,7 @@ public class Testsuite2_15 {
     screen = new ScreenBuffer();
 
     c64 = c64Class.getConstructor(File.class).newInstance(program);
+    clock = c64Class.getMethod("getClock").invoke(c64);
     c64Class.getMethod("setSystemOut", OutputStream.class).invoke(c64, screen);
     systemIn = (KeyListener) c64Class.getMethod("getSystemIn").invoke(c64);
 
@@ -129,8 +135,8 @@ public class Testsuite2_15 {
     screen.clear();
 
     System.out.println("Test:");
-    type("poke2,0:sys2070\n");
-    int event = screen.waitFor(10000, " OK", "RIGHT", "ERROR");
+    type("poke2,1:sys2070\n");
+    int event = screen.waitFor(10000, "- OK", "RIGHT", "ERROR");
 
     // Assert that test program exits with "OK" message.
     // Consider everything else (timeout, error messages) as a test failure.
@@ -146,9 +152,27 @@ public class Testsuite2_15 {
     for (char c : s.toCharArray()) {
       KeyEvent event = new KeyEvent(new Button(), 0, 0, 0, 0, c, 0);
       systemIn.keyPressed(event);
-      Thread.sleep(21); // wait at least one interrupt
+      waitCycles(21000); // wait at least one interrupt
       systemIn.keyReleased(event);
-      Thread.sleep(21); // wait at least one interrupt
+      waitCycles(21000); // wait at least one interrupt
     }
+  }
+
+  /**
+   * Wait the given number of clock cycles.
+   *
+   * @param cycles Cycles
+   */
+  private void waitCycles(int cycles) throws Exception {
+    for (long end = getTick() + cycles; getTick() < end; ) {
+      Thread.sleep(100);
+    }
+  }
+
+  /**
+   * Get current clock tick.
+   */
+  private Long getTick() throws Exception {
+    return (Long) clock.getClass().getMethod("getTick").invoke(clock);
   }
 }

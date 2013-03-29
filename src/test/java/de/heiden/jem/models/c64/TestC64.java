@@ -95,6 +95,13 @@ public class TestC64 {
   }
 
   /**
+   * Clock.
+   */
+  public Clock getClock() {
+    return _clock;
+  }
+
+  /**
    * Set stream for screen output.
    */
   public void setSystemOut(OutputStream systemOut) {
