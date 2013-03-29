@@ -19,9 +19,7 @@ import java.io.FilenameFilter;
 import java.io.OutputStream;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
@@ -99,17 +97,12 @@ public class Testsuite2_15 {
       public void run() {
         try {
           c64Class.getMethod("start").invoke(c64);
-        } catch (ReflectiveOperationException e) {
+        } catch (Exception e) {
           Testsuite2_15.this.exception = e;
         }
       }
     }, filename);
   }
-
-  private static final List<String> ignore = Arrays.asList(
-    "alr", "anc", "ane", "arr", "aso", "axs",
-    "andzx"
-  );
 
   @Parameters(name = "{1}")
   public static Collection<Object[]> parameters() throws Exception {
@@ -118,7 +111,7 @@ public class Testsuite2_15 {
     File[] programs = testDir.listFiles(new FilenameFilter() {
       @Override
       public boolean accept(File dir, String name) {
-        return !name.startsWith(" ") && !ignore(name) && name.endsWith(".prg");
+        return !name.startsWith(" ") && name.endsWith(".prg");
       }
     });
 
@@ -130,20 +123,10 @@ public class Testsuite2_15 {
     return result;
   }
 
-  private static boolean ignore(String name) {
-    for (String i : ignore) {
-      if (name.startsWith(i)) {
-        return true;
-      }
-    }
-
-    return false;
-  }
-
   @After
   public void tearDown() throws Exception {
     c64Class.getMethod("setSystemOut", OutputStream.class).invoke(c64, new Object[]{null});
-    thread.interrupt();
+    thread.stop();
   }
 
   @Test
@@ -213,6 +196,10 @@ public class Testsuite2_15 {
    */
   private void waitCycles(int cycles) throws Exception {
     for (long end = getTick() + cycles; getTick() < end; ) {
+      if (exception != null) {
+        throw exception;
+      }
+
       Thread.sleep(10);
     }
   }
