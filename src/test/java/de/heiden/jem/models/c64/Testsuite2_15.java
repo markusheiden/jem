@@ -111,7 +111,7 @@ public class Testsuite2_15 {
     File[] programs = testDir.listFiles(new FilenameFilter() {
       @Override
       public boolean accept(File dir, String name) {
-        return !name.startsWith(" ") && name.endsWith(".prg");
+        return !name.startsWith(" ") && name.endsWith("ldab.prg");
       }
     });
 
@@ -124,19 +124,19 @@ public class Testsuite2_15 {
   }
 
   @After
-  public void tearDown() {
+  public void tearDown() throws Exception {
+    c64Class.getMethod("setSystemOut", OutputStream.class).invoke(c64, new Object[]{null});
     thread.interrupt();
   }
 
   @Test
   public void test() throws Exception {
     thread.start();
-    screen.waitFor(2000, "READY.");
+    waitFor(2000000, "READY.");
     screen.clear();
 
-    System.out.println("Test:");
     type("poke2,1:sys2070\n");
-    int event = screen.waitFor(10000, "- OK", "RIGHT", "ERROR");
+    int event = waitFor(30000000, "- OK", "RIGHT", "ERROR");
 
     // Assert that test program exits with "OK" message.
     // Consider everything else (timeout, error messages) as a test failure.
@@ -158,6 +158,35 @@ public class Testsuite2_15 {
     }
   }
 
+
+  /**
+   * Wait for a string to appear on screen.
+   *
+   * @param maxCycles Max cycles to wait
+   * @param strings Strings
+   * @return Index of string that appeared on screen or -1, if timeout
+   */
+  private int waitFor(long maxCycles, String... strings) throws Exception {
+    long end = getTick() + maxCycles;
+
+    while (true) {
+      for (int i = 0; i < strings.length; i++) {
+        if (screen.contains(strings[i])) {
+          System.out.flush();
+          return i;
+        }
+      }
+
+      if (getTick() >= end) {
+        // Timeout -> exit with -1
+        System.out.flush();
+        return -1;
+      }
+
+      waitCycles(10000);
+    }
+  }
+
   /**
    * Wait the given number of clock cycles.
    *
@@ -165,7 +194,7 @@ public class Testsuite2_15 {
    */
   private void waitCycles(int cycles) throws Exception {
     for (long end = getTick() + cycles; getTick() < end; ) {
-      Thread.sleep(100);
+      Thread.sleep(10);
     }
   }
 

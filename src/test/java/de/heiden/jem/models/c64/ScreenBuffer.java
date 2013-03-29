@@ -23,12 +23,8 @@ public class ScreenBuffer extends OutputStream {
   public void write(int b) throws IOException {
     char c = convert(b);
     if (c > 0) {
-      synchronized (screen) {
-        screen.append(c);
-        screen.notifyAll();
-      }
-
       System.out.print(c);
+      screen.append(c);
     }
   }
 
@@ -66,40 +62,8 @@ public class ScreenBuffer extends OutputStream {
    * Clear screen buffer.
    */
   public void clear() {
-    screen.setLength(0);
-
     System.out.println();
     System.out.flush();
-  }
-
-  /**
-   * Wait for a string to appear on screen.
-   *
-   * @param maxWait Max milliseconds to wait
-   * @param strings Strings
-   * @return Index of string that appeared on screen or -1, if timeout
-   */
-  public int waitFor(long maxWait, String... strings) throws Exception {
-    long end = System.currentTimeMillis() + maxWait;
-
-    while (true) {
-      for (int i = 0; i < strings.length; i++) {
-        if (contains(strings[i])) {
-          System.out.flush();
-          return i;
-        }
-      }
-
-      long toWait = end - System.currentTimeMillis();
-      if (toWait <= 0) {
-        // Timeout -> exit with -1
-        System.out.flush();
-        return -1;
-      }
-
-      synchronized (screen) {
-        screen.wait(toWait);
-      }
-    }
+    screen.setLength(0);
   }
 }
