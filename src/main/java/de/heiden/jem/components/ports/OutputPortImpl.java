@@ -33,9 +33,8 @@ public final class OutputPortImpl implements OutputPort {
     if (listener == null) {
       _outputListeners = newListener;
     } else {
-      OutputPortListener next;
-      while ((next = listener.next) != null) {
-        listener = next;
+      while (listener.next != null) {
+        listener = listener.next;
       }
       listener.next = newListener;
     }
@@ -54,9 +53,8 @@ public final class OutputPortImpl implements OutputPort {
     if (listener == oldListener) {
       _outputListeners = oldListener.next;
     } else {
-      OutputPortListener next;
-      while ((next = listener.next) != oldListener) {
-        listener = next;
+      while (listener.next != oldListener) {
+        listener = listener.next;
       }
       listener.next = oldListener.next;
     }

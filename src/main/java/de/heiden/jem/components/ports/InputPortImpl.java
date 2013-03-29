@@ -1,26 +1,26 @@
 package de.heiden.jem.components.ports;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Input port implementation.
  */
 public final class InputPortImpl implements InputPort {
   /**
-   * Output ports driving this port.
+   * Output ports and the listeners listening to them.
    */
-  private final List<OutputPort> _outputPorts;
+  private final Map<OutputPort, OutputPortListener> _outputPortListeners = new HashMap<>();
 
   /**
-   * Output listener.
+   * Output ports driving this port.
    */
-  private final OutputPortListener _outputListener;
+  private OutputPort[] _outputPorts = new OutputPort[0];
 
   /**
    * Input listeners.
    */
-  private final List<InputPortListener> _inputListeners;
+  private InputPortListener _inputListeners = null;
 
   /**
    * Port data.
@@ -33,24 +33,6 @@ public final class InputPortImpl implements InputPort {
   private int _inputMask = 0xFF;
 
   /**
-   * Constructor.
-   */
-  public InputPortImpl() {
-    _outputPorts = new ArrayList<>();
-    _outputListener = new OutputPortListener() {
-      /**
-       * Output port changed.
-       */
-      public void outputPortChanged(int value, int mask) {
-        updateInputPort();
-      }
-    };
-    _inputListeners = new ArrayList<>();
-    _inputData = 0xFF;
-    _inputMask = 0xFF;
-  }
-
-  /**
    * Connect output port to this input port.
    *
    * @param port output port to connect to.
@@ -59,9 +41,18 @@ public final class InputPortImpl implements InputPort {
   public void connect(OutputPort port) {
     assert port != null : "port != null";
 
-    _outputPorts.add(port);
-    port.addOutputPortListener(_outputListener);
+    OutputPortListener listener = new OutputPortListener() {
+      /**
+       * Output port changed.
+       */
+      public final void outputPortChanged(int value, int mask) {
+        updateInputPort();
+      }
+    };
 
+    _outputPortListeners.put(port, listener);
+    _outputPorts = _outputPortListeners.keySet().toArray(new OutputPort[_outputPortListeners.size()]);
+    port.addOutputPortListener(listener);
     updateInputPort();
   }
 
@@ -72,33 +63,52 @@ public final class InputPortImpl implements InputPort {
    * @require port != null
    */
   public void disconnect(OutputPort port) {
-    _outputPorts.remove(port);
-    port.removeOutputPortListener(_outputListener);
+    OutputPortListener listener = _outputPortListeners.remove(port);
+    _outputPorts = _outputPortListeners.keySet().toArray(new OutputPort[_outputPortListeners.size()]);
+    port.removeOutputPortListener(listener);
     updateInputPort();
   }
 
   /**
    * Add port listener.
    *
-   * @param listener port listener
+   * @param newListener port listener
    * @require listener != null
    */
-  public void addInputPortListener(InputPortListener listener) {
-    assert listener != null : "listener != null";
+  public void addInputPortListener(InputPortListener newListener) {
+    assert newListener != null : "newListener != null";
+    assert newListener.next == null : "newListener.next == null";
 
-    _inputListeners.add(listener);
+    InputPortListener listener = _inputListeners;
+    if (listener == null) {
+      _inputListeners = newListener;
+    } else {
+      while (listener.next != null) {
+        listener = listener.next;
+      }
+      listener.next = newListener;
+    }
   }
 
   /**
    * Remove port listener.
    *
-   * @param listener port listener
+   * @param oldListener port listener
    * @require listener != null
    */
-  public void removeInputPortListener(InputPortListener listener) {
-    assert listener != null : "listener != null";
+  public void removeInputPortListener(InputPortListener oldListener) {
+    assert oldListener != null : "oldListener != null";
 
-    _inputListeners.remove(listener);
+    InputPortListener listener = _inputListeners;
+    if (listener == oldListener) {
+      _inputListeners = oldListener.next;
+    } else {
+      while (listener.next != oldListener) {
+        listener = listener.next;
+      }
+      listener.next = oldListener.next;
+    }
+    oldListener.next = null;
   }
 
   /**
@@ -143,9 +153,12 @@ public final class InputPortImpl implements InputPort {
    * Notify all listeners.
    */
   protected final void notifyInputPortListeners() {
-    List<InputPortListener> listeners = _inputListeners;
-    for (InputPortListener listener : listeners) {
-      listener.inputPortChanged(_inputData, _inputMask);
+    InputPortListener listener = _inputListeners;
+    final int inputData = _inputData;
+    final int inputMask = _inputMask;
+    while (listener != null) {
+      listener.inputPortChanged(inputData, inputMask);
+      listener = listener.next;
     }
   }
 }
