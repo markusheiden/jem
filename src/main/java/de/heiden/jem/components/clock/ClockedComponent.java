@@ -5,8 +5,7 @@ import org.serialthreads.context.IRunnable;
 /**
  * Clocked component.
  */
-public interface ClockedComponent extends IRunnable
-{
+public interface ClockedComponent extends IRunnable {
   /**
    * Name of component.
    */

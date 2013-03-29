@@ -7,8 +7,7 @@ import de.heiden.jem.components.clock.Tick;
 /**
  * Bean holding registration information for one clocked component.
  */
-public class ParallelClockEntry extends ClockEntry
-{
+public class ParallelClockEntry extends ClockEntry {
   /**
    * Constructor.
    *
@@ -17,8 +16,7 @@ public class ParallelClockEntry extends ClockEntry
    * @require component != null
    * @require tick != null
    */
-  public ParallelClockEntry(ClockedComponent component, Tick tick, Thread thread)
-  {
+  public ParallelClockEntry(ClockedComponent component, Tick tick, Thread thread) {
     super(component, tick);
 
     this.thread = thread;

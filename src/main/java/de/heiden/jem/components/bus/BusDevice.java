@@ -3,8 +3,7 @@ package de.heiden.jem.components.bus;
 /**
  * Device (slave) connected to bus.
  */
-public interface BusDevice
-{
+public interface BusDevice {
   /**
    * Write byte to bus device.
    *

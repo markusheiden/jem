@@ -6,8 +6,7 @@ import de.heiden.jem.models.c64.components.memory.ColorRAM;
 /**
  * VIC 6569 (PAL).
  */
-public class VIC6569PAL extends VIC
-{
+public class VIC6569PAL extends VIC {
   /**
    * Constructor.
    *
@@ -18,8 +17,7 @@ public class VIC6569PAL extends VIC
    * @require bus != null
    * @require colorRam != null
    */
-  public VIC6569PAL (Clock clock, VICBus bus, ColorRAM colorRam)
-  {
+  public VIC6569PAL(Clock clock, VICBus bus, ColorRAM colorRam) {
     super(clock, bus, colorRam,
       63, 312, 300, 15, 480, 380, 504);
 

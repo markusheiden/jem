@@ -9,16 +9,14 @@ import java.io.InputStream;
 /**
  * Loader for ROM contents.
  */
-public class ROMLoader
-{
+public class ROMLoader {
   /**
    * Basic ROM.
    *
    * @param filename filename of rom image.
    * @ensure result != null
    */
-  public static ROM basic(String filename) throws Exception
-  {
+  public static ROM basic(String filename) throws Exception {
     byte[] content = load(0x2000, filename);
     ROM result = new ROM(content);
 
@@ -32,8 +30,7 @@ public class ROMLoader
    * @param filename filename of rom image.
    * @ensure result != null
    */
-  public static ROM kernel(String filename) throws Exception
-  {
+  public static ROM kernel(String filename) throws Exception {
     byte[] content = load(0x2000, filename);
     ROM result = new ROM(content);
 
@@ -47,8 +44,7 @@ public class ROMLoader
    * @param filename filename of rom image.
    * @ensure result != null
    */
-  public static ROM character(String filename) throws Exception
-  {
+  public static ROM character(String filename) throws Exception {
     byte[] content = load(0x1000, filename);
     ROM result = new ROM(content); // TODO correct?
 
@@ -62,8 +58,7 @@ public class ROMLoader
    * @param filename filename of rom image.
    * @ensure result != null
    */
-  public static ROM pla(String filename) throws Exception
-  {
+  public static ROM pla(String filename) throws Exception {
     byte[] content = load(0x1000, filename);
     ROM result = new ROM(content);
 
@@ -76,31 +71,24 @@ public class ROMLoader
    *
    * @param length of expected content
    * @param filename filename of content
-   * @throws Exception
+   * @exception Exception
    */
-  protected static byte[] load(int length, String filename) throws Exception
-  {
-    try
-    {
+  protected static byte[] load(int length, String filename) throws Exception {
+    try {
       InputStream stream = ROMLoader.class.getResourceAsStream(filename);
       byte[] result = new byte[length];
       int size = stream.read(result);
       stream.close();
 
-      if (size != length)
-      {
+      if (size != length) {
         throw new Exception("ROM image '" + filename + "' is too short");
       }
 
       assert result != null : "result != null";
       return result;
-    }
-    catch (FileNotFoundException e)
-    {
+    } catch (FileNotFoundException e) {
       throw new Exception("ROM image '" + filename + "' not found", e);
-    }
-    catch (IOException e)
-    {
+    } catch (IOException e) {
       throw new Exception("Unable to read ROM image '" + filename + "'", e);
     }
   }

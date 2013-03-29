@@ -6,11 +6,9 @@ import org.serialthreads.Interrupt;
 /**
  * Tick for serial clocks.
  */
-class SerialClockTick implements Tick
-{
+class SerialClockTick implements Tick {
   @Override
   @Interrupt
-  public final void waitForTick()
-  {
+  public final void waitForTick() {
   }
 }

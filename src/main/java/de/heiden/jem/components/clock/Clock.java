@@ -3,11 +3,10 @@ package de.heiden.jem.components.clock;
 /**
  * Clock.
  */
-public interface Clock
-{
+public interface Clock {
   /**
    * Position constants.
-   *
+   * <p/>
    * TODO Should be in subclass...
    */
   public static final int CPU = 1000;

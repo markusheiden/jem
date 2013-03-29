@@ -5,16 +5,14 @@ import static de.heiden.jem.models.c64.components.cpu.PLA.Input.CAS;
 
 /**
  * "MMU"-PLA.
- *
+ * <p/>
  * TODO 2010-10-11 mh: use AbstractMemory as super class?
  */
-public class PLA
-{
+public class PLA {
   /**
    * All inputs of the pla in the correct order.
    */
-  public static enum Input
-  {
+  public static enum Input {
     CAS, // low active
     LORAM, // low active
     HIRAM, // low active
@@ -36,8 +34,7 @@ public class PLA
   /**
    * All outputs of the pla in the correct order.
    */
-  public static enum Output
-  {
+  public static enum Output {
     RAM, // low active
     BASIC, // low active
     KERNAL, // low active
@@ -53,8 +50,7 @@ public class PLA
   /**
    * Constructor.
    */
-  public PLA(byte[] content)
-  {
+  public PLA(byte[] content) {
     assert content != null : "Precondition: content != null";
     assert content.length == 0x10000 : "Precondition: content.length == 0x10000 ";
 
@@ -66,8 +62,7 @@ public class PLA
    *
    * @param addr address
    */
-  public Output cpu(boolean rw, int addr, boolean loram, boolean hiram, boolean charen, boolean exrom, boolean game)
-  {
+  public Output cpu(boolean rw, int addr, boolean loram, boolean hiram, boolean charen, boolean exrom, boolean game) {
     int a = addr >> 12;
 
     int plaAddress =

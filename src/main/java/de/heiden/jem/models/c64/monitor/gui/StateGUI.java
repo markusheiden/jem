@@ -11,8 +11,7 @@ import java.awt.*;
 /**
  * GUI for showing the state of the processor.
  */
-public class StateGUI extends JPanel
-{
+public class StateGUI extends JPanel {
   private final JC64TextArea _text;
 
   private CPU6510 _cpu;
@@ -20,8 +19,7 @@ public class StateGUI extends JPanel
   /**
    * Constructor.
    */
-  public StateGUI()
-  {
+  public StateGUI() {
     setLayout(new BorderLayout());
 
     _text = new JC64TextArea(12, 7, 2, false);
@@ -29,8 +27,7 @@ public class StateGUI extends JPanel
     add(_text, BorderLayout.CENTER);
   }
 
-  public final void setCpu(CPU6510 cpu)
-  {
+  public final void setCpu(CPU6510 cpu) {
     _cpu = cpu;
 
     stateChanged();
@@ -43,12 +40,10 @@ public class StateGUI extends JPanel
   /**
    * The state changed, so update text.
    */
-  public void stateChanged()
-  {
+  public void stateChanged() {
     // update text
     _text.clear();
-    if (_cpu != null)
-    {
+    if (_cpu != null) {
       CPU6510State state = _cpu.getState();
 
       _text.setText(0, 0, "PC=" + HexUtil.hexWord(state.PC));
@@ -58,15 +53,15 @@ public class StateGUI extends JPanel
       _text.setText(0, 4, "Y =" + HexUtil.hexByte(state.Y));
       _text.setText(0, 5, "P =");
       int c = 3;
-      _text.setText(c++, 5, state.N? "N" : "n");
-      _text.setText(c++, 5, state.V? "V" : "v");
+      _text.setText(c++, 5, state.N ? "N" : "n");
+      _text.setText(c++, 5, state.V ? "V" : "v");
       _text.setText(c++, 5, "1");
-      _text.setText(c++, 5, state.B? "B" : "b");
-      _text.setText(c++, 5, state.D? "D" : "d");
-      _text.setText(c++, 5, state.I? "I" : "i");
-      _text.setText(c++, 5, state.Z? "Z" : "z");
-      _text.setText(c++, 5, state.C? "C" : "c");
-      _text.setText(0, 6, (state.NMI? "NMI" : "") + (state.IRQ? " IRQ" : ""));
+      _text.setText(c++, 5, state.B ? "B" : "b");
+      _text.setText(c++, 5, state.D ? "D" : "d");
+      _text.setText(c++, 5, state.I ? "I" : "i");
+      _text.setText(c++, 5, state.Z ? "Z" : "z");
+      _text.setText(c++, 5, state.C ? "C" : "c");
+      _text.setText(0, 6, (state.NMI ? "NMI" : "") + (state.IRQ ? " IRQ" : ""));
     }
 
     repaint();

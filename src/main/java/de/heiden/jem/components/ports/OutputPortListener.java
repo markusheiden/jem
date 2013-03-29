@@ -3,8 +3,7 @@ package de.heiden.jem.components.ports;
 /**
  * Output port listener.
  */
-public abstract class OutputPortListener
-{
+public abstract class OutputPortListener {
   /**
    * Next output port listener.
    * Used for efficient list implementation in output ports.
@@ -17,5 +16,5 @@ public abstract class OutputPortListener
    * @param value new port value
    * @param mask driven bits
    */
-  public abstract void outputPortChanged (int value, int mask);
+  public abstract void outputPortChanged(int value, int mask);
 }

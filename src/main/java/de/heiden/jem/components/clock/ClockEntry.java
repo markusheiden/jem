@@ -3,8 +3,7 @@ package de.heiden.jem.components.clock;
 /**
  * Bean holding registration information for one clocked component.
  */
-public class ClockEntry
-{
+public class ClockEntry {
   public final ClockedComponent component;
 
   public final Tick tick;
@@ -17,8 +16,7 @@ public class ClockEntry
    * @require component != null
    * @require tick != null
    */
-  public ClockEntry(ClockedComponent component, Tick tick)
-  {
+  public ClockEntry(ClockedComponent component, Tick tick) {
     assert component != null : "Precondition: component != null";
     assert tick != null : "Precondition: tick != null";
 

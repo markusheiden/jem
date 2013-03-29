@@ -11,8 +11,7 @@ import org.serialthreads.context.ThreadFinishedException;
 /**
  * Clock using serial threads.
  */
-public class SerialClock extends AbstractClock<ClockEntry>
-{
+public class SerialClock extends AbstractClock<ClockEntry> {
   /**
    * Current tick.
    */
@@ -21,67 +20,55 @@ public class SerialClock extends AbstractClock<ClockEntry>
   /**
    * Constructor.
    */
-  public SerialClock()
-  {
+  public SerialClock() {
     _tick = -1;
   }
 
   @Override
-  public long getTick()
-  {
+  public long getTick() {
     return _tick;
   }
 
   @Override
-  protected ClockEntry createClockEntry(ClockedComponent component)
-  {
+  protected ClockEntry createClockEntry(ClockedComponent component) {
     // every components needs its own Tick instance, because the instances cache its serial thread
     return new ClockEntry(component, new SerialClockTick());
   }
 
   @Override
   @Executor
-  public final void run()
-  {
+  public final void run() {
     final ChainedRunnable first = createChain()[0];
     ChainedRunnable chain = first;
     long tick = _tick;
 
-    try
-    {
+    try {
       //noinspection InfiniteLoopStatement
-      while (true)
-      {
+      while (true) {
         // execute events first, if any
-        if (_nextEventTick <= tick)
-        {
+        if (_nextEventTick <= tick) {
           executeEvent(tick);
         }
 
         // execute chain one tick
-        do
-        {
+        do {
           chain.runnable.run();
           chain = chain.next;
         } while (chain != first);
 
         _tick = ++tick;
       }
-    }
-    catch (ThreadFinishedException e)
-    {
+    } catch (ThreadFinishedException e) {
       // TODO 2009-12-11 mh: should not happen!!!
     }
   }
 
   @Override
   @Executor
-  public void run(int ticks)
-  {
+  public void run(int ticks) {
     assert ticks >= 0 : "Precondition: ticks >= 0";
 
-    if (ticks <= 0)
-    {
+    if (ticks <= 0) {
       return;
     }
 
@@ -89,28 +76,22 @@ public class SerialClock extends AbstractClock<ClockEntry>
     ChainedRunnable chain = first;
     long tick = _tick;
 
-    try
-    {
-      for (; ticks != 0; ticks--)
-      {
+    try {
+      for (; ticks != 0; ticks--) {
         // execute events first, if any
-        if (_nextEventTick <= tick)
-        {
+        if (_nextEventTick <= tick) {
           executeEvent(tick);
         }
 
         // execute chain one tick
-        do
-        {
+        do {
           chain.runnable.run();
           chain = chain.next;
         } while (chain != first);
 
         _tick = ++tick;
       }
-    }
-    catch (ThreadFinishedException e)
-    {
+    } catch (ThreadFinishedException e) {
       // TODO 2009-12-11 mh: should not happen!!!
     }
   }
@@ -118,12 +99,10 @@ public class SerialClock extends AbstractClock<ClockEntry>
   /**
    * Create a chain of runnables from the component.
    */
-  private ChainedRunnable[] createChain()
-  {
+  private ChainedRunnable[] createChain() {
     IRunnable[] runnables = new IRunnable[_entryMap.size()];
     int i = 0;
-    for (ClockEntry entry : _entryMap.values())
-    {
+    for (ClockEntry entry : _entryMap.values()) {
       runnables[i++] = entry.component;
     }
 
