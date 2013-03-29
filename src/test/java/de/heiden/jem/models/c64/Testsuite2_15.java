@@ -19,7 +19,9 @@ import java.io.FilenameFilter;
 import java.io.OutputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
@@ -104,6 +106,11 @@ public class Testsuite2_15 {
     }, filename);
   }
 
+  private static final List<String> ignore = Arrays.asList(
+    "alr", "anc", "ane", "arr", "aso", "axs",
+    "andzx"
+  );
+
   @Parameters(name = "{1}")
   public static Collection<Object[]> parameters() throws Exception {
     URL start = Testsuite2_15.class.getResource("/testsuite2.15/ start.prg");
@@ -111,7 +118,7 @@ public class Testsuite2_15 {
     File[] programs = testDir.listFiles(new FilenameFilter() {
       @Override
       public boolean accept(File dir, String name) {
-        return !name.startsWith(" ") && name.endsWith(".prg");
+        return !name.startsWith(" ") && !ignore(name) && name.endsWith(".prg");
       }
     });
 
@@ -121,6 +128,16 @@ public class Testsuite2_15 {
     }
 
     return result;
+  }
+
+  private static boolean ignore(String name) {
+    for (String i : ignore) {
+      if (name.startsWith(i)) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   @After
