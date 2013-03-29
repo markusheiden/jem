@@ -111,7 +111,7 @@ public class Testsuite2_15 {
     File[] programs = testDir.listFiles(new FilenameFilter() {
       @Override
       public boolean accept(File dir, String name) {
-        return !name.startsWith(" ") && name.endsWith("ldab.prg");
+        return !name.startsWith(" ") && name.endsWith(".prg");
       }
     });
 
