@@ -9,6 +9,7 @@ import de.heiden.jem.models.c64.components.keyboard.Keyboard;
 import de.heiden.jem.models.c64.components.memory.ColorRAM;
 import de.heiden.jem.models.c64.components.memory.RAM;
 import de.heiden.jem.models.c64.components.memory.ROM;
+import de.heiden.jem.models.c64.components.patch.StopAtSystemIn;
 import de.heiden.jem.models.c64.components.patch.SystemOut;
 import de.heiden.jem.models.c64.components.vic.VIC6569PAL;
 import de.heiden.jem.models.c64.components.vic.VICBus;
@@ -92,6 +93,7 @@ public class TestC64 {
     //
 
     _cpu.add(systemOut);
+    _cpu.add(new StopAtSystemIn());
   }
 
   /**
