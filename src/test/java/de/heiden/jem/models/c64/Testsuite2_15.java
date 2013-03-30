@@ -66,7 +66,7 @@ public class Testsuite2_15 extends AbstractTest {
 
     screen.setLower(true);
     type("poke2,1:sys2070\n");
-    int event = waitFor(30000000, "- ok", "right", "error");
+    int event = waitFor(120000000, "- ok", "right", "error");
     waitCycles(1000);
 
     // Assert that test program exits with "OK" message.
