@@ -127,6 +127,11 @@ public class AbstractTest {
         return -1;
       }
 
+      if (exception != null) {
+        // Abort on exceptions
+        throw exception;
+      }
+
       waitCycles(10000);
     }
   }
@@ -139,7 +144,8 @@ public class AbstractTest {
   protected void waitCycles(int cycles) throws Exception {
     for (long end = getTick() + cycles; getTick() < end; ) {
       if (exception != null) {
-        throw exception;
+        // Early exit on exceptions, because the emulation has been halted
+        return;
       }
 
       Thread.sleep(10);
