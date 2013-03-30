@@ -2696,9 +2696,9 @@ public class CPU6510 implements ClockedComponent {
     if (logger.isDebugEnabled()) {
       logger.debug("Not implemented yet");
     }
-    if (DEBUG) {
-      throw new UnsupportedOperationException();
-    }
+//    if (DEBUG) {
+    throw new UnsupportedOperationException();
+//    }
   }
 
   //
