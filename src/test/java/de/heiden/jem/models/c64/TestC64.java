@@ -1,6 +1,7 @@
 package de.heiden.jem.models.c64;
 
 import de.heiden.jem.components.clock.Clock;
+import de.heiden.jem.components.clock.ClockEvent;
 import de.heiden.jem.components.clock.serialthreads.SerialClock;
 import de.heiden.jem.models.c64.components.CIA6526;
 import de.heiden.jem.models.c64.components.cpu.C64Bus;
@@ -94,6 +95,17 @@ public class TestC64 {
 
     _cpu.add(systemOut);
     _cpu.add(new StopAtSystemIn());
+
+    _clock.addClockEvent(100000, new ClockEvent() {
+      @Override
+      public void execute(long tick) {
+        if (Thread.interrupted()) {
+          throw new IllegalArgumentException("Thread has been interrupted");
+        }
+
+        _clock.addClockEvent(tick + 100000, this);
+      }
+    });
   }
 
   /**
