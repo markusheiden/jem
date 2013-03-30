@@ -27,7 +27,7 @@ public class CPU6510 implements ClockedComponent {
   /**
    * Enable debug features.
    */
-  protected static final boolean DEBUG = true;
+  protected static final boolean DEBUG = false;
 
   /**
    * Stack base address.
