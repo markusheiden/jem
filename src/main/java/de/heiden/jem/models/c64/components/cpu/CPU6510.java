@@ -291,7 +291,7 @@ public class CPU6510 implements ClockedComponent {
         @Interruptible
         public final void execute() // $03: *SLO ($XX,X) (8)
         {
-          shiftLeftOr(readZeropageIndirectXAddressPC());
+          slo(readZeropageIndirectXAddressPC());
         }
       },
 
@@ -328,7 +328,7 @@ public class CPU6510 implements ClockedComponent {
         @Interruptible
         public final void execute() // $07: *SLO $XX (5)
         {
-          shiftLeftOr(readAbsoluteZeropageAddressPC());
+          slo(readAbsoluteZeropageAddressPC());
         }
       },
 
@@ -365,8 +365,7 @@ public class CPU6510 implements ClockedComponent {
         @Interruptible
         public final void execute() // $0B:
         {
-          // TODO implement opcode
-          notImplementedYet();
+          anc(readImmediatePC());
         }
       },
 
@@ -403,7 +402,7 @@ public class CPU6510 implements ClockedComponent {
         @Interruptible
         public final void execute() // $0F: *SLO $XXXX (6)
         {
-          shiftLeftOr(readAbsoluteAddressPC());
+          slo(readAbsoluteAddressPC());
         }
       },
 
@@ -440,7 +439,7 @@ public class CPU6510 implements ClockedComponent {
         public final void execute() // $13: *SLO ($XX),Y (8)
         {
           // TODO 1 tick
-          shiftLeftOr(readZeropageIndirectYAddressPC());
+          slo(readZeropageIndirectYAddressPC());
         }
       },
 
@@ -479,7 +478,7 @@ public class CPU6510 implements ClockedComponent {
         public final void execute() // $17: *SLO $XX,X (6)
         {
           // TODO 1 tick
-          shiftLeftOr(readAbsoluteZeropageAddressPC(_state.X));
+          slo(readAbsoluteZeropageAddressPC(_state.X));
         }
       },
 
@@ -517,7 +516,7 @@ public class CPU6510 implements ClockedComponent {
         public final void execute() // $1B: *SLO $XXXX,Y (7)
         {
           // TODO 1 tick
-          shiftLeftOr(readAbsoluteAddressPC(_state.Y));
+          slo(readAbsoluteAddressPC(_state.Y));
         }
       },
 
@@ -556,7 +555,7 @@ public class CPU6510 implements ClockedComponent {
         public final void execute() // $1F: *SLO $XXXX,X (7)
         {
           // TODO 1 tick
-          shiftLeftOr(readAbsoluteAddressPC(_state.X));
+          slo(readAbsoluteAddressPC(_state.X));
         }
       },
 
@@ -596,7 +595,7 @@ public class CPU6510 implements ClockedComponent {
         @Interruptible
         public final void execute() // $23: *RLA ($XX,X) (8)
         {
-          rotateLeftAnd(readZeropageIndirectXAddressPC());
+          rla(readZeropageIndirectXAddressPC());
         }
       },
 
@@ -633,7 +632,7 @@ public class CPU6510 implements ClockedComponent {
         @Interruptible
         public final void execute() // $27: *RLA $XX (5)
         {
-          rotateLeftAnd(readAbsoluteZeropageAddressPC());
+          rla(readAbsoluteZeropageAddressPC());
         }
       },
 
@@ -670,8 +669,7 @@ public class CPU6510 implements ClockedComponent {
         @Interruptible
         public final void execute() // $2B:
         {
-          // TODO implement opcode
-          notImplementedYet();
+          anc(readImmediatePC());
         }
       },
 
@@ -708,7 +706,7 @@ public class CPU6510 implements ClockedComponent {
         @Interruptible
         public final void execute() // $2F: *RLA $XXXX (6)
         {
-          rotateLeftAnd(readAbsoluteAddressPC());
+          rla(readAbsoluteAddressPC());
         }
       },
 
@@ -745,7 +743,7 @@ public class CPU6510 implements ClockedComponent {
         public final void execute() // $33: *RLA ($XX),Y (8)
         {
           // TODO 1 tick
-          rotateLeftAnd(readZeropageIndirectYAddressPC());
+          rla(readZeropageIndirectYAddressPC());
         }
       },
 
@@ -784,7 +782,7 @@ public class CPU6510 implements ClockedComponent {
         @Interruptible
         public final void execute() // $37: *RLA $XX,X (6)
         {
-          rotateLeftAnd(readAbsoluteAddressPC(_state.X));
+          rla(readAbsoluteAddressPC(_state.X));
         }
       },
 
@@ -822,7 +820,7 @@ public class CPU6510 implements ClockedComponent {
         public final void execute() // $3B: *RLA $XXXX,Y (7)
         {
           // TODO 1 tick
-          rotateLeftAnd(readAbsoluteAddressPC(_state.Y));
+          rla(readAbsoluteAddressPC(_state.Y));
         }
       },
 
@@ -861,7 +859,7 @@ public class CPU6510 implements ClockedComponent {
         public final void execute() // $3F: *RLA $XXXX,X (7)
         {
           // TODO 1 tick
-          rotateLeftAnd(readAbsoluteAddressPC(_state.X));
+          rla(readAbsoluteAddressPC(_state.X));
         }
       },
 
@@ -975,8 +973,7 @@ public class CPU6510 implements ClockedComponent {
         @Interruptible
         public final void execute() // $4B:
         {
-          // TODO implement opcode
-          notImplementedYet();
+          alr(readImmediatePC());
         }
       },
 
@@ -3179,23 +3176,37 @@ public class CPU6510 implements ClockedComponent {
   }
 
   /**
-   * *SLO: Shift left and or with A.
-   * (3)
+   * *ALR: AND and LSR.
    *
-   * @param addr address
+   * @param value argument
    */
   @Interruptible
-  protected final void shiftLeftOr(int addr) {
+  protected void alr(int value) {
     if (DEBUG) {
       reportIllegalOpcode();
     }
-    int value = read(addr) << 1;
-    _state.setCarryZeroNegativeP(value, (value & 0x100) != 0);
-    _tick.waitForTick(); // internal operation
-    write(value & 0xFF, addr);
 
-    _state.A |= value & 0xFF;
-    _state.setZeroNegativeP(_state.A);
+    int result = _state.A & value;
+    boolean c = (result & 0x01) != 0;
+    result = result >> 1;
+    _state.setCarryZeroNegativeP(result, c);
+    _state.A = result;
+  }
+
+  /**
+   * *ALR: AND with moving bit 7 to carry (logic from ASL/ROL).
+   *
+   * @param value argument
+   */
+  @Interruptible
+  protected void anc(int value) {
+    if (DEBUG) {
+      reportIllegalOpcode();
+    }
+
+    int result = _state.A & value;
+    _state.setCarryZeroNegativeP(result, (result & 0x80) != 0);
+    _state.A = result;
   }
 
   /**
@@ -3205,7 +3216,7 @@ public class CPU6510 implements ClockedComponent {
    * @param addr address
    */
   @Interruptible
-  protected final void rotateLeftAnd(int addr) {
+  protected final void rla(int addr) {
     if (DEBUG) {
       reportIllegalOpcode();
     }
@@ -3215,6 +3226,26 @@ public class CPU6510 implements ClockedComponent {
     write(value & 0xFF, addr);
 
     _state.A &= value & 0xFF;
+    _state.setZeroNegativeP(_state.A);
+  }
+
+  /**
+   * *SLO: Shift left and or with A.
+   * (3)
+   *
+   * @param addr address
+   */
+  @Interruptible
+  protected final void slo(int addr) {
+    if (DEBUG) {
+      reportIllegalOpcode();
+    }
+    int value = read(addr) << 1;
+    _state.setCarryZeroNegativeP(value, (value & 0x100) != 0);
+    _tick.waitForTick(); // internal operation
+    write(value & 0xFF, addr);
+
+    _state.A |= value & 0xFF;
     _state.setZeroNegativeP(_state.A);
   }
 
