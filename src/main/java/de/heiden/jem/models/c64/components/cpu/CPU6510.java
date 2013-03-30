@@ -211,7 +211,7 @@ public class CPU6510 implements ClockedComponent {
   }
 
   /**
-   * NMI ausführen.
+   * Execute NMI.
    */
   @Interruptible
   private void nmi() {
@@ -220,7 +220,7 @@ public class CPU6510 implements ClockedComponent {
   }
 
   /**
-   * IRQ ausführen.
+   * Execute IRQ.
    */
   @Interruptible
   private void irq() {
