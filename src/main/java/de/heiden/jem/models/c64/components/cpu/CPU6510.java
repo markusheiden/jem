@@ -2818,39 +2818,57 @@ public class CPU6510 implements ClockedComponent {
    */
   protected final void add(int value) {
     if (_state.D) {
-      // add low nibbles
-      int lo = (_state.A & 0x0F) + (value & 0x0F);
-      if (_state.C) {
-        lo += 0x01;
-      }
-      boolean clo = lo > 0x09;
-
-      // add high nibbles
-      int hi = (_state.A & 0xF0) + (value & 0xF0);
-      if (clo) {
-        hi += 0x10;
-      }
-      boolean chi = hi > 0x90;
-
-      _state.setCarryZeroOverflowNegativeP(_state.A, value, lo & 0x0F | hi);
-      if (clo) {
-        lo -= 0x0A;
-      }
-      if (chi) {
-        hi -= 0xA0;
-      }
-
-      _state.A = lo & 0x0F | hi & 0xF0;
-      _state.C = chi;
-
+      addDecimal(value);
     } else {
-      int a = _state.A + value;
-      if (_state.C) {
-        a++;
-      }
-      _state.setCarryZeroOverflowNegativeP(_state.A, value, a);
-      _state.A = a & 0xFF;
+      addBinary(value);
     }
+  }
+
+  /**
+   * Add value to A (binary mode).
+   *
+   * @param value value
+   */
+  private void addBinary(int value) {
+    int a = _state.A + value;
+    if (_state.C) {
+      a++;
+    }
+    _state.setCarryZeroOverflowNegativeP(_state.A, value, a);
+    _state.A = a & 0xFF;
+  }
+
+  /**
+   * Add value to A (binary mode).
+   *
+   * @param value value
+   */
+  private void addDecimal(int value) {
+    // add low nibbles
+    int lo = (_state.A & 0x0F) + (value & 0x0F);
+    if (_state.C) {
+      lo += 0x01;
+    }
+    boolean clo = lo > 0x09;
+
+    // add high nibbles
+    int hi = (_state.A & 0xF0) + (value & 0xF0);
+    if (clo) {
+      hi += 0x10;
+    }
+    boolean chi = hi > 0x90;
+
+    _state.setCarryZeroOverflowNegativeP(_state.A, value, lo & 0x0F | hi);
+
+    if (clo) {
+      lo -= 0x0A;
+    }
+    if (chi) {
+      hi -= 0xA0;
+    }
+
+    _state.A = lo & 0x0F | hi & 0xF0;
+    _state.C = chi;
   }
 
   /**
@@ -2859,12 +2877,44 @@ public class CPU6510 implements ClockedComponent {
    * @param value value
    */
   protected final void subtract(int value) {
-    int a = 0x100 + _state.A - value;
-    if (!_state.C) {
-      a--;
+    if (_state.D) {
+      subtractDecimal(value ^ 0xFF);
+    } else {
+      addBinary(value ^ 0xFF);
     }
-    _state.setCarryZeroOverflowNegativeP(_state.A, value, a);
-    _state.A = a & 0xFF;
+  }
+
+  /**
+   * Add value to A (binary mode).
+   *
+   * @param value value
+   */
+  private void subtractDecimal(int value) {
+    // add low nibbles
+    int lo = (_state.A & 0x0F) + (value & 0x0F);
+    if (_state.C) {
+      lo += 0x01;
+    }
+    boolean clo = lo <= 0x0F;
+
+    // add high nibbles
+    int hi = (_state.A & 0xF0) + (value & 0xF0);
+    if (!clo) {
+      hi += 0x10;
+    }
+    boolean chi = hi <= 0xF0;
+
+    _state.setCarryZeroOverflowNegativeP(_state.A, value, lo & 0x0F | hi);
+
+    if (clo) {
+      lo -= 0x06;
+    }
+    if (chi) {
+      hi -= 0x60;
+    }
+
+    _state.A = lo & 0x0F | hi & 0xF0;
+    _state.C = !chi;
   }
 
   /**
