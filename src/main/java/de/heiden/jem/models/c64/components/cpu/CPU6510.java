@@ -247,14 +247,11 @@ public class CPU6510 implements ClockedComponent {
         public final void execute() // $00: BRK (7)
         {
           readBytePC();
-          if (!_state.I) // TODO correct?
-          {
-            pushWord(_state.PC);
-            _state.B = true;
-            pushByte(_state.getP());
-            _state.triggerIRQ();
-            _state.PC = readAbsoluteAddress(0xFFFE);
-          }
+          pushWord(_state.PC);
+          _state.B = true;
+          pushByte(_state.getP());
+          _state.I = true;
+          _state.PC = readAbsoluteAddress(0xFFFE);
         }
       },
 
