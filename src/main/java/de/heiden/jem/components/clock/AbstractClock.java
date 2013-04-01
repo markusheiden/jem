@@ -28,7 +28,7 @@ public abstract class AbstractClock<E extends ClockEntry> implements Clock {
   /**
    * Events.
    */
-  private ClockEvent _events;
+  private ClockEvent _events = new RootClockEvent();
 
   /**
    * Next event to look for.
@@ -44,12 +44,7 @@ public abstract class AbstractClock<E extends ClockEntry> implements Clock {
 
     _entryMap = new TreeMap<>();
 
-    _events = new ClockEvent() {
-      @Override
-      public void execute(long tick) {
-        throw new IllegalArgumentException("Dummy event may never be executed");
-      }
-    };
+    _events = new RootClockEvent();
     _events.next = null;
     _events.tick = Long.MAX_VALUE;
     _nextEventTick = Long.MAX_VALUE;
@@ -143,23 +138,20 @@ public abstract class AbstractClock<E extends ClockEntry> implements Clock {
   public void removeClockEvent(ClockEvent oldEvent) {
     assert oldEvent != null : "oldEvent != null";
 
-//    if (_logger.isDebugEnabled())
-//    {
+//    if (_logger.isDebugEnabled()) {
 //      _logger.debug("remove event " + event);
 //    }
 
     ClockEvent event = _events;
-    if (event == oldEvent) {
-      _events = oldEvent.next;
-    } else {
-      ClockEvent next;
-      while ((next = event.next) != oldEvent) {
-        event = next;
+    do {
+      if (event.next == oldEvent) {
+        event.next = oldEvent.next;
+        oldEvent.next = null;
+        updateNextEvent();
+        return;
       }
-      event.next = oldEvent.next;
-    }
-    oldEvent.next = null;
-    updateNextEvent();
+      event = event.next;
+    } while (event != null);
   }
 
   /**
