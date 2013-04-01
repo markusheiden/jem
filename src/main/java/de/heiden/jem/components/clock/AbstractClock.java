@@ -28,7 +28,7 @@ public abstract class AbstractClock<E extends ClockEntry> implements Clock {
   /**
    * Events.
    */
-  private ClockEvent _events = new RootClockEvent();
+  private final ClockEvent _events;
 
   /**
    * Next event to look for.
@@ -44,9 +44,8 @@ public abstract class AbstractClock<E extends ClockEntry> implements Clock {
 
     _entryMap = new TreeMap<>();
 
-    _events = new RootClockEvent();
-    _events.next = null;
-    _events.tick = Long.MAX_VALUE;
+    _events = new RootClockEvent(); // root node, may not be executed
+    _events.next = new RootClockEvent(); // end marker, may not be reached
     _nextEventTick = Long.MAX_VALUE;
   }
 
@@ -106,26 +105,24 @@ public abstract class AbstractClock<E extends ClockEntry> implements Clock {
     assert newEvent != null : "newEvent != null";
     assert newEvent.next == null : "newEvent.next == null";
 
-//    if (_logger.isDebugEnabled())
-//    {
+//    if (_logger.isDebugEnabled()) {
 //      _logger.debug("add event " + newEvent + " at " + tick);
 //    }
 
     newEvent.tick = tick;
 
     ClockEvent event = _events;
-    if (tick <= _nextEventTick) {
-      newEvent.next = event;
-      _events = newEvent;
-    } else {
-      ClockEvent next;
-      while ((next = event.next).tick < tick) {
-        event = next;
+    do {
+      ClockEvent next = event.next;
+      if (next == null || tick <= next.tick) {
+        event.next = newEvent;
+        newEvent.next = next;
+        updateNextEvent();
+        return;
       }
-      newEvent.next = event.next;
-      event.next = newEvent;
-    }
-    updateNextEvent();
+
+      event = next;
+    } while (true);
   }
 
   /**
@@ -144,13 +141,16 @@ public abstract class AbstractClock<E extends ClockEntry> implements Clock {
 
     ClockEvent event = _events;
     do {
-      if (event.next == oldEvent) {
+      ClockEvent next = event.next;
+      if (next == oldEvent) {
         event.next = oldEvent.next;
         oldEvent.next = null;
         updateNextEvent();
         return;
       }
-      event = event.next;
+
+      event = next;
+
     } while (event != null);
   }
 
@@ -166,18 +166,17 @@ public abstract class AbstractClock<E extends ClockEntry> implements Clock {
 
     while (_nextEventTick == tick) {
       // get current event
-      ClockEvent event = _events;
+      ClockEvent event = _events.next;
 
       // remove it
       ClockEvent nextEvent = event.next;
-      _events = nextEvent;
+      _events.next = nextEvent;
       _nextEventTick = nextEvent.tick;
       event.next = null;
 
       // execute it
-//      if (_logger.isDebugEnabled())
-//      {
-//        _logger.debug("execute event " + event.toString() + " at " + tick);
+//      if (_logger.isDebugEnabled()) {
+//        _logger.debug("execute event " + event + " at " + tick);
 //      }
       event.execute(tick);
     }
@@ -187,6 +186,6 @@ public abstract class AbstractClock<E extends ClockEntry> implements Clock {
    * Update _nextEventTick.
    */
   protected final void updateNextEvent() {
-    _nextEventTick = _events.tick;
+    _nextEventTick = _events.next.tick;
   }
 }
