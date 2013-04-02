@@ -2023,7 +2023,7 @@ public class CPU6510 implements ClockedComponent {
         public final void execute() // $BA: TSX (2)
         {
           _tick.waitForTick(); // minimum operation time: 1 tick
-          _state.X = _state.S & 0xFF;
+          _state.X = load(_state.S & 0xFF);
         }
       },
 
@@ -3383,7 +3383,7 @@ public class CPU6510 implements ClockedComponent {
   @Interruptible
   protected final int readZeropageIndirectXAddressPC() {
     _tick.waitForTick(); // + X needs 1 tick, TODO read address first?
-    return readAbsoluteAddress((readAbsoluteZeropageAddressPC() + _state.X) & 0xFF);
+    return readAbsoluteAddressForIndirect((readAbsoluteZeropageAddressPC() + _state.X) & 0xFF);
   }
 
   /**
@@ -3392,7 +3392,7 @@ public class CPU6510 implements ClockedComponent {
    */
   @Interruptible
   protected final int readZeropageIndirectYAddressPC() {
-    return (readAbsoluteAddress(readAbsoluteZeropageAddressPC()) + _state.Y) & 0xFFFF;
+    return (readAbsoluteAddressForIndirect(readAbsoluteZeropageAddressPC()) + _state.Y) & 0xFFFF;
   }
 
   /**
