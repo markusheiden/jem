@@ -160,7 +160,7 @@ public class CPU6510 implements ClockedComponent {
     logger.debug("reset");
 
     // TODO init something else?
-    _state.S = 0x01FF;
+    _state.S = STACK + 0xFF;
     _state.setP(0x00); // TODO correct?
     _state.PC = readAbsoluteAddress(0xFFFC);
   }
@@ -2023,7 +2023,7 @@ public class CPU6510 implements ClockedComponent {
         public final void execute() // $BA: TSX (2)
         {
           _tick.waitForTick(); // minimum operation time: 1 tick
-          _state.X = load(_state.S & 0xFF);
+          _state.X = _state.S & 0xFF;
         }
       },
 
@@ -2976,7 +2976,7 @@ public class CPU6510 implements ClockedComponent {
       if (DEBUG) {
         throw new IllegalArgumentException("Stack overflow");
       }
-      s = STACK + 0xFF; // TODO overflow OK?
+      s = STACK + (s & 0xFF); // TODO overflow OK?
     }
     _state.S = s;
   }
@@ -2986,24 +2986,8 @@ public class CPU6510 implements ClockedComponent {
    */
   @Interruptible
   protected final void pushWord(int value) {
-    int s = _state.S;
-    write(value >> 8, s);
-    s--;
-    if (s < STACK) {
-      if (DEBUG) {
-        throw new IllegalArgumentException("Stack overflow");
-      }
-      s = STACK + 0xFF; // TODO overflow OK?
-    }
-    write(value & 0xFF, s);
-    s--;
-    if (s < STACK) {
-      if (DEBUG) {
-        throw new IllegalArgumentException("Stack overflow");
-      }
-      s = STACK + 0xFF; // TODO overflow OK?
-    }
-    _state.S = s;
+    pushByte(value >> 8);
+    pushByte(value & 0xFF);
   }
 
   /**
@@ -3012,11 +2996,11 @@ public class CPU6510 implements ClockedComponent {
   @Interruptible
   protected final int popByte() {
     int s = _state.S + 1;
-    if (s >= STACK + 0x0100) {
+    if (s > STACK + 0xFF) {
       if (DEBUG) {
         throw new IllegalArgumentException("Stack underflow");
       }
-      s = STACK; // TODO underflow OK?
+      s = STACK + (s & 0xFF); // TODO underflow OK?
     }
     _state.S = s;
     return read(s);
@@ -3027,23 +3011,7 @@ public class CPU6510 implements ClockedComponent {
    */
   @Interruptible
   protected final int popWord() {
-    int s = _state.S + 1;
-    if (s >= STACK + 0x0100) {
-      if (DEBUG) {
-        throw new IllegalArgumentException("Stack underflow");
-      }
-      s = STACK; // TODO underflow OK?
-    }
-    int result = read(s);
-    s++;
-    if (s >= STACK + 0x0100) {
-      if (DEBUG) {
-        throw new IllegalArgumentException("Stack underflow");
-      }
-      s = STACK; // TODO underflow OK?
-    }
-    _state.S = s;
-    return result | read(s) << 8;
+    return popByte() | popByte() << 8;
   }
 
   /**
