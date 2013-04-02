@@ -3361,7 +3361,19 @@ public class CPU6510 implements ClockedComponent {
    */
   @Interruptible
   protected final int readAbsoluteAddress(int addr) {
-    return read(addr) + (read((addr + 1) & 0xFFFF) << 8);
+    return read(addr) | (read((addr + 1) & 0xFFFF) << 8);
+  }
+
+  /**
+   * Read absolute address at addr for indirect addressing modes. (AAY64)
+   * Processor bug: Incrementing address does not increment page.
+   * (2)
+   *
+   * @param addr address
+   */
+  @Interruptible
+  protected final int readAbsoluteAddressForIndirect(int addr) {
+    return read(addr) | (read(addr & 0xFF00 | ((addr + 1) & 0xFF)) << 8);
   }
 
   /**
@@ -3389,7 +3401,7 @@ public class CPU6510 implements ClockedComponent {
    */
   @Interruptible
   protected final int readIndirectAddress() {
-    return readAbsoluteAddress(readAbsoluteAddressPC());
+    return readAbsoluteAddressForIndirect(readAbsoluteAddressPC());
   }
 
   //
