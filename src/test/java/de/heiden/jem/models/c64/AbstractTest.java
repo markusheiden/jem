@@ -23,7 +23,7 @@ public class AbstractTest {
   /**
    * Transformed test C64.
    */
-  private static Object c64;
+  private Object c64;
 
   /**
    * C64 clock.

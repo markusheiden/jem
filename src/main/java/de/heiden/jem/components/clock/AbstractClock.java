@@ -122,6 +122,7 @@ public abstract class AbstractClock<E extends ClockEntry> implements Clock {
       }
 
       event = next;
+
     } while (true);
   }
 
