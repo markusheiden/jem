@@ -46,7 +46,11 @@ public class Testsuite2_15 extends AbstractTest {
     File[] programs = testDir.listFiles(new FilenameFilter() {
       @Override
       public boolean accept(File dir, String name) {
-        return !name.startsWith(" ") && name.endsWith(".prg");
+        return
+          !name.startsWith(" ") &&
+            !name.startsWith("cia") &&
+            !name.startsWith("cnt") &&
+            name.endsWith(".prg");
       }
     });
 
@@ -66,7 +70,7 @@ public class Testsuite2_15 extends AbstractTest {
 
     screen.setLower(true);
     type("poke2,1:sys2070\n");
-    int event = waitFor(120000000, "- ok", "right", "error");
+    int event = waitFor(999999999, "- ok", "right", "error");
     waitCycles(1000);
 
     // Assert that test program exits with "OK" message.
