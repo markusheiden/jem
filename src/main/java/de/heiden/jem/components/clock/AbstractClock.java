@@ -99,7 +99,7 @@ public abstract class AbstractClock<E extends ClockEntry> implements Clock {
    * @require newEvent != null
    */
   @Override
-  public void addClockEvent(long tick, ClockEvent newEvent) {
+  public final void addClockEvent(long tick, ClockEvent newEvent) {
     assert tick > getTick() : "tick > getTick()";
     assert newEvent != null : "newEvent != null";
     assert newEvent.next == null : "newEvent.next == null";
@@ -140,7 +140,7 @@ public abstract class AbstractClock<E extends ClockEntry> implements Clock {
    * @require oldEvent != null
    */
   @Override
-  public void removeClockEvent(ClockEvent oldEvent) {
+  public final void removeClockEvent(ClockEvent oldEvent) {
     assert oldEvent != null : "oldEvent != null";
 
 //    if (_logger.isDebugEnabled()) {
