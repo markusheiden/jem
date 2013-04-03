@@ -10,9 +10,7 @@ import org.slf4j.LoggerFactory;
  * <p/>
  * TODO add / remove clocked components operation could not be execute while clock is running
  */
-public class SerializedClock
-  extends AbstractSynchronizedClock<SerializedClockEntry>
-  implements Tick {
+public class SerializedClock extends AbstractSynchronizedClock<SerializedClockEntry> implements Tick {
   /**
    * Logger.
    */
@@ -24,7 +22,7 @@ public class SerializedClock
   protected SerializedClockEntry[] _entries;
 
   /**
-   * Index of currently excecute entry / clocked component.
+   * Index of currently executed entry / clocked component.
    */
   protected int _currentIndex;
 
@@ -109,6 +107,8 @@ public class SerializedClock
   public void run() {
     logger.debug("run clock");
 
+    _entries = _entryMap.values().toArray(new SerializedClockEntry[_entryMap.size()]);
+
     // only run this thread if no one else is able to run
     Thread.currentThread().setPriority(Thread.currentThread().getPriority() - 1);
 
@@ -129,6 +129,8 @@ public class SerializedClock
   @Override
   public void run(int ticks) {
     logger.debug("run clock for " + ticks + " ticks");
+
+    _entries = _entryMap.values().toArray(new SerializedClockEntry[_entryMap.size()]);
 
     // only run this thread if no one else is able to run
     Thread.currentThread().setPriority(Thread.currentThread().getPriority() - 1);
