@@ -3,12 +3,18 @@ package de.heiden.jem.models.c64.components.keyboard;
 import de.heiden.jem.components.ports.InputOutputPortImpl;
 import junit.framework.TestCase;
 
+import java.awt.*;
 import java.awt.event.KeyEvent;
 
 /**
  * Test.
  */
 public class KeyboardTest extends TestCase {
+  /**
+   * Dummy source for events.
+   */
+  private static final Button source = new Button();
+
   private InputOutputPortImpl _port0;
   private InputOutputPortImpl _port1;
   private Keyboard _keyboard;
@@ -17,7 +23,7 @@ public class KeyboardTest extends TestCase {
    * Test single key presses.
    */
   public void testSingleKey() {
-    KeyEvent a = new KeyEvent(null, 0, 0, 0, KeyEvent.VK_A, 'a', KeyEvent.KEY_LOCATION_STANDARD);
+    KeyEvent a = new KeyEvent(source, 0, 0, 0, KeyEvent.VK_A, 'a', KeyEvent.KEY_LOCATION_STANDARD);
     _keyboard.keyPressed(a);
     _port1.setOutputData(0x00); // port 1 is input
     _port1.setOutputMask(0x00);
@@ -39,7 +45,7 @@ public class KeyboardTest extends TestCase {
     assertEquals(0x02, _port0.inputMask());
     _keyboard.keyReleased(a);
 
-    KeyEvent b = new KeyEvent(null, 0, 0, 0, KeyEvent.VK_B, 'b', KeyEvent.KEY_LOCATION_STANDARD);
+    KeyEvent b = new KeyEvent(source, 0, 0, 0, KeyEvent.VK_B, 'b', KeyEvent.KEY_LOCATION_STANDARD);
     _keyboard.keyPressed(b);
     _port1.setOutputData(0x00);
     _port1.setOutputMask(0x00);
