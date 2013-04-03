@@ -28,7 +28,7 @@ public abstract class AbstractClock<E extends ClockEntry> implements Clock {
   /**
    * Events.
    */
-  private final ClockEvent _events;
+  private ClockEvent _events;
 
   /**
    * Next event to look for.
@@ -44,9 +44,8 @@ public abstract class AbstractClock<E extends ClockEntry> implements Clock {
 
     _entryMap = new TreeMap<>();
 
-    _events = new RootClockEvent(); // root node, may not be executed
-    _events.next = new RootClockEvent(); // end marker, may not be reached
-    _nextEventTick = Long.MAX_VALUE;
+    _events = new RootClockEvent(); // end marker, may not be reached
+    _nextEventTick = _events.tick;
   }
 
   @Override
@@ -112,12 +111,20 @@ public abstract class AbstractClock<E extends ClockEntry> implements Clock {
     newEvent.tick = tick;
 
     ClockEvent event = _events;
+
+    if (tick <= event.tick) {
+      newEvent.next = event;
+      _events = newEvent;
+      _nextEventTick = tick;
+      return;
+    }
+
     do {
-      ClockEvent next = event.next;
+      final ClockEvent next = event.next;
       if (next == null || tick <= next.tick) {
         event.next = newEvent;
         newEvent.next = next;
-        updateNextEvent();
+        // _nextEventTick needs no update
         return;
       }
 
@@ -141,12 +148,19 @@ public abstract class AbstractClock<E extends ClockEntry> implements Clock {
 //    }
 
     ClockEvent event = _events;
+
+    if (oldEvent == event) {
+      final ClockEvent next = event.next;
+      _events = next;
+      _nextEventTick = next.tick;
+      return;
+    }
+
     do {
-      ClockEvent next = event.next;
+      final ClockEvent next = event.next;
       if (next == oldEvent) {
         event.next = oldEvent.next;
-        oldEvent.next = null;
-        updateNextEvent();
+        // _nextEventTick needs no update
         return;
       }
 
@@ -158,7 +172,7 @@ public abstract class AbstractClock<E extends ClockEntry> implements Clock {
   /**
    * Execute current event, if any.
    * <p/>
-   * TODO 2010-10-14 mh: remove tick parameter, because it always has to be _nextEventTick...
+   * TODO 2010-10-14 mh: remove tick parameter, because it always has to be _nextEventTick?
    *
    * @param tick current clock tick
    */
@@ -167,13 +181,12 @@ public abstract class AbstractClock<E extends ClockEntry> implements Clock {
 
     while (_nextEventTick == tick) {
       // get current event
-      ClockEvent event = _events.next;
+      ClockEvent event = _events;
 
       // remove it
       ClockEvent nextEvent = event.next;
-      _events.next = nextEvent;
+      _events = nextEvent;
       _nextEventTick = nextEvent.tick;
-      event.next = null;
 
       // execute it
 //      if (_logger.isDebugEnabled()) {
@@ -181,12 +194,5 @@ public abstract class AbstractClock<E extends ClockEntry> implements Clock {
 //      }
       event.execute(tick);
     }
-  }
-
-  /**
-   * Update _nextEventTick.
-   */
-  protected final void updateNextEvent() {
-    _nextEventTick = _events.next.tick;
   }
 }
