@@ -12,10 +12,17 @@ import java.util.List;
  * C64 bus for testing purposes. This bus logs all access to it.
  */
 public class CPUTestBus implements BusDevice {
-  private BusDevice _bus;
+  /**
+   * Bus to which will be delegated.
+   */
+  private final BusDevice _bus;
 
-  // TODO 2010-10-12 mh: use array with cyclic pointer?
-  private List<LogEntry> _log;
+  /**
+   * Log entries.
+   * <p/>
+   * TODO 2010-10-12 mh: use array with cyclic pointer?
+   */
+  private final List<LogEntry> _log;
 
   /**
    * Constructor.
@@ -24,9 +31,10 @@ public class CPUTestBus implements BusDevice {
    * @require ram != null
    */
   public CPUTestBus(RAM ram) {
-    new C64Bus(new OutputPortImpl(), ram, ram, ram, ram, ram, ram, ram, ram);
+    assert ram != null : "ram != null";
 
-    _log = new ArrayList<>();
+    _bus = new C64Bus(new OutputPortImpl(), ram, ram, ram, ram, ram, ram, ram, ram);
+    _log = new ArrayList<>(1024);
   }
 
   /**
@@ -134,7 +142,6 @@ public class CPUTestBus implements BusDevice {
     public String toString() {
       return (_read ? "read from " : "write to ") + HexUtil.hexWord(_address) +
         " value " + HexUtil.hexByte(_value);
-
     }
   }
 }
