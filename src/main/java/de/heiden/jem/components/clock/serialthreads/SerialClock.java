@@ -66,10 +66,6 @@ public class SerialClock extends AbstractClock<ClockEntry> {
   public void run(int ticks) {
     assert ticks >= 0 : "Precondition: ticks >= 0";
 
-    if (ticks <= 0) {
-      return;
-    }
-
     final ChainedRunnable first = createChain()[0];
     ChainedRunnable chain = first;
     long tick = _tick;
