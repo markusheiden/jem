@@ -153,6 +153,7 @@ public abstract class AbstractClock<E extends ClockEntry> implements Clock {
       final ClockEvent next = event.next;
       _events = next;
       _nextEventTick = next.tick;
+      oldEvent.next = null;
       return;
     }
 
@@ -161,6 +162,7 @@ public abstract class AbstractClock<E extends ClockEntry> implements Clock {
       if (next == oldEvent) {
         event.next = oldEvent.next;
         // _nextEventTick needs no update
+        oldEvent.next = null;
         return;
       }
 
