@@ -177,14 +177,12 @@ public abstract class AbstractClock<E extends ClockEntry> implements Clock {
    * @param tick current clock tick
    */
   protected final void executeEvent(long tick) {
-    assert tick == _nextEventTick : "tick == _nextEventTick";
-
     while (_nextEventTick == tick) {
       // get current event
-      ClockEvent event = _events;
+      final ClockEvent event = _events;
 
       // remove it
-      ClockEvent nextEvent = event.next;
+      final ClockEvent nextEvent = event.next;
       _events = nextEvent;
       _nextEventTick = nextEvent.tick;
 

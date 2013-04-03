@@ -46,9 +46,7 @@ public class SerialClock extends AbstractClock<ClockEntry> {
       //noinspection InfiniteLoopStatement
       while (true) {
         // execute events first, if any
-        if (_nextEventTick <= tick) {
-          executeEvent(tick);
-        }
+        executeEvent(tick);
 
         // execute chain one tick
         do {
@@ -79,9 +77,7 @@ public class SerialClock extends AbstractClock<ClockEntry> {
     try {
       for (; ticks != 0; ticks--) {
         // execute events first, if any
-        if (_nextEventTick <= tick) {
-          executeEvent(tick);
-        }
+        executeEvent(tick);
 
         // execute chain one tick
         do {
