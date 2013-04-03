@@ -143,6 +143,13 @@ public class AbstractClockTest {
    * Clock event implementation for testing.
    */
   private class TestClockEvent extends ClockEvent {
+    /**
+     * Constructor.
+     */
+    public TestClockEvent() {
+      super("Test event");
+    }
+
     @Override
     public void execute(long tick) {
       // Record executions

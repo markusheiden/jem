@@ -96,7 +96,7 @@ public class TestC64 {
     _cpu.add(systemOut);
     _cpu.add(new StopAtSystemIn());
 
-    _clock.addClockEvent(100000, new ClockEvent() {
+    _clock.addClockEvent(100000, new ClockEvent("Interrupt check") {
       @Override
       public void execute(long tick) {
         if (Thread.interrupted()) {
