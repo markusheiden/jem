@@ -25,6 +25,8 @@ public class StopWatch extends ClockEvent {
    * @param freq frequency in Hz (clock ticks per second)
    */
   public StopWatch(Clock clock, long freq) {
+    super("Stop watch");
+
     assert clock != null : "Precondition: clock != null";
     assert freq > 0 : "Precondition: freq > 0";
 

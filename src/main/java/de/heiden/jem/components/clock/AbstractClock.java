@@ -169,6 +169,8 @@ public abstract class AbstractClock<E extends ClockEntry> implements Clock {
       event = next;
 
     } while (event != null);
+
+    assert oldEvent.next == null : "oldEvent.next == null";
   }
 
   /**

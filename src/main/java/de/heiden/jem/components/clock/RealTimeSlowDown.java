@@ -66,6 +66,8 @@ public class RealTimeSlowDown extends ClockEvent {
    * @param div How often per second should the clock speed be adjusted?
    */
   public RealTimeSlowDown(Clock clock, long freq, int div) {
+    super("Real time slow down");
+
     assert clock != null : "Precondition: clock != null";
     assert freq > 0 : "Precondition: freq > 0";
     assert div > 0 : "Precondition: div > 0";
@@ -81,7 +83,7 @@ public class RealTimeSlowDown extends ClockEvent {
     _incrementTime0 = 1000000000 - (div - 1) * _incrementTime;
 
     // Initial clock event
-    _clock.addClockEvent(0, new ClockEvent() {
+    _clock.addClockEvent(0, new ClockEvent("Init real time slow down") {
       @Override
       public void execute(long tick) {
         long now = System.nanoTime();

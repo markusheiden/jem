@@ -8,6 +8,8 @@ class RootClockEvent extends ClockEvent {
    * Constructor.
    */
   RootClockEvent() {
+    super("Root clock event");
+
     tick = Long.MAX_VALUE;
   }
 

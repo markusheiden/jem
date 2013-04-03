@@ -117,7 +117,7 @@ public class CIA6526 implements BusDevice {
     _clock = clock;
 
     // event for timer a finished clock counting
-    _timerAUnderflowEvent = new ClockEvent() {
+    _timerAUnderflowEvent = new ClockEvent("Timer A underflow") {
       @Override
       public void execute(long tick) {
         timerAUnderflow();
@@ -127,15 +127,10 @@ public class CIA6526 implements BusDevice {
           _clock.addClockEvent(_timerABase + _timerA, _timerAUnderflowEvent);
         }
       }
-
-      @Override
-      public String toString() {
-        return "Timer A underflow";
-      }
     };
 
     // event for timer b finished clock counting
-    _timerBUnderflowEvent = new ClockEvent() {
+    _timerBUnderflowEvent = new ClockEvent("Timer B underflow") {
       @Override
       public void execute(long tick) {
         timerBUnderflow();
@@ -144,11 +139,6 @@ public class CIA6526 implements BusDevice {
         if ((_controlB & CR_ONE_SHOT) == 0) {
           _clock.addClockEvent(_timerBBase + _timerB, _timerBUnderflowEvent);
         }
-      }
-
-      @Override
-      public String toString() {
-        return "Timer B underflow";
       }
     };
 
