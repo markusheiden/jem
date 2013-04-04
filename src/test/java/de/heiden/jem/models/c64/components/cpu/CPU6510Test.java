@@ -4,6 +4,7 @@ import de.heiden.jem.components.bus.LogEntry;
 import de.heiden.jem.components.bus.LoggingBus;
 import de.heiden.jem.components.clock.synchronization.SerializedClock;
 import de.heiden.jem.models.c64.components.memory.RAM;
+import de.heiden.jem.models.c64.util.BusUtil;
 import junit.framework.TestCase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,13 +79,14 @@ public class CPU6510Test extends TestCase {
 
     _clock = new SerializedClock();
     _ram = new RAM(0x10000);
+    // Test code starts at $300
+    BusUtil.writeWord(0xFFFC, 0x0300, _ram);
     _bus = new LoggingBus(_ram);
     _cpu = new CPU6510(_clock);
     _cpu.connect(_bus);
     // Execute reset sequence
     _clock.run(2);
-    // Test code starts at $300
-    _cpu.getState().PC = 0x0300;
+    assertEquals(0x0300, _cpu.getState().PC);
   }
 
   /**
