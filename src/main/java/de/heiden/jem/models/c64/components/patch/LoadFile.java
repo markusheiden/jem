@@ -2,9 +2,9 @@ package de.heiden.jem.models.c64.components.patch;
 
 import de.heiden.c64dt.util.ByteUtil;
 import de.heiden.jem.components.bus.BusDevice;
+import de.heiden.jem.components.bus.WordBus;
 import de.heiden.jem.models.c64.components.cpu.CPU6510State;
 import de.heiden.jem.models.c64.components.cpu.Patch;
-import de.heiden.jem.models.c64.util.BusUtil;
 import de.heiden.jem.models.c64.util.FileUtil;
 import de.heiden.jem.models.c64.util.StringUtil;
 
@@ -54,7 +54,8 @@ public class LoadFile extends Patch {
   @Override
   protected int execute(CPU6510State state, BusDevice bus) {
     // Read filename from ($BB), length ($B7)
-    String filename = StringUtil.read(bus, BusUtil.readWord(0xBB, bus), bus.read(0xB7));
+    WordBus wordBus = new WordBus(bus);
+    String filename = StringUtil.read(bus, wordBus.readWord(0xBB), bus.read(0xB7));
     filename = filename.toLowerCase() + ".prg";
 
     try {
@@ -64,10 +65,10 @@ public class LoadFile extends Patch {
       assert file != null : "file " + filename + " exists";
 
       int endAddress = bus.read(0xB9) == 0 ?
-        FileUtil.read(file, BusUtil.readWord(0xC3, bus), bus) :
+        FileUtil.read(file, wordBus.readWord(0xC3), bus) :
         FileUtil.read(file, bus);
 
-      BusUtil.writeWord(0xAE, endAddress, bus);
+      wordBus.writeWord(0xAE, endAddress);
 
       state.C = false; // OK
       state.X = ByteUtil.lo(endAddress);

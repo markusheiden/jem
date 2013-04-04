@@ -2,9 +2,9 @@ package de.heiden.jem.models.c64.components.cpu;
 
 import de.heiden.jem.components.bus.LogEntry;
 import de.heiden.jem.components.bus.LoggingBus;
+import de.heiden.jem.components.bus.WordBus;
 import de.heiden.jem.components.clock.synchronization.SerializedClock;
 import de.heiden.jem.models.c64.components.memory.RAM;
-import de.heiden.jem.models.c64.util.BusUtil;
 import junit.framework.TestCase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +20,8 @@ public class CPU6510Test extends TestCase {
 
   private SerializedClock _clock;
   private RAM _ram;
-  private LoggingBus _bus;
+  private LoggingBus _LoggingBus;
+  private WordBus _bus;
   private CPU6510 _cpu;
 
   /**
@@ -79,13 +80,17 @@ public class CPU6510Test extends TestCase {
 
     _clock = new SerializedClock();
     _ram = new RAM(0x10000);
-    // Test code starts at $300
-    BusUtil.writeWord(0xFFFC, 0x0300, _ram);
-    _bus = new LoggingBus(_ram);
+    _LoggingBus = new LoggingBus(_ram);
+    _bus = new WordBus(_LoggingBus);
     _cpu = new CPU6510(_clock);
     _cpu.connect(_bus);
+
+    // Test code starts at $300
+    _bus.writeWord(0xFFFC, 0x0300);
+
     // Execute reset sequence
     _clock.run(2);
+
     assertEquals(0x0300, _cpu.getState().PC);
   }
 
@@ -112,6 +117,6 @@ public class CPU6510Test extends TestCase {
   private void executeOneTick(CPU6510State expectedState, LogEntry expectedLog) {
     _clock.run(1);
     assertEquals(expectedState, _cpu.getState());
-    assertEquals(expectedLog, _bus.getLastLogEntry());
+    assertEquals(expectedLog, _LoggingBus.getLastLogEntry());
   }
 }

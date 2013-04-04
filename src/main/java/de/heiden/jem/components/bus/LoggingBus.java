@@ -7,12 +7,7 @@ import java.util.List;
  * Bus for testing purposes.
  * This bus delegates to a given bus and logs all accesses to it.
  */
-public class LoggingBus implements BusDevice {
-  /**
-   * Bus to which will be delegated.
-   */
-  private final BusDevice _bus;
-
+public class LoggingBus extends BusDeviceAdapter {
   /**
    * Log entries.
    * <p/>
@@ -27,9 +22,8 @@ public class LoggingBus implements BusDevice {
    * @require bus != null
    */
   public LoggingBus(BusDevice bus) {
-    assert bus != null : "bus != null";
+    super(bus);
 
-    _bus = bus;
     _log = new ArrayList<>(1024);
   }
 
@@ -39,7 +33,7 @@ public class LoggingBus implements BusDevice {
   @Override
   public final void write(int value, int address) {
     _log.add(new LogEntry(false, address, value));
-    _bus.write(value, address);
+    super.write(value, address);
   }
 
   /**
@@ -47,7 +41,7 @@ public class LoggingBus implements BusDevice {
    */
   @Override
   public final int read(int address) {
-    int value = _bus.read(address);
+    int value = super.read(address);
     _log.add(new LogEntry(true, address, value));
 
     return value;
