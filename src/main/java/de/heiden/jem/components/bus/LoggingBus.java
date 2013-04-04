@@ -31,7 +31,7 @@ public class LoggingBus extends BusDeviceAdapter {
    * Protocol all write accesses.
    */
   @Override
-  public final void write(int value, int address) {
+  public synchronized final void write(int value, int address) {
     _log.add(new LogEntry(false, address, value));
     super.write(value, address);
   }
@@ -40,7 +40,7 @@ public class LoggingBus extends BusDeviceAdapter {
    * Protocol all read accesses
    */
   @Override
-  public final int read(int address) {
+  public synchronized final int read(int address) {
     int value = super.read(address);
     _log.add(new LogEntry(true, address, value));
 
@@ -53,7 +53,7 @@ public class LoggingBus extends BusDeviceAdapter {
    * @require getLog().length > 0
    * @ensure result != null
    */
-  public LogEntry getLastLogEntry() {
+  public synchronized LogEntry getLastLogEntry() {
     assert !getLog().isEmpty() : "Precondition: !getLog().isEmpty()";
 
     LogEntry result = _log.get(_log.size() - 1);
@@ -65,7 +65,7 @@ public class LoggingBus extends BusDeviceAdapter {
   /**
    * Get log.
    */
-  public List<LogEntry> getLog() {
+  public synchronized List<LogEntry> getLog() {
     return _log;
   }
 
@@ -74,7 +74,7 @@ public class LoggingBus extends BusDeviceAdapter {
    *
    * @ensure getLog().length == 0
    */
-  public void resetLog() {
+  public synchronized void resetLog() {
     _log.clear();
 
     assert getLog().isEmpty() : "Postcondition: getLog().isEmpty()";

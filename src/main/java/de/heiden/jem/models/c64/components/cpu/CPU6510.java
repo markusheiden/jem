@@ -159,6 +159,9 @@ public class CPU6510 implements ClockedComponent {
   public void reset() {
     logger.debug("reset");
 
+    // wait for first tick
+    _tick.waitForTick();
+
     // TODO init something else?
     _state.S = STACK + 0xFF;
     _state.setP(0x00); // TODO correct?
@@ -3415,8 +3418,8 @@ public class CPU6510 implements ClockedComponent {
   @Interruptible
   protected final int readBytePC() {
     int pc = _state.PC;
-    int result = read(pc++);
-    _state.PC = pc & 0xFFFF;
+    int result = read(pc);
+    _state.PC = (pc + 1) & 0xFFFF;
 
     return result;
   }
@@ -3428,10 +3431,10 @@ public class CPU6510 implements ClockedComponent {
   @Interruptible
   protected final int readWordPC() {
     int pc = _state.PC;
-    int result = read(pc++);
-    pc = pc & 0xFFFF;
-    result |= read(pc++) << 8;
-    _state.PC = pc & 0xFFFF;
+    int result = read(pc);
+    pc = (pc + 1) & 0xFFFF;
+    result |= read(pc) << 8;
+    _state.PC = (pc + 1) & 0xFFFF;
 
     return result;
   }

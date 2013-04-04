@@ -20,7 +20,7 @@ public class CPU6510Test extends TestCase {
 
   private SerializedClock _clock;
   private RAM _ram;
-  private LoggingBus _LoggingBus;
+  private LoggingBus _loggingBus;
   private WordBus _bus;
   private CPU6510 _cpu;
 
@@ -32,26 +32,29 @@ public class CPU6510Test extends TestCase {
 
     logger.debug("test 0x00");
 
-    _ram.write(0x00, 0x0300); // BRK
-    _ram.write(0xA5, 0x0301); // dummy
+    _ram.write(0xEA, 0x0300); // NOP
+    _ram.write(0x00, 0x0301); // BRK
+    _ram.write(0xA5, 0x0302); // dummy
     _ram.write(0x48, 0xFFFE); // BRK vector low
     _ram.write(0xFF, 0xFFFF); // BRK vector high
 
+    // Execute NOP
     _clock.run(1);
+//    assertEquals(0x0301, _cpu.getState().PC);
 
     CPU6510State expectedState = _cpu.getState().copy();
 
-    // load opcode -> PC = 0x0301
+    // load opcode -> PC = 0x0302
     executeOneTick(expectedState, new LogEntry(true, expectedState.PC++, 0x00));
 
-    // load byte after opcode -> PC = 0x0302
+    // load byte after opcode -> PC = 0x0303
     executeOneTick(expectedState, new LogEntry(true, expectedState.PC++, 0xA5));
 
     // store high(PC) at stack
     executeOneTick(expectedState, new LogEntry(false, expectedState.S--, 0x03));
 
     // store low(PC) at stack
-    executeOneTick(expectedState, new LogEntry(false, expectedState.S--, 0x02));
+    executeOneTick(expectedState, new LogEntry(false, expectedState.S--, 0x03));
 
     // store status flag at stack
     executeOneTick(expectedState, new LogEntry(false, expectedState.S--, expectedState.getP()));
@@ -61,7 +64,7 @@ public class CPU6510Test extends TestCase {
 
     // load high(vector)
     expectedState.PC = 0xFF48;
-    executeOneTick(expectedState, new LogEntry(true, 0xFFFE, 0x48));
+    executeOneTick(expectedState, new LogEntry(true, 0xFFFF, 0xFF));
 
     assertEquals(7, _clock.getTick());
   }
@@ -80,8 +83,8 @@ public class CPU6510Test extends TestCase {
 
     _clock = new SerializedClock();
     _ram = new RAM(0x10000);
-    _LoggingBus = new LoggingBus(_ram);
-    _bus = new WordBus(_LoggingBus);
+    _loggingBus = new LoggingBus(_ram);
+    _bus = new WordBus(_loggingBus);
     _cpu = new CPU6510(_clock);
     _cpu.connect(_bus);
 
@@ -90,8 +93,6 @@ public class CPU6510Test extends TestCase {
 
     // Execute reset sequence
     _clock.run(2);
-
-    assertEquals(0x0300, _cpu.getState().PC);
   }
 
   /**
@@ -117,6 +118,6 @@ public class CPU6510Test extends TestCase {
   private void executeOneTick(CPU6510State expectedState, LogEntry expectedLog) {
     _clock.run(1);
     assertEquals(expectedState, _cpu.getState());
-    assertEquals(expectedLog, _LoggingBus.getLastLogEntry());
+    assertEquals(expectedLog, _loggingBus.getLastLogEntry());
   }
 }
