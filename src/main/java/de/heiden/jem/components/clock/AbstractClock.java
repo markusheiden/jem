@@ -124,17 +124,16 @@ public abstract class AbstractClock<E extends ClockEntry> implements Clock {
   }
 
   /**
-   * Run this clock as master clock.
+   * Run this clock for ever.
    */
   protected abstract void doRun();
 
   /**
-   * Run this clock as master clock.
+   * Run this clock for a given number of ticks.
    *
    * @param ticks number of ticks to run this clock for
    */
   protected abstract void doRun(int ticks);
-
 
   /**
    * Add event.

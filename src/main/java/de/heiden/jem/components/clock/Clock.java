@@ -35,12 +35,12 @@ public interface Clock {
   public Tick addClockedComponent(int position, ClockedComponent component);
 
   /**
-   * Run this clock as master clock.
+   * Run this clock for ever as master clock.
    */
   public void run();
 
   /**
-   * Run this clock as master clock.
+   * Run this clock a given number of ticks as master clock.
    *
    * @param ticks number of ticks to run this clock for
    */
