@@ -80,7 +80,9 @@ public class CPU6510Test extends TestCase {
     _bus = new CPUTestBus(_ram);
     _cpu = new CPU6510(_clock);
     _cpu.connect(_bus);
+    // Execute reset sequence
     _clock.run(2);
+    // Test code starts at $300
     _cpu.getState().PC = 0x0300;
   }
 
