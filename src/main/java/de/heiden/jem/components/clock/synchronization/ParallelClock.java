@@ -8,9 +8,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Clock implemented with synchronization.
  */
-public class ParallelClock
-  extends AbstractSynchronizedClock<ParallelClockEntry>
-  implements Tick {
+public class ParallelClock extends AbstractSynchronizedClock<ParallelClockEntry> implements Tick {
   /**
    * Logger.
    */
@@ -121,13 +119,36 @@ public class ParallelClock
     _lock.notifyAll();
   }
 
-  @Override
-  public void run() {
-    logger.debug("run clock");
-
+  /**
+   * Start threads of all components.
+   */
+  protected void doInit() {
     try {
-      startClockedComponents();
+      logger.debug("starting components");
 
+      _entries = _entryMap.values().toArray(new ParallelClockEntry[_entryMap.size()]);
+      for (ParallelClockEntry entry : _entries) {
+        entry.thread.start();
+      }
+      Thread.yield();
+
+      // wait for all components
+      while (_waiting < _entries.length) {
+        logger.debug("waiting for " + (_entries.length - _waiting) + "/" + _entries.length + " components");
+        _lock.wait(1);
+      }
+
+      // start clock
+      _started = true;
+      tick();
+    } catch (InterruptedException e) {
+      throw new RuntimeException("Thread has been stopped", e);
+    }
+  }
+
+  @Override
+  protected final void doRun() {
+    try {
       synchronized (this) {
         wait();
       }
@@ -136,39 +157,12 @@ public class ParallelClock
     }
   }
 
-  /**
-   * Start threads of all components.
-   */
-  private void startClockedComponents() throws InterruptedException {
-    logger.debug("starting components");
-
-    _entries = _entryMap.values().toArray(new ParallelClockEntry[_entryMap.size()]);
-    for (ParallelClockEntry entry : _entries) {
-      entry.thread.start();
-    }
-    Thread.yield();
-
-    // wait for all components
-    while (_waiting < _entries.length) {
-      logger.debug("waiting for " + (_entries.length - _waiting) + "/" + _entries.length + " components");
-      _lock.wait(1);
-    }
-
-    // start clock
-    _started = true;
-    tick();
-  }
-
   @Override
-  public void run(int ticks) {
-    logger.debug("run clock for " + ticks + " ticks");
-
+  protected final void doRun(int ticks) {
     try {
       synchronized (_lock) {
         if (_started) {
           resume();
-        } else {
-          startClockedComponents();
         }
 
         long end = _tick + ticks;

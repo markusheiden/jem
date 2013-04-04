@@ -100,18 +100,16 @@ public class SerializedClock extends AbstractSynchronizedClock<SerializedClockEn
     }
   }
 
-  /**
-   * Run this clock as master clock.
-   */
   @Override
-  public void run() {
-    logger.debug("run clock");
-
+  protected void doInit() {
     _entries = _entryMap.values().toArray(new SerializedClockEntry[_entryMap.size()]);
 
     // only run this thread if no one else is able to run
     Thread.currentThread().setPriority(Thread.currentThread().getPriority() - 1);
+  }
 
+  @Override
+  protected final void doRun() {
     try {
       while (true) {
         tick();
@@ -121,20 +119,8 @@ public class SerializedClock extends AbstractSynchronizedClock<SerializedClockEn
     }
   }
 
-  /**
-   * Start debugging run.
-   *
-   * @param ticks number of ticks to execute.
-   */
   @Override
-  public void run(int ticks) {
-    logger.debug("run clock for " + ticks + " ticks");
-
-    _entries = _entryMap.values().toArray(new SerializedClockEntry[_entryMap.size()]);
-
-    // only run this thread if no one else is able to run
-    Thread.currentThread().setPriority(Thread.currentThread().getPriority() - 1);
-
+  protected final void doRun(int ticks) {
     try {
       while (--ticks >= 0) {
         tick();

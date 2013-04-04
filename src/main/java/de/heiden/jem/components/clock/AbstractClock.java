@@ -90,6 +90,52 @@ public abstract class AbstractClock<E extends ClockEntry> implements Clock {
    */
   protected abstract E createClockEntry(ClockedComponent component);
 
+  @Override
+  public final void run() {
+    logger.debug("run clock");
+
+    init();
+    doRun();
+  }
+
+  @Override
+  public final void run(int ticks) {
+    logger.debug("run clock for " + ticks + " ticks");
+
+    init();
+    doRun(ticks);
+  }
+
+  /**
+   * Init clock.
+   */
+  private void init() {
+    if (!_started) {
+      doInit();
+      _started = true;
+    }
+  }
+
+  /**
+   * Init clock.
+   */
+  protected void doInit() {
+    // overwrite, if needed
+  }
+
+  /**
+   * Run this clock as master clock.
+   */
+  protected abstract void doRun();
+
+  /**
+   * Run this clock as master clock.
+   *
+   * @param ticks number of ticks to run this clock for
+   */
+  protected abstract void doRun(int ticks);
+
+
   /**
    * Add event.
    *

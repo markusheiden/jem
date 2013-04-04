@@ -37,14 +37,14 @@ public final class SerialClock extends AbstractClock<ClockEntry> {
   }
 
   @Override
-  public void run() {
+  protected final void doRun() {
     Counter counter = new Counter();
     createChain(counter);
     run(counter);
   }
 
   @Override
-  public void run(int ticks) {
+  protected final void doRun(int ticks) {
     assert ticks >= 0 : "Precondition: ticks >= 0";
 
     StopCounter counter = new StopCounter(ticks);

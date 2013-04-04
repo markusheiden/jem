@@ -117,12 +117,12 @@ public class AbstractClockTest {
     }
 
     @Override
-    public void run() {
+    protected void doRun() {
       throw new UnsupportedOperationException("Not implemented for test clock");
     }
 
     @Override
-    public void run(int ticks) {
+    protected void doRun(int ticks) {
       throw new UnsupportedOperationException("Not implemented for test clock");
     }
 
