@@ -51,10 +51,7 @@ public class SerializedClock extends AbstractSynchronizedClock<SerializedClockEn
   @Override
   protected SerializedClockEntry createClockEntry(ClockedComponent component) {
     // TODO 2009-04-27 mh: use own Tick instance for every thread
-    SerializedClockEntry entry = new SerializedClockEntry(component, this);
-    entry.start();
-
-    return entry;
+    return new SerializedClockEntry(component, this);
   }
 
   /**
@@ -102,7 +99,12 @@ public class SerializedClock extends AbstractSynchronizedClock<SerializedClockEn
 
   @Override
   protected void doInit() {
+    // Create array of clock entry for faster iteration
     _entries = _entryMap.values().toArray(new SerializedClockEntry[_entryMap.size()]);
+    // Start (threads of) entries
+    for (SerializedClockEntry entry : _entries) {
+      entry.start();
+    }
 
     // only run this thread if no one else is able to run
     Thread.currentThread().setPriority(Thread.currentThread().getPriority() - 1);
