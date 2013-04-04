@@ -1,7 +1,8 @@
 package de.heiden.jem.models.c64.components.cpu;
 
+import de.heiden.jem.components.bus.LogEntry;
+import de.heiden.jem.components.bus.LoggingBus;
 import de.heiden.jem.components.clock.synchronization.SerializedClock;
-import de.heiden.jem.models.c64.components.cpu.CPUTestBus.LogEntry;
 import de.heiden.jem.models.c64.components.memory.RAM;
 import junit.framework.TestCase;
 import org.slf4j.Logger;
@@ -18,7 +19,7 @@ public class CPU6510Test extends TestCase {
 
   private SerializedClock _clock;
   private RAM _ram;
-  private CPUTestBus _bus;
+  private LoggingBus _bus;
   private CPU6510 _cpu;
 
   /**
@@ -77,7 +78,7 @@ public class CPU6510Test extends TestCase {
 
     _clock = new SerializedClock();
     _ram = new RAM(0x10000);
-    _bus = new CPUTestBus(_ram);
+    _bus = new LoggingBus(_ram);
     _cpu = new CPU6510(_clock);
     _cpu.connect(_bus);
     // Execute reset sequence
