@@ -6,16 +6,45 @@ package de.heiden.jem.components.clock.synchronization;
  */
 public final class Lock {
   /**
-   * Constructor using default name.
+   * Informal name of lock.
+   */
+  private final String _name;
+
+  /**
+   * Numer of ticks to sleep.
+   */
+  private volatile int _ticks;
+
+  /**
+   * Remembers if thread to sleep is already waiting.
+   */
+  private volatile boolean _waiting;
+
+  /**
+   * Remembers if thread has not already been waked up.
+   */
+  private volatile boolean _noWakeup;
+
+  /**
+   * Object used as lock.
+   */
+  private final Object _lock;
+
+  //
+  //
+  //
+
+  /**
+   * Constructor using a default name.
    */
   public Lock() {
-    this("lock");
+    this("Lock");
   }
 
   /**
    * Constructor.
    *
-   * @param name informal name of lock.
+   * @param name Informal name of the lock.
    * @require name != null
    */
   public Lock(String name) {
@@ -46,7 +75,7 @@ public final class Lock {
    */
   public void sleep() throws InterruptedException {
     if (_noWakeup && _ticks == 1) {
-      // give other threads chance to run to avoid wait of this thread
+      // give other threads the chance to run to avoid wait of this thread
       Thread.yield();
     }
     synchronized (_lock) {
@@ -85,38 +114,21 @@ public final class Lock {
   }
 
   /**
+   * Wait for the lock being sleeping.
+   */
+  public void waitForLock() throws InterruptedException {
+    synchronized (_lock) {
+      while (!_waiting) {
+        // Wait for sleep() being called
+        _lock.wait(10);
+      }
+    }
+  }
+
+  /**
    * toString.
    */
   public String toString() {
     return _name;
   }
-
-  //
-  // private attributes
-  //
-
-  /**
-   * Informal name of lock.
-   */
-  private final String _name;
-
-  /**
-   * Numer of ticks to sleep.
-   */
-  private volatile int _ticks;
-
-  /**
-   * Remembers if thread to sleep is already waiting.
-   */
-  private volatile boolean _waiting;
-
-  /**
-   * Remembers if thread has not already been waked up.
-   */
-  private volatile boolean _noWakeup;
-
-  /**
-   * Object used as lock.
-   */
-  private final Object _lock;
 }

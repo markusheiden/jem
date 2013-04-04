@@ -15,8 +15,14 @@ public class SerializedClockEntry extends ClockEntry {
    */
   private final Logger logger = LoggerFactory.getLogger(getClass());
 
-  private final Thread _thread;
+  /**
+   * Thread used to execute the component.
+   */
+  private final Thread thread;
 
+  /**
+   * Lock for controlling the execution of the thread.
+   */
   public final Lock lock;
 
   /**
@@ -30,7 +36,7 @@ public class SerializedClockEntry extends ClockEntry {
   public SerializedClockEntry(final ClockedComponent component, Tick tick) {
     super(component, tick);
 
-    _thread = new Thread(new Runnable() {
+    thread = new Thread(new Runnable() {
       @Override
       public void run() {
         component.run();
@@ -39,6 +45,9 @@ public class SerializedClockEntry extends ClockEntry {
     this.lock = new Lock(component.getName());
   }
 
+  /**
+   * Run the component for one tick.
+   */
   public void run() {
     try {
       logger.debug("wait for start of clock");
@@ -47,7 +56,7 @@ public class SerializedClockEntry extends ClockEntry {
 
       component.run();
     } catch (InterruptedException e) {
-      logger.debug("interrupted");
+      logger.debug("Execution has been interrupted");
     }
   }
 
@@ -55,13 +64,29 @@ public class SerializedClockEntry extends ClockEntry {
    * Start associated thread.
    */
   public void start() {
-    _thread.start();
+    try {
+      thread.start();
+      // Wait for the thread to reach the first sleep()
+      lock.waitForLock();
+    } catch (InterruptedException e) {
+      logger.debug("Execution has been interrupted");
+      // T
+    }
+  }
+
+  @Override
+  protected void finalize() throws Throwable {
+    try {
+      dispose();
+    } finally {
+      super.finalize();
+    }
   }
 
   /**
    * Dispose.
    */
   public void dispose() {
-    _thread.interrupt();
+    thread.interrupt();
   }
 }
