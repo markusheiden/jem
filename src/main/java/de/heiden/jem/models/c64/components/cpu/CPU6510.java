@@ -3329,7 +3329,7 @@ public class CPU6510 implements ClockedComponent {
    */
   @Interruptible
   protected final void xaa() {
-    // TODO the _state.A | 0xEE part isn't documented in any docs... is it correct?
+    // TODO 0xEE is cpu dependant
     int result = (_state.A | 0xEE) & _state.X & readImmediatePC();
     _state.setZeroNegativeP(result);
     _state.A = result;
