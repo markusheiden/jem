@@ -119,7 +119,10 @@ public class CPU6510Debugger extends CPU6510 {
       if (_stop) {
         throw new DebuggerExit("C64 has been stopped");
       }
-      if (_suspend || _breakpoints.contains(_state.PC)) {
+      if (_breakpoints.contains(_state.PC)) {
+        _suspend = true;
+      }
+      if (_suspend) {
         waitForResume();
       }
     }
