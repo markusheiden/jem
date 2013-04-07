@@ -781,7 +781,7 @@ public class CPU6510 implements ClockedComponent {
         @Interruptible
         public final void execute() // $37: *RLA $XX,X (6)
         {
-          rla(readAbsoluteAddressPC(_state.X));
+          rla(readAbsoluteZeropageAddressPC(_state.X));
         }
       },
 
