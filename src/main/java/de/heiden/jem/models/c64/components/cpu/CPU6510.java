@@ -1804,10 +1804,9 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $A3:
+        public final void execute() // $A3: *LAX ($XX,X)
         {
-          // TODO implement opcode
-          notImplementedYet();
+          lax(readZeropageIndirectXAddressPC());
         }
       },
 
@@ -1841,10 +1840,9 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $A7:
+        public final void execute() // $A7: *LAX $XX
         {
-          // TODO implement opcode
-          notImplementedYet();
+          lax(readAbsoluteZeropageAddressPC());
         }
       },
 
@@ -1917,10 +1915,9 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $AF:
+        public final void execute() // $AF: *LAX $XXXX
         {
-          // TODO implement opcode
-          notImplementedYet();
+          lax(readAbsoluteAddressPC());
         }
       },
 
@@ -1954,10 +1951,9 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $B3:
+        public final void execute() // $B3: *LAX ($XX),Y
         {
-          // TODO implement opcode
-          notImplementedYet();
+          lax(readZeropageIndirectYAddressPC());
         }
       },
 
@@ -1994,10 +1990,9 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $B7:
+        public final void execute() // $B7: *LAX $XX,Y
         {
-          // TODO implement opcode
-          notImplementedYet();
+          lax(readAbsoluteZeropageAddressPC(_state.Y));
         }
       },
 
@@ -2070,10 +2065,9 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $BF:
+        public final void execute() // $BF: *LAX $XXXX,Y
         {
-          // TODO implement opcode
-          notImplementedYet();
+          lax(readAbsoluteAddressPC(_state.Y));
         }
       },
 
@@ -3240,6 +3234,21 @@ public class CPU6510 implements ClockedComponent {
     int value = increment(read(addr));
     write(value, addr);
     subtract(value);
+  }
+
+  /**
+   * *LAX: Load A and X.
+   * (?)
+   *
+   * @param addr address
+   */
+  @Interruptible
+  protected final void lax(int addr) {
+    if (DEBUG) {
+      reportIllegalOpcode();
+    }
+    _state.A = load(read(addr));
+    _state.X = _state.A;
   }
 
   /**
