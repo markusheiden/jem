@@ -12,12 +12,12 @@ public class ScreenBuffer extends OutputStream {
   /**
    * Charset.
    */
-  private PetSCIICharset charset = new PetSCIICharset();
+  private final PetSCIICharset charset = new PetSCIICharset();
 
   /**
    * Buffer for screen output.
    */
-  private final StringBuffer screen = new StringBuffer(1024);
+  private final StringBuilder screen = new StringBuilder(1024);
 
   /**
    * Upper and lower case chars?.
