@@ -1563,7 +1563,7 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $8B:
+        public final void execute() // $8B: *XAA
         {
           xaa();
         }
@@ -3148,7 +3148,7 @@ public class CPU6510 implements ClockedComponent {
   }
 
   /**
-   * *ALR: AND with decimal mode corrections of ADC and with exchanging bit 7 with carry (logic from ROR).
+   * *ARR: AND with decimal mode corrections of ADC and with exchanging bit 7 with carry (logic from ROR).
    *
    * @param value argument
    */
@@ -3329,7 +3329,8 @@ public class CPU6510 implements ClockedComponent {
    */
   @Interruptible
   protected final void xaa() {
-    int result = _state.X & readImmediatePC();
+    // TODO the _state.A | 0xEE part isn't documented in any docs... is it correct?
+    int result = (_state.A | 0xEE) & _state.X & readImmediatePC();
     _state.setZeroNegativeP(result);
     _state.A = result;
   }
