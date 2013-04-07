@@ -2987,7 +2987,7 @@ public class CPU6510 implements ClockedComponent {
    */
   @Interruptible
   protected final int popWord() {
-    return popByte() | popByte() << 8;
+    return popByte() | (popByte() << 8);
   }
 
   /**
