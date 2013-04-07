@@ -894,10 +894,9 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $43:
+        public final void execute() // $43: *LSE ($XX,X)
         {
-          // TODO implement opcode
-          notImplementedYet();
+          lse(readZeropageIndirectXAddressPC());
         }
       },
 
@@ -932,10 +931,9 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $47:
+        public final void execute() // $47: *LSE $XX
         {
-          // TODO implement opcode
-          notImplementedYet();
+          lse(readAbsoluteZeropageAddressPC());
         }
       },
 
@@ -1007,10 +1005,9 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $4F:
+        public final void execute() // $4F: *LSE $XXXX
         {
-          // TODO implement opcode
-          notImplementedYet();
+          lse(readAbsoluteAddressPC());
         }
       },
 
@@ -1044,10 +1041,9 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $53:
+        public final void execute() // $53: *LSE ($XX),Y
         {
-          // TODO implement opcode
-          notImplementedYet();
+          lse(readZeropageIndirectYAddressPC());
         }
       },
 
@@ -1083,10 +1079,9 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $57:
+        public final void execute() // $57: *LSE $XX,X
         {
-          // TODO implement opcode
-          notImplementedYet();
+          lse(readAbsoluteZeropageAddressPC(_state.X));
         }
       },
 
@@ -1121,10 +1116,9 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $5B:
+        public final void execute() // $5B: *LSE $XXXX,Y
         {
-          // TODO implement opcode
-          notImplementedYet();
+          lse(readAbsoluteAddressPC(_state.Y));
         }
       },
 
@@ -1160,10 +1154,9 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $5F:
+        public final void execute() // $5F: *LSE $XXXX,X
         {
-          // TODO implement opcode
-          notImplementedYet();
+          lse(readAbsoluteAddressPC(_state.X));
         }
       },
 
@@ -3249,6 +3242,22 @@ public class CPU6510 implements ClockedComponent {
     }
     _state.A = load(read(addr));
     _state.X = _state.A;
+  }
+
+  /**
+   * *LSE: Logical shift right and eor.
+   * (?)
+   *
+   * @param addr address
+   */
+  @Interruptible
+  protected final void lse(int addr) {
+    if (DEBUG) {
+      reportIllegalOpcode();
+    }
+    int value = shiftRight(read(addr));
+    write(value, addr);
+    xor(value);
   }
 
   /**
