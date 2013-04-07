@@ -2107,10 +2107,9 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $C3:
+        public final void execute() // $C3: *DCM ($XX,X)
         {
-          // TODO implement opcode
-          notImplementedYet();
+          dcm(readZeropageIndirectXAddressPC());
         }
       },
 
@@ -2145,10 +2144,9 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $C7:
+        public final void execute() // $C7: *DCM $XX
         {
-          // TODO implement opcode
-          notImplementedYet();
+          dcm(readAbsoluteZeropageAddressPC());
         }
       },
 
@@ -2222,10 +2220,9 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $CF:
+        public final void execute() // $CF: *DCM $XXXX
         {
-          // TODO implement opcode
-          notImplementedYet();
+          dcm(readAbsoluteAddressPC());
         }
       },
 
@@ -2259,10 +2256,9 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $D3:
+        public final void execute() // $D3: *DCM ($XX),Y
         {
-          // TODO implement opcode
-          notImplementedYet();
+          dcm(readZeropageIndirectYAddressPC());
         }
       },
 
@@ -2299,10 +2295,9 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $D7:
+        public final void execute() // $D7: *DCM $XX,X
         {
-          // TODO implement opcode
-          notImplementedYet();
+          dcm(readAbsoluteZeropageAddressPC(_state.X));
         }
       },
 
@@ -2337,10 +2332,9 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $DB:
+        public final void execute() // $DB: *DCM $XXXX,Y
         {
-          // TODO implement opcode
-          notImplementedYet();
+          dcm(readAbsoluteAddressPC(_state.Y));
         }
       },
 
@@ -2376,10 +2370,9 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $DF:
+        public final void execute() // $DF: *DCM $XXXX,X
         {
-          // TODO implement opcode
-          notImplementedYet();
+          dcm(readAbsoluteAddressPC(_state.X));
         }
       },
 
@@ -3218,6 +3211,38 @@ public class CPU6510 implements ClockedComponent {
   }
 
   /**
+   * *DCM (*DCP): Decrement and compare.
+   * (?)
+   *
+   * @param addr address
+   */
+  @Interruptible
+  protected final void dcm(int addr) {
+    if (DEBUG) {
+      reportIllegalOpcode();
+    }
+    int value = decrement(read(addr));
+    write(value, addr);
+    compare(_state.A, value);
+  }
+
+  /**
+   * *ISC: increment address, subtract value from A.
+   * (?)
+   *
+   * @param addr address
+   */
+  @Interruptible
+  protected final void isc(int addr) {
+    if (DEBUG) {
+      reportIllegalOpcode();
+    }
+    int value = read(addr);
+    write(increment(value), addr);
+    subtract(value); // TODO correct?
+  }
+
+  /**
    * *RLA: Rotate left and and with A, store result.
    * (3)
    *
@@ -3270,22 +3295,6 @@ public class CPU6510 implements ClockedComponent {
     }
     write(_state.A & _state.X, addr);
     // no state change!
-  }
-
-  /**
-   * *ISC: increment address, subtract value from A.
-   * (?)
-   *
-   * @param addr address
-   */
-  @Interruptible
-  protected final void isc(int addr) {
-    if (DEBUG) {
-      reportIllegalOpcode();
-    }
-    int value = read(addr);
-    write(increment(value), addr);
-    subtract(value); // TODO correct?
   }
 
   /**

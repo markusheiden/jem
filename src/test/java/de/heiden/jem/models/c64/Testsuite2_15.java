@@ -10,8 +10,7 @@ import org.junit.runners.Parameterized.Parameters;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 
@@ -22,6 +21,13 @@ import static org.junit.Assert.assertEquals;
  */
 @RunWith(Parameterized.class)
 public class Testsuite2_15 extends AbstractTest {
+  /**
+   * Ignored tests.
+   */
+  private static final Set<String> IGNORE = new HashSet<>(Arrays.asList(
+    " start.prg"
+  ));
+
   /**
    * Test program.
    */
@@ -47,9 +53,10 @@ public class Testsuite2_15 extends AbstractTest {
       @Override
       public boolean accept(File dir, String name) {
         return
-          !name.startsWith(" ") &&
+          !IGNORE.contains(name) &&
             !name.startsWith("cia") &&
             !name.startsWith("cnt") &&
+//            name.startsWith("dcm") &&
             name.endsWith(".prg");
       }
     });
