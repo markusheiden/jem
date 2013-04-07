@@ -2406,9 +2406,9 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $E3: *ISC ($XX,X)
+        public final void execute() // $E3: *INS ($XX,X)
         {
-          isc(readZeropageIndirectXAddressPC());
+          ins(readZeropageIndirectXAddressPC());
         }
       },
 
@@ -2443,9 +2443,9 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $E7: *ISC $XX
+        public final void execute() // $E7: *INS $XX
         {
-          isc(readAbsoluteZeropageAddressPC());
+          ins(readAbsoluteZeropageAddressPC());
         }
       },
 
@@ -2518,9 +2518,9 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $EF: *ISC $XXXX
+        public final void execute() // $EF: *INS $XXXX
         {
-          isc(readAbsoluteAddressPC());
+          ins(readAbsoluteAddressPC());
         }
       },
 
@@ -2554,9 +2554,9 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $F3: *ISC ($XX),Y
+        public final void execute() // $F3: *INS ($XX),Y
         {
-          isc(readZeropageIndirectYAddressPC());
+          ins(readZeropageIndirectYAddressPC());
         }
       },
 
@@ -2592,9 +2592,9 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $F7: *ISC $XX,X
+        public final void execute() // $F7: *INS $XX,X
         {
-          isc(readAbsoluteZeropageAddressPC(_state.X));
+          ins(readAbsoluteZeropageAddressPC(_state.X));
         }
       },
 
@@ -2629,9 +2629,9 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $FB: *ISC $XXXX,Y
+        public final void execute() // $FB: *INS $XXXX,Y
         {
-          isc(readAbsoluteAddressPC(_state.Y));
+          ins(readAbsoluteAddressPC(_state.Y));
         }
       },
 
@@ -2667,9 +2667,9 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $FF: *ISC $XXXX,X
+        public final void execute() // $FF: *INS $XXXX,X
         {
-          isc(readAbsoluteAddressPC(_state.X));
+          ins(readAbsoluteAddressPC(_state.X));
         }
       },
     };
@@ -3227,19 +3227,19 @@ public class CPU6510 implements ClockedComponent {
   }
 
   /**
-   * *ISC: increment address, subtract value from A.
+   * *INS (*ISC): increment address, subtract value from A.
    * (?)
    *
    * @param addr address
    */
   @Interruptible
-  protected final void isc(int addr) {
+  protected final void ins(int addr) {
     if (DEBUG) {
       reportIllegalOpcode();
     }
-    int value = read(addr);
-    write(increment(value), addr);
-    subtract(value); // TODO correct?
+    int value = increment(read(addr));
+    write(value, addr);
+    subtract(value);
   }
 
   /**
