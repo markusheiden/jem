@@ -74,11 +74,11 @@ public class DebuggerGUI extends JPanel {
     topBottom.setBottomComponent(bottom);
 
     _disassembler = new DisassemblerGUI();
-    _disassembler.setAddress(0xE000);
+//    _disassembler.setAddress(0xE000);
     bottom.setLeftComponent(_disassembler);
 
     _memDump = new MemDumpGUI();
-    _memDump.setAddress(0xE000);
+//    _memDump.setAddress(0xE000);
     bottom.setRightComponent(_memDump);
 
     add(topBottom);
