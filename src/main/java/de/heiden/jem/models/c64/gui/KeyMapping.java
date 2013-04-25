@@ -1,4 +1,6 @@
-package de.heiden.jem.models.c64.components.keyboard;
+package de.heiden.jem.models.c64.gui;
+
+import de.heiden.jem.models.c64.components.keyboard.Key;
 
 import java.awt.event.KeyEvent;
 import java.util.HashMap;

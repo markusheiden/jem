@@ -4,7 +4,6 @@ import de.heiden.jem.components.ports.InputOutputPortImpl;
 import junit.framework.TestCase;
 
 import java.awt.*;
-import java.awt.event.KeyEvent;
 
 /**
  * Test.
@@ -23,8 +22,7 @@ public class KeyboardTest extends TestCase {
    * Test single key presses.
    */
   public void testSingleKey() {
-    KeyEvent a = new KeyEvent(source, 0, 0, 0, KeyEvent.VK_A, 'a', KeyEvent.KEY_LOCATION_STANDARD);
-    _keyboard.keyPressed(a);
+    _keyboard.press(Key.A);
     _port1.setOutputData(0x00); // port 1 is input
     _port1.setOutputMask(0x00);
     _port0.setOutputData(0x00); // port 0 drives all bits 0
@@ -43,10 +41,9 @@ public class KeyboardTest extends TestCase {
     _port1.setOutputData(0xFF); // port 1 drives all bits 1
     assertEquals(0xFF, _port0.inputData()); // row 1 is driven to 1
     assertEquals(0x02, _port0.inputMask());
-    _keyboard.keyReleased(a);
+    _keyboard.release(Key.A);
 
-    KeyEvent b = new KeyEvent(source, 0, 0, 0, KeyEvent.VK_B, 'b', KeyEvent.KEY_LOCATION_STANDARD);
-    _keyboard.keyPressed(b);
+    _keyboard.press(Key.B);
     _port1.setOutputData(0x00);
     _port1.setOutputMask(0x00);
     _port0.setOutputData(0x00);
@@ -65,7 +62,7 @@ public class KeyboardTest extends TestCase {
     _port1.setOutputData(0xFF);
     assertEquals(0xFF, _port0.inputData());
     assertEquals(0x08, _port0.inputMask());
-    _keyboard.keyReleased(b);
+    _keyboard.release(Key.B);
   }
 
   /**

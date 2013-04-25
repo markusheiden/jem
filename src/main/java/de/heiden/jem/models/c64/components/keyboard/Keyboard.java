@@ -7,8 +7,6 @@ import de.heiden.jem.components.ports.OutputPortListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.awt.event.KeyEvent;
-
 import static de.heiden.jem.models.c64.components.keyboard.Key.RESTORE;
 
 /**
@@ -32,11 +30,6 @@ public class Keyboard {
   private final OutputPortImpl _matrixPort0;
   private final OutputPortImpl _matrixPort1;
   private final OutputPortImpl _nmi;
-
-  /**
-   * Mapping chars/keys -> matrix entry.
-   */
-  private final KeyMapping _keyMapping;
 
   /**
    * C64 key matrix.
@@ -87,9 +80,6 @@ public class Keyboard {
 
     // init matrix
     _matrix = new int[]{0, 0, 0, 0, 0, 0, 0, 0};
-
-    // generate key mappings
-    _keyMapping = new PCMapping();
   }
 
   /**
@@ -105,50 +95,17 @@ public class Keyboard {
   //
 
   /**
-   * A key has been pressed.
-   *
-   * @param e Key
-   */
-  public void keyPressed(KeyEvent e) {
-    logger.debug("pressed " + KeyMapping.toString(e));
-
-    Key[] keys = _keyMapping.getKeys(e);
-    if (keys != null) {
-      for (Key key : keys) {
-        press(key);
-      }
-      logger.trace(keyMatrixToString());
-    }
-  }
-
-  /**
    * Execute key press on keyboard matrix.
    *
    * @param key key
    */
-  private void press(Key key) {
+  public void press(Key key) {
     if (key == RESTORE) {
       // low active
       _nmi.setOutputData(0x0);
     } else {
       _matrix[key.getRow()] |= 1 << key.getColumn();
       updatePorts();
-    }
-  }
-
-  /**
-   * A key has been released.
-   *
-   * @param e Key
-   */
-  public void keyReleased(KeyEvent e) {
-    logger.debug("released " + KeyMapping.toString(e));
-
-    Key[] keys = _keyMapping.getKeys(e);
-    if (keys != null) {
-      for (Key key : keys) {
-        release(key);
-      }
       logger.trace(keyMatrixToString());
     }
   }
@@ -158,13 +115,14 @@ public class Keyboard {
    *
    * @param key key
    */
-  private void release(Key key) {
+  public void release(Key key) {
     if (key == RESTORE) {
       // low active
       _nmi.setOutputData(0x1);
     } else {
       _matrix[key.getRow()] &= 0xFF - (1 << key.getColumn());
       updatePorts();
+      logger.trace(keyMatrixToString());
     }
   }
 

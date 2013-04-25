@@ -14,6 +14,7 @@ import de.heiden.jem.models.c64.components.memory.ROM;
 import de.heiden.jem.models.c64.components.vic.VIC6569PAL;
 import de.heiden.jem.models.c64.components.vic.VICBus;
 import de.heiden.jem.models.c64.gui.KeyboardKeyListener;
+import de.heiden.jem.models.c64.gui.PCMapping;
 import de.heiden.jem.models.c64.gui.VICScreen;
 import de.heiden.jem.models.c64.util.ROMLoader;
 import org.slf4j.Logger;
@@ -111,7 +112,7 @@ public class C64 {
 //    FileUtil.read(new File("/Users/markus/Workspaces/jem-projects/jem/bluemax.prg"), _cpuBus);
 //    FileUtil.read(new File("/Users/markus/Workspaces/jem-projects/jem/src/test/resources/testsuite2.15/loadth.prg"), _cpuBus);
 
-    show(_vic, new KeyboardKeyListener(_keyboard));
+    show(_vic, new KeyboardKeyListener(_keyboard, new PCMapping()));
 
     logger.debug("start");
     _clock.run();
