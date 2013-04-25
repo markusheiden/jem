@@ -14,6 +14,7 @@ import de.heiden.jem.models.c64.components.patch.StopAtSystemIn;
 import de.heiden.jem.models.c64.components.patch.SystemOut;
 import de.heiden.jem.models.c64.components.vic.VIC6569PAL;
 import de.heiden.jem.models.c64.components.vic.VICBus;
+import de.heiden.jem.models.c64.gui.KeyboardKeyListener;
 import de.heiden.jem.models.c64.util.FileUtil;
 import de.heiden.jem.models.c64.util.ROMLoader;
 import org.slf4j.Logger;
@@ -122,8 +123,11 @@ public class TestC64 {
     this.systemOut.setStream(systemOut);
   }
 
+  /**
+   * Get stream for keyboard input.
+   */
   public KeyListener getSystemIn() {
-    return _keyboard.getKeyListener();
+    return new KeyboardKeyListener(_keyboard);
   }
 
   /**

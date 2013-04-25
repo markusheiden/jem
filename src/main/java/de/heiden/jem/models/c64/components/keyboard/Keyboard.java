@@ -7,9 +7,7 @@ import de.heiden.jem.components.ports.OutputPortListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 
 import static de.heiden.jem.models.c64.components.keyboard.Key.RESTORE;
 
@@ -19,7 +17,7 @@ import static de.heiden.jem.models.c64.components.keyboard.Key.RESTORE;
  * TODO mapping of @, :, /, arrow up, ;, *, pound, commodore, run stop, arrow left
  * TODO C64 like mapping of -, +, home, shift lock, control?
  */
-public class Keyboard extends KeyAdapter {
+public class Keyboard {
   /**
    * Logger.
    */
@@ -102,20 +100,15 @@ public class Keyboard extends KeyAdapter {
     return _nmi;
   }
 
-  /**
-   * Get key listener.
-   *
-   * @ensure result != null
-   */
-  public KeyListener getKeyListener() {
-    return this;
-  }
-
   //
   // protected
   //
 
-  @Override
+  /**
+   * A key has been pressed.
+   *
+   * @param e Key
+   */
   public void keyPressed(KeyEvent e) {
     logger.debug("pressed " + KeyMapping.toString(e));
 
@@ -143,7 +136,11 @@ public class Keyboard extends KeyAdapter {
     }
   }
 
-  @Override
+  /**
+   * A key has been released.
+   *
+   * @param e Key
+   */
   public void keyReleased(KeyEvent e) {
     logger.debug("released " + KeyMapping.toString(e));
 

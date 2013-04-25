@@ -13,15 +13,14 @@ import de.heiden.jem.models.c64.components.memory.RAM;
 import de.heiden.jem.models.c64.components.memory.ROM;
 import de.heiden.jem.models.c64.components.vic.VIC6569PAL;
 import de.heiden.jem.models.c64.components.vic.VICBus;
+import de.heiden.jem.models.c64.gui.KeyboardKeyListener;
 import de.heiden.jem.models.c64.gui.VICScreen;
-import de.heiden.jem.models.c64.util.FileUtil;
 import de.heiden.jem.models.c64.util.ROMLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.event.KeyListener;
-import java.io.File;
 
 /**
  * C64.
@@ -110,9 +109,9 @@ public class C64 {
 //    _cpu.add(new LoadFile(new File("/Users/markus/Workspaces/jem-projects/jem/src/test/resources/testsuite2.15")));
 //    FileUtil.read(new File("/Users/markus/Workspaces/jem-projects/jem/commando.prg"), _cpuBus);
 //    FileUtil.read(new File("/Users/markus/Workspaces/jem-projects/jem/bluemax.prg"), _cpuBus);
-    FileUtil.read(new File("/Users/markus/Workspaces/jem-projects/jem/src/test/resources/testsuite2.15/loadth.prg"), _cpuBus);
+//    FileUtil.read(new File("/Users/markus/Workspaces/jem-projects/jem/src/test/resources/testsuite2.15/loadth.prg"), _cpuBus);
 
-    show(_vic, _keyboard.getKeyListener());
+    show(_vic, new KeyboardKeyListener(_keyboard));
 
     logger.debug("start");
     _clock.run();
