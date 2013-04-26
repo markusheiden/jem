@@ -13,15 +13,9 @@ import de.heiden.jem.models.c64.components.memory.RAM;
 import de.heiden.jem.models.c64.components.memory.ROM;
 import de.heiden.jem.models.c64.components.vic.VIC6569PAL;
 import de.heiden.jem.models.c64.components.vic.VICBus;
-import de.heiden.jem.models.c64.gui.KeyboardKeyListener;
-import de.heiden.jem.models.c64.gui.PCMapping;
-import de.heiden.jem.models.c64.gui.VICScreen;
 import de.heiden.jem.models.c64.util.ROMLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.swing.*;
-import java.awt.event.KeyListener;
 
 /**
  * C64.
@@ -32,14 +26,29 @@ public class C64 {
    */
   private final Logger logger = LoggerFactory.getLogger(getClass());
 
-  private JFrame _frame;
-
+  /**
+   * Main clock.
+   */
   private final Clock _clock;
 
+  /**
+   * CPU bus.
+   */
   private C64Bus _cpuBus;
+
+  /**
+   * CPU.
+   */
   private final CPU6510 _cpu;
 
+  /**
+   * Keyboard.
+   */
   private Keyboard _keyboard;
+
+  /**
+   * VIC.
+   */
   private final VIC6569PAL _vic;
 
   /**
@@ -92,9 +101,14 @@ public class C64 {
     // real time measurement
     // TODO 2010-03-14 mh: NTSC: 1022700 Hz
     new RealTimeSlowDown(clock, 985248, 100);
+
+    init();
   }
 
-  public void start() throws Exception {
+  /**
+   * Additional init for test purposes.
+   */
+  private void init() {
     // init RAM with 0x02 (crash) to easier detect wrong behaviour
     // TODO 2010-06-22 mh: realistic init?
     for (int addr = 0; addr < 0x10000; addr++) {
@@ -111,9 +125,12 @@ public class C64 {
 //    FileUtil.read(new File("/Users/markus/Workspaces/jem-projects/jem/commando.prg"), _cpuBus);
 //    FileUtil.read(new File("/Users/markus/Workspaces/jem-projects/jem/bluemax.prg"), _cpuBus);
 //    FileUtil.read(new File("/Users/markus/Workspaces/jem-projects/jem/src/test/resources/testsuite2.15/loadth.prg"), _cpuBus);
+  }
 
-    show(_vic, new KeyboardKeyListener(_keyboard, new PCMapping()));
-
+  /**
+   * Start emulation.
+   */
+  public void start() throws Exception {
     logger.debug("start");
     _clock.run();
 
@@ -125,47 +142,44 @@ public class C64 {
 //      time = System.currentTimeMillis() - time;
 //      _logger.debug("executed " + ticks + " in " + time + " ms");
 //    }
-
-    _clock.dispose();
-  }
-
-  public void stop() {
-    _frame.setVisible(false);
-    _frame.dispose();
-    _frame = null;
   }
 
   /**
-   * For testing purposes only!
+   * Stop emulation.
    */
-  public JFrame show(VIC6569PAL vic, KeyListener keyListener) {
-    _frame = new JFrame("C64");
-    _frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-    final VICScreen screen = new VICScreen(vic._displayUnit);
-    _frame.addKeyListener(keyListener);
-    _frame.getContentPane().add(screen);
-
-    // pack
-    _frame.pack();
-    // _frame.setResizable(false);
-    _frame.setVisible(true);
-
-    return _frame;
+  public void stop() {
+    _clock.dispose();
   }
 
   //
   // Expose components, e.g. for debugger
   //
 
+  /**
+   * CPU bus.
+   */
   public C64Bus getCpuBus() {
     return _cpuBus;
   }
 
   /**
-   * Get cpu.
+   * CPU.
    */
   public CPU6510 getCpu() {
     return _cpu;
+  }
+
+  /**
+   * Keyboard.
+   */
+  public Keyboard getKeyboard() {
+    return _keyboard;
+  }
+
+  /**
+   * VIC.
+   */
+  public VIC6569PAL getVIC() {
+    return _vic;
   }
 }
