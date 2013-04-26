@@ -29,10 +29,13 @@ public class C64Application extends Application {
   @Override
   public void start(Stage stage) throws Exception {
     c64 = new C64();
-    VICScreen screen = new VICScreen(c64.getVIC()._displayUnit);
-    new KeyboardKeyListener(screen, c64.getKeyboard(), new PCMapping());
 
-    stage.setScene(new Scene(screen, screen.getWidth(), screen.getHeight()));
+    VICScreen screen = new VICScreen(c64.getVIC()._displayUnit);
+
+    Scene scene = new Scene(screen, screen.getWidth(), screen.getHeight());
+    new KeyboardKeyListener(scene, c64.getKeyboard(), new PCMapping());
+
+    stage.setScene(scene);
     stage.show();
 
     thread = new Thread(new Runnable() {
@@ -46,11 +49,16 @@ public class C64Application extends Application {
       }
     });
 
+    thread.setName("C64");
+    // JavaFX thread keeps vm running
+    thread.setDaemon(true);
     thread.start();
   }
 
   @Override
   public void stop() throws Exception {
     thread.interrupt();
+    thread.join(100);
+    thread.stop();
   }
 }

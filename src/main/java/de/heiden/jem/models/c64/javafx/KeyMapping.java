@@ -38,7 +38,7 @@ public abstract class KeyMapping {
    * @return Key or null if key is not mapped
    */
   public Key[] getKeys(KeyEvent e) {
-    Key[] result = _chars.get(e.getCharacter());
+    Key[] result = _chars.get(e.getText());
     if (result == null) {
       result = _keys.get(e.getCode());
     }
