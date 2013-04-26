@@ -164,10 +164,10 @@
         <module name="JEM" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="C64DT" target="1.7" />
-      <module name="JEM" target="1.7" />
-      <module name="SerialThreads" target="1.7" />
+    <bytecodeTargetLevel target="1.8">
+      <module name="C64DT" target="1.8" />
+      <module name="JEM" target="1.8" />
+      <module name="SerialThreads" target="1.8" />
     </bytecodeTargetLevel>
   </component>
   <component name="CopyrightManager" default="">
