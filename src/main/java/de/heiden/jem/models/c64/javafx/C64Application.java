@@ -2,26 +2,55 @@ package de.heiden.jem.models.c64.javafx;
 
 import de.heiden.jem.models.c64.C64;
 import javafx.application.Application;
+import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 /**
  * Application for C64 emulation.
  */
 public class C64Application extends Application {
-  @Override
-  public void start(Stage stage) throws Exception {
-    C64 c64 = new C64();
-//    VICScreen screen = new VICScreen(c64);
-//    new KeyboardKeyListener(screen, keyboard, new PCMapping());
+  /**
+   * C64.
+   */
+  private C64 c64;
 
-//    stage.setScene(new Scene(screen, screen.getWidth(), screen.getHeight()));
-    stage.show();
-  }
+  /**
+   * Thread mit emulated C64.
+   */
+  private Thread thread;
 
   /**
    * Start application.
    */
-  public static void main(String[] args) {
+  public void start() {
     launch();
+  }
+
+  @Override
+  public void start(Stage stage) throws Exception {
+    c64 = new C64();
+    VICScreen screen = new VICScreen(c64.getVIC()._displayUnit);
+    new KeyboardKeyListener(screen, c64.getKeyboard(), new PCMapping());
+
+    stage.setScene(new Scene(screen, screen.getWidth(), screen.getHeight()));
+    stage.show();
+
+    thread = new Thread(new Runnable() {
+      @Override
+      public void run() {
+        try {
+          c64.start();
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
+      }
+    });
+
+    thread.start();
+  }
+
+  @Override
+  public void stop() throws Exception {
+    thread.interrupt();
   }
 }
