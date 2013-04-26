@@ -11,13 +11,13 @@ import javafx.scene.input.KeyEvent;
  */
 public class KeyboardKeyListener {
   /**
-   * Constructor.
+   * Attach key listeners to scene.
    *
-   * @param scene Scene to attach listeners to
+   * @param scene Scene
    * @param keyboard Keyboard
    * @param keyMapping Mapping from Java keys to C64 keys
    */
-  public KeyboardKeyListener(Scene scene, Keyboard keyboard, KeyMapping keyMapping) {
+  public static void attachTo(Scene scene, Keyboard keyboard, KeyMapping keyMapping) {
     scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
       @Override
       public void handle(KeyEvent e) {
