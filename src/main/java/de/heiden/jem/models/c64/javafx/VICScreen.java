@@ -1,13 +1,13 @@
 package de.heiden.jem.models.c64.javafx;
 
-import de.heiden.c64dt.javafx.JC64ScreenComponent;
+import de.heiden.c64dt.javafx.C64ScreenComponent;
 import de.heiden.jem.models.c64.components.vic.AbstractDisplayUnit;
 import de.heiden.jem.models.c64.components.vic.IScreenListener;
 
 /**
  * VIC screen display component.
  */
-public class VICScreen extends JC64ScreenComponent implements IScreenListener {
+public class VICScreen extends C64ScreenComponent implements IScreenListener {
   private final AbstractDisplayUnit _displayUnit;
 
   /**
