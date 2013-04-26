@@ -3,19 +3,16 @@ package de.heiden.jem.models.c64.components.keyboard;
 import de.heiden.jem.components.ports.InputOutputPortImpl;
 import junit.framework.TestCase;
 
-import java.awt.*;
-
 /**
  * Test.
  */
 public class KeyboardTest extends TestCase {
-  /**
-   * Dummy source for events.
-   */
-  private static final Button source = new Button();
-
   private InputOutputPortImpl _port0;
   private InputOutputPortImpl _port1;
+
+  /**
+   * Keyboard.
+   */
   private Keyboard _keyboard;
 
   /**
