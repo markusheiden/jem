@@ -46,6 +46,16 @@ public abstract class KeyMapping {
     return result;
   }
 
+  /**
+   * Get key for character.
+   *
+   * @param c Character
+   * @return Key or null if key is not mapped
+   */
+  public Key[] getKeys(char c) {
+    return _chars.get(String.valueOf(c));
+  }
+
   //
   // protected interface
   //
