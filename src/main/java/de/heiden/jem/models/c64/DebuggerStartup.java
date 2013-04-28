@@ -22,7 +22,7 @@ public class DebuggerStartup extends Startup {
       Object debugger = clazz.newInstance();
 
       JFrame frame = new JFrame("C64 Debugger");
-      frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+      frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
       frame.setLayout(new BorderLayout());
 
       frame.add((Component) debugger, BorderLayout.CENTER);
