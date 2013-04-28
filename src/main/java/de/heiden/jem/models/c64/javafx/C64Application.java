@@ -33,7 +33,7 @@ public class C64Application extends Application {
     VICScreen screen = new VICScreen(c64.getVIC()._displayUnit);
 
     Scene scene = new Scene(screen, screen.getWidth(), screen.getHeight());
-    KeyboardKeyListener.attachTo(scene, c64.getKeyboard(), new PCMapping());
+    KeyListener.attachTo(scene, c64.getKeyboard(), new PCMapping());
 
     stage.setScene(scene);
     stage.show();

@@ -9,7 +9,7 @@ import javafx.scene.input.KeyEvent;
 /**
  * Key listener for C64 Keyboard.
  */
-public class KeyboardKeyListener {
+public class KeyListener {
   /**
    * Attach key listeners to scene.
    *

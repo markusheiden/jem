@@ -9,7 +9,10 @@ import java.awt.*;
 /**
  * VIC screen display component.
  */
-public class VICScreen extends JC64ScreenComponent implements IScreenListener {
+public class VICScreen extends JC64ScreenComponent {
+  /**
+   * The VIC display unit.
+   */
   private final AbstractDisplayUnit _displayUnit;
 
   /**
@@ -22,13 +25,13 @@ public class VICScreen extends JC64ScreenComponent implements IScreenListener {
     super(displayUnit.getOffset(), displayUnit.getWidth(), displayUnit.getLineLength(), displayUnit.getHeight(), 2);
 
     _displayUnit = displayUnit;
-    _displayUnit.setScreenListener(this);
-  }
-
-  @Override
-  public void newScreenRendered() {
-    repaint();
-    Thread.yield();
+    _displayUnit.setScreenListener(new IScreenListener() {
+      @Override
+      public void newScreenRendered() {
+        repaint();
+        Thread.yield();
+      }
+    });
   }
 
   /**
@@ -38,7 +41,7 @@ public class VICScreen extends JC64ScreenComponent implements IScreenListener {
    * @param g graphics
    */
   @Override
-  public void doPaintComponent(Graphics g) {
+  protected void doPaintComponent(Graphics g) {
     // write screen to image source
     updateImageData(_displayUnit.display());
   }

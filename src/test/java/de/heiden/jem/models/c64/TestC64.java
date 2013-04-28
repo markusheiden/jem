@@ -14,14 +14,13 @@ import de.heiden.jem.models.c64.components.patch.StopAtSystemIn;
 import de.heiden.jem.models.c64.components.patch.SystemOut;
 import de.heiden.jem.models.c64.components.vic.VIC6569PAL;
 import de.heiden.jem.models.c64.components.vic.VICBus;
-import de.heiden.jem.models.c64.gui.KeyboardKeyListener;
+import de.heiden.jem.models.c64.gui.KeyListener;
 import de.heiden.jem.models.c64.gui.PCMapping;
 import de.heiden.jem.models.c64.util.FileUtil;
 import de.heiden.jem.models.c64.util.ROMLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.awt.event.KeyListener;
 import java.io.File;
 import java.io.OutputStream;
 
@@ -127,8 +126,8 @@ public class TestC64 {
   /**
    * Get stream for keyboard input.
    */
-  public KeyListener getSystemIn() {
-    return new KeyboardKeyListener(_keyboard, new PCMapping());
+  public java.awt.event.KeyListener getSystemIn() {
+    return new KeyListener(_keyboard, new PCMapping());
   }
 
   /**

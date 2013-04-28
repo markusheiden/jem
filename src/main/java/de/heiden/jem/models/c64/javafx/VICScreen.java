@@ -7,27 +7,21 @@ import de.heiden.jem.models.c64.components.vic.IScreenListener;
 /**
  * VIC screen display component.
  */
-public class VICScreen extends C64ScreenComponent implements IScreenListener {
-  /**
-   * The VIC display unit.
-   */
-  private final AbstractDisplayUnit _displayUnit;
-
+public class VICScreen extends C64ScreenComponent {
   /**
    * Constructor.
    *
    * @param displayUnit display unit to display
    * @require displayUnit != null
    */
-  public VICScreen(AbstractDisplayUnit displayUnit) {
+  public VICScreen(final AbstractDisplayUnit displayUnit) {
     super(displayUnit.getOffset(), displayUnit.getWidth(), displayUnit.getLineLength(), displayUnit.getHeight(), 2);
 
-    _displayUnit = displayUnit;
-    _displayUnit.setScreenListener(this);
-  }
-
-  @Override
-  public void newScreenRendered() {
-    updateImageData(_displayUnit.display());
+    displayUnit.setScreenListener(new IScreenListener() {
+      @Override
+      public void newScreenRendered() {
+        updateImageData(displayUnit.display());
+      }
+    });
   }
 }

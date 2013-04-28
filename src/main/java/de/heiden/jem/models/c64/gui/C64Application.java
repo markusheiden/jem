@@ -28,7 +28,7 @@ public class C64Application {
     _frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
     VICScreen screen = new VICScreen(c64.getVIC()._displayUnit);
-    _frame.addKeyListener(new KeyboardKeyListener(c64.getKeyboard(), new PCMapping()));
+    _frame.addKeyListener(new KeyListener(c64.getKeyboard(), new PCMapping()));
     _frame.getContentPane().add(screen);
 
     // pack

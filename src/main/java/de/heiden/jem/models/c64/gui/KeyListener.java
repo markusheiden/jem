@@ -5,12 +5,11 @@ import de.heiden.jem.models.c64.components.keyboard.Keyboard;
 
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 
 /**
- * {@link KeyListener} for C64 Keyboard
+ * {@link java.awt.event.KeyListener} for C64 Keyboard
  */
-public class KeyboardKeyListener extends KeyAdapter {
+public class KeyListener extends KeyAdapter {
   /**
    * Keyboard.
    */
@@ -27,7 +26,7 @@ public class KeyboardKeyListener extends KeyAdapter {
    * @param keyboard Keyboard
    * @param keyMapping Mapping from Java keys to C64 keys
    */
-  public KeyboardKeyListener(Keyboard keyboard, KeyMapping keyMapping) {
+  public KeyListener(Keyboard keyboard, KeyMapping keyMapping) {
     this.keyboard = keyboard;
     this.keyMapping = keyMapping;
   }
