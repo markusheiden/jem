@@ -69,14 +69,11 @@ public class AbstractTest {
     c64Class.getMethod("setSystemOut", OutputStream.class).invoke(c64, screen);
     systemIn = (KeyListener) c64Class.getMethod("getSystemIn").invoke(c64);
 
-    thread = new Thread(new Runnable() {
-      @Override
-      public void run() {
-        try {
-          c64Class.getMethod("start").invoke(c64);
-        } catch (Exception e) {
-          AbstractTest.this.exception = e;
-        }
+    thread = new Thread(() -> {
+      try {
+        c64Class.getMethod("start").invoke(c64);
+      } catch (Exception e) {
+        AbstractTest.this.exception = e;
       }
     }, program.getName());
   }

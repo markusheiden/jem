@@ -8,7 +8,6 @@ import org.junit.runners.Parameterized.Parameter;
 import org.junit.runners.Parameterized.Parameters;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.net.URL;
 import java.util.*;
 
@@ -47,17 +46,12 @@ public class Testsuite2_15 extends AbstractTest {
   public static Collection<Object[]> parameters() throws Exception {
     URL start = Testsuite2_15.class.getResource("/testsuite2.15/ start.prg");
     File testDir = new File(start.toURI()).getParentFile();
-    File[] programs = testDir.listFiles(new FilenameFilter() {
-      @Override
-      public boolean accept(File dir, String name) {
-        return
-          !IGNORE.contains(name) &&
-            !name.startsWith("cia") &&
-            !name.startsWith("cnt") &&
-//            name.startsWith("dcm") &&
-            name.endsWith(".prg");
-      }
-    });
+    File[] programs = testDir.listFiles((dir, name) ->
+      !IGNORE.contains(name) &&
+        !name.startsWith("cia") &&
+        !name.startsWith("cnt") &&
+//      name.startsWith("dcm") &&
+        name.endsWith(".prg"));
 
     Collection<Object[]> result = new ArrayList<>(programs.length);
     for (File program : programs) {

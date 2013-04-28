@@ -83,12 +83,9 @@ public class DebuggerGUI extends JPanel {
 
     add(topBottom);
 
-    _runButton.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        if (_thread == null) {
-          run();
-        }
+    _runButton.addActionListener(e -> {
+      if (_thread == null) {
+        run();
       }
     });
 
@@ -100,30 +97,21 @@ public class DebuggerGUI extends JPanel {
         }
       }
     });
-    _resumeButton.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        if (_thread != null) {
-          resume();
-        }
+    _resumeButton.addActionListener(e -> {
+      if (_thread != null) {
+        resume();
       }
     });
 
-    _stopButton.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        if (_thread != null) {
-          stop();
-        }
+    _stopButton.addActionListener(e -> {
+      if (_thread != null) {
+        stop();
       }
     });
 
-    _refreshButton.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        if (_thread != null) {
-          updateComponents();
-        }
+    _refreshButton.addActionListener(e -> {
+      if (_thread != null) {
+        updateComponents();
       }
     });
 
@@ -148,21 +136,18 @@ public class DebuggerGUI extends JPanel {
       _disassembler.setBus(_bus);
       _memDump.setBus(_bus);
 
-      _thread = new Thread(new Runnable() {
-        @Override
-        public void run() {
-          try {
-            logger.info("C64 has been started");
-            _c64.start();
-          } catch (DebuggerExit e) {
-            logger.info(e.getMessage());
-          } catch (Exception e) {
-            logger.error("C64 terminated abnormally", e);
-          } finally {
-            _c64 = null;
-            _cpu = null;
-            _bus = null;
-          }
+      _thread = new Thread(() -> {
+        try {
+          logger.info("C64 has been started");
+          _c64.start();
+        } catch (DebuggerExit e) {
+          logger.info(e.getMessage());
+        } catch (Exception e) {
+          logger.error("C64 terminated abnormally", e);
+        } finally {
+          _c64 = null;
+          _cpu = null;
+          _bus = null;
         }
       }, "C64 (debug)");
       _thread.start();

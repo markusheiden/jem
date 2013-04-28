@@ -6,10 +6,11 @@ import de.heiden.c64dt.gui.JC64List;
 import de.heiden.jem.components.bus.BusDevice;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.io.IOException;
 import java.io.StringWriter;
 
@@ -44,11 +45,8 @@ public class DisassemblerGUI extends JPanel {
 
     _disassembler = new Disassembler();
 
-    _text.addListSelectionListener(new ListSelectionListener() {
-      @Override
-      public void valueChanged(ListSelectionEvent e) {
-        if (e.getFirstIndex() == 0) {
-        }
+    _text.addListSelectionListener(e -> {
+      if (e.getFirstIndex() == 0) {
       }
     });
 
@@ -63,12 +61,7 @@ public class DisassemblerGUI extends JPanel {
     });
 
     // Update model on scroll bar change
-    _scrollBar.addAdjustmentListener(new AdjustmentListener() {
-      @Override
-      public void adjustmentValueChanged(AdjustmentEvent e) {
-        setAddress(e.getValue());
-      }
-    });
+    _scrollBar.addAdjustmentListener(e -> setAddress(e.getValue()));
 
     // React on mouse wheel
     addMouseWheelListener(new MouseWheelListener() {

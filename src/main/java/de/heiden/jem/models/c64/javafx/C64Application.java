@@ -38,14 +38,11 @@ public class C64Application extends Application {
     stage.setScene(scene);
     stage.show();
 
-    thread = new Thread(new Runnable() {
-      @Override
-      public void run() {
-        try {
-          c64.start();
-        } catch (Exception e) {
-          e.printStackTrace();
-        }
+    thread = new Thread(() -> {
+      try {
+        c64.start();
+      } catch (Exception e) {
+        e.printStackTrace();
       }
     });
 

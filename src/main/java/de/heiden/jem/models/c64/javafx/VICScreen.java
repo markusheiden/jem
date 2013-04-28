@@ -2,7 +2,6 @@ package de.heiden.jem.models.c64.javafx;
 
 import de.heiden.c64dt.javafx.C64ScreenComponent;
 import de.heiden.jem.models.c64.components.vic.AbstractDisplayUnit;
-import de.heiden.jem.models.c64.components.vic.IScreenListener;
 
 /**
  * VIC screen display component.
@@ -17,11 +16,6 @@ public class VICScreen extends C64ScreenComponent {
   public VICScreen(final AbstractDisplayUnit displayUnit) {
     super(displayUnit.getOffset(), displayUnit.getWidth(), displayUnit.getLineLength(), displayUnit.getHeight(), 2);
 
-    displayUnit.setScreenListener(new IScreenListener() {
-      @Override
-      public void newScreenRendered() {
-        updateImageData(displayUnit.display());
-      }
-    });
+    displayUnit.setScreenListener(() -> updateImageData(displayUnit.display()));
   }
 }

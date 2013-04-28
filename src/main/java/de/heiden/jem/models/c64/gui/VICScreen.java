@@ -2,7 +2,6 @@ package de.heiden.jem.models.c64.gui;
 
 import de.heiden.c64dt.gui.JC64ScreenComponent;
 import de.heiden.jem.models.c64.components.vic.AbstractDisplayUnit;
-import de.heiden.jem.models.c64.components.vic.IScreenListener;
 
 import java.awt.*;
 
@@ -25,12 +24,9 @@ public class VICScreen extends JC64ScreenComponent {
     super(displayUnit.getOffset(), displayUnit.getWidth(), displayUnit.getLineLength(), displayUnit.getHeight(), 2);
 
     _displayUnit = displayUnit;
-    _displayUnit.setScreenListener(new IScreenListener() {
-      @Override
-      public void newScreenRendered() {
-        repaint();
-        Thread.yield();
-      }
+    _displayUnit.setScreenListener(() -> {
+      repaint();
+      Thread.yield();
     });
   }
 

@@ -6,7 +6,10 @@ import de.heiden.jem.components.bus.BusDevice;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 
 /**
  * GUI for showing a memory dump.
@@ -48,12 +51,7 @@ public class MemDumpGUI extends JPanel {
     });
 
     // Update model on scroll bar change
-    _scrollBar.addAdjustmentListener(new AdjustmentListener() {
-      @Override
-      public void adjustmentValueChanged(AdjustmentEvent e) {
-        setAddress(e.getValue());
-      }
-    });
+    _scrollBar.addAdjustmentListener(e -> setAddress(e.getValue()));
 
     // React on mouse wheel
     addMouseWheelListener(new MouseWheelListener() {

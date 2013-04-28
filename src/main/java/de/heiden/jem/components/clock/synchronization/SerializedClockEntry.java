@@ -36,12 +36,7 @@ public class SerializedClockEntry extends ClockEntry {
   public SerializedClockEntry(final ClockedComponent component, Tick tick) {
     super(component, tick);
 
-    thread = new Thread(new Runnable() {
-      @Override
-      public void run() {
-        component.run();
-      }
-    }, component.getName());
+    thread = new Thread(() -> component.run(), component.getName());
     this.lock = new Lock(component.getName());
   }
 

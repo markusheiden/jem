@@ -108,11 +108,8 @@ public class AbstractClockTest {
 
     @Override
     protected ClockEntry createClockEntry(ClockedComponent component) {
-      return new ClockEntry(component, new Tick() {
-        @Override
-        public void waitForTick() {
-          // do nothing
-        }
+      return new ClockEntry(component, () -> {
+        // do nothing
       });
     }
 
