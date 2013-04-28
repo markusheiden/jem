@@ -9,8 +9,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 /**
  * Main Monitor frame.
@@ -89,12 +87,9 @@ public class DebuggerGUI extends JPanel {
       }
     });
 
-    _suspendButton.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        if (_thread != null) {
-          suspend();
-        }
+    _suspendButton.addActionListener(e -> {
+      if (_thread != null) {
+        suspend();
       }
     });
     _resumeButton.addActionListener(e -> {
