@@ -3531,7 +3531,7 @@ public class CPU6510 implements ClockedComponent {
   /**
    * Read byte from io port.
    *
-   * @param addr
+   * @param addr Address of port
    * @return byte from port
    */
   private int readPort(int addr) {
