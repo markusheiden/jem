@@ -16,8 +16,6 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * Testsuite 2.15.
- * <p/>
- * TODO time should be simulated time or cycles instead of real time
  */
 @RunWith(Parameterized.class)
 public class Testsuite2_15 extends AbstractTest {
