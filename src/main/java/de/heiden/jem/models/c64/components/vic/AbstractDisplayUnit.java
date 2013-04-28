@@ -67,7 +67,7 @@ public abstract class AbstractDisplayUnit implements ClockedComponent {
   }
 
   /**
-   * Screen rendering has been finished. Handles tripple buffering.
+   * Screen rendering has been finished. Handles triple buffering.
    *
    * @param screen new rendered screen
    */
