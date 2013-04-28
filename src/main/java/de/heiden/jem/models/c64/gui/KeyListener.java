@@ -24,7 +24,7 @@ public class KeyListener extends KeyAdapter {
    * Constructor.
    *
    * @param keyboard Keyboard
-   * @param keyMapping Mapping from Java keys to C64 keys
+   * @param keyMapping Mapping from keys to C64 keys
    */
   public KeyListener(Keyboard keyboard, KeyMapping keyMapping) {
     this.keyboard = keyboard;

@@ -15,7 +15,7 @@ public class KeyListener {
    *
    * @param scene Scene
    * @param keyboard Keyboard
-   * @param keyMapping Mapping from Java keys to C64 keys
+   * @param keyMapping Mapping from keys to C64 keys
    */
   public static void attachTo(Scene scene, Keyboard keyboard, KeyMapping keyMapping) {
     scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
