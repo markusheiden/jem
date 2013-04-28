@@ -15,7 +15,7 @@ import static de.heiden.jem.models.c64.components.keyboard.Key.RESTORE;
  * TODO mapping of @, :, /, arrow up, ;, *, pound, commodore, run stop, arrow left
  * TODO C64 like mapping of -, +, home, shift lock, control?
  */
-public class Keyboard {
+public class Keyboard implements IKeyboard {
   /**
    * Logger.
    */
@@ -90,15 +90,7 @@ public class Keyboard {
     return _nmi;
   }
 
-  //
-  // protected
-  //
-
-  /**
-   * Execute key press on keyboard matrix.
-   *
-   * @param key key
-   */
+  @Override
   public void press(Key key) {
     if (key == RESTORE) {
       // low active
@@ -110,11 +102,7 @@ public class Keyboard {
     }
   }
 
-  /**
-   * Execute key release on keyboard matrix.
-   *
-   * @param key key
-   */
+  @Override
   public void release(Key key) {
     if (key == RESTORE) {
       // low active
