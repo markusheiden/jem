@@ -593,65 +593,6 @@
     <output url="file://$PROJECT_DIR$/target/idea" />
   </component>
   <component name="ProjectRunConfigurationManager">
-    <configuration default="false" name="StartupAgent" type="Application" factoryName="Application">
-      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="emma" />
-      <option name="MAIN_CLASS_NAME" value="de.heiden.jem.models.c64.StartupAgent" />
-      <option name="VM_PARAMETERS" value="-ea -XX:+UseConcMarkSweepGC -XX:+CMSIncrementalMode -XX:+CMSIncrementalPacing -javaagent:../serialthreads/target/serialthreads-1.0-SNAPSHOT.jar" />
-      <option name="PROGRAM_PARAMETERS" value="" />
-      <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$/" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" value="" />
-      <option name="ENABLE_SWING_INSPECTOR" value="false" />
-      <option name="ENV_VARIABLES" />
-      <option name="PASS_PARENT_ENVS" value="true" />
-      <module name="JEM" />
-      <envs />
-      <RunnerSettings RunnerId="Debug">
-        <option name="DEBUG_PORT" value="51434" />
-        <option name="TRANSPORT" value="0" />
-        <option name="LOCAL" value="true" />
-      </RunnerSettings>
-      <RunnerSettings RunnerId="JProfiler">
-        <option name="WINDOW" value="false" />
-        <option name="JVMPI" value="false" />
-        <option name="INTERPRETED" value="false" />
-      </RunnerSettings>
-      <RunnerSettings RunnerId="Run" />
-      <ConfigurationWrapper RunnerId="Debug" />
-      <ConfigurationWrapper RunnerId="JProfiler" />
-      <ConfigurationWrapper RunnerId="Run" />
-      <method>
-        <option name="Maven.BeforeRunTask" enabled="true" file="$PROJECT_DIR$/../serialthreads/pom.xml" goal="package" />
-      </method>
-    </configuration>
-    <configuration default="false" name="Startup -ea" type="Application" factoryName="Application">
-      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="emma" />
-      <option name="MAIN_CLASS_NAME" value="de.heiden.jem.models.c64.Startup" />
-      <option name="VM_PARAMETERS" value="-ea -XX:+UseConcMarkSweepGC -XX:+CMSIncrementalMode -XX:+CMSIncrementalPacing" />
-      <option name="PROGRAM_PARAMETERS" value="" />
-      <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$/" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" value="" />
-      <option name="ENABLE_SWING_INSPECTOR" value="false" />
-      <option name="ENV_VARIABLES" />
-      <option name="PASS_PARENT_ENVS" value="true" />
-      <module name="JEM" />
-      <envs />
-      <RunnerSettings RunnerId="Debug">
-        <option name="DEBUG_PORT" value="59391" />
-        <option name="TRANSPORT" value="0" />
-        <option name="LOCAL" value="true" />
-      </RunnerSettings>
-      <RunnerSettings RunnerId="JProfiler">
-        <option name="WINDOW" value="false" />
-        <option name="JVMPI" value="false" />
-        <option name="INTERPRETED" value="false" />
-      </RunnerSettings>
-      <RunnerSettings RunnerId="Run" />
-      <ConfigurationWrapper RunnerId="Debug" />
-      <ConfigurationWrapper RunnerId="Run" />
-      <method />
-    </configuration>
     <configuration default="false" name="Startup" type="Application" factoryName="Application">
       <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="emma" />
       <option name="MAIN_CLASS_NAME" value="de.heiden.jem.models.c64.Startup" />
@@ -682,6 +623,65 @@
       <ConfigurationWrapper RunnerId="JProfiler" />
       <ConfigurationWrapper RunnerId="Run" />
       <method />
+    </configuration>
+    <configuration default="false" name="Startup -ea" type="Application" factoryName="Application">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="emma" />
+      <option name="MAIN_CLASS_NAME" value="de.heiden.jem.models.c64.Startup" />
+      <option name="VM_PARAMETERS" value="-ea -XX:+UseConcMarkSweepGC -XX:+CMSIncrementalMode -XX:+CMSIncrementalPacing" />
+      <option name="PROGRAM_PARAMETERS" value="" />
+      <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$/" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" value="" />
+      <option name="ENABLE_SWING_INSPECTOR" value="false" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <module name="JEM" />
+      <envs />
+      <RunnerSettings RunnerId="Debug">
+        <option name="DEBUG_PORT" value="59391" />
+        <option name="TRANSPORT" value="0" />
+        <option name="LOCAL" value="true" />
+      </RunnerSettings>
+      <RunnerSettings RunnerId="JProfiler">
+        <option name="WINDOW" value="false" />
+        <option name="JVMPI" value="false" />
+        <option name="INTERPRETED" value="false" />
+      </RunnerSettings>
+      <RunnerSettings RunnerId="Run" />
+      <ConfigurationWrapper RunnerId="Debug" />
+      <ConfigurationWrapper RunnerId="Run" />
+      <method />
+    </configuration>
+    <configuration default="false" name="StartupAgent" type="Application" factoryName="Application">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="emma" />
+      <option name="MAIN_CLASS_NAME" value="de.heiden.jem.models.c64.StartupAgent" />
+      <option name="VM_PARAMETERS" value="-ea -XX:+UseConcMarkSweepGC -XX:+CMSIncrementalMode -XX:+CMSIncrementalPacing -javaagent:../serialthreads/target/serialthreads-1.0-SNAPSHOT.jar" />
+      <option name="PROGRAM_PARAMETERS" value="" />
+      <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$/" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" value="" />
+      <option name="ENABLE_SWING_INSPECTOR" value="false" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <module name="JEM" />
+      <envs />
+      <RunnerSettings RunnerId="Debug">
+        <option name="DEBUG_PORT" value="51434" />
+        <option name="TRANSPORT" value="0" />
+        <option name="LOCAL" value="true" />
+      </RunnerSettings>
+      <RunnerSettings RunnerId="JProfiler">
+        <option name="WINDOW" value="false" />
+        <option name="JVMPI" value="false" />
+        <option name="INTERPRETED" value="false" />
+      </RunnerSettings>
+      <RunnerSettings RunnerId="Run" />
+      <ConfigurationWrapper RunnerId="Debug" />
+      <ConfigurationWrapper RunnerId="JProfiler" />
+      <ConfigurationWrapper RunnerId="Run" />
+      <method>
+        <option name="Maven.BeforeRunTask" enabled="true" file="$PROJECT_DIR$/../serialthreads/pom.xml" goal="package" />
+      </method>
     </configuration>
   </component>
   <component name="ResourceManagerContainer">
@@ -727,6 +727,13 @@
   </component>
   <component name="WebServicesPlugin" addRequiredLibraries="true" />
   <component name="libraryTable">
+    <library name="asm-debug-all-5.0">
+      <CLASSES>
+        <root url="jar://$PROJECT_DIR$/../serialthreads/lib/asm-debug-all-5.0_ALPHA.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES />
+    </library>
     <library name="Maven: aopalliance:aopalliance:1.0">
       <CLASSES>
         <root url="jar://$MAVEN_REPOSITORY$/aopalliance/aopalliance/1.0/aopalliance-1.0.jar!/" />
@@ -817,57 +824,57 @@
     </library>
     <library name="Maven: org.springframework:spring-aop:4.0.0.BUILD-SNAPSHOT">
       <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-aop/4.0.0.BUILD-SNAPSHOT/spring-aop-4.0.0.BUILD-20130502.152724-20.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-aop/4.0.0.BUILD-SNAPSHOT/spring-aop-4.0.0.BUILD-20130531.062545-71.jar!/" />
       </CLASSES>
       <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-aop/4.0.0.BUILD-SNAPSHOT/spring-aop-4.0.0.BUILD-20130502.152724-20-javadoc.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-aop/4.0.0.BUILD-SNAPSHOT/spring-aop-4.0.0.BUILD-20130531.062545-71-javadoc.jar!/" />
       </JAVADOC>
       <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-aop/4.0.0.BUILD-SNAPSHOT/spring-aop-4.0.0.BUILD-20130502.152724-20-sources.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-aop/4.0.0.BUILD-SNAPSHOT/spring-aop-4.0.0.BUILD-20130531.062545-71-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="Maven: org.springframework:spring-beans:4.0.0.BUILD-SNAPSHOT">
       <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-beans/4.0.0.BUILD-SNAPSHOT/spring-beans-4.0.0.BUILD-20130502.152724-19.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-beans/4.0.0.BUILD-SNAPSHOT/spring-beans-4.0.0.BUILD-20130531.062545-71.jar!/" />
       </CLASSES>
       <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-beans/4.0.0.BUILD-SNAPSHOT/spring-beans-4.0.0.BUILD-20130502.152724-19-javadoc.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-beans/4.0.0.BUILD-SNAPSHOT/spring-beans-4.0.0.BUILD-20130531.062545-71-javadoc.jar!/" />
       </JAVADOC>
       <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-beans/4.0.0.BUILD-SNAPSHOT/spring-beans-4.0.0.BUILD-20130502.152724-19-sources.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-beans/4.0.0.BUILD-SNAPSHOT/spring-beans-4.0.0.BUILD-20130531.062545-71-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="Maven: org.springframework:spring-context:4.0.0.BUILD-SNAPSHOT">
       <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-context/4.0.0.BUILD-SNAPSHOT/spring-context-4.0.0.BUILD-20130502.152724-19.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-context/4.0.0.BUILD-SNAPSHOT/spring-context-4.0.0.BUILD-20130531.062545-70.jar!/" />
       </CLASSES>
       <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-context/4.0.0.BUILD-SNAPSHOT/spring-context-4.0.0.BUILD-20130502.152724-19-javadoc.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-context/4.0.0.BUILD-SNAPSHOT/spring-context-4.0.0.BUILD-20130531.062545-70-javadoc.jar!/" />
       </JAVADOC>
       <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-context/4.0.0.BUILD-SNAPSHOT/spring-context-4.0.0.BUILD-20130502.152724-19-sources.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-context/4.0.0.BUILD-SNAPSHOT/spring-context-4.0.0.BUILD-20130531.062545-70-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="Maven: org.springframework:spring-core:4.0.0.BUILD-SNAPSHOT">
       <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-core/4.0.0.BUILD-SNAPSHOT/spring-core-4.0.0.BUILD-20130502.152724-20.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-core/4.0.0.BUILD-SNAPSHOT/spring-core-4.0.0.BUILD-20130531.062545-71.jar!/" />
       </CLASSES>
       <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-core/4.0.0.BUILD-SNAPSHOT/spring-core-4.0.0.BUILD-20130502.152724-20-javadoc.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-core/4.0.0.BUILD-SNAPSHOT/spring-core-4.0.0.BUILD-20130531.062545-71-javadoc.jar!/" />
       </JAVADOC>
       <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-core/4.0.0.BUILD-SNAPSHOT/spring-core-4.0.0.BUILD-20130502.152724-20-sources.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-core/4.0.0.BUILD-SNAPSHOT/spring-core-4.0.0.BUILD-20130531.062545-71-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="Maven: org.springframework:spring-expression:4.0.0.BUILD-SNAPSHOT">
       <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-expression/4.0.0.BUILD-SNAPSHOT/spring-expression-4.0.0.BUILD-20130502.152724-20.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-expression/4.0.0.BUILD-SNAPSHOT/spring-expression-4.0.0.BUILD-20130531.062545-72.jar!/" />
       </CLASSES>
       <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-expression/4.0.0.BUILD-SNAPSHOT/spring-expression-4.0.0.BUILD-20130502.152724-20-javadoc.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-expression/4.0.0.BUILD-SNAPSHOT/spring-expression-4.0.0.BUILD-20130531.062545-72-javadoc.jar!/" />
       </JAVADOC>
       <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-expression/4.0.0.BUILD-SNAPSHOT/spring-expression-4.0.0.BUILD-20130502.152724-20-sources.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-expression/4.0.0.BUILD-SNAPSHOT/spring-expression-4.0.0.BUILD-20130531.062545-72-sources.jar!/" />
       </SOURCES>
     </library>
   </component>
