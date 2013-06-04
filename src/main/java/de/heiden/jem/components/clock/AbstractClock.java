@@ -215,8 +215,6 @@ public abstract class AbstractClock<E extends ClockEntry> implements Clock {
 
   /**
    * Execute current event, if any.
-   * <p/>
-   * TODO 2010-10-14 mh: remove tick parameter, because it always has to be _nextEventTick?
    *
    * @param tick current clock tick
    */
