@@ -529,8 +529,7 @@ public class CIA6526 implements BusDevice {
    */
   public void updateTimerAWrite() {
     if (_timerACLK) {
-      _clock.removeClockEvent(_timerAUnderflowEvent);
-      _clock.addClockEvent(_clock.getTick() + _timerA, _timerAUnderflowEvent);
+      _clock.updateClockEvent(_clock.getTick() + _timerA, _timerAUnderflowEvent);
     }
   }
 
@@ -629,8 +628,7 @@ public class CIA6526 implements BusDevice {
    */
   public void updateTimerBWrite() {
     if (_timerBCLK) {
-      _clock.removeClockEvent(_timerBUnderflowEvent);
-      _clock.addClockEvent(_clock.getTick() + _timerB, _timerBUnderflowEvent);
+      _clock.updateClockEvent(_clock.getTick() + _timerB, _timerBUnderflowEvent);
     }
   }
 

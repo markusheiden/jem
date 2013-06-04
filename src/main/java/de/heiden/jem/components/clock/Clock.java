@@ -47,20 +47,31 @@ public interface Clock {
   public void run(int ticks);
 
   /**
-   * Add event.
+   * Add a new event.
    *
    * @param tick tick to execute event at.
    * @param event event to add.
-   * @require tick > getTick()
-   * @require listener != null
+   * @require tick > getTick()ate
+   * @require event != null
    */
   public void addClockEvent(long tick, ClockEvent event);
+
+  /**
+   * Set tick to execute an existing event at.
+   * Shortcut for removing and re-adding an event.
+   *
+   * @param tick tick to execute event at.
+   * @param event event.
+   * @require tick > getTick()
+   * @require event != null
+   */
+  public void updateClockEvent(long tick, ClockEvent event);
 
   /**
    * Remove event.
    *
    * @param event event to remove
-   * @require listener != null
+   * @require event != null
    */
   public void removeClockEvent(ClockEvent event);
 

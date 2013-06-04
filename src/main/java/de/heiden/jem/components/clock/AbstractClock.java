@@ -135,19 +135,11 @@ public abstract class AbstractClock<E extends ClockEntry> implements Clock {
    */
   protected abstract void doRun(int ticks);
 
-  /**
-   * Add event.
-   *
-   * @param tick tick to execute event at.
-   * @param newEvent event to add.
-   * @require tick > getTick()
-   * @require newEvent != null
-   */
   @Override
   public void addClockEvent(long tick, ClockEvent newEvent) {
     assert tick > getTick() : "tick > getTick()";
     assert newEvent != null : "newEvent != null";
-    assert newEvent.next == null : "newEvent.next == null";
+//    assert newEvent.next == null : "newEvent.next == null";
 
 //    if (_logger.isDebugEnabled()) {
 //      _logger.debug("add event " + newEvent + " at " + tick);
@@ -178,12 +170,13 @@ public abstract class AbstractClock<E extends ClockEntry> implements Clock {
     } while (true);
   }
 
-  /**
-   * Remove event.
-   *
-   * @param oldEvent event to remove
-   * @require oldEvent != null
-   */
+  @Override
+  public void updateClockEvent(long tick, ClockEvent event) {
+    // TODO mh: check, if events needs to be moved. otherwise exit early.
+    removeClockEvent(event);
+    updateClockEvent(tick, event);
+  }
+
   @Override
   public void removeClockEvent(ClockEvent oldEvent) {
     assert oldEvent != null : "oldEvent != null";
@@ -214,6 +207,8 @@ public abstract class AbstractClock<E extends ClockEntry> implements Clock {
       event = next;
 
     } while (event != null);
+
+    // TODO mh: handle case that event is not registered?: oldEvent.next = null;
 
     assert oldEvent.next == null : "oldEvent.next == null";
   }
