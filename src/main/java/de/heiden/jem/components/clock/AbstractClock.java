@@ -174,7 +174,7 @@ public abstract class AbstractClock<E extends ClockEntry> implements Clock {
   public void updateClockEvent(long tick, ClockEvent event) {
     // TODO mh: check, if events needs to be moved. otherwise exit early.
     removeClockEvent(event);
-    updateClockEvent(tick, event);
+    addClockEvent(tick, event);
   }
 
   @Override
