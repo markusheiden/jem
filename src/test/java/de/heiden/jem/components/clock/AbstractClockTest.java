@@ -5,8 +5,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Test for {@link AbstractClock}
@@ -51,13 +50,16 @@ public class AbstractClockTest {
     // Remove not registered event -> nothing should happen
     clock.removeClockEvent(event);
     assertEquals(Long.MAX_VALUE, clock.getNextEventTick());
+    assertNull(event.next);
 
     clock.addClockEvent(1, event);
     assertEquals(1, clock.getNextEventTick());
+    assertNotNull(event.next);
 
     // Remove first registered event -> next tick should be reset
     clock.removeClockEvent(event);
     assertEquals(Long.MAX_VALUE, clock.getNextEventTick());
+    assertNull(event.next);
   }
 
   @Test
