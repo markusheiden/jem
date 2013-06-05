@@ -96,7 +96,9 @@ public class AbstractClockTest {
     clock.executeEvent(2);
     assertEquals(2, executed.size());
     assertTrue(executed.contains(event2a));
+    assertNull(event2a.next);
     assertTrue(executed.contains(event2b));
+    assertNull(event2b.next);
   }
 
   /**
