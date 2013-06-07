@@ -2460,10 +2460,9 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $EB:
+        public final void execute() // $EB: *SBC #$XX (2)
         {
-          // TODO implement opcode
-          notImplementedYet();
+          subtract(readImmediatePC());
         }
       },
 
