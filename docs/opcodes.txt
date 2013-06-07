@@ -1,0 +1,18 @@
+0xx0 0000 abs?
+1xx0 0000 imm
+xxx1 0000 rel
+xxx0 0001 izx
+xxx1 0001 izy
+xxxx 0010 imm
+xxx0 0011 izx
+xxx1 0011 izy
+xxx0 01xx zp
+xxx1 010x zpx
+10x1 011x zpy !!!
+xxxx 1000 ---
+xxx0 10x1 imm
+xxx1 10x1 aby
+xxxx 1010 ---
+xxx0 11xx abs
+xxx1 11xx abx
+10x1 111x aby !!!
