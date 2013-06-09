@@ -3,7 +3,7 @@
 xxx1 0000 rel     OK
 xxx0 0001 izx     OK
 xxx1 0001 izy     OK
-xxxx 0010 imm
+xxxx 0010 imm     OK
 xxx0 0011 izx
 xxx1 0011 izy
 xxx0 01xx zp

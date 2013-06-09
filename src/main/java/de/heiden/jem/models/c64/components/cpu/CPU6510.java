@@ -270,7 +270,7 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $02: *KIL (*)
+        public final void execute() // $02: *KIL (*) // TODO imm?
         {
           // Use opcode $02 as escape
           Patch patch = patches.get(_state.PC - 1);
@@ -427,7 +427,7 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $12: *KIL (*)
+        public final void execute() // $12: *KIL (*) // TODO imm?
         {
           crash();
         }
@@ -584,7 +584,7 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $22: *KIL (*)
+        public final void execute() // $22: *KIL (*) // TODO imm?
         {
           crash();
         }
@@ -731,7 +731,7 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $32: *KIL (*)
+        public final void execute() // $32: *KIL (*) // TODO imm?
         {
           crash();
         }
@@ -885,7 +885,7 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $42: *KIL (*)
+        public final void execute() // $42: *KIL (*) // TODO imm?
         {
           crash();
         }
@@ -1032,7 +1032,7 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $52: *KIL (*)
+        public final void execute() // $52: *KIL (*) // TODO imm?
         {
           crash();
         }
@@ -1181,7 +1181,7 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $62: *KIL (*)
+        public final void execute() // $62: *KIL (*) // TODO imm?
         {
           crash();
         }
@@ -1330,7 +1330,7 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $72: *KIL (*)
+        public final void execute() // $72: *KIL (*) // TODO imm?
         {
           crash();
         }
@@ -1480,9 +1480,9 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $82: *NOP (2)
+        public final void execute() // $82: *NOP #$XX (2) // imm
         {
-          nop12();
+          nop(readImmediatePC());
         }
       },
 
@@ -1626,7 +1626,7 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $92: *KIL (*)
+        public final void execute() // $92: *KIL (*) // TODO imm?
         {
           crash();
         }
@@ -1781,7 +1781,7 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $A2: LDX #$XX (2)
+        public final void execute() // $A2: LDX #$XX (2) // imm
         {
           _state.X = load(readImmediatePC());
         }
@@ -1928,7 +1928,7 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $B2: *KIL (*)
+        public final void execute() // $B2: *KIL (*) // TODO imm?
         {
           crash();
         }
@@ -2078,9 +2078,9 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $C2: *NOP (2)
+        public final void execute() // $C2: *NOP #$XX (2) // imm
         {
-          nop12();
+          nop(readImmediatePC());
         }
       },
 
@@ -2227,7 +2227,7 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $D2: *KIL (*)
+        public final void execute() // $D2: *KIL (*) // TODO imm?
         {
           crash();
         }
@@ -2377,9 +2377,9 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $E2: *NOP (2)
+        public final void execute() // $E2: *NOP #$XX (2) // TODO imm?
         {
-          nop12();
+          nop(readImmediatePC());
         }
       },
 
@@ -2524,7 +2524,7 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $F2: *KIL (*)
+        public final void execute() // $F2: *KIL (*) // TODO imm?
         {
           crash();
         }
