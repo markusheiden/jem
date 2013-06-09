@@ -1462,9 +1462,9 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $80: *NOP (2)
+        public final void execute() // $80: *NOP #$XX (2) // imm
         {
-          nop12();
+          nop(readImmediatePC());
         }
       },
 
@@ -1763,7 +1763,7 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $A0: LDY #$XX (2)
+        public final void execute() // $A0: LDY #$XX (2) // imm
         {
           _state.Y = load(readImmediatePC());
         }
@@ -2060,7 +2060,7 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $C0: CPY #$XX (2)
+        public final void execute() // $C0: CPY #$XX (2) // imm
         {
           compare(_state.Y, readImmediatePC());
         }
@@ -2359,7 +2359,7 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $E0: CPX #$XX (2)
+        public final void execute() // $E0: CPX #$XX (2) // imm
         {
           compare(_state.X, readImmediatePC());
         }
@@ -3028,9 +3028,23 @@ public class CPU6510 implements ClockedComponent {
   }
 
   /**
-   * NOP. 2 ticks.
-   * (1)
+   * *NOP.
+   * (?)
+   *
+   * @param value argument
    */
+  @Interruptible
+  protected void nop(int value) {
+    if (DEBUG) {
+      reportIllegalOpcode();
+    }
+  }
+
+
+    /**
+     * NOP. 2 ticks.
+     * (1)
+     */
   @Interruptible
   protected final void nop2() {
     if (DEBUG) {
