@@ -409,7 +409,7 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $10: BPL $XXXX (2/3)
+        public final void execute() // $10: BPL $XXXX (2/3) // rel
         {
           branchIf(!_state.N);
         }
@@ -713,7 +713,7 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $30: BMI $XXXX (2/3)
+        public final void execute() // $30: BMI $XXXX (2/3) // rel
         {
           branchIf(_state.N);
         }
@@ -1014,7 +1014,7 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $50: BVC $XXXX (2/3)
+        public final void execute() // $50: BVC $XXXX (2/3) // rel
         {
           branchIf(!_state.V);
         }
@@ -1312,7 +1312,7 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $70: BVS $XXXX (2/3)
+        public final void execute() // $70: BVS $XXXX (2/3) // rel
         {
           branchIf(_state.V);
         }
@@ -1608,7 +1608,7 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $90: BCC $XXXX (2/3)
+        public final void execute() // $90: BCC $XXXX (2/3) // rel
         {
           branchIf(!_state.C);
         }
@@ -1910,7 +1910,7 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $B0: BCS $XXXX (2/3)
+        public final void execute() // $B0: BCS $XXXX (2/3) // rel
         {
           branchIf(_state.C);
         }
@@ -2209,7 +2209,7 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $D0: BNE $XXXX (2/3)
+        public final void execute() // $D0: BNE $XXXX (2/3) // rel
         {
           branchIf(!_state.Z);
         }
@@ -2506,7 +2506,7 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $F0: BEQ $XXXX (2/3)
+        public final void execute() // $F0: BEQ $XXXX (2/3) // rel
         {
           branchIf(_state.Z);
         }

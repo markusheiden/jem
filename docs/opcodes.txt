@@ -1,6 +1,6 @@
 0xx0 0000 abs?
 1xx0 0000 imm     OK
-xxx1 0000 rel
+xxx1 0000 rel     OK
 xxx0 0001 izx
 xxx1 0001 izy
 xxxx 0010 imm
