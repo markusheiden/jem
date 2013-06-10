@@ -335,7 +335,7 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $08: PHP (3)
+        public final void execute() // $08: PHP (3) // no
         {
           pushByte(_state.getP());
         }
@@ -353,7 +353,7 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $0A: ASL (2)
+        public final void execute() // $0A: ASL (2) // no
         {
           _tick.waitForTick(); // minimum operation time: 1 tick
           _state.A = shiftLeft(_state.A);
@@ -483,7 +483,7 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $18: CLC (2)
+        public final void execute() // $18: CLC (2) // no
         {
           _tick.waitForTick(); // minimum operation time: 1 tick
           _state.C = false;
@@ -502,7 +502,7 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $1A: *NOP (2)
+        public final void execute() // $1A: *NOP (2) // no
         {
           nop2();
         }
@@ -637,7 +637,7 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $28: PLP (4)
+        public final void execute() // $28: PLP (4) // no
         {
           _state.setP(popByte());
         }
@@ -655,7 +655,7 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $2A: ROL (2)
+        public final void execute() // $2A: ROL (2) // no
         {
           _tick.waitForTick(); // minimum operation time: 1 tick
           _state.A = rotateLeft(_state.A);
@@ -785,7 +785,7 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $38: SEC (2)
+        public final void execute() // $38: SEC (2) // no
         {
           _tick.waitForTick(); // minimum operation time: 1 tick
           _state.C = true;
@@ -804,7 +804,7 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $3A: *NOP (2)
+        public final void execute() // $3A: *NOP (2) // no
         {
           nop2();
         }
@@ -937,7 +937,7 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $48: PHA (3)
+        public final void execute() // $48: PHA (3) // no
         {
           pushByte(_state.A);
         }
@@ -955,7 +955,7 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $4A: LSR (2)
+        public final void execute() // $4A: LSR (2) // no
         {
           _tick.waitForTick(); // minimum operation time: 1 tick
           _state.A = shiftRight(_state.A);
@@ -1084,7 +1084,7 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $58: CLI (2)
+        public final void execute() // $58: CLI (2) // no
         {
           _tick.waitForTick(); // minimum operation time: 1 tick
           _state.cli();
@@ -1103,7 +1103,7 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $5A: *NOP (2)
+        public final void execute() // $5A: *NOP (2) // no
         {
           nop2();
         }
@@ -1232,7 +1232,7 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $68: PLA (4)
+        public final void execute() // $68: PLA (4) // no
         {
           int a = popByte();
           _state.setZeroNegativeP(a);
@@ -1252,7 +1252,7 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $6A: ROR (2)
+        public final void execute() // $6A: ROR (2) // no
         {
           _tick.waitForTick(); // minimum operation time: 1 tick
           _state.A = rotateRight(_state.A);
@@ -1381,7 +1381,7 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $78: SEI (2)
+        public final void execute() // $78: SEI (2) // no
         {
           _tick.waitForTick(); // minimum operation time: 1 tick
           _state.sei();
@@ -1400,7 +1400,7 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $7A: *NOP (2)
+        public final void execute() // $7A: *NOP (2) // no
         {
           nop2();
         }
@@ -1528,7 +1528,7 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $88: DEY (2)
+        public final void execute() // $88: DEY (2) // no
         {
           _tick.waitForTick(); // minimum operation time: 1 tick
           _state.Y = decrement(_state.Y);
@@ -1547,7 +1547,7 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $8A: TXA (2)
+        public final void execute() // $8A: TXA (2) // no
         {
           _tick.waitForTick(); // minimum operation time: 1 tick
           _state.A = load(_state.X);
@@ -1675,7 +1675,7 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $98: TYA (2)
+        public final void execute() // $98: TYA (2) // no
         {
           _tick.waitForTick(); // minimum operation time: 1 tick
           _state.A = load(_state.Y);
@@ -1695,7 +1695,7 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $9A: TXS (2)
+        public final void execute() // $9A: TXS (2) // no
         {
           _tick.waitForTick(); // minimum operation time: 1 tick
           _state.S = STACK + _state.X; // no update of P !!!
@@ -1826,7 +1826,7 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $A8: TAY (2)
+        public final void execute() // $A8: TAY (2) // no
         {
           _tick.waitForTick(); // minimum operation time: 1 tick
           _state.Y = load(_state.A);
@@ -1845,7 +1845,7 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $AA: TAX (2)
+        public final void execute() // $AA: TAX (2) // no
         {
           _tick.waitForTick(); // minimum operation time: 1 tick
           _state.X = load(_state.A);
@@ -1973,7 +1973,7 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $B8: CLV (2)
+        public final void execute() // $B8: CLV (2) // no
         {
           _tick.waitForTick(); // minimum operation time: 1 tick
           _state.V = false;
@@ -1992,7 +1992,7 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $BA: TSX (2)
+        public final void execute() // $BA: TSX (2) // no
         {
           _tick.waitForTick(); // minimum operation time: 1 tick
           _state.X = load(_state.S & 0xFF);
@@ -2121,7 +2121,7 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $C8: INY (2)
+        public final void execute() // $C8: INY (2) // no
         {
           _tick.waitForTick(); // minimum operation time: 1 tick
           _state.Y = increment(_state.Y);
@@ -2140,7 +2140,7 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $CA: DEX (2)
+        public final void execute() // $CA: DEX (2) // no
         {
           _tick.waitForTick(); // minimum operation time: 1 tick
           _state.X = decrement(_state.X);
@@ -2270,7 +2270,7 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $D8: CLD (2)
+        public final void execute() // $D8: CLD (2) // no
         {
           _tick.waitForTick(); // minimum operation time: 1 tick
           _state.D = false;
@@ -2289,7 +2289,7 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $DA: *NOP (2)
+        public final void execute() // $DA: *NOP (2) // no
         {
           nop2();
         }
@@ -2418,7 +2418,7 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $E8: INX (2)
+        public final void execute() // $E8: INX (2) // no
         {
           _tick.waitForTick(); // minimum operation time: 1 tick
           _state.X = increment(_state.X);
@@ -2437,7 +2437,7 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $EA: NOP (2)
+        public final void execute() // $EA: NOP (2) // no
         {
           _tick.waitForTick();
         }
@@ -2565,7 +2565,7 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $F8: SED (2)
+        public final void execute() // $F8: SED (2) // no
         {
           _tick.waitForTick(); // minimum operation time: 1 tick
           _state.D = true;
@@ -2584,7 +2584,7 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $FA: *NOP (2)
+        public final void execute() // $FA: *NOP (2) // no
         {
           nop2();
         }
