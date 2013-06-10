@@ -436,7 +436,7 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $13: *SLO ($XX),Y (8)
+        public final void execute() // $13: *SLO ($XX),Y (8) // izy
         {
           // TODO 1 tick
           slo(readZeropageIndirectYAddressPC());
@@ -740,7 +740,7 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $33: *RLA ($XX),Y (8)
+        public final void execute() // $33: *RLA ($XX),Y (8) // izy
         {
           // TODO 1 tick
           rla(readZeropageIndirectYAddressPC());
@@ -1041,7 +1041,7 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $53: *LSE ($XX),Y
+        public final void execute() // $53: *LSE ($XX),Y // izy
         {
           lse(readZeropageIndirectYAddressPC());
         }
@@ -1339,7 +1339,7 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $73: *RRA ($XX),Y
+        public final void execute() // $73: *RRA ($XX),Y // izy
         {
           rra(readZeropageIndirectYAddressPC());
         }
@@ -1635,7 +1635,7 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $93:
+        public final void execute() // $93: // izy
         {
           // TODO implement opcode
           notImplementedYet();
@@ -1937,7 +1937,7 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $B3: *LAX ($XX),Y
+        public final void execute() // $B3: *LAX ($XX),Y // izy
         {
           lax(readZeropageIndirectYAddressPC());
         }
@@ -2236,7 +2236,7 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $D3: *DCM ($XX),Y
+        public final void execute() // $D3: *DCM ($XX),Y // izy
         {
           dcm(readZeropageIndirectYAddressPC());
         }
@@ -2533,7 +2533,7 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $F3: *INS ($XX),Y
+        public final void execute() // $F3: *INS ($XX),Y // izy
         {
           ins(readZeropageIndirectYAddressPC());
         }
