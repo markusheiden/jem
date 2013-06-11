@@ -3481,7 +3481,7 @@ public class CPU6510 implements ClockedComponent {
 
   /**
    * Read word at PC. Increment PC.
-   * (1)
+   * (2)
    */
   @Interruptible
   protected final int readWordPC() {
