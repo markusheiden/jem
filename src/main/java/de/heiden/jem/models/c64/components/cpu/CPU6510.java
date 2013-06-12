@@ -200,6 +200,7 @@ public class CPU6510 implements ClockedComponent {
     reset();
 
     final CPU6510State state = _state;
+    //noinspection InfiniteLoopStatement
     while (true) {
       if (state.NMI) {
         nmi();
@@ -242,6 +243,7 @@ public class CPU6510 implements ClockedComponent {
 
   // <editor-fold desc="Opcodes">
 
+  @SuppressWarnings({"Convert2Lambda", "Anonymous2MethodRef", "SpellCheckingInspection"})
   private final Opcode[] OPCODES =
     {
       new Opcode() {
@@ -3040,6 +3042,7 @@ public class CPU6510 implements ClockedComponent {
     if (DEBUG) {
       reportIllegalOpcode();
     }
+    //noinspection InfiniteLoopStatement
     while (true) {
       _tick.waitForTick();
     }
