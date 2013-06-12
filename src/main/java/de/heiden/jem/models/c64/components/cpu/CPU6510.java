@@ -372,9 +372,10 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $0C: *NOP (4)
+        public final void execute() // $0C: *NOP $XXXX (4) // abs
         {
-          nop24();
+          read(readAbsoluteAddressPC());
+          nop();
         }
       },
 
@@ -522,9 +523,10 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $1C: *NOP (5)
+        public final void execute() // $1C: *NOP $XXXX,X (5) // abx
         {
-          nop25();
+          read(readAbsoluteAddressPC(_state.X));
+          nop();
         }
       },
 
@@ -824,16 +826,17 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $3C: *NOP (5)
+        public final void execute() // $3C: *NOP $XXXX,X (5) // abx
         {
-          nop25();
+          read(readAbsoluteAddressPC(_state.X));
+          nop();
         }
       },
 
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $3D: AND $XXXX,X (4)
+        public final void execute() // $3D: AND $XXXX,X (4) // abx
         {
           and(read(readAbsoluteAddressPC(_state.X)));
         }
@@ -1123,9 +1126,10 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $5C: *NOP (5)
+        public final void execute() // $5C: *NOP $XXXX,X (5) // abx
         {
-          nop25();
+          read(readAbsoluteAddressPC(_state.X));
+          nop();
         }
       },
 
@@ -1421,9 +1425,10 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $7C: *NOP (5)
+        public final void execute() // $7C: *NOP $XXXX,X (5) // abx
         {
-          nop25();
+          read(readAbsoluteAddressPC(_state.X));
+          nop();
         }
       },
 
@@ -1542,9 +1547,10 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $89: *NOP (2)
+        public final void execute() // $89: *NOP (2) // imm
         {
-          nop12();
+          readImmediatePC();
+          nop();
         }
       },
 
@@ -2306,9 +2312,10 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $DC: *NOP (5)
+        public final void execute() // $DC: *NOP $XXXX,X (5) // abx
         {
-          nop25();
+          read(readAbsoluteAddressPC(_state.X));
+          nop();
         }
       },
 
@@ -2602,9 +2609,10 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $FC: *NOP (5)
+        public final void execute() // $FC: *NOP $XXXX,X (5) // abx
         {
-          nop25();
+          read(readAbsoluteAddressPC(_state.X));
+          nop();
         }
       },
 
@@ -3047,91 +3055,6 @@ public class CPU6510 implements ClockedComponent {
     if (DEBUG) {
       reportIllegalOpcode();
     }
-  }
-
-   /**
-    * NOP. 2 ticks.
-    * (1)
-    */
-  @Interruptible
-  protected final void nop2() {
-    if (DEBUG) {
-      reportIllegalOpcode();
-    }
-    _tick.waitForTick();
-  }
-
-  /**
-   * NOP with 1 byte extra. 2 ticks.
-   * (1)
-   */
-  @Interruptible
-  protected final void nop12() {
-    if (DEBUG) {
-      reportIllegalOpcode();
-    }
-    _state.PC = (_state.PC + 1) & 0xFFFF; // TODO read?
-    _tick.waitForTick();
-  }
-
-  /**
-   * NOP with 1 byte extra. 3 ticks.
-   * (2)
-   */
-  @Interruptible
-  protected final void nop13() {
-    if (DEBUG) {
-      reportIllegalOpcode();
-    }
-    _state.PC = (_state.PC + 1) & 0xFFFF; // TODO read?
-    _tick.waitForTick();
-    _tick.waitForTick();
-  }
-
-  /**
-   * NOP with 1 byte extra. 4 ticks.
-   * (3)
-   */
-  @Interruptible
-  protected final void nop14() {
-    if (DEBUG) {
-      reportIllegalOpcode();
-    }
-    _state.PC = (_state.PC + 1) & 0xFFFF; // TODO read?
-    _tick.waitForTick();
-    _tick.waitForTick();
-    _tick.waitForTick();
-  }
-
-  /**
-   * NOP with 2 bytes extra. 4 ticks.
-   * (3)
-   */
-  @Interruptible
-  protected final void nop24() {
-    if (DEBUG) {
-      reportIllegalOpcode();
-    }
-    _state.PC = (_state.PC + 2) & 0xFFFF; // TODO read?
-    _tick.waitForTick();
-    _tick.waitForTick();
-    _tick.waitForTick();
-  }
-
-  /**
-   * NOP with 2 bytes extra. 5 ticks.
-   * (4)
-   */
-  @Interruptible
-  protected final void nop25() {
-    if (DEBUG) {
-      reportIllegalOpcode();
-    }
-    _state.PC = (_state.PC + 2) & 0xFFFF; // TODO read?
-    _tick.waitForTick();
-    _tick.waitForTick();
-    _tick.waitForTick();
-    _tick.waitForTick();
   }
 
   /**
