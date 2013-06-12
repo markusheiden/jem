@@ -300,7 +300,8 @@ public class CPU6510 implements ClockedComponent {
         @Interruptible
         public final void execute() // $04: *NOP $XX (3) // zp
         {
-          nop(read(readAbsoluteZeropageAddressPC()));
+          read(readAbsoluteZeropageAddressPC());
+          nop();
         }
       },
 
@@ -355,7 +356,6 @@ public class CPU6510 implements ClockedComponent {
         @Interruptible
         public final void execute() // $0A: ASL (2) // no
         {
-          _tick.waitForTick(); // minimum operation time: 1 tick
           _state.A = shiftLeft(_state.A);
         }
       },
@@ -448,7 +448,8 @@ public class CPU6510 implements ClockedComponent {
         @Interruptible
         public final void execute() // $14: *NOP $XX,X (4) // zpx
         {
-          nop(read(readAbsoluteZeropageAddressPC(_state.X)));
+          read(readAbsoluteZeropageAddressPC(_state.X));
+          nop();
         }
       },
 
@@ -485,7 +486,7 @@ public class CPU6510 implements ClockedComponent {
         @Interruptible
         public final void execute() // $18: CLC (2) // no
         {
-          _tick.waitForTick(); // minimum operation time: 1 tick
+          idleRead(); // during operation
           _state.C = false;
         }
       },
@@ -504,7 +505,7 @@ public class CPU6510 implements ClockedComponent {
         @Interruptible
         public final void execute() // $1A: *NOP (2) // no
         {
-          nop2();
+          nop();
         }
       },
 
@@ -657,7 +658,6 @@ public class CPU6510 implements ClockedComponent {
         @Interruptible
         public final void execute() // $2A: ROL (2) // no
         {
-          _tick.waitForTick(); // minimum operation time: 1 tick
           _state.A = rotateLeft(_state.A);
         }
       },
@@ -750,7 +750,8 @@ public class CPU6510 implements ClockedComponent {
         @Interruptible
         public final void execute() // $34: *NOP $XX,X (4) // zpx
         {
-          nop(read(readAbsoluteZeropageAddressPC(_state.X)));
+          read(readAbsoluteZeropageAddressPC(_state.X));
+          nop();
         }
       },
 
@@ -787,7 +788,7 @@ public class CPU6510 implements ClockedComponent {
         @Interruptible
         public final void execute() // $38: SEC (2) // no
         {
-          _tick.waitForTick(); // minimum operation time: 1 tick
+          idleRead(); // during operation
           _state.C = true;
         }
       },
@@ -806,7 +807,7 @@ public class CPU6510 implements ClockedComponent {
         @Interruptible
         public final void execute() // $3A: *NOP (2) // no
         {
-          nop2();
+          nop();
         }
       },
 
@@ -902,7 +903,8 @@ public class CPU6510 implements ClockedComponent {
         @Interruptible
         public final void execute() // $44: *NOP $XX (3) // zp
         {
-          nop(read(readAbsoluteZeropageAddressPC()));
+          read(readAbsoluteZeropageAddressPC());
+          nop();
         }
       },
 
@@ -957,7 +959,6 @@ public class CPU6510 implements ClockedComponent {
         @Interruptible
         public final void execute() // $4A: LSR (2) // no
         {
-          _tick.waitForTick(); // minimum operation time: 1 tick
           _state.A = shiftRight(_state.A);
         }
       },
@@ -1049,7 +1050,8 @@ public class CPU6510 implements ClockedComponent {
         @Interruptible
         public final void execute() // $54: *NOP $XX,X (4) // zpx
         {
-          nop(read(readAbsoluteZeropageAddressPC(_state.X)));
+          read(readAbsoluteZeropageAddressPC(_state.X));
+          nop();
         }
       },
 
@@ -1086,7 +1088,7 @@ public class CPU6510 implements ClockedComponent {
         @Interruptible
         public final void execute() // $58: CLI (2) // no
         {
-          _tick.waitForTick(); // minimum operation time: 1 tick
+          idleRead(); // during operation
           _state.cli();
         }
       },
@@ -1105,7 +1107,7 @@ public class CPU6510 implements ClockedComponent {
         @Interruptible
         public final void execute() // $5A: *NOP (2) // no
         {
-          nop2();
+          nop();
         }
       },
 
@@ -1197,7 +1199,8 @@ public class CPU6510 implements ClockedComponent {
         @Interruptible
         public final void execute() // $64: *NOP $XX (3) // zp
         {
-          nop(read(readAbsoluteZeropageAddressPC()));
+          read(readAbsoluteZeropageAddressPC());
+          nop();
         }
       },
 
@@ -1254,7 +1257,6 @@ public class CPU6510 implements ClockedComponent {
         @Interruptible
         public final void execute() // $6A: ROR (2) // no
         {
-          _tick.waitForTick(); // minimum operation time: 1 tick
           _state.A = rotateRight(_state.A);
         }
       },
@@ -1346,7 +1348,8 @@ public class CPU6510 implements ClockedComponent {
         @Interruptible
         public final void execute() // $74: *NOP $XX,X (4) // zpx
         {
-          nop(read(readAbsoluteZeropageAddressPC(_state.X)));
+          read(readAbsoluteZeropageAddressPC(_state.X));
+          nop();
         }
       },
 
@@ -1383,7 +1386,7 @@ public class CPU6510 implements ClockedComponent {
         @Interruptible
         public final void execute() // $78: SEI (2) // no
         {
-          _tick.waitForTick(); // minimum operation time: 1 tick
+          idleRead(); // during operation
           _state.sei();
         }
       },
@@ -1402,7 +1405,7 @@ public class CPU6510 implements ClockedComponent {
         @Interruptible
         public final void execute() // $7A: *NOP (2) // no
         {
-          nop2();
+          nop();
         }
       },
 
@@ -1418,7 +1421,7 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $7C: *NOP (5)2
+        public final void execute() // $7C: *NOP (5)
         {
           nop25();
         }
@@ -1458,7 +1461,8 @@ public class CPU6510 implements ClockedComponent {
         @Interruptible
         public final void execute() // $80: *NOP #$XX (2) // imm
         {
-          nop(readImmediatePC());
+          readImmediatePC();
+          nop();
         }
       },
 
@@ -1476,7 +1480,8 @@ public class CPU6510 implements ClockedComponent {
         @Interruptible
         public final void execute() // $82: *NOP #$XX (2) // imm
         {
-          nop(readImmediatePC());
+          readImmediatePC();
+          nop();
         }
       },
 
@@ -1530,7 +1535,6 @@ public class CPU6510 implements ClockedComponent {
         @Interruptible
         public final void execute() // $88: DEY (2) // no
         {
-          _tick.waitForTick(); // minimum operation time: 1 tick
           _state.Y = decrement(_state.Y);
         }
       },
@@ -1549,7 +1553,6 @@ public class CPU6510 implements ClockedComponent {
         @Interruptible
         public final void execute() // $8A: TXA (2) // no
         {
-          _tick.waitForTick(); // minimum operation time: 1 tick
           _state.A = load(_state.X);
         }
       },
@@ -1677,7 +1680,6 @@ public class CPU6510 implements ClockedComponent {
         @Interruptible
         public final void execute() // $98: TYA (2) // no
         {
-          _tick.waitForTick(); // minimum operation time: 1 tick
           _state.A = load(_state.Y);
         }
       },
@@ -1697,7 +1699,7 @@ public class CPU6510 implements ClockedComponent {
         @Interruptible
         public final void execute() // $9A: TXS (2) // no
         {
-          _tick.waitForTick(); // minimum operation time: 1 tick
+          idleRead(); // during operation
           _state.S = STACK + _state.X; // no update of P !!!
         }
       },
@@ -1828,7 +1830,6 @@ public class CPU6510 implements ClockedComponent {
         @Interruptible
         public final void execute() // $A8: TAY (2) // no
         {
-          _tick.waitForTick(); // minimum operation time: 1 tick
           _state.Y = load(_state.A);
         }
       },
@@ -1847,7 +1848,6 @@ public class CPU6510 implements ClockedComponent {
         @Interruptible
         public final void execute() // $AA: TAX (2) // no
         {
-          _tick.waitForTick(); // minimum operation time: 1 tick
           _state.X = load(_state.A);
         }
       },
@@ -1975,7 +1975,7 @@ public class CPU6510 implements ClockedComponent {
         @Interruptible
         public final void execute() // $B8: CLV (2) // no
         {
-          _tick.waitForTick(); // minimum operation time: 1 tick
+          idleRead(); // during operation
           _state.V = false;
         }
       },
@@ -1994,7 +1994,6 @@ public class CPU6510 implements ClockedComponent {
         @Interruptible
         public final void execute() // $BA: TSX (2) // no
         {
-          _tick.waitForTick(); // minimum operation time: 1 tick
           _state.X = load(_state.S & 0xFF);
         }
       },
@@ -2068,7 +2067,8 @@ public class CPU6510 implements ClockedComponent {
         @Interruptible
         public final void execute() // $C2: *NOP #$XX (2) // imm
         {
-          nop(readImmediatePC());
+          readImmediatePC();
+          nop();
         }
       },
 
@@ -2123,7 +2123,6 @@ public class CPU6510 implements ClockedComponent {
         @Interruptible
         public final void execute() // $C8: INY (2) // no
         {
-          _tick.waitForTick(); // minimum operation time: 1 tick
           _state.Y = increment(_state.Y);
         }
       },
@@ -2142,7 +2141,6 @@ public class CPU6510 implements ClockedComponent {
         @Interruptible
         public final void execute() // $CA: DEX (2) // no
         {
-          _tick.waitForTick(); // minimum operation time: 1 tick
           _state.X = decrement(_state.X);
         }
       },
@@ -2235,7 +2233,8 @@ public class CPU6510 implements ClockedComponent {
         @Interruptible
         public final void execute() // $D4: *NOP $XX,X (4) // zpx
         {
-          nop(read(readAbsoluteZeropageAddressPC(_state.X)));
+          read(readAbsoluteZeropageAddressPC(_state.X));
+          nop();
         }
       },
 
@@ -2272,7 +2271,7 @@ public class CPU6510 implements ClockedComponent {
         @Interruptible
         public final void execute() // $D8: CLD (2) // no
         {
-          _tick.waitForTick(); // minimum operation time: 1 tick
+          idleRead(); // during operation
           _state.D = false;
         }
       },
@@ -2291,7 +2290,7 @@ public class CPU6510 implements ClockedComponent {
         @Interruptible
         public final void execute() // $DA: *NOP (2) // no
         {
-          nop2();
+          nop();
         }
       },
 
@@ -2365,7 +2364,8 @@ public class CPU6510 implements ClockedComponent {
         @Interruptible
         public final void execute() // $E2: *NOP #$XX (2) // TODO imm?
         {
-          nop(readImmediatePC());
+          readImmediatePC();
+          nop();
         }
       },
 
@@ -2420,7 +2420,6 @@ public class CPU6510 implements ClockedComponent {
         @Interruptible
         public final void execute() // $E8: INX (2) // no
         {
-          _tick.waitForTick(); // minimum operation time: 1 tick
           _state.X = increment(_state.X);
         }
       },
@@ -2439,7 +2438,7 @@ public class CPU6510 implements ClockedComponent {
         @Interruptible
         public final void execute() // $EA: NOP (2) // no
         {
-          _tick.waitForTick();
+          idleRead(); // during operation
         }
       },
 
@@ -2530,7 +2529,8 @@ public class CPU6510 implements ClockedComponent {
         @Interruptible
         public final void execute() // $F4: *NOP $XX,X (4) // zpx
         {
-          nop(read(readAbsoluteZeropageAddressPC(_state.X)));
+          read(readAbsoluteZeropageAddressPC(_state.X));
+          nop();
         }
       },
 
@@ -2567,7 +2567,7 @@ public class CPU6510 implements ClockedComponent {
         @Interruptible
         public final void execute() // $F8: SED (2) // no
         {
-          _tick.waitForTick(); // minimum operation time: 1 tick
+          idleRead(); // during operation
           _state.D = true;
         }
       },
@@ -2586,7 +2586,7 @@ public class CPU6510 implements ClockedComponent {
         @Interruptible
         public final void execute() // $FA: *NOP (2) // no
         {
-          nop2();
+          nop();
         }
       },
 
@@ -2675,7 +2675,10 @@ public class CPU6510 implements ClockedComponent {
    *
    * @param value value
    */
+  @Interruptible
   protected final int shiftLeft(int value) {
+    idleRead(); // during operation
+
     int result = value << 1;
     _state.setCarryZeroNegativeP(result, (result & 0x100) != 0);
     return result & 0xFF;
@@ -2683,10 +2686,14 @@ public class CPU6510 implements ClockedComponent {
 
   /**
    * Shift right.
+   * (1)
    *
    * @param value value
    */
+  @Interruptible
   protected final int shiftRight(int value) {
+    idleRead(); // during operation
+
     int result = value >> 1;
     _state.setCarryZeroNegativeP(result, (value & 0x01) != 0);
     return result;
@@ -2697,7 +2704,10 @@ public class CPU6510 implements ClockedComponent {
    *
    * @param value value
    */
+  @Interruptible
   protected final int rotateLeft(int value) {
+    idleRead(); // during operation
+
     int result = value << 1;
     if (_state.C) {
       result |= 0x01;
@@ -2708,10 +2718,14 @@ public class CPU6510 implements ClockedComponent {
 
   /**
    * Rotate right.
+   * (1)
    *
    * @param value value
    */
+  @Interruptible
   protected final int rotateRight(int value) {
+    idleRead(); // during operation
+
     int result = value >> 1;
     if (_state.C) {
       result |= 0x80;
@@ -2873,17 +2887,24 @@ public class CPU6510 implements ClockedComponent {
    *
    * @param value value
    */
+  @Interruptible
   protected final int load(int value) {
+    idleRead(); // during operation
+
     _state.setZeroNegativeP(value);
     return value;
   }
 
   /**
    * Decrement.
+   * (1)
    *
    * @param value value
    */
+  @Interruptible
   protected final int decrement(int value) {
+    idleRead(); // during operation
+
     int result = (value - 1) & 0xFF;
     _state.setZeroNegativeP(result);
     return result;
@@ -2891,10 +2912,14 @@ public class CPU6510 implements ClockedComponent {
 
   /**
    * Increment.
+   * (1)
    *
    * @param value value
    */
+  @Interruptible
   protected final int increment(int value) {
+    idleRead(); // during operation
+
     int result = (value + 1) & 0xFF;
     _state.setZeroNegativeP(result);
     return result;
@@ -3014,22 +3039,20 @@ public class CPU6510 implements ClockedComponent {
 
   /**
    * *NOP.
-   * (?)
-   *
-   * @param value argument
+   * (1)
    */
   @Interruptible
-  protected void nop(int value) {
+  protected void nop() {
+    idleRead(); // during operation
     if (DEBUG) {
       reportIllegalOpcode();
     }
   }
 
-
-    /**
-     * NOP. 2 ticks.
-     * (1)
-     */
+   /**
+    * NOP. 2 ticks.
+    * (1)
+    */
   @Interruptible
   protected final void nop2() {
     if (DEBUG) {
@@ -3465,6 +3488,15 @@ public class CPU6510 implements ClockedComponent {
   //
   // read / write interface
   //
+
+  /**
+   * Read byte at PC. Does NOT Increment PC.
+   * (1)
+   */
+  @Interruptible
+  protected final void idleRead() {
+    read(_state.PC);
+  }
 
   /**
    * Read byte at PC. Increment PC.

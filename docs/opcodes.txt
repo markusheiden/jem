@@ -10,7 +10,7 @@ xxx1 0011 izy     OK
 xxx0 01xx zp      OK
 xxx1 01xx zpx     OK
 10x1 011x zpy !!! OK
-xxxx 10x0 no
+xxxx 10x0 no      OK
 xxx0 10x1 imm
 xxx1 10x1 aby
 xxx0 11xx abs
