@@ -508,6 +508,7 @@ public class CPU6510 implements ClockedComponent {
         @Interruptible
         public final void execute() // $1A: *NOP (2) // no
         {
+          readImpliedPC();
           nop();
         }
       },
@@ -811,6 +812,7 @@ public class CPU6510 implements ClockedComponent {
         @Interruptible
         public final void execute() // $3A: *NOP (2) // no
         {
+          readImpliedPC();
           nop();
         }
       },
@@ -1112,6 +1114,7 @@ public class CPU6510 implements ClockedComponent {
         @Interruptible
         public final void execute() // $5A: *NOP (2) // no
         {
+          readImpliedPC();
           nop();
         }
       },
@@ -1411,6 +1414,7 @@ public class CPU6510 implements ClockedComponent {
         @Interruptible
         public final void execute() // $7A: *NOP (2) // no
         {
+          readImpliedPC();
           nop();
         }
       },
@@ -2298,6 +2302,7 @@ public class CPU6510 implements ClockedComponent {
         @Interruptible
         public final void execute() // $DA: *NOP (2) // no
         {
+          readImmediatePC();
           nop();
         }
       },
@@ -2595,6 +2600,7 @@ public class CPU6510 implements ClockedComponent {
         @Interruptible
         public final void execute() // $FA: *NOP (2) // no
         {
+          readImmediatePC();
           nop();
         }
       },
@@ -3054,7 +3060,6 @@ public class CPU6510 implements ClockedComponent {
    */
   @Interruptible
   protected void nop() {
-    idleRead(); // during operation
     if (DEBUG) {
       reportIllegalOpcode();
     }
@@ -3305,6 +3310,15 @@ public class CPU6510 implements ClockedComponent {
   //
 
   /**
+   * Dummy read at PC for implied addressing modes.
+   * (1)
+   */
+  @Interruptible
+  protected final void readImpliedPC() {
+    idleRead();
+  }
+
+  /**
    * Read immediate at PC.
    * (1)
    */
@@ -3338,7 +3352,8 @@ public class CPU6510 implements ClockedComponent {
   @Interruptible
   protected final int readAbsoluteZeropageAddressPC(int index) {
     int addr = readBytePC();
-    read(addr); // dummy read (while adding index to addr)
+    // dummy read, while adding index to addr
+    read(addr);
     return (addr + index) & 0xFF;
   }
 
@@ -3353,11 +3368,15 @@ public class CPU6510 implements ClockedComponent {
 
   /**
    * Read absolute address at PC indexed by index.
-   * (2)
+   * (3)
    */
   @Interruptible
   protected final int readAbsoluteAddressPC(int index) {
-    return (readWordPC() + index) & 0xFFFF;
+    int addr = readWordPC();
+    int result = (addr + index) & 0xFFFF;
+    // dummy read with just the low byte indexed, while the high byte is being added
+    read(addr & 0xFF00 | result & 0x00FF);
+    return result;
   }
 
   /**
