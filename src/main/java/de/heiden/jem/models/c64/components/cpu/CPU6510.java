@@ -973,7 +973,7 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $4B:
+        public final void execute() // $4B: ALR #$XX (2)
         {
           alr(readImmediatePC());
         }
@@ -1572,9 +1572,9 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $8B: *XAA
+        public final void execute() // $8B: *XAA #$XX (?)
         {
-          xaa();
+          xaa(readImmediatePC());
         }
       },
 
@@ -1867,7 +1867,7 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $AB:
+        public final void execute() // $AB: ??? #$XX (?)
         {
           // TODO implement opcode
           notImplementedYet();
@@ -2160,7 +2160,7 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $CB:
+        public final void execute() // $CB: ??? #$XX (?)
         {
           // TODO implement opcode
           notImplementedYet();
@@ -3145,7 +3145,7 @@ public class CPU6510 implements ClockedComponent {
   /**
    * *DCM (*DCP): Decrement and compare.
    * (?)
-   *
+   * <p/>
    * TODO mh: add value as a parameter instead of reading it here?
    *
    * @param addr address
@@ -3163,7 +3163,7 @@ public class CPU6510 implements ClockedComponent {
   /**
    * *INS (*ISC): increment address, subtract value from A.
    * (?)
-   *
+   * <p/>
    * TODO mh: add value as a parameter instead of reading it here?
    *
    * @param addr address
@@ -3181,7 +3181,7 @@ public class CPU6510 implements ClockedComponent {
   /**
    * *LAX: Load A and X.
    * (?)
-   *
+   * <p/>
    * TODO mh: add value as a parameter instead of reading it here?
    *
    * @param addr address
@@ -3198,7 +3198,7 @@ public class CPU6510 implements ClockedComponent {
   /**
    * *LSE: Logical shift right and eor.
    * (?)
-   *
+   * <p/>
    * TODO mh: add value as a parameter instead of reading it here?
    *
    * @param addr address
@@ -3216,7 +3216,7 @@ public class CPU6510 implements ClockedComponent {
   /**
    * *RLA: Rotate left and and with A, store result.
    * (3)
-   *
+   * <p/>
    * TODO mh: add value as a parameter instead of reading it here?
    *
    * @param addr address
@@ -3238,7 +3238,7 @@ public class CPU6510 implements ClockedComponent {
   /**
    * *RRA: ROR and ADC.
    * (?)
-   *
+   * <p/>
    * TODO mh: add value as a parameter instead of reading it here?
    *
    * @param addr address
@@ -3256,7 +3256,7 @@ public class CPU6510 implements ClockedComponent {
   /**
    * *SLO: Shift left and or with A.
    * (3)
-   *
+   * <p/>
    * TODO mh: add value as a parameter instead of reading it here?
    *
    * @param addr address
@@ -3278,7 +3278,7 @@ public class CPU6510 implements ClockedComponent {
   /**
    * *SAX: A and X, store result.
    * (?)
-   *
+   * <p/>
    * TODO mh: return value instead of writing it here?
    *
    * @param addr address
@@ -3293,14 +3293,14 @@ public class CPU6510 implements ClockedComponent {
   }
 
   /**
-   * *XAA (*ANE): TXA and AND #$XX.
+   * *XAA (*ANE): TXA and AND.
    *
-   * TODO mh: add value as a parameter instead of reading it here?
+   * @param value argument
    */
   @Interruptible
-  protected final void xaa() {
+  protected final void xaa(int value) {
     // TODO 0xEE is cpu dependant
-    int result = (_state.A | 0xEE) & _state.X & readImmediatePC();
+    int result = (_state.A | 0xEE) & _state.X & value;
     _state.setZeroNegativeP(result);
     _state.A = result;
   }
