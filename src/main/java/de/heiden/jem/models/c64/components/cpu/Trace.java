@@ -1,9 +1,13 @@
 package de.heiden.jem.models.c64.components.cpu;
 
 import de.heiden.c64dt.assembler.CodeBuffer;
+import de.heiden.c64dt.assembler.Disassembler;
 import de.heiden.c64dt.assembler.ICodeBuffer;
 import de.heiden.c64dt.assembler.Opcode;
 import de.heiden.jem.components.bus.BusDevice;
+
+import java.io.IOException;
+import java.io.StringWriter;
 
 import static de.heiden.c64dt.assembler.Opcode.OPCODES;
 
@@ -42,5 +46,16 @@ public class Trace {
    */
   public ICodeBuffer toCodeBuffer() {
     return new CodeBuffer(address, bytes);
+  }
+
+  @Override
+  public String toString() {
+    try {
+      StringWriter result = new StringWriter(16);
+      new Disassembler().disassemble(toCodeBuffer(), result);
+      return result.toString();
+    } catch (IOException e) {
+      return "???";
+    }
   }
 }
