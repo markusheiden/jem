@@ -1,7 +1,7 @@
 package de.heiden.jem.models.c64;
 
+import de.heiden.c64dt.assembler.Disassembler;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -9,6 +9,8 @@ import org.junit.runners.Parameterized.Parameter;
 import org.junit.runners.Parameterized.Parameters;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.PrintWriter;
 import java.net.URL;
 import java.util.*;
 
@@ -51,7 +53,7 @@ public class Testsuite2_15 extends AbstractTest {
       !IGNORE.contains(name) &&
         !name.startsWith("cia") &&
         !name.startsWith("cnt") &&
-//      name.startsWith("dcm") &&
+//        name.startsWith("beqr") &&
         name.endsWith(".prg"));
 
     Collection<Object[]> result = new ArrayList<>(programs.length);
@@ -64,6 +66,8 @@ public class Testsuite2_15 extends AbstractTest {
 
   @Test
   public void test() throws Exception {
+    new Disassembler().disassemble(new FileInputStream(program), new PrintWriter(System.out));
+
     thread.start();
     waitFor(2000000, "READY.");
     screen.clear();
