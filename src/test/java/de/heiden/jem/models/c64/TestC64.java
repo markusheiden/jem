@@ -5,18 +5,18 @@ import de.heiden.jem.components.clock.ClockEvent;
 import de.heiden.jem.components.clock.serialthreads.SerialClock;
 import de.heiden.jem.models.c64.components.CIA6526;
 import de.heiden.jem.models.c64.components.cpu.C64Bus;
-import de.heiden.jem.models.c64.components.cpu.CPU6510;
+import de.heiden.jem.models.c64.components.cpu.CPU6510Debugger;
 import de.heiden.jem.models.c64.components.keyboard.Keyboard;
 import de.heiden.jem.models.c64.components.memory.ColorRAM;
 import de.heiden.jem.models.c64.components.memory.RAM;
 import de.heiden.jem.models.c64.components.memory.ROM;
+import de.heiden.jem.models.c64.components.patch.LoadFile;
 import de.heiden.jem.models.c64.components.patch.StopAtSystemIn;
 import de.heiden.jem.models.c64.components.patch.SystemOut;
 import de.heiden.jem.models.c64.components.vic.VIC6569PAL;
 import de.heiden.jem.models.c64.components.vic.VICBus;
 import de.heiden.jem.models.c64.gui.KeyListener;
 import de.heiden.jem.models.c64.gui.PCMapping;
-import de.heiden.jem.models.c64.util.FileUtil;
 import de.heiden.jem.models.c64.util.ROMLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +36,7 @@ public class TestC64 {
   private final Clock _clock;
 
   private C64Bus _cpuBus;
-  private final CPU6510 _cpu;
+  private final CPU6510Debugger _cpu;
 
   private Keyboard _keyboard;
   private final VIC6569PAL _vic;
@@ -49,12 +49,12 @@ public class TestC64 {
   /**
    * Constructor.
    *
-   * @param program Program to load
+   * @param baseDirectory Base directory to load files from
    */
-  public TestC64(File program) throws Exception {
+  public TestC64(File baseDirectory) throws Exception {
     this();
 
-    FileUtil.read(program, _cpuBus);
+    _cpu.add(new LoadFile(baseDirectory));
   }
 
   /**
@@ -77,7 +77,7 @@ public class TestC64 {
 
     _keyboard = new Keyboard(cia1.portA(), cia1.portB());
 
-    _cpu = new CPU6510(_clock);
+    _cpu = new CPU6510Debugger(_clock);
     _cpuBus = new C64Bus(_cpu.getPort(), _ram, basic, _vic, colorRam, cia1, cia2, charset, kernel);
     _cpu.connect(_cpuBus);
     _cpu.getIRQ().connect(cia1.getIRQ());

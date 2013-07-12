@@ -64,7 +64,7 @@ public class AbstractTest {
   protected void setUp(File program) throws Exception {
     screen = new ScreenBuffer();
 
-    c64 = c64Class.getConstructor(File.class).newInstance(program);
+    c64 = c64Class.getConstructor(File.class).newInstance(program.getParentFile());
     clock = c64Class.getMethod("getClock").invoke(c64);
     c64Class.getMethod("setSystemOut", OutputStream.class).invoke(c64, screen);
     systemIn = (KeyListener) c64Class.getMethod("getSystemIn").invoke(c64);

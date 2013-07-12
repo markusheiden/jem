@@ -67,13 +67,17 @@ public class Testsuite2_15 extends AbstractTest {
   @Test
   public void test() throws Exception {
     new Disassembler().disassemble(new FileInputStream(program), new PrintWriter(System.out));
+    String programName = program.getName();
+    programName = programName.substring(0, programName.length() - ".prg".length());
 
     thread.start();
     waitFor(2000000, "READY.");
     screen.clear();
 
     screen.setLower(true);
-    type("poke2,1:sys2070\n");
+    type("load\"" + programName + "\",8\n");
+    type("run\n");
+
     int event = waitFor(999999999, "- ok", "right", "error");
     waitCycles(1000);
 
