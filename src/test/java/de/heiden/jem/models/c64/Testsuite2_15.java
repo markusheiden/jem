@@ -66,23 +66,28 @@ public class Testsuite2_15 extends AbstractTest {
 
   @Test
   public void test() throws Exception {
-    new Disassembler().disassemble(new FileInputStream(program), new PrintWriter(System.out));
-    String programName = program.getName();
-    programName = programName.substring(0, programName.length() - ".prg".length());
+    try {
+      String programName = program.getName();
+      programName = programName.substring(0, programName.length() - ".prg".length());
 
-    thread.start();
-    waitFor(2000000, "READY.");
-    screen.clear();
+      thread.start();
+      waitFor(2000000, "READY.");
+      screen.clear();
 
-    screen.setLower(true);
-    type("load\"" + programName + "\",8\n");
-    type("run\n");
+      screen.setLower(true);
+      type("load\"" + programName + "\",8\n");
+      type("run\n");
 
-    int event = waitFor(999999999, "- ok", "right", "error");
-    waitCycles(1000);
+      int event = waitFor(999999999, "- ok", "right", "error");
+      waitCycles(1000);
 
-    // Assert that test program exits with "OK" message.
-    // Consider everything else (timeout, error messages) as a test failure.
-    assertEquals(0, event);
+      // Assert that test program exits with "OK" message.
+      // Consider everything else (timeout, error messages) as a test failure.
+      assertEquals(0, event);
+
+    } catch (AssertionError e) {
+      // For debugging purposes disassemble test program
+      new Disassembler().disassemble(new FileInputStream(program), new PrintWriter(System.out));
+    }
   }
 }
