@@ -8,10 +8,7 @@ import de.heiden.jem.models.c64.components.cpu.Patch;
 import de.heiden.jem.models.c64.util.FileUtil;
 import de.heiden.jem.models.c64.util.StringUtil;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 
 /**
  * Replaces standard C64 load routine at $F4A5
@@ -73,6 +70,10 @@ public class LoadFile extends Patch {
       state.C = false; // OK
       state.X = ByteUtil.lo(endAddress);
       state.Y = ByteUtil.hi(endAddress);
+
+    } catch (FileNotFoundException e) {
+      state.PC = 0xf704;
+      return -1;
 
     } catch (IOException e) {
       logger.error("Failed to load " + filename, e);
