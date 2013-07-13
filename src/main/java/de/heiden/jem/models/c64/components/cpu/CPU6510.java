@@ -2302,7 +2302,7 @@ public class CPU6510 implements ClockedComponent {
         @Interruptible
         public final void execute() // $DA: *NOP (2) // no
         {
-          readImmediatePC();
+          idleRead();
           nop();
         }
       },
@@ -2600,7 +2600,7 @@ public class CPU6510 implements ClockedComponent {
         @Interruptible
         public final void execute() // $FA: *NOP (2) // no
         {
-          readImmediatePC();
+          idleRead();
           nop();
         }
       },
