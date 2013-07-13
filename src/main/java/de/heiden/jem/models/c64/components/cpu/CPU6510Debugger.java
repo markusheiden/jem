@@ -220,10 +220,9 @@ public class CPU6510Debugger extends CPU6510 {
     for (int i = 20; i > 0; i--) {
       int t = _currentTrace - i;
       if (t < 0) {
-        t = _traces.length;
+        t += _traces.length;
       }
       result.append(_traces[t]);
-      result.append("\n");
     }
 
     return result.toString();
