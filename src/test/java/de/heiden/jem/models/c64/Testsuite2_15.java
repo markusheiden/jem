@@ -15,6 +15,7 @@ import java.net.URL;
 import java.util.*;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assume.assumeTrue;
 
 /**
  * Testsuite 2.15.
@@ -38,7 +39,7 @@ public class Testsuite2_15 extends AbstractTest {
    * Test program filename, just for test naming purposes.
    */
   @Parameter(1)
-  public String filename;
+  public String programName;
 
   @Before
   public void setUp() throws Exception {
@@ -51,14 +52,14 @@ public class Testsuite2_15 extends AbstractTest {
     File testDir = new File(start.toURI()).getParentFile();
     File[] programs = testDir.listFiles((dir, name) ->
       !IGNORE.contains(name) &&
-        !name.startsWith("cia") &&
-        !name.startsWith("cnt") &&
 //        name.startsWith("beqr") &&
         name.endsWith(".prg"));
 
     Collection<Object[]> result = new ArrayList<>(programs.length);
     for (File program : programs) {
-      result.add(new Object[]{program, program.getName()});
+      String programName = program.getName();
+      programName = programName.substring(0, programName.length() - ".prg".length());
+      result.add(new Object[]{program, programName});
     }
 
     return result;
@@ -67,8 +68,10 @@ public class Testsuite2_15 extends AbstractTest {
   @Test
   public void test() throws Exception {
     try {
-      String programName = program.getName();
-      programName = programName.substring(0, programName.length() - ".prg".length());
+      // ignore some failing tests, because functionality has not been implemented yet
+      assumeTrue(
+        !programName.startsWith("cia") &&
+          !programName.startsWith("cnt"));
 
       thread.start();
       waitFor(2000000, "READY.");
@@ -85,9 +88,11 @@ public class Testsuite2_15 extends AbstractTest {
       // Consider everything else (timeout, error messages) as a test failure.
       assertEquals(0, event);
 
-    } catch (AssertionError e) {
+    } catch (AssertionError | Exception e) {
       // For debugging purposes disassemble test program
+      System.out.println();
       new Disassembler().disassemble(new FileInputStream(program), new PrintWriter(System.out));
+      throw e;
     }
   }
 }
