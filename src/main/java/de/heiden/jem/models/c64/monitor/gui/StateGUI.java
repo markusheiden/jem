@@ -47,7 +47,7 @@ public class StateGUI extends JPanel {
       CPU6510State state = _cpu.getState();
 
       _text.setText(0, 0, "PC=" + HexUtil.hexWord(state.PC));
-      _text.setText(0, 1, "S =" + HexUtil.hexWord(state.S));
+      _text.setText(0, 1, "S =" + HexUtil.hexWord(state.getS()));
       _text.setText(0, 2, "A =" + HexUtil.hexByte(state.A));
       _text.setText(0, 3, "X =" + HexUtil.hexByte(state.X));
       _text.setText(0, 4, "Y =" + HexUtil.hexByte(state.Y));

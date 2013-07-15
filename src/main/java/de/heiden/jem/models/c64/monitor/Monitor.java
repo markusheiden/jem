@@ -19,7 +19,7 @@ public class Monitor {
     result.append(".  PC=");
     result.append(HexUtil.hexWord(state.PC));
     result.append(" S=");
-    result.append(HexUtil.hexWord(state.S));
+    result.append(HexUtil.hexWord(state.getS()));
     result.append(" A=");
     result.append(HexUtil.hexByte(state.A));
     result.append(" X=");

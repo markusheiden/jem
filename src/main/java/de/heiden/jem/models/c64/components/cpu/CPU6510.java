@@ -30,11 +30,6 @@ public class CPU6510 implements ClockedComponent {
   protected static final boolean DEBUG = false;
 
   /**
-   * Stack base address.
-   */
-  protected static final int STACK = 0x0100;
-
-  /**
    * State.
    */
   protected final CPU6510State _state;
@@ -163,7 +158,7 @@ public class CPU6510 implements ClockedComponent {
     _tick.waitForTick();
 
     // TODO init something else?
-    _state.S = STACK + 0xFF;
+    _state.S = 0xFF;
     _state.setP(0x00); // TODO correct?
     _state.PC = readAbsoluteAddress(0xFFFC);
   }
@@ -1712,7 +1707,7 @@ public class CPU6510 implements ClockedComponent {
         public final void execute() // $9A: TXS (2) // no
         {
           idleRead(); // during operation
-          _state.S = STACK + _state.X; // no update of P !!!
+          _state.S = _state.X; // no update of P !!!
         }
       },
 
@@ -2006,17 +2001,19 @@ public class CPU6510 implements ClockedComponent {
         @Interruptible
         public final void execute() // $BA: TSX (2) // no
         {
-          _state.X = load(_state.S & 0xFF);
+          _state.X = load(_state.S);
         }
       },
 
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $BB:
+        public final void execute() // $BB: *LAS $XXXX,Y (4?)
         {
-          // TODO implement opcode
-          notImplementedYet();
+          int result = load(read(readAbsoluteAddressPC(_state.Y)) & _state.S);
+          _state.A = result;
+          _state.X = result;
+          _state.S = result;
         }
       },
 
@@ -2970,16 +2967,10 @@ public class CPU6510 implements ClockedComponent {
    */
   @Interruptible
   protected final void pushByte(int value) {
-    int s = _state.S;
-    write(value, s);
-    s--;
-    if (s < STACK) {
-      if (DEBUG) {
-        throw new IllegalArgumentException("Stack overflow");
-      }
-      s = STACK + (s & 0xFF); // TODO overflow OK?
+    if (DEBUG && _state.S == 0x00) {
+      throw new IllegalArgumentException("Stack overflow");
     }
-    _state.S = s;
+    write(value, _state.decS());
   }
 
   /**
@@ -2996,15 +2987,10 @@ public class CPU6510 implements ClockedComponent {
    */
   @Interruptible
   protected final int popByte() {
-    int s = _state.S + 1;
-    if (s > STACK + 0xFF) {
-      if (DEBUG) {
-        throw new IllegalArgumentException("Stack underflow");
-      }
-      s = STACK + (s & 0xFF); // TODO underflow OK?
+    if (DEBUG && _state.S == 0xFF) {
+      throw new IllegalArgumentException("Stack underflow");
     }
-    _state.S = s;
-    return read(s);
+    return read(_state.incS());
   }
 
   /**

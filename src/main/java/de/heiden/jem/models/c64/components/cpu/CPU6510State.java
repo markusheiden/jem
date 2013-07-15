@@ -6,6 +6,11 @@ import de.heiden.c64dt.util.HexUtil;
  * State of CPU.
  */
 public final class CPU6510State {
+  /**
+   * Stack base address.
+   */
+  protected static final int STACK = 0x0100;
+
   public static final int N_BIT = 1 << 7;
   public static final int V_BIT = 1 << 6;
   public static final int U_BIT = 1 << 5; // bit 5 is unused: always 1
@@ -17,7 +22,11 @@ public final class CPU6510State {
 
   public int PC; // program counter
 
-  public int S; // stack pointer in range 0x0100 - 0x01FF!
+  /**
+   * Stack pointer.
+   * For stack pointer address see {@link #getS()}.
+   */
+  public int S;
 
   public boolean C; // status P: carry
   public boolean Z; // status P: zero
@@ -104,6 +113,35 @@ public final class CPU6510State {
   public void resetIRQ() {
     IRQ = false;
     interrupt = false;
+  }
+
+  /**
+   * Stack pointer address.
+   */
+  public final int getS() {
+    return STACK | S;
+  }
+
+  /**
+   * Decrement stack pointer.
+   *
+   * @return Stack pointer address before decrement
+   */
+  public final int decS() {
+    int s = S;
+    S = ((s - 1) & 0xFF);
+    return STACK | s;
+  }
+
+  /**
+   * Increment stack pointer.
+   *
+   * @return Incremented stack pointer address
+   */
+  public final int incS() {
+    int s = ((S + 1) & 0xFF);
+    S = s;
+    return STACK | s;
   }
 
   /**
@@ -223,7 +261,7 @@ public final class CPU6510State {
   public String toString() {
     return
       "PC=" + HexUtil.hexWord(PC) +
-        ", S=" + HexUtil.hexWord(S) +
+        ", S=" + HexUtil.hexWord(getS()) +
         ", A=" + HexUtil.hexByte(A) +
         ", X=" + HexUtil.hexByte(X) +
         ", Y=" + HexUtil.hexByte(Y) +
