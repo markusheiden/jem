@@ -1639,10 +1639,10 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $93: // izy
+        public final void execute() // $93: *AHX ($XX),Y
         {
-          // TODO implement opcode
-          notImplementedYet();
+          int addr = readZeropageIndirectYAddressPC();
+          ahx(read(addr), addr);
         }
       },
 
@@ -1753,10 +1753,10 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $9F:
+        public final void execute() // $9F: *AHX $XXXX,Y
         {
-          // TODO implement opcode
-          notImplementedYet();
+          int addr = readAbsoluteAddressPC(_state.Y);
+          ahx(read(addr), addr);
         }
       },
 
@@ -3078,6 +3078,21 @@ public class CPU6510 implements ClockedComponent {
     int result = _state.A & value;
     _state.setCarryZeroNegativeP(result, (result & 0x80) != 0);
     _state.A = result;
+  }
+
+  /**
+   * *ALR: AND with moving bit 7 to carry (logic from ASL/ROL).
+   *
+   * @param value argument
+   */
+  @Interruptible
+  protected void ahx(int value, int addr) {
+    if (DEBUG) {
+      reportIllegalOpcode();
+    }
+
+    int result = _state.A & _state.X & ((addr >> 8) + 1);
+    write(result, addr);
   }
 
   /**
