@@ -1862,10 +1862,9 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $AB: ??? #$XX (?)
+        public final void execute() // $AB: LXA #$XX (?)
         {
-          // TODO implement opcode
-          notImplementedYet();
+          lxa(readImmediatePC());
         }
       },
 
@@ -3209,6 +3208,23 @@ public class CPU6510 implements ClockedComponent {
     int value = shiftRight(read(addr));
     write(value, addr);
     xor(value);
+  }
+
+  /**
+   * *LXA: Load A and X.
+   * (?)
+   *
+   * @param value argument
+   */
+  @Interruptible
+  protected final void lxa(int value) {
+    if (DEBUG) {
+      reportIllegalOpcode();
+    }
+    int result = (_state.A | 0xEE) & value;
+    _state.setZeroNegativeP(result);
+    _state.A = result;
+    _state.X = result;
   }
 
   /**
