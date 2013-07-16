@@ -1494,9 +1494,9 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $83: *SAX ($XX,X) // izx
+        public final void execute() // $83: *AXS ($XX,X) // izx
         {
-          sax(readZeropageIndirectXAddressPC());
+          axs(readZeropageIndirectXAddressPC());
         }
       },
 
@@ -1530,9 +1530,9 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $87: *SAX $XX // zp
+        public final void execute() // $87: *AXS $XX // zp
         {
-          sax(readAbsoluteZeropageAddressPC());
+          axs(readAbsoluteZeropageAddressPC());
         }
       },
 
@@ -1603,9 +1603,9 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $8F: *SAX $XXXX
+        public final void execute() // $8F: *AXS $XXXX
         {
-          sax(readAbsoluteAddressPC());
+          axs(readAbsoluteAddressPC());
         }
       },
 
@@ -1676,9 +1676,9 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $97: *SAX $XX,Y // zpy
+        public final void execute() // $97: *AXS $XX,Y // zpy
         {
-          sax(readAbsoluteZeropageAddressPC(_state.Y));
+          axs(readAbsoluteZeropageAddressPC(_state.Y));
         }
       },
 
@@ -2153,10 +2153,9 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $CB: ??? #$XX (?)
+        public final void execute() // $CB: *SAX #$XX (?)
         {
-          // TODO implement opcode
-          notImplementedYet();
+          sax(readImmediatePC());
         }
       },
 
@@ -3125,6 +3124,21 @@ public class CPU6510 implements ClockedComponent {
   }
 
   /**
+   * *AXS: A and X, store result.
+   * (?)
+   *
+   * @param addr address
+   */
+  @Interruptible
+  protected final void axs(int addr) {
+    if (DEBUG) {
+      reportIllegalOpcode();
+    }
+    // no state change!
+    write(_state.A & _state.X, addr);
+  }
+
+  /**
    * *DCM (*DCP): Decrement and compare.
    * (?)
    * <p/>
@@ -3290,20 +3304,19 @@ public class CPU6510 implements ClockedComponent {
   }
 
   /**
-   * *SAX: A and X, store result.
+   * *AXS: A and X, store result.
    * (?)
-   * <p/>
-   * TODO mh: return value instead of writing it here?
    *
-   * @param addr address
+   * @param value argument
    */
   @Interruptible
-  protected final void sax(int addr) {
+  protected final void sax(int value) {
     if (DEBUG) {
       reportIllegalOpcode();
     }
-    write(_state.A & _state.X, addr);
-    // no state change!
+    int result = (_state.A & _state.X) - value;
+    _state.setCarryZeroNegativeP(result, result >= 0);
+    _state.X = result & 0xFF;
   }
 
   /**
