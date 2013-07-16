@@ -1792,7 +1792,7 @@ public class CPU6510 implements ClockedComponent {
         @Interruptible
         public final void execute() // $A3: *LAX ($XX,X) // izx
         {
-          lax(readZeropageIndirectXAddressPC());
+          lax(read(readZeropageIndirectXAddressPC()));
         }
       },
 
@@ -1828,7 +1828,7 @@ public class CPU6510 implements ClockedComponent {
         @Interruptible
         public final void execute() // $A7: *LAX $XX // zp
         {
-          lax(readAbsoluteZeropageAddressPC());
+          lax(read(readAbsoluteZeropageAddressPC()));
         }
       },
 
@@ -1901,7 +1901,7 @@ public class CPU6510 implements ClockedComponent {
         @Interruptible
         public final void execute() // $AF: *LAX $XXXX
         {
-          lax(readAbsoluteAddressPC());
+          lax(read(readAbsoluteAddressPC()));
         }
       },
 
@@ -1937,7 +1937,7 @@ public class CPU6510 implements ClockedComponent {
         @Interruptible
         public final void execute() // $B3: *LAX ($XX),Y // izy
         {
-          lax(readZeropageIndirectYAddressPC());
+          lax(read(readZeropageIndirectYAddressPC()));
         }
       },
 
@@ -1973,7 +1973,7 @@ public class CPU6510 implements ClockedComponent {
         @Interruptible
         public final void execute() // $B7: *LAX $XX,Y // zpy
         {
-          lax(readAbsoluteZeropageAddressPC(_state.Y));
+          lax(read(readAbsoluteZeropageAddressPC(_state.Y)));
         }
       },
 
@@ -2010,10 +2010,7 @@ public class CPU6510 implements ClockedComponent {
         @Interruptible
         public final void execute() // $BB: *LAS $XXXX,Y (4?)
         {
-          int result = load(read(readAbsoluteAddressPC(_state.Y)) & _state.S);
-          _state.A = result;
-          _state.X = result;
-          _state.S = result;
+          las(read(readAbsoluteAddressPC(_state.Y)));
         }
       },
 
@@ -2049,7 +2046,7 @@ public class CPU6510 implements ClockedComponent {
         @Interruptible
         public final void execute() // $BF: *LAX $XXXX,Y
         {
-          lax(readAbsoluteAddressPC(_state.Y));
+          lax(read(readAbsoluteAddressPC(_state.Y)));
         }
       },
 
@@ -3165,20 +3162,35 @@ public class CPU6510 implements ClockedComponent {
   }
 
   /**
-   * *LAX: Load A and X.
-   * (?)
-   * <p/>
-   * TODO mh: add value as a parameter instead of reading it here?
-   *
-   * @param addr address
+   * *LAS: Load A, X and S.
+   * (0)
    */
   @Interruptible
-  protected final void lax(int addr) {
+  protected final void las(int value) {
     if (DEBUG) {
       reportIllegalOpcode();
     }
-    _state.A = load(read(addr));
-    _state.X = _state.A;
+    int result = value & _state.S;
+    _state.setZeroNegativeP(result);
+    _state.A = result;
+    _state.X = result;
+    _state.S = result;
+  }
+
+  /**
+   * *LAX: Load A and X.
+   * (?)
+   *
+   * @param value argument
+   */
+  @Interruptible
+  protected final void lax(int value) {
+    if (DEBUG) {
+      reportIllegalOpcode();
+    }
+    _state.setZeroNegativeP(value);
+    _state.A = value;
+    _state.X = value;
   }
 
   /**
