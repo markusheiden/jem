@@ -1724,10 +1724,10 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $9C:
+        public final void execute() // $9C: *SHY $XXXX,X
         {
-          // TODO implement opcode
-          notImplementedYet();
+          int addr = readAbsoluteAddressPC(_state.X);
+          shy(read(addr), addr);
         }
       },
 
@@ -1743,10 +1743,10 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $9E:
+        public final void execute() // $9E: *SHX $XXXX,Y
         {
-          // TODO implement opcode
-          notImplementedYet();
+          int addr = readAbsoluteAddressPC(_state.Y);
+          shx(read(addr), addr);
         }
       },
 
@@ -3081,9 +3081,10 @@ public class CPU6510 implements ClockedComponent {
   }
 
   /**
-   * *ALR: AND with moving bit 7 to carry (logic from ASL/ROL).
+   * *AHX: A and X and (Highbyte of address + 1).
    *
    * @param value argument
+   * @param addr address
    */
   @Interruptible
   protected void ahx(int value, int addr) {
@@ -3092,6 +3093,7 @@ public class CPU6510 implements ClockedComponent {
     }
 
     int result = _state.A & _state.X & ((addr >> 8) + 1);
+    // no state change!
     write(result, addr);
   }
 
@@ -3332,6 +3334,38 @@ public class CPU6510 implements ClockedComponent {
     int result = (_state.A & _state.X) - value;
     _state.setCarryZeroNegativeP(result, result >= 0);
     _state.X = result & 0xFF;
+  }
+
+  /**
+   * *SHX: X and (Highbyte of address + 1).
+   *
+   * @param value argument
+   * @param addr address
+   */
+  @Interruptible
+  protected void shx(int value, int addr) {
+    if (DEBUG) {
+      reportIllegalOpcode();
+    }
+
+    int result = _state.X & ((addr >> 8) + 1);
+    write(result, addr);
+  }
+
+  /**
+   * *SHY: Y and (Highbyte of address + 1).
+   *
+   * @param value argument
+   * @param addr address
+   */
+  @Interruptible
+  protected void shy(int value, int addr) {
+    if (DEBUG) {
+      reportIllegalOpcode();
+    }
+
+    int result = _state.Y & ((addr >> 8) + 1);
+    write(result, addr);
   }
 
   /**
