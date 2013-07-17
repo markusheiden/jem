@@ -1714,10 +1714,9 @@ public class CPU6510 implements ClockedComponent {
       new Opcode() {
         @Override
         @Interruptible
-        public final void execute() // $9B:
+        public final void execute() // $9B: *TAS $XXXX,Y
         {
-          // TODO implement opcode
-          notImplementedYet();
+          tas(readAbsoluteAddressPC(_state.Y));
         }
       },
 
@@ -3365,6 +3364,24 @@ public class CPU6510 implements ClockedComponent {
     }
 
     int result = _state.Y & ((addr >> 8) + 1);
+    write(result, addr);
+  }
+
+  /**
+   * *TAS: S = A amd X, write S and (Highbyte of address + 1).
+   *
+   * @param value argument
+   * @param addr address
+   */
+  @Interruptible
+  protected void tas(int addr) {
+    if (DEBUG) {
+      reportIllegalOpcode();
+    }
+
+    _state.S = _state.A & _state.X;
+    int result = _state.S & ((addr >> 8) + 1);
+    // no state change!
     write(result, addr);
   }
 
