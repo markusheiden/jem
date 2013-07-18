@@ -100,6 +100,7 @@ public class PCMapping extends KeyMapping {
     add('=', EQUALS);
     add('/', SLASH);
     add('?', LEFT_SHIFT, SLASH);
+    add('_', COMMODORE, P);
 
     add('@', AT);
     add('*', ASTERISK);
