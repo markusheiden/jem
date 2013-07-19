@@ -37,7 +37,8 @@ public class Trace {
 
     Opcode opcode = OPCODES[bus.read(pc)];
     for (int i = 0; i < opcode.getSize(); i++) {
-      bytes[i] = (byte) bus.read(pc++);
+      bytes[i] = (byte) bus.read(pc);
+      pc = (pc + 1) & 0xFFFF;
     }
   }
 
