@@ -80,7 +80,7 @@ public class AbstractTest {
 
   @After
   public void tearDown() throws Exception {
-    c64Class.getMethod("setSystemOut", OutputStream.class).invoke(c64, new Object[]{null});
+    c64Class.getMethod("setSystemOut", OutputStream.class).invoke(c64, (Object) null);
     thread.interrupt();
     thread.join(1000);
     thread.stop();
