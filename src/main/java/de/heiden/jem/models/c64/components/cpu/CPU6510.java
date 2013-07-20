@@ -47,7 +47,12 @@ public class CPU6510 implements ClockedComponent {
   /**
    * Port at address $0000/$0001.
    */
-  private final InputOutputPortImpl _port;
+  private final InputOutputPortImpl _portOut;
+
+  /**
+   * Input for port at address $0000/$0001.
+   */
+  private final OutputPortImpl _portIn;
 
   /**
    * Port for interrupt.
@@ -75,7 +80,13 @@ public class CPU6510 implements ClockedComponent {
 
     _state = new CPU6510State();
 
-    _port = new InputOutputPortImpl();
+    // TODO mh: connect to emulated hardware
+    _portIn = new OutputPortImpl();
+    _portIn.setOutputMask(0xFF);
+    _portIn.setOutputData(0xDF);
+    _portOut = new InputOutputPortImpl();
+    _portOut.connect(_portIn);
+
 
     _irq = new InputPortImpl();
     _irq.addInputPortListener(new InputPortListener() {
@@ -172,7 +183,7 @@ public class CPU6510 implements ClockedComponent {
    * CPU port.
    */
   public InputOutputPort getPort() {
-    return _port;
+    return _portOut;
   }
 
   /**
@@ -3589,12 +3600,14 @@ public class CPU6510 implements ClockedComponent {
    */
   private void writePort(int value, int addr) {
     if (addr == 0) {
-      _port.setOutputMask(value);
+      _portOut.setOutputMask(value);
     } else if (addr == 1) {
-      _port.setOutputData(value);
+      _portOut.setOutputData(value);
     } else {
       throw new IllegalArgumentException("unreachable code");
     }
+
+    _portIn.setOutputData(_portOut.outputData() & _portOut.outputMask() & 0xDF | _portIn.outputData() & ~_portOut.outputMask() | 0x17);
   }
 
   /**
@@ -3624,9 +3637,9 @@ public class CPU6510 implements ClockedComponent {
    */
   private int readPort(int addr) {
     if (addr == 0) {
-      return _port.outputMask();
+      return _portOut.outputMask();
     } else if (addr == 1) {
-      return _port.inputData();
+      return _portOut.data();
     } else {
       throw new IllegalArgumentException("unreachable code");
     }

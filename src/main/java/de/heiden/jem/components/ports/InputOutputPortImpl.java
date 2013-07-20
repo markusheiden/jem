@@ -129,4 +129,11 @@ public final class InputOutputPortImpl implements InputOutputPort {
   public void setOutputMask(int mask) {
     _outputPort.setOutputMask(mask);
   }
+
+  /**
+   * Consolidated value of data register.
+   */
+  public int data() {
+    return outputData() & outputMask() | inputData() & ~outputMask();
+  }
 }
