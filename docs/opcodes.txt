@@ -25,3 +25,6 @@ http://www.oxyron.de/html/opcodes02.html
 http://www.ataripreservation.org/websites/freddy.offenga/illopc31.txt
 http://www.ffd2.com/fridge/docs/6502-NMOS.extra.opcodes
 http://www.weihenstephan.org/~michaste/pagetable/6502/6502.jpg
+
+KeyCodes:
+http://sta.c64.org/cbm64petkey.html
