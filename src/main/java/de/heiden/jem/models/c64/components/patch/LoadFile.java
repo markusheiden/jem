@@ -11,7 +11,8 @@ import de.heiden.jem.models.c64.util.StringUtil;
 import java.io.*;
 
 /**
- * Replaces standard C64 load routine at $F4A5
+ * Replaces standard C64 load routine at $F4A5.
+ * Intercepts load routine at $F4C4 directly after printing "SEARCHING FOR".
  */
 public class LoadFile extends Patch {
   /**
@@ -42,7 +43,7 @@ public class LoadFile extends Patch {
    * @param baseDirectory Base directory to load files from
    */
   public LoadFile(File baseDirectory) {
-    super(0xF4A5);
+    super(0xF4C4);
 
     this.basePackage = null;
     this.baseDir = baseDirectory;
@@ -72,7 +73,7 @@ public class LoadFile extends Patch {
       state.Y = ByteUtil.hi(endAddress);
 
     } catch (FileNotFoundException e) {
-      state.PC = 0xf704;
+      state.PC = 0xF704;
       return -1;
 
     } catch (IOException e) {
