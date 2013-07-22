@@ -93,6 +93,7 @@ public class Testsuite2_15 extends AbstractTest {
     } catch (AssertionError | Exception e) {
       // For debugging purposes disassemble test program
       System.out.println();
+      System.out.println();
       new Disassembler().disassemble(new FileInputStream(program), new PrintWriter(System.out));
       throw e;
     }
