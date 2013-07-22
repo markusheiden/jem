@@ -11,6 +11,7 @@ import de.heiden.jem.models.c64.components.memory.ColorRAM;
 import de.heiden.jem.models.c64.components.memory.RAM;
 import de.heiden.jem.models.c64.components.memory.ROM;
 import de.heiden.jem.models.c64.components.patch.LoadFile;
+import de.heiden.jem.models.c64.components.patch.Return;
 import de.heiden.jem.models.c64.components.patch.StopAtSystemIn;
 import de.heiden.jem.models.c64.components.patch.SystemOut;
 import de.heiden.jem.models.c64.components.vic.VIC6569PAL;
@@ -128,6 +129,15 @@ public class TestC64 {
    */
   public java.awt.event.KeyListener getSystemIn() {
     return new KeyListener(_keyboard, new PCMapping());
+  }
+
+  /**
+   * Add a patch to the cpu, to insert a RTS at the given address.
+   *
+   * @param addr Address to write RTS to
+   */
+  public void rts(int addr) {
+    _cpu.add(new Return(addr));
   }
 
   /**

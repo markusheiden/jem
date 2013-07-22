@@ -78,6 +78,15 @@ public class AbstractTest {
     }, program.getName());
   }
 
+  /**
+   * Add a patch to the cpu, to insert a RTS at the given address.
+   *
+   * @param addr Address to write RTS to
+   */
+  protected void rts(int addr) throws Exception {
+    c64Class.getMethod("rts", int.class).invoke(c64, addr);
+  }
+
   @After
   public void tearDown() throws Exception {
     c64Class.getMethod("setSystemOut", OutputStream.class).invoke(c64, (Object) null);

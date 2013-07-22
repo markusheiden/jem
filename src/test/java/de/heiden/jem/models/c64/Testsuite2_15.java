@@ -79,6 +79,8 @@ public class Testsuite2_15 extends AbstractTest {
 
       screen.setLower(true);
       type("load\"" + programName + "\",8\n");
+      // Skip further loads
+      rts(0xE16F);
       type("run\n");
 
       int event = waitFor(999999999, "- ok", "right", "error");
