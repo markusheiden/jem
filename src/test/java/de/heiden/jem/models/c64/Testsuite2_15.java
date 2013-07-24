@@ -1,5 +1,6 @@
 package de.heiden.jem.models.c64;
 
+import de.heiden.c64dt.assembler.CodeBuffer;
 import de.heiden.c64dt.assembler.Disassembler;
 import org.junit.Before;
 import org.junit.Test;
@@ -52,7 +53,7 @@ public class Testsuite2_15 extends AbstractTest {
     File testDir = new File(start.toURI()).getParentFile();
     File[] programs = testDir.listFiles((dir, name) ->
       !IGNORE.contains(name) &&
-//        name.startsWith("beqr") &&
+        name.startsWith("flipos") &&
         name.endsWith(".prg"));
 
     Collection<Object[]> result = new ArrayList<>(programs.length);
@@ -94,7 +95,10 @@ public class Testsuite2_15 extends AbstractTest {
       // For debugging purposes disassemble test program
       System.out.println();
       System.out.println();
-      new Disassembler().disassemble(new FileInputStream(program), new PrintWriter(System.out));
+      new Disassembler().disassemble(CodeBuffer.fromProgram(new FileInputStream(program)), new PrintWriter(System.out));
+      System.out.println();
+      new Disassembler().dump(CodeBuffer.fromProgram(new FileInputStream(program)), new PrintWriter(System.out));
+      System.out.flush();
       throw e;
     }
   }
