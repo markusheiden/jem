@@ -28,3 +28,6 @@ http://www.weihenstephan.org/~michaste/pagetable/6502/6502.jpg
 
 KeyCodes:
 http://sta.c64.org/cbm64petkey.html
+
+CIA6526:
+http://ist.uwaterloo.ca/~schepers/MJK/cia6526.html
