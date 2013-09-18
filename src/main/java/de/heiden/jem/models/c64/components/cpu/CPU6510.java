@@ -3381,7 +3381,6 @@ public class CPU6510 implements ClockedComponent {
   /**
    * *TAS: S = A amd X, write S and (Highbyte of address + 1).
    *
-   * @param value argument
    * @param addr address
    */
   @Interruptible

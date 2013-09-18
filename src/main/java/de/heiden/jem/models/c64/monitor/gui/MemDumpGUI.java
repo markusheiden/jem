@@ -52,9 +52,7 @@ public class MemDumpGUI extends JPanel {
     _scrollBar.addAdjustmentListener(e -> setAddress(e.getValue()));
 
     // React on mouse wheel
-    addMouseWheelListener(e -> {
-      _scrollBar.setValue(_scrollBar.getValue() + e.getUnitsToScroll() * BYTES_PER_LINE);
-    });
+    addMouseWheelListener(e -> _scrollBar.setValue(_scrollBar.getValue() + e.getUnitsToScroll() * BYTES_PER_LINE));
   }
 
   /**

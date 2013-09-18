@@ -32,8 +32,7 @@ public class StopWatch extends ClockEvent {
 
     _clock = clock;
     _freq = freq;
-    long now = System.nanoTime();
-    _last = now;
+    _last = System.nanoTime();
 
     _clock.addClockEvent(_freq, this);
   }

@@ -62,9 +62,7 @@ public class DisassemblerGUI extends JPanel {
     _scrollBar.addAdjustmentListener(e -> setAddress(e.getValue()));
 
     // React on mouse wheel
-    addMouseWheelListener(e -> {
-      _scrollBar.setValue(_scrollBar.getValue() + e.getUnitsToScroll());
-    });
+    addMouseWheelListener(e -> _scrollBar.setValue(_scrollBar.getValue() + e.getUnitsToScroll()));
   }
 
   //
