@@ -2,6 +2,7 @@ package de.heiden.jem.models.c64;
 
 import de.heiden.c64dt.assembler.CodeBuffer;
 import de.heiden.c64dt.assembler.Disassembler;
+import de.heiden.c64dt.assembler.Dumper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -53,7 +54,7 @@ public class Testsuite2_15 extends AbstractTest {
     File testDir = new File(start.toURI()).getParentFile();
     File[] programs = testDir.listFiles((dir, name) ->
       !IGNORE.contains(name) &&
-        name.startsWith("flipos") &&
+//        name.startsWith("flipos") &&
         name.endsWith(".prg"));
 
     Collection<Object[]> result = new ArrayList<>(programs.length);
@@ -97,7 +98,7 @@ public class Testsuite2_15 extends AbstractTest {
       System.out.println();
       new Disassembler().disassemble(CodeBuffer.fromProgram(new FileInputStream(program)), new PrintWriter(System.out));
       System.out.println();
-      new Disassembler().dump(CodeBuffer.fromProgram(new FileInputStream(program)), new PrintWriter(System.out));
+      new Dumper().dump(CodeBuffer.fromProgram(new FileInputStream(program)), new PrintWriter(System.out));
       System.out.flush();
       throw e;
     }
