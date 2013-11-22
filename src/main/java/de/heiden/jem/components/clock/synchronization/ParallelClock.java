@@ -85,17 +85,13 @@ public class ParallelClock extends AbstractSynchronizedClock<ParallelClockEntry>
    * Call needs to be synchronized by _lock;
    */
   private void sleep() throws InterruptedException {
-    if (logger.isDebugEnabled()) {
-      logger.debug("going to sleep at " + _tick);
-    }
+    logger.debug("going to sleep at {}", _tick);
 
     long tick = _tick;
     _waiting++;
     do {
       _lock.wait();
-      if (logger.isDebugEnabled()) {
-        logger.debug("wake up at " + _tick);
-      }
+      logger.debug("wake up at {}", _tick);
     } while (tick == _tick);
   }
 
@@ -104,9 +100,7 @@ public class ParallelClock extends AbstractSynchronizedClock<ParallelClockEntry>
    * Call needs to be synchronized by _lock;
    */
   private void tick() {
-    if (logger.isDebugEnabled()) {
-      logger.debug("tick " + _tick);
-    }
+    logger.debug("tick {}", _tick);
 
     executeEvent(_tick);
 

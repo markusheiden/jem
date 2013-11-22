@@ -97,7 +97,7 @@ public class C64Bus implements BusDevice, Patchable {
         _ioModeRead = _ioModesRead[mode];
         _ioModeWrite = _ioModesWrite[mode];
         if (logger.isDebugEnabled() && oldIoModeRead != _ioModeRead) {
-          logger.debug("Changed bus mode to " + HexUtil.hexBytePlain(mode));
+          logger.debug("Changed bus mode to {}", HexUtil.hexBytePlain(mode));
         }
       }
     });

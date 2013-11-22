@@ -685,9 +685,7 @@ public abstract class VIC implements BusDevice {
       _regInterruptRequest |= INTERRUPT_RASTER | INTERRUPT_ANY;
       _irqPort.setOutputData(0x0);
 
-      if (logger.isDebugEnabled()) {
-        logger.debug("Raster irq at line " + _regRaster + " at tick " + _clock.getTick());
-      }
+      logger.debug("Raster irq at line {} at tick {}", _regRaster, _clock.getTick());
     }
   }
 

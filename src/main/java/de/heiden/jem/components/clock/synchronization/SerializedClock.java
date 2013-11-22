@@ -136,9 +136,7 @@ public class SerializedClock extends AbstractSynchronizedClock<SerializedClockEn
    * Execute 1 tick.
    */
   protected final void tick() throws InterruptedException {
-    if (logger.isDebugEnabled()) {
-      logger.debug("tick " + _tick);
-    }
+    logger.debug("tick {}", _tick);
 
     executeEvent(_tick);
 
