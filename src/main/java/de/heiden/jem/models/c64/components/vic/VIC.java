@@ -277,7 +277,7 @@ public abstract class VIC implements BusDevice {
           boolean bitmapMode = (_regControl1 & VIC.CONTROL1_BITMAP) != 0;
           boolean extColorMode = (_regControl1 & VIC.CONTROL1_EXT_COLOR) != 0;
           boolean multiColorMode = (_regControl2 & VIC.CONTROL2_MULTI_COLOR) != 0;
-          logger.debug("bitmap: " + bitmapMode + ", extended color: " + extColorMode + ", multi color: " + multiColorMode);
+          logger.debug("bitmap: {}, extended color: {}, multi color: {}", bitmapMode, extColorMode, multiColorMode);
         }
 
         break;
@@ -308,7 +308,7 @@ public abstract class VIC implements BusDevice {
           boolean bitmapMode = (_regControl1 & VIC.CONTROL1_BITMAP) != 0;
           boolean extColorMode = (_regControl1 & VIC.CONTROL1_EXT_COLOR) != 0;
           boolean multiColorMode = (_regControl2 & VIC.CONTROL2_MULTI_COLOR) != 0;
-          logger.debug("bitmap: " + bitmapMode + ", extended color: " + extColorMode + ", multi color: " + multiColorMode);
+          logger.debug("bitmap: {}, extended color: {}, multi color: {}", bitmapMode, extColorMode, multiColorMode);
         }
 
         break;
