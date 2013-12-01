@@ -16,11 +16,12 @@
     </encoder>
   </appender>
 
-  <logger name="org.serialthreads" level="info">
+  <logger name="org.serialthreads" level="debug" additivity="false">
     <appender-ref ref="file"/>
   </logger>
 
   <logger name="de.heiden.jem.components.clock.RealTimeSlowDown" level="info"/>
+  <logger name="org.serialthreads.transformer.strategies.frequent3.MethodTransformer" level="error"/>
 
   <root level="warn">
     <appender-ref ref="console"/>
