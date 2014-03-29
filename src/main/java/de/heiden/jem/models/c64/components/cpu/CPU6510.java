@@ -234,8 +234,9 @@ public class CPU6510 implements ClockedComponent {
    */
   @Interruptible
   private void irq() {
-    _state.resetIRQ();
-    _state.B = false;
+    CPU6510State state = _state;
+    state.resetIRQ();
+    state.B = false;
     interrupt(0xFFFE);
   }
 

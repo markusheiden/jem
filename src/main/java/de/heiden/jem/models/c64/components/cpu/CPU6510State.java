@@ -110,7 +110,10 @@ public final class CPU6510State {
     interrupt = !I;
   }
 
-  public void resetIRQ() {
+  /**
+   * Reset interrupt request.
+   */
+  public final void resetIRQ() {
     IRQ = false;
     interrupt = false;
   }
