@@ -53,6 +53,7 @@ public class C64Application extends Application {
   }
 
   @Override
+  @SuppressWarnings("deprecation")
   public void stop() throws Exception {
     thread.interrupt();
     thread.join(100);

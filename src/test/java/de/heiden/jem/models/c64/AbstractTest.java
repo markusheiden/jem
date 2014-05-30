@@ -88,6 +88,7 @@ public class AbstractTest {
   }
 
   @After
+  @SuppressWarnings("deprecation")
   public void tearDown() throws Exception {
     c64Class.getMethod("setSystemOut", OutputStream.class).invoke(c64, (Object) null);
     thread.interrupt();
