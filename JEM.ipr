@@ -461,7 +461,6 @@
         </codeStyleSettings>
         <codeStyleSettings language="Groovy">
           <option name="IF_BRACE_FORCE" value="3" />
-          <option name="DOWHILE_BRACE_FORCE" value="3" />
           <option name="WHILE_BRACE_FORCE" value="3" />
           <option name="FOR_BRACE_FORCE" value="3" />
           <option name="PARENT_SETTINGS_INSTALLED" value="true" />
@@ -523,6 +522,13 @@
           <indentOptions>
             <option name="CONTINUATION_INDENT_SIZE" value="2" />
           </indentOptions>
+        </codeStyleSettings>
+        <codeStyleSettings language="TypeScript">
+          <option name="IF_BRACE_FORCE" value="3" />
+          <option name="DOWHILE_BRACE_FORCE" value="3" />
+          <option name="WHILE_BRACE_FORCE" value="3" />
+          <option name="FOR_BRACE_FORCE" value="3" />
+          <option name="PARENT_SETTINGS_INSTALLED" value="true" />
         </codeStyleSettings>
         <codeStyleSettings language="XML">
           <indentOptions>
@@ -822,59 +828,59 @@
         <root url="jar://$MAVEN_REPOSITORY$/org/slf4j/slf4j-api/1.7.2/slf4j-api-1.7.2-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Maven: org.springframework:spring-aop:4.0.0.BUILD-SNAPSHOT">
+    <library name="Maven: org.springframework:spring-aop:4.0.1.RELEASE">
       <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-aop/4.0.0.BUILD-SNAPSHOT/spring-aop-4.0.0.BUILD-20130531.062545-71.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-aop/4.0.1.RELEASE/spring-aop-4.0.1.RELEASE.jar!/" />
       </CLASSES>
       <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-aop/4.0.0.BUILD-SNAPSHOT/spring-aop-4.0.0.BUILD-20130531.062545-71-javadoc.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-aop/4.0.1.RELEASE/spring-aop-4.0.1.RELEASE-javadoc.jar!/" />
       </JAVADOC>
       <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-aop/4.0.0.BUILD-SNAPSHOT/spring-aop-4.0.0.BUILD-20130531.062545-71-sources.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-aop/4.0.1.RELEASE/spring-aop-4.0.1.RELEASE-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Maven: org.springframework:spring-beans:4.0.0.BUILD-SNAPSHOT">
+    <library name="Maven: org.springframework:spring-beans:4.0.1.RELEASE">
       <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-beans/4.0.0.BUILD-SNAPSHOT/spring-beans-4.0.0.BUILD-20130531.062545-71.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-beans/4.0.1.RELEASE/spring-beans-4.0.1.RELEASE.jar!/" />
       </CLASSES>
       <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-beans/4.0.0.BUILD-SNAPSHOT/spring-beans-4.0.0.BUILD-20130531.062545-71-javadoc.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-beans/4.0.1.RELEASE/spring-beans-4.0.1.RELEASE-javadoc.jar!/" />
       </JAVADOC>
       <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-beans/4.0.0.BUILD-SNAPSHOT/spring-beans-4.0.0.BUILD-20130531.062545-71-sources.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-beans/4.0.1.RELEASE/spring-beans-4.0.1.RELEASE-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Maven: org.springframework:spring-context:4.0.0.BUILD-SNAPSHOT">
+    <library name="Maven: org.springframework:spring-context:4.0.1.RELEASE">
       <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-context/4.0.0.BUILD-SNAPSHOT/spring-context-4.0.0.BUILD-20130531.062545-70.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-context/4.0.1.RELEASE/spring-context-4.0.1.RELEASE.jar!/" />
       </CLASSES>
       <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-context/4.0.0.BUILD-SNAPSHOT/spring-context-4.0.0.BUILD-20130531.062545-70-javadoc.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-context/4.0.1.RELEASE/spring-context-4.0.1.RELEASE-javadoc.jar!/" />
       </JAVADOC>
       <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-context/4.0.0.BUILD-SNAPSHOT/spring-context-4.0.0.BUILD-20130531.062545-70-sources.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-context/4.0.1.RELEASE/spring-context-4.0.1.RELEASE-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Maven: org.springframework:spring-core:4.0.0.BUILD-SNAPSHOT">
+    <library name="Maven: org.springframework:spring-core:4.0.1.RELEASE">
       <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-core/4.0.0.BUILD-SNAPSHOT/spring-core-4.0.0.BUILD-20130531.062545-71.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-core/4.0.1.RELEASE/spring-core-4.0.1.RELEASE.jar!/" />
       </CLASSES>
       <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-core/4.0.0.BUILD-SNAPSHOT/spring-core-4.0.0.BUILD-20130531.062545-71-javadoc.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-core/4.0.1.RELEASE/spring-core-4.0.1.RELEASE-javadoc.jar!/" />
       </JAVADOC>
       <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-core/4.0.0.BUILD-SNAPSHOT/spring-core-4.0.0.BUILD-20130531.062545-71-sources.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-core/4.0.1.RELEASE/spring-core-4.0.1.RELEASE-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Maven: org.springframework:spring-expression:4.0.0.BUILD-SNAPSHOT">
+    <library name="Maven: org.springframework:spring-expression:4.0.1.RELEASE">
       <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-expression/4.0.0.BUILD-SNAPSHOT/spring-expression-4.0.0.BUILD-20130531.062545-72.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-expression/4.0.1.RELEASE/spring-expression-4.0.1.RELEASE.jar!/" />
       </CLASSES>
       <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-expression/4.0.0.BUILD-SNAPSHOT/spring-expression-4.0.0.BUILD-20130531.062545-72-javadoc.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-expression/4.0.1.RELEASE/spring-expression-4.0.1.RELEASE-javadoc.jar!/" />
       </JAVADOC>
       <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-expression/4.0.0.BUILD-SNAPSHOT/spring-expression-4.0.0.BUILD-20130531.062545-72-sources.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-expression/4.0.1.RELEASE/spring-expression-4.0.1.RELEASE-sources.jar!/" />
       </SOURCES>
     </library>
   </component>
