@@ -13,9 +13,13 @@ import de.heiden.jem.models.c64.components.memory.RAM;
 import de.heiden.jem.models.c64.components.memory.ROM;
 import de.heiden.jem.models.c64.components.vic.VIC6569PAL;
 import de.heiden.jem.models.c64.components.vic.VICBus;
+import de.heiden.jem.models.c64.util.FileUtil;
 import de.heiden.jem.models.c64.util.ROMLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.IOException;
 
 /**
  * C64.
@@ -108,7 +112,7 @@ public class C64 {
   /**
    * Additional init for test purposes.
    */
-  private void init() {
+  private void init() throws IOException {
     // init RAM with 0x02 (crash) to easier detect wrong behaviour
     // TODO 2010-06-22 mh: realistic init?
     for (int addr = 0; addr < 0x10000; addr++) {
@@ -123,7 +127,7 @@ public class C64 {
 
 //    _cpu.add(new LoadFile(new File("/Users/markus/Workspaces/jem-projects/jem/src/test/resources/testsuite2.15")));
 //    FileUtil.read(new File("/Users/markus/Workspaces/jem-projects/jem/commando.prg"), _cpuBus);
-//    FileUtil.read(new File("/Users/markus/Workspaces/jem-projects/jem/bluemax.prg"), _cpuBus);
+    FileUtil.read(new File("/Users/markus/Workspaces/jem-projects/jem/bluemax.prg"), _cpuBus);
 //    FileUtil.read(new File("/Users/markus/Workspaces/jem-projects/jem/src/test/resources/testsuite2.15/loadth.prg"), _cpuBus);
   }
 
