@@ -135,16 +135,13 @@ public class RealTimeSlowDown extends ClockEvent {
       logger.debug(String.format("real time : %,11d ns", _incrementTime));
     }
 
-    // Wait until next
-    long remainder;
-    while ((remainder = (next - now) / 1000000) > 0) // 1 milli second precision
+    // Wait until next (max. 1 ms precision)
+    for (long remainder; (remainder = (next - now) / 1000000) > 0; now = System.nanoTime())
     {
       try {
         Thread.sleep(remainder);
-        now = System.nanoTime();
       } catch (InterruptedException e) {
         // stop slowing down, if thread has been interrupted
-        now = System.nanoTime();
         break;
       }
     }
