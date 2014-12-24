@@ -417,6 +417,7 @@
             <option name="USE_RELATIVE_INDENTS" value="false" />
           </value>
         </option>
+        <option name="USE_FQ_CLASS_NAMES_IN_JAVADOC" value="false" />
         <option name="JD_ALIGN_PARAM_COMMENTS" value="false" />
         <option name="JD_ALIGN_EXCEPTION_COMMENTS" value="false" />
         <option name="JD_USE_THROWS_NOT_EXCEPTION" value="false" />
