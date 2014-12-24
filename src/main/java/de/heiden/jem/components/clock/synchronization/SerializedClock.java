@@ -69,7 +69,7 @@ public class SerializedClock extends AbstractSynchronizedClock<SerializedClockEn
     assert _entries.length > 0 : "Precondition: _entries.length > 0";
 
     int currentIndex = _currentIndex;
-//    _logger.debug("wait for tick (" + currentIndex + ")");
+//    _logger.debug("wait for tick ({})", currentIndex);
     Lock currentLock = _entries[currentIndex].lock;
     currentLock.setTicksToSleep(ticks);
 
@@ -77,7 +77,7 @@ public class SerializedClock extends AbstractSynchronizedClock<SerializedClockEn
     boolean started = false;
     while (!started && nextIndex < _entries.length) {
       // trigger next component
-//      _logger.debug("wakeup next (" + nextIndex + ")");
+//      _logger.debug("wakeup next ({})", nextIndex);
       _currentIndex = nextIndex;
       started = _entries[nextIndex++].lock.wakeup();
     }
@@ -89,7 +89,7 @@ public class SerializedClock extends AbstractSynchronizedClock<SerializedClockEn
     }
 
     // go to sleep
-//    _logger.debug("wait (" + currentIndex + ")");
+//    _logger.debug("wait ({})", currentIndex);
     try {
       currentLock.sleep();
     } catch (InterruptedException e) {

@@ -77,7 +77,7 @@ public class LoadFile extends Patch {
       return -1;
 
     } catch (IOException e) {
-      logger.error("Failed to load " + filename, e);
+      logger.error("Failed to load {}", filename, e);
     }
 
     return 0x60; // rts

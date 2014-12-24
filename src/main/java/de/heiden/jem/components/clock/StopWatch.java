@@ -41,7 +41,7 @@ public class StopWatch extends ClockEvent {
   public void execute(long tick) {
     long now = System.nanoTime();
     long elapsed = (now - _last) / 1000000;
-    logger.info("1 simulated second took " + elapsed + " ms");
+    logger.info("1 simulated second took {} ms", elapsed);
     _last = now;
 
     _clock.addClockEvent(tick + _freq, this);

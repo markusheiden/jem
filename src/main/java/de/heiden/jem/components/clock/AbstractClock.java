@@ -76,7 +76,7 @@ public abstract class AbstractClock<E extends ClockEntry> implements Clock {
     assert position >= 0 : "Precondition: position >= 0";
     assert !isStarted() : "Precondition: !isStarted()";
 
-    logger.debug("add component " + component.getName());
+    logger.debug("add component {}", component.getName());
     E entry = createClockEntry(component);
     ClockEntry removed = _entryMap.put(position, entry);
     assert removed == null : "Check: no duplicate positions";
@@ -100,7 +100,7 @@ public abstract class AbstractClock<E extends ClockEntry> implements Clock {
 
   @Override
   public final void run(int ticks) {
-    logger.debug("run clock for " + ticks + " ticks");
+    logger.debug("run clock for {} ticks", ticks);
 
     init();
     doRun(ticks);
@@ -142,7 +142,7 @@ public abstract class AbstractClock<E extends ClockEntry> implements Clock {
     assert newEvent.next == null : "newEvent.next == null";
 
 //    if (_logger.isDebugEnabled()) {
-//      _logger.debug("add event " + newEvent + " at " + tick);
+//      _logger.debug("add event {} at {}", newEvent, tick);
 //    }
 
     newEvent.tick = tick;
@@ -182,7 +182,7 @@ public abstract class AbstractClock<E extends ClockEntry> implements Clock {
     assert oldEvent != null : "oldEvent != null";
 
 //    if (_logger.isDebugEnabled()) {
-//      _logger.debug("remove event " + event);
+//      _logger.debug("remove event {}", event);
 //    }
 
     ClockEvent event = _events;
@@ -231,7 +231,7 @@ public abstract class AbstractClock<E extends ClockEntry> implements Clock {
 
       // execute it
 //      if (_logger.isDebugEnabled()) {
-//        _logger.debug("execute event " + event + " at " + tick);
+//        _logger.debug("execute event {} at {}", event, tick);
 //      }
       event.execute(tick);
     }

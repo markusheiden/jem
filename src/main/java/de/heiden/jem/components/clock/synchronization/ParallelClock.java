@@ -45,9 +45,9 @@ public class ParallelClock extends AbstractSynchronizedClock<ParallelClockEntry>
   @Override
   protected ParallelClockEntry createClockEntry(final ClockedComponent component) {
     Thread thread = new Thread(() -> {
-      logger.debug("starting " + component.getName());
+      logger.debug("starting {}", component.getName());
       waitForTick();
-      logger.debug("started " + component.getName());
+      logger.debug("started {}", component.getName());
       component.run();
     }, component.getName());
 
@@ -125,7 +125,7 @@ public class ParallelClock extends AbstractSynchronizedClock<ParallelClockEntry>
 
       // wait for all components
       while (_waiting < _entries.length) {
-        logger.debug("waiting for " + (_entries.length - _waiting) + "/" + _entries.length + " components");
+        logger.debug("waiting for {} / {} components", _entries.length - _waiting, _entries.length);
         _lock.wait(1);
       }
 
