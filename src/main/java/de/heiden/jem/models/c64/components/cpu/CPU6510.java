@@ -3551,9 +3551,8 @@ public class CPU6510 implements ClockedComponent {
    */
   @Interruptible
   protected final int readBytePC() {
-    int pc = _state.PC;
+    int pc = _state.incPC();
     int result = read(pc);
-    _state.PC = (pc + 1) & 0xFFFF;
 
     return result;
   }
@@ -3564,11 +3563,10 @@ public class CPU6510 implements ClockedComponent {
    */
   @Interruptible
   protected final int readWordPC() {
-    int pc = _state.PC;
+    int pc = _state.incPC();
     int result = read(pc);
-    pc = (pc + 1) & 0xFFFF;
+    pc = _state.incPC();
     result |= read(pc) << 8;
-    _state.PC = (pc + 1) & 0xFFFF;
 
     return result;
   }

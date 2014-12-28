@@ -119,6 +119,15 @@ public final class CPU6510State {
   }
 
   /**
+   * Get and increment PC.
+   */
+  public final int incPC() {
+    int pc = PC;
+    PC = (pc + 1) & 0xFFFF;
+    return pc;
+  }
+
+  /**
    * Stack pointer address.
    */
   public final int getS() {
