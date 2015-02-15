@@ -69,15 +69,15 @@ public final class CPU6510State {
    * Constructor.
    */
   public CPU6510State() {
-    this(0, 0x01FF, 0, 0, 0, 0, false, false);
+    this(0, 0x00FF, 0, 0, 0, 0, false, false);
   }
 
   /**
-   * Constructor.
+   * Copy constructor.
    */
-  public CPU6510State(int PC, int S, int P, int A, int X, int Y, boolean IRQ, boolean NMI) {
+  CPU6510State(int PC, int S, int P, int A, int X, int Y, boolean IRQ, boolean NMI) {
     assert PC >= 0 && PC < 0x10000 : "Precondition: PC >= 0 && PC < 0x10000";
-    assert S >= 0x0100 && S < 0x0200 : "Precondition: S >= 0x0100 && S < 0x0200";
+    assert S >= 0x00 && S <= 0xFF : "Precondition: S >= 0x00 && S <= 0xFF";
     assert P >= 0 && P < 0x100 : "Precondition: P >= 0 && P < 0x100";
     assert A >= 0 && A < 0x100 : "Precondition: A >= 0 && A < 0x100";
     assert X >= 0 && X < 0x100 : "Precondition: X >= 0 && X < 0x100";
