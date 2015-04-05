@@ -1,5 +1,6 @@
 package de.heiden.jem.models.c64;
 
+import de.heiden.jem.models.c64.javafx.C64Application;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,7 +16,7 @@ public class StartupAgent {
   public void start() {
     try {
       logger.debug("Starting c64");
-      new C64().start();
+      new C64Application().start();
     } catch (Exception e) {
       logger.error("Unable to startup", e);
     }
