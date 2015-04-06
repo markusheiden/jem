@@ -574,7 +574,7 @@
     <configuration default="false" name="Startup" type="Application" factoryName="Application">
       <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="jacoco" />
       <option name="MAIN_CLASS_NAME" value="de.heiden.jem.models.c64.Startup" />
-      <option name="VM_PARAMETERS" value="-XX:+UseConcMarkSweepGC -Dcom.sun.scenario.animation.vsync=true -Dcom.sun.scenario.animation.pulse=500 " />
+      <option name="VM_PARAMETERS" value="-Dcom.sun.scenario.animation.vsync=true -Dcom.sun.scenario.animation.pulse=500" />
       <option name="PROGRAM_PARAMETERS" value="" />
       <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$/" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
@@ -603,7 +603,7 @@
     <configuration default="false" name="Startup -ea" type="Application" factoryName="Application">
       <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="jacoco" />
       <option name="MAIN_CLASS_NAME" value="de.heiden.jem.models.c64.Startup" />
-      <option name="VM_PARAMETERS" value="-ea -XX:+UseConcMarkSweepGC -Dcom.sun.scenario.animation.vsync=true -Dcom.sun.scenario.animation.pulse=500 " />
+      <option name="VM_PARAMETERS" value="-ea -Dcom.sun.scenario.animation.vsync=true -Dcom.sun.scenario.animation.pulse=500" />
       <option name="PROGRAM_PARAMETERS" value="" />
       <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$/" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
@@ -629,7 +629,7 @@
     <configuration default="false" name="StartupAgent" type="Application" factoryName="Application">
       <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="jacoco" />
       <option name="MAIN_CLASS_NAME" value="de.heiden.jem.models.c64.StartupAgent" />
-      <option name="VM_PARAMETERS" value="-ea -XX:+UseConcMarkSweepGC -XX:+CMSIncrementalMode -XX:+CMSIncrementalPacing -javaagent:../serialthreads/target/serialthreads-1.0-SNAPSHOT.jar" />
+      <option name="VM_PARAMETERS" value="-ea -Dcom.sun.scenario.animation.vsync=true -Dcom.sun.scenario.animation.pulse=500 -javaagent:../serialthreads/target/serialthreads-1.0-SNAPSHOT.jar" />
       <option name="PROGRAM_PARAMETERS" value="" />
       <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$/" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
