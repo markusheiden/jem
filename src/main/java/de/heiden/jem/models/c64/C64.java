@@ -127,7 +127,7 @@ public class C64 {
 
 //    _cpu.add(new LoadFile(new File("/Users/markus/Workspaces/jem-projects/jem/src/test/resources/testsuite2.15")));
 //    FileUtil.read(new File("/Users/markus/Workspaces/jem-projects/jem/commando.prg"), _cpuBus);
-    FileUtil.read(new File("/Users/markus/Workspaces/jem-projects/jem/bluemax.prg"), _cpuBus);
+//    FileUtil.read(new File("/Users/markus/Workspaces/jem-projects/jem/bluemax.prg"), _cpuBus);
 //    FileUtil.read(new File("/Users/markus/Workspaces/jem-projects/jem/src/test/resources/testsuite2.15/loadth.prg"), _cpuBus);
   }
 
