@@ -98,7 +98,7 @@ public class CPU6510Test extends TestCase {
   /**
    * Tear down.
    *
-   * @exception Exception
+   * @throws Exception
    */
   @Override
   protected void tearDown() throws Exception {

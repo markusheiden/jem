@@ -71,7 +71,7 @@ public class ROMLoader {
    *
    * @param length of expected content
    * @param filename filename of content
-   * @exception Exception
+   * @throws Exception
    */
   protected static byte[] load(int length, String filename) throws Exception {
     try {
