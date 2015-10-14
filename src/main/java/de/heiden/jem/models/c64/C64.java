@@ -13,12 +13,10 @@ import de.heiden.jem.models.c64.components.memory.RAM;
 import de.heiden.jem.models.c64.components.memory.ROM;
 import de.heiden.jem.models.c64.components.vic.VIC6569PAL;
 import de.heiden.jem.models.c64.components.vic.VICBus;
-import de.heiden.jem.models.c64.util.FileUtil;
 import de.heiden.jem.models.c64.util.ROMLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.io.IOException;
 
 /**
@@ -144,7 +142,7 @@ public class C64 {
 //      long time = System.currentTimeMillis();
 //      _clock.run(ticks);
 //      time = System.currentTimeMillis() - time;
-//      _logger.debug("executed " + ticks + " in " + time + " ms");
+//      _logger.debug("executed {} in {} ms", ticks, time);
 //    }
   }
 
