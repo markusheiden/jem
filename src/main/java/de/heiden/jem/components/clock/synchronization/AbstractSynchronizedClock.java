@@ -1,11 +1,13 @@
 package de.heiden.jem.components.clock.synchronization;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 import de.heiden.jem.components.clock.AbstractClock;
 import de.heiden.jem.components.clock.ClockEntry;
 import de.heiden.jem.components.clock.ClockEvent;
 
 /**
- * Base implementation for all clocks.
+ * Base implementation for all clocks using synchronization.
  */
 public abstract class AbstractSynchronizedClock<E extends ClockEntry> extends AbstractClock<E> {
   //
@@ -15,7 +17,7 @@ public abstract class AbstractSynchronizedClock<E extends ClockEntry> extends Ab
   /**
    * Current tick.
    */
-  protected volatile long _tick;
+  protected final AtomicLong _tick = new AtomicLong(-1);
 
   /**
    * Lock for instance variables.
@@ -25,13 +27,6 @@ public abstract class AbstractSynchronizedClock<E extends ClockEntry> extends Ab
   //
   //
   //
-
-  /**
-   * Constructor.
-   */
-  protected AbstractSynchronizedClock() {
-    _tick = -1;
-  }
 
   @Override
   public boolean isStarted() {
@@ -56,6 +51,6 @@ public abstract class AbstractSynchronizedClock<E extends ClockEntry> extends Ab
 
   @Override
   public long getTick() {
-    return _tick;
+    return _tick.get();
   }
 }

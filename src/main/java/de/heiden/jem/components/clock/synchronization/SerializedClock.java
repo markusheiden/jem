@@ -1,9 +1,10 @@
 package de.heiden.jem.components.clock.synchronization;
 
-import de.heiden.jem.components.clock.ClockedComponent;
-import de.heiden.jem.components.clock.Tick;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import de.heiden.jem.components.clock.ClockedComponent;
+import de.heiden.jem.components.clock.Tick;
 
 /**
  * Clock implemented with synchronization.
@@ -136,9 +137,9 @@ public class SerializedClock extends AbstractSynchronizedClock<SerializedClockEn
    * Execute 1 tick.
    */
   protected final void tick() throws InterruptedException {
-    logger.debug("tick {}", _tick);
+    logger.debug("tick {}", _tick.get());
 
-    executeEvent(_tick);
+    executeEvent(_tick.get());
 
     // init finished tick lock
     _finishedTickLock.setTicksToSleep(1);
@@ -157,6 +158,7 @@ public class SerializedClock extends AbstractSynchronizedClock<SerializedClockEn
     }
 
     // increment ticks / time
-    _tick++;
+    // TODO 2015-11-11 markus: Increment at top to avoid double access to _tick?
+    _tick.incrementAndGet();
   }
 }

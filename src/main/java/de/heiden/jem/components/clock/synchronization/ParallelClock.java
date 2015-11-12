@@ -1,9 +1,10 @@
 package de.heiden.jem.components.clock.synchronization;
 
-import de.heiden.jem.components.clock.ClockedComponent;
-import de.heiden.jem.components.clock.Tick;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import de.heiden.jem.components.clock.ClockedComponent;
+import de.heiden.jem.components.clock.Tick;
 
 /**
  * Clock implemented with synchronization.
@@ -22,18 +23,11 @@ public class ParallelClock extends AbstractSynchronizedClock<ParallelClockEntry>
   /**
    * Number of waiting components.
    */
-  private int _waiting;
+  private int _waiting = 0;
 
   //
   // public
   //
-
-  /**
-   * Constructor.
-   */
-  public ParallelClock() {
-    _waiting = 0;
-  }
 
   @Override
   public void dispose() {
@@ -57,7 +51,7 @@ public class ParallelClock extends AbstractSynchronizedClock<ParallelClockEntry>
   protected void waitForStart() throws InterruptedException {
     synchronized (_lock) {
       _waiting++;
-      while (_tick < 0) {
+      while (_tick.get() < 0) {
         _lock.wait();
       }
     }
@@ -87,12 +81,12 @@ public class ParallelClock extends AbstractSynchronizedClock<ParallelClockEntry>
   private void sleep() throws InterruptedException {
     logger.debug("going to sleep at {}", _tick);
 
-    long tick = _tick;
+    long tick = _tick.get();
     _waiting++;
     do {
       _lock.wait();
-      logger.debug("wake up at {}", _tick);
-    } while (tick == _tick);
+      logger.debug("wake up at {}", _tick.get());
+    } while (tick == _tick.get());
   }
 
   /**
@@ -102,11 +96,12 @@ public class ParallelClock extends AbstractSynchronizedClock<ParallelClockEntry>
   private void tick() {
     logger.debug("tick {}", _tick);
 
-    executeEvent(_tick);
+    executeEvent(_tick.get());
 
     // next tick
     _waiting = 1;
-    _tick++;
+    // TODO 2015-11-11 markus: Increment at top to avoid double access to _tick?
+    _tick.incrementAndGet();
     _lock.notifyAll();
   }
 
@@ -156,10 +151,10 @@ public class ParallelClock extends AbstractSynchronizedClock<ParallelClockEntry>
           resume();
         }
 
-        long end = _tick + ticks;
+        long end = _tick.get() + ticks;
         do {
           _lock.wait();
-        } while (_tick < end);
+        } while (_tick.get() < end);
 
         pause();
       }
