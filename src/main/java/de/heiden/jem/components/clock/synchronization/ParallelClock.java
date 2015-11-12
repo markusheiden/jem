@@ -1,5 +1,7 @@
 package de.heiden.jem.components.clock.synchronization;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,12 +20,12 @@ public class ParallelClock extends AbstractSynchronizedClock<ParallelClockEntry>
   /**
    * All clocked components sorted by their position.
    */
-  protected ParallelClockEntry[] _entries;
+  private ParallelClockEntry[] _entries;
 
   /**
    * Number of waiting components.
    */
-  private int _waiting = 0;
+  private final AtomicInteger _waiting = new AtomicInteger(0);
 
   //
   // public
@@ -44,13 +46,14 @@ public class ParallelClock extends AbstractSynchronizedClock<ParallelClockEntry>
       logger.debug("started {}", component.getName());
       component.run();
     }, component.getName());
+    thread.setDaemon(true);
 
     return new ParallelClockEntry(component, this, thread);
   }
 
   protected void waitForStart() throws InterruptedException {
     synchronized (_lock) {
-      _waiting++;
+      _waiting.incrementAndGet();
       while (_tick.get() < 0) {
         _lock.wait();
       }
@@ -63,7 +66,7 @@ public class ParallelClock extends AbstractSynchronizedClock<ParallelClockEntry>
 
     try {
       synchronized (_lock) {
-        if (_waiting < _entries.length) {
+        if (_waiting.get() <  _entries.length) {
           sleep();
         } else {
           tick();
@@ -82,7 +85,7 @@ public class ParallelClock extends AbstractSynchronizedClock<ParallelClockEntry>
     logger.debug("going to sleep at {}", _tick);
 
     long tick = _tick.get();
-    _waiting++;
+    _waiting.incrementAndGet();
     do {
       _lock.wait();
       logger.debug("wake up at {}", _tick.get());
@@ -99,7 +102,7 @@ public class ParallelClock extends AbstractSynchronizedClock<ParallelClockEntry>
     executeEvent(_tick.get());
 
     // next tick
-    _waiting = 1;
+    _waiting.set(1);
     // TODO 2015-11-11 markus: Increment at top to avoid double access to _tick?
     _tick.incrementAndGet();
     synchronized (_lock) {
@@ -121,8 +124,8 @@ public class ParallelClock extends AbstractSynchronizedClock<ParallelClockEntry>
       Thread.yield();
 
       // wait for all components
-      while (_waiting < _entries.length) {
-        logger.debug("waiting for {} / {} components", _entries.length - _waiting, _entries.length);
+      while (_waiting.get() <  _entries.length) {
+        logger.debug("waiting for {} / {} components", _entries.length - _waiting.get(), _entries.length);
         _lock.wait(1);
       }
 
@@ -141,6 +144,7 @@ public class ParallelClock extends AbstractSynchronizedClock<ParallelClockEntry>
         wait();
       }
     } catch (InterruptedException e) {
+      dispose();
       throw new RuntimeException("Thread has been stopped", e);
     }
   }
@@ -170,7 +174,7 @@ public class ParallelClock extends AbstractSynchronizedClock<ParallelClockEntry>
    * Call needs to be synchronized by _lock;
    */
   private void pause() {
-    _waiting--;
+    _waiting.decrementAndGet();
     logger.debug("paused");
   }
 
@@ -180,8 +184,7 @@ public class ParallelClock extends AbstractSynchronizedClock<ParallelClockEntry>
    */
   private void resume() {
     logger.debug("resume");
-    _waiting++;
-    if (_waiting > _entries.length) {
+    if (_waiting.incrementAndGet() > _entries.length) {
       tick();
     }
   }
