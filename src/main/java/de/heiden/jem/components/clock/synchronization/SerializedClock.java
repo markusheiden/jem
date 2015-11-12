@@ -45,11 +45,6 @@ public class SerializedClock extends AbstractSynchronizedClock<SerializedClockEn
   }
 
   @Override
-  public void dispose() {
-    // TODO
-  }
-
-  @Override
   protected SerializedClockEntry createClockEntry(ClockedComponent component) {
     // TODO 2009-04-27 mh: use own Tick instance for every thread
     return new SerializedClockEntry(component, this);

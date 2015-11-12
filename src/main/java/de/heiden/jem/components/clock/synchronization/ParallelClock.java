@@ -32,9 +32,9 @@ public class ParallelClock extends AbstractSynchronizedClock<ParallelClockEntry>
   //
 
   @Override
-  public void dispose() {
+  public void close() {
     for (ParallelClockEntry entry : _entries) {
-      entry.thread.interrupt();
+      entry.close();
     }
   }
 
@@ -119,7 +119,7 @@ public class ParallelClock extends AbstractSynchronizedClock<ParallelClockEntry>
 
       _entries = _entryMap.values().toArray(new ParallelClockEntry[_entryMap.size()]);
       for (ParallelClockEntry entry : _entries) {
-        entry.thread.start();
+        entry.start();
       }
       Thread.yield();
 
@@ -146,7 +146,7 @@ public class ParallelClock extends AbstractSynchronizedClock<ParallelClockEntry>
         wait();
       }
     } catch (InterruptedException e) {
-      dispose();
+      close();
       throw new RuntimeException("Thread has been stopped", e);
     }
   }

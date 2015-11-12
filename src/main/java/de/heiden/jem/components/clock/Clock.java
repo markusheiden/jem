@@ -3,7 +3,7 @@ package de.heiden.jem.components.clock;
 /**
  * Clock.
  */
-public interface Clock {
+public interface Clock extends AutoCloseable {
   /**
    * Position constants.
    * <p/>
@@ -16,7 +16,10 @@ public interface Clock {
   /**
    * Dispose clock and all its clocked components.
    */
-  void dispose();
+  @Override
+  default void close() {
+    // overwrite, if needed
+  }
 
   /**
    * Has the clock been started?

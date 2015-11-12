@@ -51,11 +51,6 @@ public abstract class AbstractClock<E extends ClockEntry> implements Clock {
     _nextEventTick = _events.tick;
   }
 
-  @Override
-  public void dispose() {
-    // overwrite, if needed
-  }
-
   /**
    * Has the clock been started?.
    */

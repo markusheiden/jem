@@ -1,5 +1,11 @@
 package de.heiden.jem.models.c64;
 
+import java.io.File;
+import java.io.OutputStream;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.heiden.jem.components.clock.Clock;
 import de.heiden.jem.components.clock.ClockEvent;
 import de.heiden.jem.components.clock.serialthreads.SerialClock;
@@ -19,11 +25,6 @@ import de.heiden.jem.models.c64.components.vic.VICBus;
 import de.heiden.jem.models.c64.gui.KeyListener;
 import de.heiden.jem.models.c64.gui.PCMapping;
 import de.heiden.jem.models.c64.util.ROMLoader;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.File;
-import java.io.OutputStream;
 
 /**
  * Modified C64 for better testability.
@@ -145,6 +146,6 @@ public class TestC64 {
    */
   public void start() throws Exception {
     _clock.run();
-    _clock.dispose();
+    _clock.close();
   }
 }

@@ -1,13 +1,15 @@
 package de.heiden.jem.models.c64.components.cpu;
 
+import junit.framework.TestCase;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.heiden.jem.components.bus.LogEntry;
 import de.heiden.jem.components.bus.LoggingBus;
 import de.heiden.jem.components.bus.WordBus;
 import de.heiden.jem.components.clock.synchronization.SerializedClock;
 import de.heiden.jem.models.c64.components.memory.RAM;
-import junit.framework.TestCase;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Test.
@@ -104,7 +106,7 @@ public class CPU6510Test extends TestCase {
   protected void tearDown() throws Exception {
     logger.debug("tear down");
 
-    _clock.dispose();
+    _clock.close();
 
     super.tearDown();
   }

@@ -7,7 +7,12 @@ import de.heiden.jem.components.clock.Tick;
 /**
  * Bean holding registration information for one clocked component.
  */
-public class ParallelClockEntry extends ClockEntry {
+public class ParallelClockEntry extends ClockEntry implements AutoCloseable {
+  /**
+   * Thread to execute component.
+   */
+  private final Thread thread;
+
   /**
    * Constructor.
    *
@@ -22,9 +27,18 @@ public class ParallelClockEntry extends ClockEntry {
     this.thread = thread;
   }
 
-  //
-  // attributes
-  //
+  /**
+   * Start underlying thread.
+   */
+  public void start() {
+    thread.start();
+  }
 
-  public final Thread thread;
+  /**
+   * Interrupt underlying thread.
+   */
+  @Override
+  public void close() {
+    thread.interrupt();
+  }
 }

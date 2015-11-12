@@ -1,8 +1,13 @@
 package de.heiden.jem.models.c64;
 
+import java.io.IOException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.heiden.jem.components.clock.Clock;
 import de.heiden.jem.components.clock.RealTimeSlowDown;
-import de.heiden.jem.components.clock.serialthreads.SerialClock;
+import de.heiden.jem.components.clock.synchronization.ParallelClock;
 import de.heiden.jem.models.c64.components.CIA6526;
 import de.heiden.jem.models.c64.components.cpu.C64Bus;
 import de.heiden.jem.models.c64.components.cpu.CPU6510;
@@ -150,7 +155,7 @@ public class C64 {
    * Stop emulation.
    */
   public void stop() {
-    _clock.dispose();
+    _clock.close();
   }
 
   //
