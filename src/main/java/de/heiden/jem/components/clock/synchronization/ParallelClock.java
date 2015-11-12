@@ -66,7 +66,7 @@ public class ParallelClock extends AbstractSynchronizedClock<ParallelClockEntry>
 
     try {
       synchronized (_lock) {
-        if (_waiting.get() <  _entries.length) {
+        if (_waiting.get() < _entries.length) {
           sleep();
         } else {
           tick();
@@ -105,9 +105,7 @@ public class ParallelClock extends AbstractSynchronizedClock<ParallelClockEntry>
     _waiting.set(1);
     // TODO 2015-11-11 markus: Increment at top to avoid double access to _tick?
     _tick.incrementAndGet();
-    synchronized (_lock) {
-      _lock.notifyAll();
-    }
+    _lock.notifyAll();
   }
 
   /**
@@ -123,15 +121,17 @@ public class ParallelClock extends AbstractSynchronizedClock<ParallelClockEntry>
       }
       Thread.yield();
 
-      // wait for all components
-      while (_waiting.get() <  _entries.length) {
-        logger.debug("waiting for {} / {} components", _entries.length - _waiting.get(), _entries.length);
-        _lock.wait(1);
-      }
+      synchronized (_lock) {
+        // wait for all components
+        while (_waiting.get() <  _entries.length) {
+          logger.debug("waiting for {} / {} components", _entries.length - _waiting.get(), _entries.length);
+          _lock.wait(1);
+        }
 
-      // start clock
-      _started = true;
-      tick();
+        // start clock
+        _started = true;
+        tick();
+      }
     } catch (InterruptedException e) {
       throw new RuntimeException("Thread has been stopped", e);
     }
