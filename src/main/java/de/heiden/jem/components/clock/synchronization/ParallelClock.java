@@ -82,9 +82,10 @@ public class ParallelClock extends AbstractSynchronizedClock<ParallelClockEntry>
    * Call needs to be synchronized by _lock;
    */
   private void sleep() throws InterruptedException {
-    logger.debug("going to sleep at {}", _tick);
-
     long tick = _tick.get();
+
+    logger.debug("going to sleep at {}", tick);
+
     _waiting.incrementAndGet();
     do {
       _lock.wait();
@@ -97,14 +98,15 @@ public class ParallelClock extends AbstractSynchronizedClock<ParallelClockEntry>
    * Call needs to be synchronized by _lock;
    */
   private void tick() {
-    logger.debug("tick {}", _tick);
+    long tick = _tick.incrementAndGet();
 
-    executeEvent(_tick.get());
+    logger.debug("tick {}", tick);
 
-    // next tick
+    // First execute events
+    executeEvent(tick);
+
+    // Second execute all entries
     _waiting.set(1);
-    // TODO 2015-11-11 markus: Increment at top to avoid double access to _tick?
-    _tick.incrementAndGet();
     _lock.notifyAll();
   }
 
