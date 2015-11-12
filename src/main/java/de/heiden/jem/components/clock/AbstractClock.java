@@ -36,7 +36,7 @@ public abstract class AbstractClock<E extends ClockEntry> implements Clock {
    * Next event to look for.
    * Needs not to be volatile, because only used by clock thread.
    */
-  protected long _nextEventTick;
+  long _nextEventTick;
 
   /**
    * Current tick.
