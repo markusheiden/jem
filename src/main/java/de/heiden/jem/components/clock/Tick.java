@@ -11,5 +11,5 @@ public interface Tick {
    * Called by clocked components.
    */
   @Interrupt
-  public void waitForTick();
+  void waitForTick();
 }
