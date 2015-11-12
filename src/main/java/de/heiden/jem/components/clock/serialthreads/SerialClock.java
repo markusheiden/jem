@@ -45,7 +45,7 @@ public final class SerialClock extends AbstractClock<ClockEntry> {
     IRunnable[] runnables = new IRunnable[_entryMap.size()];
     int i = 0;
     for (ClockEntry entry : _entryMap.values()) {
-      runnables[i++] = entry.component;
+      runnables[i++] = entry.getComponent();
     }
 
     // prepend first to chain

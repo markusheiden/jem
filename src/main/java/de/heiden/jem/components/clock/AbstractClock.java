@@ -79,8 +79,8 @@ public abstract class AbstractClock<E extends ClockEntry> implements Clock {
     ClockEntry removed = _entryMap.put(position, entry);
     assert removed == null : "Check: no duplicate positions";
 
-    assert entry.tick != null : "Postcondition: result != null";
-    return entry.tick;
+    assert entry.getTick() != null : "Postcondition: result != null";
+    return entry.getTick();
   }
 
   /**

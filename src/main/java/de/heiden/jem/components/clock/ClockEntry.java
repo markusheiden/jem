@@ -4,9 +4,15 @@ package de.heiden.jem.components.clock;
  * Bean holding registration information for one clocked component.
  */
 public class ClockEntry {
-  public final ClockedComponent component;
+  /**
+   * Component.
+   */
+  protected final ClockedComponent component;
 
-  public final Tick tick;
+  /**
+   * Tick.
+   */
+  protected final Tick tick;
 
   /**
    * Constructor.
@@ -22,5 +28,19 @@ public class ClockEntry {
 
     this.component = component;
     this.tick = tick;
+  }
+
+  /**
+   * Component.
+   */
+  public ClockedComponent getComponent() {
+    return component;
+  }
+
+  /**
+   * Tick.
+   */
+  public Tick getTick() {
+    return tick;
   }
 }
