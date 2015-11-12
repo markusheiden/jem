@@ -1,5 +1,8 @@
 package de.heiden.jem.components.clock.synchronization;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.heiden.jem.components.clock.ClockEntry;
 import de.heiden.jem.components.clock.ClockedComponent;
 import de.heiden.jem.components.clock.Tick;
@@ -8,6 +11,11 @@ import de.heiden.jem.components.clock.Tick;
  * Bean holding registration information for one clocked component.
  */
 public class ParallelClockEntry extends ClockEntry implements AutoCloseable {
+  /**
+   * Logger.
+   */
+  private final Logger logger = LoggerFactory.getLogger(getClass());
+
   /**
    * Thread to execute component.
    */
@@ -21,10 +29,16 @@ public class ParallelClockEntry extends ClockEntry implements AutoCloseable {
    * @require component != null
    * @require tick != null
    */
-  public ParallelClockEntry(ClockedComponent component, Tick tick, Thread thread) {
+  public ParallelClockEntry(ClockedComponent component, Tick tick) {
     super(component, tick);
 
-    this.thread = thread;
+    thread = new Thread(() -> {
+      logger.debug("starting {}", component.getName());
+      tick.waitForTick();
+      logger.debug("started {}", component.getName());
+      component.run();
+    }, component.getName());
+    thread.setDaemon(true);
   }
 
   /**

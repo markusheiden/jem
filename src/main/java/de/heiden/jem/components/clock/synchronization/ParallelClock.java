@@ -40,15 +40,7 @@ public class ParallelClock extends AbstractSynchronizedClock<ParallelClockEntry>
 
   @Override
   protected ParallelClockEntry createClockEntry(final ClockedComponent component) {
-    Thread thread = new Thread(() -> {
-      logger.debug("starting {}", component.getName());
-      waitForTick();
-      logger.debug("started {}", component.getName());
-      component.run();
-    }, component.getName());
-    thread.setDaemon(true);
-
-    return new ParallelClockEntry(component, this, thread);
+    return new ParallelClockEntry(component, this);
   }
 
   protected void waitForStart() throws InterruptedException {
