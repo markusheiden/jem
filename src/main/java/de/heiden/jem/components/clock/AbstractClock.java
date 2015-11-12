@@ -1,10 +1,11 @@
 package de.heiden.jem.components.clock;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.concurrent.atomic.AtomicLong;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Base implementation for all clocks.
@@ -18,12 +19,12 @@ public abstract class AbstractClock<E extends ClockEntry> implements Clock {
   /**
    * Has the clock been started?.
    */
-  protected boolean _started;
+  protected boolean _started = false;
 
   /**
    * Clocked components.
    */
-  protected final SortedMap<Integer, E> _entryMap;
+  protected final SortedMap<Integer, E> _entryMap = new TreeMap<>();
 
   /**
    * Events.
@@ -37,13 +38,15 @@ public abstract class AbstractClock<E extends ClockEntry> implements Clock {
   protected long _nextEventTick;
 
   /**
+   * Current tick.
+   * Start at tick -1, because the first action when running is to increment the tick.
+   */
+  protected final AtomicLong _tick = new AtomicLong(-1);
+
+  /**
    * Constructor.
    */
   protected AbstractClock() {
-    _started = false;
-
-    _entryMap = new TreeMap<>();
-
     _events = new RootClockEvent(); // end marker, may not be reached
     _nextEventTick = _events.tick;
   }
@@ -235,5 +238,10 @@ public abstract class AbstractClock<E extends ClockEntry> implements Clock {
 //      }
       event.execute(tick);
     }
+  }
+
+  @Override
+  public final long getTick() {
+    return _tick.get();
   }
 }

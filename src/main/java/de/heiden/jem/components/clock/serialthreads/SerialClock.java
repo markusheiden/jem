@@ -1,35 +1,18 @@
 package de.heiden.jem.components.clock.serialthreads;
 
-import de.heiden.jem.components.clock.AbstractClock;
-import de.heiden.jem.components.clock.ClockEntry;
-import de.heiden.jem.components.clock.ClockedComponent;
 import org.serialthreads.Executor;
 import org.serialthreads.context.ChainedRunnable;
 import org.serialthreads.context.IRunnable;
 import org.serialthreads.context.ThreadFinishedException;
 
+import de.heiden.jem.components.clock.AbstractClock;
+import de.heiden.jem.components.clock.ClockEntry;
+import de.heiden.jem.components.clock.ClockedComponent;
+
 /**
  * Clock using serial threads.
  */
 public final class SerialClock extends AbstractClock<ClockEntry> {
-  /**
-   * Current tick.
-   */
-  private long _tick;
-
-  /**
-   * Constructor.
-   */
-  public SerialClock() {
-    // Start at tick -1, because the first action when running is to increment the tick
-    _tick = -1;
-  }
-
-  @Override
-  public long getTick() {
-    return _tick;
-  }
-
   @Override
   protected ClockEntry createClockEntry(ClockedComponent component) {
     // every components needs its own Tick instance, because the instances cache its serial thread
@@ -95,8 +78,7 @@ public final class SerialClock extends AbstractClock<ClockEntry> {
   private class Counter extends ChainedRunnable {
     @Override
     public final ChainedRunnable run() {
-      final long tick = _tick + 1;
-      _tick = tick;
+      final long tick = _tick.incrementAndGet();
 
       // execute events first, if any
       executeEvent(tick);
@@ -121,19 +103,17 @@ public final class SerialClock extends AbstractClock<ClockEntry> {
      * @param ticks Stop after executing this number of ticks
      */
     public StopCounter(long ticks) {
-      stop = _tick + 1 + ticks;
+      stop = _tick.get() + 1 + ticks;
     }
 
     @Override
     public final ChainedRunnable run() {
-      final long tick = _tick + 1;
+      final long tick = _tick.incrementAndGet();
 
       if (tick == stop) {
         // TODO throw another kind of exception?
         throw new ThreadFinishedException("Stop");
       }
-
-      _tick = tick;
 
       // execute events first, if any
       executeEvent(tick);

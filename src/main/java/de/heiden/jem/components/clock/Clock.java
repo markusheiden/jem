@@ -9,19 +9,19 @@ public interface Clock {
    * <p/>
    * TODO Should be in subclass...
    */
-  public static final int CPU = 1000;
-  public static final int VIC_MEM = 2000;
-  public static final int VIC_DISPLAY = 2001;
+  int CPU = 1000;
+  int VIC_MEM = 2000;
+  int VIC_DISPLAY = 2001;
 
   /**
    * Dispose clock and all its clocked components.
    */
-  public void dispose();
+  void dispose();
 
   /**
    * Has the clock been started?
    */
-  public boolean isStarted();
+  boolean isStarted();
 
   /**
    * Add clocked component.
@@ -32,19 +32,19 @@ public interface Clock {
    * @require position >= 0
    * @require !isStarted()
    */
-  public Tick addClockedComponent(int position, ClockedComponent component);
+  Tick addClockedComponent(int position, ClockedComponent component);
 
   /**
    * Run this clock for ever as master clock.
    */
-  public void run();
+  void run();
 
   /**
    * Run this clock a given number of ticks as master clock.
    *
    * @param ticks number of ticks to run this clock for
    */
-  public void run(int ticks);
+  void run(int ticks);
 
   /**
    * Add a new event.
@@ -54,7 +54,7 @@ public interface Clock {
    * @require tick > getTick()ate
    * @require event != null
    */
-  public void addClockEvent(long tick, ClockEvent event);
+  void addClockEvent(long tick, ClockEvent event);
 
   /**
    * Set tick to execute an existing event at.
@@ -65,7 +65,7 @@ public interface Clock {
    * @require tick > getTick()
    * @require event != null
    */
-  public void updateClockEvent(long tick, ClockEvent event);
+  void updateClockEvent(long tick, ClockEvent event);
 
   /**
    * Remove event.
@@ -73,7 +73,7 @@ public interface Clock {
    * @param event event to remove
    * @require event != null
    */
-  public void removeClockEvent(ClockEvent event);
+  void removeClockEvent(ClockEvent event);
 
   /**
    * Get current tick.
@@ -81,5 +81,5 @@ public interface Clock {
    *
    * @ensure result >= 0
    */
-  public long getTick();
+  long getTick();
 }
