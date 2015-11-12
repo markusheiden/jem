@@ -2,6 +2,7 @@ package de.heiden.jem.components.clock;
 
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.slf4j.Logger;
@@ -19,7 +20,7 @@ public abstract class AbstractClock<E extends ClockEntry> implements Clock {
   /**
    * Has the clock been started?.
    */
-  protected boolean _started = false;
+  protected final AtomicBoolean _started = new AtomicBoolean(false);
 
   /**
    * Clocked components.
@@ -56,7 +57,7 @@ public abstract class AbstractClock<E extends ClockEntry> implements Clock {
    */
   @Override
   public boolean isStarted() {
-    return _started;
+    return _started.get();
   }
 
   /**
@@ -108,9 +109,9 @@ public abstract class AbstractClock<E extends ClockEntry> implements Clock {
    * Init clock.
    */
   private void init() {
-    if (!_started) {
+    if (!_started.get()) {
       doInit();
-      _started = true;
+      _started.set(true);
     }
   }
 

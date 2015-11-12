@@ -1,6 +1,7 @@
 package de.heiden.jem.components.clock.synchronization;
 
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.BrokenBarrierException;
+import java.util.concurrent.CyclicBarrier;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,14 +19,9 @@ public class ParallelClock extends AbstractSynchronizedClock<ParallelClockEntry>
   private final Logger logger = LoggerFactory.getLogger(getClass());
 
   /**
-   * All clocked components sorted by their position.
+   * Barrier for synchronizing all component threads.
    */
-  private ParallelClockEntry[] _entries;
-
-  /**
-   * Number of waiting components.
-   */
-  private final AtomicInteger _waiting = new AtomicInteger(0);
+  private CyclicBarrier _barrier;
 
   //
   // public
@@ -33,22 +29,57 @@ public class ParallelClock extends AbstractSynchronizedClock<ParallelClockEntry>
 
   @Override
   public void close() {
-    for (ParallelClockEntry entry : _entries) {
-      entry.close();
+    _entryMap.values().forEach(ParallelClockEntry::close);
+    Thread.yield();
+    _barrier.reset();
+  }
+
+  @Override
+  protected ParallelClockEntry createClockEntry(ClockedComponent component) {
+    return new ParallelClockEntry(component, this);
+  }
+
+  /**
+   * Start threads of all components.
+   */
+  protected void doInit() {
+    logger.debug("starting components");
+
+    _barrier = new CyclicBarrier(_entryMap.size(), this::tick);
+    _entryMap.values().forEach(ParallelClockEntry::start);
+    Thread.yield();
+  }
+
+  /**
+   * Start tick.
+   */
+  private void tick() {
+    // First increment tick.
+    // Second execute events.
+    executeEvent(_tick.incrementAndGet());
+    // Thirds execute components.
+  }
+
+  @Override
+  protected synchronized final void doRun() {
+    try {
+      wait();
+    } catch (InterruptedException e) {
+      close();
+      throw new RuntimeException("Thread has been stopped", e);
     }
   }
 
   @Override
-  protected ParallelClockEntry createClockEntry(final ClockedComponent component) {
-    return new ParallelClockEntry(component, this);
-  }
-
-  protected void waitForStart() throws InterruptedException {
-    synchronized (_lock) {
-      _waiting.incrementAndGet();
-      while (_tick.get() < 0) {
-        _lock.wait();
-      }
+  protected synchronized final void doRun(int ticks) {
+    try {
+      final long end = _tick.get() + ticks;
+      do {
+        wait();
+      } while (_tick.get() < end);
+    } catch (InterruptedException e) {
+      close();
+      throw new RuntimeException("Thread has been stopped", e);
     }
   }
 
@@ -57,129 +88,9 @@ public class ParallelClock extends AbstractSynchronizedClock<ParallelClockEntry>
     assert isStarted() : "Precondition: isStarted()";
 
     try {
-      synchronized (_lock) {
-        if (_waiting.get() < _entries.length) {
-          sleep();
-        } else {
-          tick();
-        }
-      }
-    } catch (InterruptedException e) {
+      _barrier.await();
+    } catch (InterruptedException | BrokenBarrierException e) {
       throw new RuntimeException("Thread has been stopped", e);
-    }
-  }
-
-  /**
-   * Sleep until the other components finish the current tick.
-   * Call needs to be synchronized by _lock;
-   */
-  private void sleep() throws InterruptedException {
-    long tick = _tick.get();
-
-    logger.debug("going to sleep at {}", tick);
-
-    _waiting.incrementAndGet();
-    do {
-      _lock.wait();
-      logger.debug("wake up at {}", _tick.get());
-    } while (tick == _tick.get());
-  }
-
-  /**
-   * All other components have finished the tick, continue with the next tick.
-   * Call needs to be synchronized by _lock;
-   */
-  private void tick() {
-    long tick = _tick.incrementAndGet();
-
-    logger.debug("tick {}", tick);
-
-    // First execute events
-    executeEvent(tick);
-
-    // Second execute all entries
-    _waiting.set(1);
-    _lock.notifyAll();
-  }
-
-  /**
-   * Start threads of all components.
-   */
-  protected void doInit() {
-    try {
-      logger.debug("starting components");
-
-      _entries = _entryMap.values().toArray(new ParallelClockEntry[_entryMap.size()]);
-      for (ParallelClockEntry entry : _entries) {
-        entry.start();
-      }
-      Thread.yield();
-
-      synchronized (_lock) {
-        // wait for all components
-        while (_waiting.get() <  _entries.length) {
-          logger.debug("waiting for {} / {} components", _entries.length - _waiting.get(), _entries.length);
-          _lock.wait(1);
-        }
-
-        // start clock
-        _started = true;
-        tick();
-      }
-    } catch (InterruptedException e) {
-      throw new RuntimeException("Thread has been stopped", e);
-    }
-  }
-
-  @Override
-  protected final void doRun() {
-    try {
-      synchronized (this) {
-        wait();
-      }
-    } catch (InterruptedException e) {
-      close();
-      throw new RuntimeException("Thread has been stopped", e);
-    }
-  }
-
-  @Override
-  protected final void doRun(int ticks) {
-    try {
-      synchronized (_lock) {
-        if (_started) {
-          resume();
-        }
-
-        long end = _tick.get() + ticks;
-        do {
-          _lock.wait();
-        } while (_tick.get() < end);
-
-        pause();
-      }
-    } catch (InterruptedException e) {
-      throw new RuntimeException("Thread has been stopped", e);
-    }
-  }
-
-  /**
-   * Pause run.
-   * Call needs to be synchronized by _lock;
-   */
-  private void pause() {
-    _waiting.decrementAndGet();
-    logger.debug("paused");
-  }
-
-  /**
-   * Resume run.
-   * Call needs to be synchronized by _lock;
-   */
-  private void resume() {
-    logger.debug("resume");
-    if (_waiting.incrementAndGet() > _entries.length) {
-      tick();
     }
   }
 }
