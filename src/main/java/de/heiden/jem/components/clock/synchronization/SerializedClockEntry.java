@@ -1,10 +1,11 @@
 package de.heiden.jem.components.clock.synchronization;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.heiden.jem.components.clock.ClockEntry;
 import de.heiden.jem.components.clock.ClockedComponent;
 import de.heiden.jem.components.clock.Tick;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Bean holding registration information for one clocked component.
@@ -36,7 +37,7 @@ public class SerializedClockEntry extends ClockEntry {
   public SerializedClockEntry(final ClockedComponent component, Tick tick) {
     super(component, tick);
 
-    thread = new Thread(component::run, component.getName());
+    thread = new Thread(this::run, component.getName());
     this.lock = new Lock(component.getName());
   }
 
