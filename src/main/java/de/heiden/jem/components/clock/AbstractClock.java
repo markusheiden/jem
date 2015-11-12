@@ -20,7 +20,7 @@ public abstract class AbstractClock<E extends ClockEntry> implements Clock {
   /**
    * Has the clock been started?.
    */
-  protected final AtomicBoolean _started = new AtomicBoolean(false);
+  private final AtomicBoolean _started = new AtomicBoolean(false);
 
   /**
    * Clocked components.
