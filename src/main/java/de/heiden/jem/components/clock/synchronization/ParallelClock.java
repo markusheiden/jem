@@ -102,7 +102,9 @@ public class ParallelClock extends AbstractSynchronizedClock<ParallelClockEntry>
     _waiting = 1;
     // TODO 2015-11-11 markus: Increment at top to avoid double access to _tick?
     _tick.incrementAndGet();
-    _lock.notifyAll();
+    synchronized (_lock) {
+      _lock.notifyAll();
+    }
   }
 
   /**
