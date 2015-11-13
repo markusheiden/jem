@@ -14,7 +14,17 @@ public abstract class AbstractSynchronizedClock<E extends ClockEntry> extends Ab
   }
 
   @Override
+  public synchronized void updateClockEvent(long tick, ClockEvent event) {
+    super.updateClockEvent(tick, event);
+  }
+
+  @Override
   public synchronized void removeClockEvent(ClockEvent event) {
     super.removeClockEvent(event);
+  }
+
+  @Override
+  protected synchronized void executeEvent(long tick) {
+    super.executeEvent(tick);
   }
 }

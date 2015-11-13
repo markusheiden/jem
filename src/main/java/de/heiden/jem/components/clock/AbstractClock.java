@@ -233,7 +233,7 @@ public abstract class AbstractClock<E extends ClockEntry> implements Clock {
    *
    * @param tick current clock tick
    */
-  protected final void executeEvent(long tick) {
+  protected void executeEvent(long tick) {
     while (_nextEventTick == tick) {
       // get current event
       final ClockEvent event = _events;
