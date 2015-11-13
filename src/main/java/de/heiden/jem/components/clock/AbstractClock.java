@@ -135,6 +135,22 @@ public abstract class AbstractClock<E extends ClockEntry> implements Clock {
   protected abstract void doRun(int ticks);
 
   @Override
+  public final void close() {
+    try {
+      doClose();
+    } finally {
+      _started.set(false);
+    }
+  }
+
+  /**
+   * Dispose clock and all its clocked components.
+   */
+  protected void doClose() {
+    // overwrite, if needed
+  }
+
+  @Override
   public void addClockEvent(long tick, ClockEvent newEvent) {
     assert tick > getTick() : "tick > getTick()";
     assert newEvent != null : "newEvent != null";

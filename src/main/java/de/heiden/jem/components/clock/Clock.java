@@ -17,9 +17,7 @@ public interface Clock extends AutoCloseable {
    * Dispose clock and all its clocked components.
    */
   @Override
-  default void close() {
-    // overwrite, if needed
-  }
+  void close();
 
   /**
    * Has the clock been started?

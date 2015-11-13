@@ -28,13 +28,6 @@ public class ParallelClock extends AbstractSynchronizedClock<ParallelClockEntry>
   //
 
   @Override
-  public void close() {
-    _entryMap.values().forEach(ParallelClockEntry::close);
-    Thread.yield();
-    _barrier.reset();
-  }
-
-  @Override
   protected ParallelClockEntry createClockEntry(ClockedComponent component) {
     return new ParallelClockEntry(component, this);
   }
@@ -92,5 +85,12 @@ public class ParallelClock extends AbstractSynchronizedClock<ParallelClockEntry>
     } catch (InterruptedException | BrokenBarrierException e) {
       throw new RuntimeException("Thread has been stopped", e);
     }
+  }
+
+  @Override
+  protected void doClose() {
+    _entryMap.values().forEach(ParallelClockEntry::close);
+    Thread.yield();
+    _barrier.reset();
   }
 }
