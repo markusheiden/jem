@@ -132,14 +132,17 @@ public class SerializedClock extends AbstractSynchronizedClock<SerializedClockEn
    * Execute 1 tick.
    */
   protected final void tick() throws InterruptedException {
-    logger.debug("tick {}", _tick.get());
+    // First increment tick.
+    long tick = _tick.incrementAndGet();
+    logger.debug("tick {}", tick);
 
-    executeEvent(_tick.get());
+    // Second execute events.
+    executeEvent(tick);
 
     // init finished tick lock
     _finishedTickLock.setTicksToSleep(1);
 
-    // execute first component
+    // Third execute components.
     int nextIndex = 0;
     boolean started = false;
     while (!started && nextIndex < _entries.length) {
@@ -151,9 +154,5 @@ public class SerializedClock extends AbstractSynchronizedClock<SerializedClockEn
     if (started) {
       _finishedTickLock.sleep();
     }
-
-    // increment ticks / time
-    // TODO 2015-11-11 markus: Increment at top to avoid double access to _tick?
-    _tick.incrementAndGet();
   }
 }
