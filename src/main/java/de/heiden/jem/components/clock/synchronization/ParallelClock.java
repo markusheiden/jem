@@ -28,7 +28,7 @@ public class ParallelClock extends AbstractSynchronizedClock<ParallelClockEntry>
   /**
    * Has the run been suspended?.
    */
-  private AtomicBoolean _suspended = new AtomicBoolean(false);
+  private final AtomicBoolean _suspended = new AtomicBoolean(false);
 
   //
   // public
@@ -73,7 +73,7 @@ public class ParallelClock extends AbstractSynchronizedClock<ParallelClockEntry>
     // First increment tick.
     // Second execute events.
     executeEvent(_tick.incrementAndGet());
-    // Thirds execute components.
+    // Third execute components.
   }
 
   @Override
@@ -85,8 +85,13 @@ public class ParallelClock extends AbstractSynchronizedClock<ParallelClockEntry>
   @Override
   protected final void doRun() {
     try {
-      resume();
       synchronized (_suspended) {
+        // Resume, if suspended.
+        if (_suspended.get()) {
+          _suspended.set(false);
+          _suspended.notifyAll();
+        }
+
         while (!_suspended.get()) {
           _suspended.wait();
         }
@@ -94,19 +99,6 @@ public class ParallelClock extends AbstractSynchronizedClock<ParallelClockEntry>
     } catch (InterruptedException e) {
       close();
       throw new RuntimeException("Thread has been stopped", e);
-    }
-  }
-
-  /**
-   * Resume clock run.
-   */
-  private void resume() {
-    synchronized (_suspended) {
-      if (_suspended.get()) {
-        logger.info("Resuming at {}.", _tick.get());
-        _suspended.set(false);
-        _suspended.notifyAll();
-      }
     }
   }
 
@@ -138,7 +130,7 @@ public class ParallelClock extends AbstractSynchronizedClock<ParallelClockEntry>
 
     @Override
     public void execute(long tick) {
-      logger.info("Suspended at {}.", tick);
+      logger.info("Suspend at {}.", tick);
       synchronized (_suspended) {
         _suspended.set(true);
         _suspended.notifyAll();
@@ -149,6 +141,7 @@ public class ParallelClock extends AbstractSynchronizedClock<ParallelClockEntry>
             throw new RuntimeException("Thread has been stopped", e);
           }
         }
+        logger.info("Resume at {}.", tick);
       }
     }
   }
