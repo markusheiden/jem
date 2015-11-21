@@ -64,7 +64,7 @@ public final class SerialClock extends AbstractClock {
    */
   private class Counter implements Runnable {
     @Override
-    public final void run() {
+    public void run() {
       final long tick = _tick.incrementAndGet();
 
       // execute events first, if any
@@ -76,7 +76,7 @@ public final class SerialClock extends AbstractClock {
    * Runnable which increments the tick and executes the events for the new tick.
    * Stops after a given number of ticks.
    */
-  private class StopCounter implements Runnable {
+  private class StopCounter extends Counter {
     /**
      * Tick to stop at.
      */
@@ -93,15 +93,10 @@ public final class SerialClock extends AbstractClock {
 
     @Override
     public final void run() {
-      final long tick = _tick.incrementAndGet();
-
-      if (tick == stop) {
-        // TODO throw another kind of exception?
+      if (_tick.get() == stop) {
         throw new ThreadFinishedException("Stop");
       }
-
-      // execute events first, if any
-      executeEvent(tick);
+      super.run();
     }
   }
 }
