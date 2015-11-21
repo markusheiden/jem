@@ -107,17 +107,12 @@ public class AbstractClockTest {
   /**
    * Clock implementation for testing.
    */
-  private static class TestClock extends AbstractClock<ClockEntry> {
-    /**
-     * Current tick.
-     */
-    private long tick = 0;
-
+  private static class TestClock extends AbstractClock {
     @Override
-    protected ClockEntry createClockEntry(ClockedComponent component) {
-      return new ClockEntry(component, () -> {
+    protected Tick createTick(ClockedComponent component) {
+      return () -> {
         // do nothing
-      });
+      };
     }
 
     @Override

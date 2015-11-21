@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Base implementation for all clocks.
  */
-public abstract class AbstractClock<E extends ClockEntry> implements Clock {
+public abstract class AbstractClock implements Clock {
   /**
    * Logger.
    */
@@ -25,7 +25,7 @@ public abstract class AbstractClock<E extends ClockEntry> implements Clock {
   /**
    * Clocked components.
    */
-  protected final SortedMap<Integer, E> _entryMap = new TreeMap<>();
+  protected final SortedMap<Integer, ClockedComponent> _componentMap = new TreeMap<>();
 
   /**
    * Events.
@@ -76,18 +76,18 @@ public abstract class AbstractClock<E extends ClockEntry> implements Clock {
     assert !isStarted() : "Precondition: !isStarted()";
 
     logger.debug("add component {}", component.getName());
-    E entry = createClockEntry(component);
-    ClockEntry removed = _entryMap.put(position, entry);
+    Tick tick = createTick(component);
+    ClockedComponent removed = _componentMap.put(position, component);
     assert removed == null : "Check: no duplicate positions";
 
-    assert entry.getTick() != null : "Postcondition: result != null";
-    return entry.getTick();
+    assert tick != null: "Postcondition: result != null";
+    return tick;
   }
 
   /**
    * Create clock entry.
    */
-  protected abstract E createClockEntry(ClockedComponent component);
+  protected abstract Tick createTick(ClockedComponent component);
 
   @Override
   public final void run() {

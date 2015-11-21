@@ -1,5 +1,7 @@
 package de.heiden.jem.components.clock.synchronization;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -14,11 +16,16 @@ import de.heiden.jem.components.clock.Tick;
 /**
  * Clock implemented with synchronization.
  */
-public class ParallelClock extends AbstractSynchronizedClock<ParallelClockEntry> implements Tick {
+public class ParallelClock extends AbstractSynchronizedClock implements Tick {
   /**
    * Logger.
    */
   private final Logger logger = LoggerFactory.getLogger(getClass());
+
+  /**
+   * Component threads.
+   */
+  private Thread[] _threads;
 
   /**
    * Barrier for synchronizing all component threads.
@@ -34,9 +41,10 @@ public class ParallelClock extends AbstractSynchronizedClock<ParallelClockEntry>
   // public
   //
 
+
   @Override
-  protected ParallelClockEntry createClockEntry(ClockedComponent component) {
-    return new ParallelClockEntry(component, this);
+  protected Tick createTick(ClockedComponent component) {
+    return this;
   }
 
   /**
@@ -48,9 +56,25 @@ public class ParallelClock extends AbstractSynchronizedClock<ParallelClockEntry>
     // Suspend execution at start of first tick.
     addClockEvent(0, new SuspendEvent());
 
+    // Create threads.
+    List<ClockedComponent> components = new ArrayList<>(_componentMap.values());
+    _threads = new Thread[components.size()];
+    for (int i = 0; i < _threads.length; i++) {
+      ClockedComponent component = components.get(i);
+      _threads[i] = new Thread(() -> {
+        logger.debug("starting {}", component.getName());
+        ParallelClock.this.waitForTick();
+        logger.debug("started {}", component.getName());
+        component.run();
+      }, component.getName());
+      _threads[i].setDaemon(true);
+    }
+
     // Start threads.
-    _barrier = new CyclicBarrier(_entryMap.size(), this::tick);
-    _entryMap.values().forEach(ParallelClockEntry::start);
+    _barrier = new CyclicBarrier(_componentMap.size(), this::tick);
+    for (Thread thread : _threads) {
+      thread.start();
+    }
     Thread.yield();
 
     // Wait until all threads are at start of first click.
@@ -115,7 +139,9 @@ public class ParallelClock extends AbstractSynchronizedClock<ParallelClockEntry>
 
   @Override
   protected void doClose() {
-    _entryMap.values().forEach(ParallelClockEntry::close);
+    for (Thread thread : _threads) {
+      thread.interrupt();
+    }
     Thread.yield();
     _barrier.reset();
   }

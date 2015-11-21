@@ -1,5 +1,8 @@
 package de.heiden.jem.components.clock.synchronization;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,16 +14,21 @@ import de.heiden.jem.components.clock.Tick;
  * <p/>
  * TODO add / remove clocked components operation could not be execute while clock is running
  */
-public class SerializedClock extends AbstractSynchronizedClock<SerializedClockEntry> implements Tick {
+public class SerializedClock extends AbstractSynchronizedClock implements Tick {
   /**
    * Logger.
    */
   private final Logger logger = LoggerFactory.getLogger(getClass());
 
   /**
-   * All clocked components sorted by their position.
+   * Component threads.
    */
-  protected SerializedClockEntry[] _entries;
+  private Thread[] _threads;
+
+  /**
+   * Component thread locks.
+   */
+  private Lock[] _locks;
 
   /**
    * Index of currently executed entry / clocked component.
@@ -44,12 +52,6 @@ public class SerializedClock extends AbstractSynchronizedClock<SerializedClockEn
     _finishedTickLock = new Lock();
   }
 
-  @Override
-  protected SerializedClockEntry createClockEntry(ClockedComponent component) {
-    // TODO 2009-04-27 mh: use own Tick instance for every thread
-    return new SerializedClockEntry(component, this);
-  }
-
   /**
    * Wait for next tick. Called by clocked components.
    */
@@ -62,20 +64,18 @@ public class SerializedClock extends AbstractSynchronizedClock<SerializedClockEn
    * Wait for next tick. Called by clocked components.
    */
   public void waitForTick(int ticks) {
-    assert _entries.length > 0 : "Precondition: _entries.length > 0";
-
     int currentIndex = _currentIndex;
 //    _logger.debug("wait for tick ({})", currentIndex);
-    Lock currentLock = _entries[currentIndex].lock;
+    Lock currentLock = _locks[currentIndex];
     currentLock.setTicksToSleep(ticks);
 
     int nextIndex = currentIndex + 1;
     boolean started = false;
-    while (!started && nextIndex < _entries.length) {
+    while (!started && nextIndex < _locks.length) {
       // trigger next component
 //      _logger.debug("wakeup next ({})", nextIndex);
       _currentIndex = nextIndex;
-      started = _entries[nextIndex++].lock.wakeup();
+      started = _locks[nextIndex++].wakeup();
     }
 
     if (!started) {
@@ -94,16 +94,51 @@ public class SerializedClock extends AbstractSynchronizedClock<SerializedClockEn
   }
 
   @Override
+  protected Tick createTick(ClockedComponent component) {
+    // TODO 2009-04-27 mh: use own Tick instance for every thread
+    return this;
+  }
+
+  @Override
   protected void doInit() {
-    // Create array of clock entry for faster iteration
-    _entries = _entryMap.values().toArray(new SerializedClockEntry[_entryMap.size()]);
-    // Start (threads of) entries
-    for (SerializedClockEntry entry : _entries) {
-      entry.start();
+    // Create threads.
+    List<ClockedComponent> components = new ArrayList<>(_componentMap.values());
+    _locks = new Lock[components.size()];
+    _threads = new Thread[components.size()];
+    for (int i = 0; i < _threads.length; i++) {
+      ClockedComponent component = components.get(i);
+
+      Lock lock = new Lock(component.getName());
+      _locks[i] = lock;
+
+      _threads[i] = new Thread(() -> {
+        try {
+          logger.debug("wait for start of clock");
+          lock.setTicksToSleep(1);
+          lock.sleep();
+
+          component.run();
+        } catch (InterruptedException e) {
+          logger.debug("Execution has been interrupted");
+        }
+      }, component.getName());
+      _threads[i].setDaemon(true);
     }
 
-    // only run this thread if no one else is able to run
+    // Just run this thread if no one else is able to run.
     Thread.currentThread().setPriority(Thread.currentThread().getPriority() - 1);
+
+    // Start threads.
+    for (int i = 0; i < _threads.length; i++) {
+      try {
+        _threads[i].start();
+        // Wait for the thread to reach the first sleep()
+        _locks[i].waitForLock();
+      } catch (InterruptedException e) {
+        logger.debug("Execution has been interrupted");
+      }
+    }
+    Thread.yield();
   }
 
   @Override
@@ -145,14 +180,22 @@ public class SerializedClock extends AbstractSynchronizedClock<SerializedClockEn
     // Third execute components.
     int nextIndex = 0;
     boolean started = false;
-    while (!started && nextIndex < _entries.length) {
+    while (!started && nextIndex < _locks.length) {
       _currentIndex = nextIndex;
-      started = _entries[nextIndex++].lock.wakeup();
+      started = _locks[nextIndex++].wakeup();
     }
 
     // wait for end of tick
     if (started) {
       _finishedTickLock.sleep();
     }
+  }
+
+  @Override
+  protected void doClose() {
+    for (Thread thread : _threads) {
+      thread.interrupt();
+    }
+    Thread.yield();
   }
 }

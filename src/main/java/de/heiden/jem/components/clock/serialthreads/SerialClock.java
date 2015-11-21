@@ -2,21 +2,19 @@ package de.heiden.jem.components.clock.serialthreads;
 
 import org.serialthreads.Executor;
 import org.serialthreads.context.ChainedRunnable;
-import org.serialthreads.context.IRunnable;
 import org.serialthreads.context.ThreadFinishedException;
 
 import de.heiden.jem.components.clock.AbstractClock;
-import de.heiden.jem.components.clock.ClockEntry;
 import de.heiden.jem.components.clock.ClockedComponent;
+import de.heiden.jem.components.clock.Tick;
 
 /**
  * Clock using serial threads.
  */
-public final class SerialClock extends AbstractClock<ClockEntry> {
+public final class SerialClock extends AbstractClock {
   @Override
-  protected ClockEntry createClockEntry(ClockedComponent component) {
-    // every components needs its own Tick instance, because the instances cache its serial thread
-    return new ClockEntry(component, new SerialClockTick());
+  protected Tick createTick(ClockedComponent component) {
+    return new SerialClockTick();
   }
 
   @Override
@@ -42,14 +40,8 @@ public final class SerialClock extends AbstractClock<ClockEntry> {
    * @param first First runnable
    */
   private void createChain(ChainedRunnable first) {
-    IRunnable[] runnables = new IRunnable[_entryMap.size()];
-    int i = 0;
-    for (ClockEntry entry : _entryMap.values()) {
-      runnables[i++] = entry.getComponent();
-    }
-
     // prepend first to chain
-    ChainedRunnable[] chain = ChainedRunnable.chain(runnables);
+    ChainedRunnable[] chain = ChainedRunnable.chain(_componentMap.values());
     first.next = chain[0];
     chain[chain.length - 1].next = first;
   }
