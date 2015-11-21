@@ -4,12 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.heiden.jem.components.clock.ClockEvent;
 import de.heiden.jem.components.clock.ClockedComponent;
 import de.heiden.jem.components.clock.Tick;
 
@@ -33,9 +31,9 @@ public class ParallelClock extends AbstractSynchronizedClock {
   private CyclicBarrier _barrier;
 
   /**
-   * Has the run been suspended?.
+   * Event for suspending execution.
    */
-  private final AtomicBoolean _suspended = new AtomicBoolean(false);
+  private SuspendEvent _suspendEvent = new SuspendEvent();
 
   //
   // public
@@ -64,7 +62,7 @@ public class ParallelClock extends AbstractSynchronizedClock {
     logger.debug("starting components");
 
     // Suspend execution at start of first tick.
-    addClockEvent(0, new SuspendEvent());
+    addClockEvent(0, _suspendEvent);
 
     // Create threads.
     List<ClockedComponent> components = new ArrayList<>(_componentMap.values());
@@ -88,42 +86,19 @@ public class ParallelClock extends AbstractSynchronizedClock {
     Thread.yield();
 
     // Wait until all threads are at start of first click.
-    try {
-      synchronized (_suspended) {
-        while (!_suspended.get()) {
-          _suspended.wait();
-        }
-      }
-    } catch (InterruptedException e) {
-      close();
-      throw new RuntimeException("Thread has been stopped", e);
-    }
+    _suspendEvent.waitForSuspend();
   }
 
   @Override
   protected final void doRun(int ticks) {
-    addClockEvent(_tick.get() + ticks, new SuspendEvent());
+    addClockEvent(_tick.get() + ticks, _suspendEvent);
     doRun();
   }
 
   @Override
   protected final void doRun() {
-    try {
-      synchronized (_suspended) {
-        // Resume, if suspended.
-        if (_suspended.get()) {
-          _suspended.set(false);
-          _suspended.notifyAll();
-        }
-
-        while (!_suspended.get()) {
-          _suspended.wait();
-        }
-      }
-    } catch (InterruptedException e) {
-      close();
-      throw new RuntimeException("Thread has been stopped", e);
-    }
+    _suspendEvent.resume();
+    _suspendEvent.waitForSuspend();
   }
 
   @Override
@@ -135,29 +110,4 @@ public class ParallelClock extends AbstractSynchronizedClock {
     _barrier.reset();
   }
 
-  /**
-   * Event to suspend clock run.
-   */
-  private class SuspendEvent extends ClockEvent {
-    public SuspendEvent() {
-      super("Suspend");
-    }
-
-    @Override
-    public void execute(long tick) {
-      logger.info("Suspend at {}.", tick);
-      synchronized (_suspended) {
-        _suspended.set(true);
-        _suspended.notifyAll();
-        while (_suspended.get()) {
-          try {
-            _suspended.wait();
-          } catch (InterruptedException e) {
-            throw new RuntimeException("Thread has been stopped", e);
-          }
-        }
-        logger.info("Resume at {}.", tick);
-      }
-    }
-  }
 }
