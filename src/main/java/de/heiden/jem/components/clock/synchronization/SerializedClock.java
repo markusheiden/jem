@@ -2,6 +2,7 @@ package de.heiden.jem.components.clock.synchronization;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Semaphore;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,14 +27,14 @@ public class SerializedClock extends AbstractSynchronizedClock {
   private Thread[] _threads;
 
   /**
-   * Component thread locks.
+   * Fair singleton semaphore for sequential execution of component threads.
    */
-  private Lock[] _locks;
+  private final Semaphore _semaphore = new Semaphore(1, true);
 
   /**
-   * Lock to wait for last component to be executed.
+   * Event for suspending execution.
    */
-  private final Lock _finishedTickLock = new Lock("Finish tick");
+  private final SuspendEvent _suspendEvent = new SuspendEvent();
 
   //
   // public
@@ -41,68 +42,74 @@ public class SerializedClock extends AbstractSynchronizedClock {
 
   @Override
   protected Tick createTick(ClockedComponent component) {
-    return new SerializedTick();
+    return this::waitForTick;
+  }
+
+  /**
+   * Wait for next tick. Called by clocked components.
+   */
+  private void waitForTick() {
+    try {
+      // Let other components run.
+      _semaphore.release();
+      // Wait for next tick.
+      _semaphore.acquire();
+      // Run again.
+    } catch (InterruptedException e) {
+      throw new ManualAbort();
+    }
   }
 
   @Override
   protected void doInit() {
-    // Create threads.
-    List<ClockedComponent> components = new ArrayList<>(_componentMap.values());
-    SerializedTick[] ticks = new SerializedTick[components.size()];
-    _locks = new Lock[components.size()];
-    _threads = new Thread[components.size()];
-    for (int i = 0; i < _threads.length; i++) {
-      ClockedComponent component = components.get(i);
-      SerializedTick tick = (SerializedTick) _tickMap.get(component);
-      ticks[i] = tick;
-
-      Lock lock = new Lock(component.getName());
-      tick._lock = _locks[i];
-      _locks[i] = lock;
-
-      _threads[i] = new Thread(() -> {
-        try {
-          logger.debug("wait for start of clock");
-          lock.sleep();
-
-          component.run();
-        } catch (InterruptedException e) {
-          logger.debug("Execution has been interrupted");
-        }
-      }, component.getName());
-      _threads[i].setDaemon(true);
-    }
-
-    for (int i = 0; i < ticks.length; i++) {
-      ticks[i]._lock = _locks[i];
-    }
-    for (int i = 0; i < ticks.length - 1; i++) {
-      ticks[i]._nextLock = _locks[i + 1];
-    }
-    ticks[components.size() - 1]._nextLock = _finishedTickLock;
-
-    // Just run this thread if no one else is able to run.
-    Thread.currentThread().setPriority(Thread.currentThread().getPriority() - 1);
-
-    // Start threads.
-    for (int i = 0; i < _threads.length; i++) {
-      try {
-        _threads[i].start();
-        // Wait for the thread to reach the first sleep()
-        _locks[i].waitForLock();
-      } catch (InterruptedException e) {
-        throw new ManualAbort();
-      }
-    }
-    Thread.yield();
-  }
-
-  @Override
-  protected final void doRun() {
     try {
-      while (true) {
-        tick();
+      // Suspend execution at start of first tick.
+      addClockEvent(0, _suspendEvent);
+
+      // Block semaphore for first.
+      _semaphore.acquire();
+
+      List<ClockedComponent> components = new ArrayList<>(_componentMap.values());
+      _threads = new Thread[1 + components.size()];
+      for (int i = 1; i < _threads.length; i++) {
+        ClockedComponent component = components.get(i - 1);
+
+        _threads[i] = createStartedDaemonThread(component.getName(), () -> {
+          logger.debug("starting {}", component.getName());
+          try {
+            // Wait for first tick.
+            _semaphore.acquire();
+          } catch (InterruptedException e) {
+            throw new ManualAbort();
+          }
+          logger.debug("started {}", component.getName());
+          component.run();
+        });
+        Thread.yield();
+
+        // Wait for thread to await permit.
+        while (_semaphore.getQueueLength() != i) {
+          Thread.sleep(1);
+        }
       }
+
+      _threads[0] = createStartedDaemonThread("Tick", () -> {
+        while (true) {
+          startTick();
+          // Execute component threads.
+          _semaphore.release();
+          // Wait for component threads to finish.
+          try {
+            _semaphore.acquire();
+          } catch (InterruptedException e) {
+            throw new ManualAbort();
+          }
+        }
+      });
+      Thread.yield();
+
+      _suspendEvent.waitForSuspend();
+
     } catch (InterruptedException e) {
       throw new ManualAbort();
     }
@@ -110,22 +117,14 @@ public class SerializedClock extends AbstractSynchronizedClock {
 
   @Override
   protected final void doRun(int ticks) {
-    try {
-      while (--ticks >= 0) {
-        tick();
-      }
-    } catch (InterruptedException e) {
-      throw new ManualAbort();
-    }
+    addClockEvent(_tick.get() + ticks, _suspendEvent);
+    doRun();
   }
 
-  /**
-   * Execute 1 tick.
-   */
-  protected final void tick() throws InterruptedException {
-    startTick();
-    _locks[0].wakeup();
-    _finishedTickLock.sleep();
+  @Override
+  protected final void doRun() {
+    _suspendEvent.resume();
+    _suspendEvent.waitForSuspend();
   }
 
   @Override
@@ -134,21 +133,5 @@ public class SerializedClock extends AbstractSynchronizedClock {
       thread.interrupt();
     }
     Thread.yield();
-  }
-
-  private static class SerializedTick implements Tick {
-    private Lock _lock;
-
-    private Lock _nextLock;
-
-    @Override
-    public void waitForTick() {
-      try {
-        _nextLock.wakeup();
-        _lock.sleep();
-      } catch (InterruptedException e) {
-        throw new ManualAbort();
-      }
-    }
   }
 }
