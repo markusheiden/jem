@@ -27,7 +27,7 @@ public final class SuspendEvent extends ClockEvent {
   }
 
   @Override
-  public synchronized void execute(long tick) {
+  public synchronized void execute(long tick) throws ManualAbort {
     logger.info("Suspend at {}.", tick);
     _suspended = true;
     notifyAll();
@@ -36,7 +36,7 @@ public final class SuspendEvent extends ClockEvent {
         wait();
       }
     } catch (InterruptedException e) {
-      throw new RuntimeException("Thread has been stopped", e);
+      throw new ManualAbort();
     }
     logger.info("Resume at {}.", tick);
   }
@@ -54,13 +54,13 @@ public final class SuspendEvent extends ClockEvent {
   /**
    * Wait for suspend.
    */
-  public synchronized void waitForSuspend() {
+  public synchronized void waitForSuspend() throws ManualAbort {
     try {
       while (!_suspended) {
         wait();
       }
     } catch (InterruptedException e) {
-      throw new RuntimeException("Thread has been stopped", e);
+      throw new ManualAbort();
     }
   }
 }

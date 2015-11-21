@@ -33,7 +33,7 @@ public class ParallelClock extends AbstractSynchronizedClock {
   /**
    * Event for suspending execution.
    */
-  private SuspendEvent _suspendEvent = new SuspendEvent();
+  private final SuspendEvent _suspendEvent = new SuspendEvent();
 
   //
   // public

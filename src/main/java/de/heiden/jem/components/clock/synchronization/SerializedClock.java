@@ -91,7 +91,7 @@ public class SerializedClock extends AbstractSynchronizedClock {
         // Wait for the thread to reach the first sleep()
         _locks[i].waitForLock();
       } catch (InterruptedException e) {
-        logger.debug("Execution has been interrupted");
+        throw new ManualAbort();
       }
     }
     Thread.yield();
@@ -104,7 +104,7 @@ public class SerializedClock extends AbstractSynchronizedClock {
         tick();
       }
     } catch (InterruptedException e) {
-      logger.debug("run interrupted");
+      throw new ManualAbort();
     }
   }
 
@@ -115,7 +115,7 @@ public class SerializedClock extends AbstractSynchronizedClock {
         tick();
       }
     } catch (InterruptedException e) {
-      logger.debug("debug run interrupted");
+      throw new ManualAbort();
     }
   }
 
@@ -147,7 +147,7 @@ public class SerializedClock extends AbstractSynchronizedClock {
         _nextLock.wakeup();
         _lock.sleep();
       } catch (InterruptedException e) {
-        throw new RuntimeException("Thread has been stopped", e);
+        throw new ManualAbort();
       }
     }
   }
