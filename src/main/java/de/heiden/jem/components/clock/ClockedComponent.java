@@ -9,5 +9,5 @@ public interface ClockedComponent extends IRunnable {
   /**
    * Name of component.
    */
-  public String getName();
+  String getName();
 }
