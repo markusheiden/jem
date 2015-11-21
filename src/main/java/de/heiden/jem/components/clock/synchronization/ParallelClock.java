@@ -50,8 +50,6 @@ public class ParallelClock extends AbstractSynchronizedClock {
    * Wait for next tick. Called by clocked components.
    */
   private void waitForTick() {
-    assert isStarted() : "Precondition: isStarted()";
-
     try {
       _barrier.await();
     } catch (InterruptedException | BrokenBarrierException e) {
@@ -83,7 +81,7 @@ public class ParallelClock extends AbstractSynchronizedClock {
     }
 
     // Start threads.
-    _barrier = new CyclicBarrier(_componentMap.size(), this::tick);
+    _barrier = new CyclicBarrier(components.size(), this::startTick);
     for (Thread thread : _threads) {
       thread.start();
     }
@@ -100,16 +98,6 @@ public class ParallelClock extends AbstractSynchronizedClock {
       close();
       throw new RuntimeException("Thread has been stopped", e);
     }
-  }
-
-  /**
-   * Start tick.
-   */
-  private void tick() {
-    // First increment tick.
-    // Second execute events.
-    executeEvent(_tick.incrementAndGet());
-    // Third execute components.
   }
 
   @Override

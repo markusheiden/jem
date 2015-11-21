@@ -26,14 +26,20 @@ public final class SerialClock extends AbstractClock {
 
   @Override
   protected final void doRun() {
-    run(new Counter());
+    run(this::startTick);
   }
 
   @Override
   protected final void doRun(int ticks) {
     assert ticks >= 0 : "Precondition: ticks >= 0";
 
-    run(new StopCounter(ticks));
+    final long stop = _tick.get() + 1 + ticks;
+    run(() -> {
+      if (_tick.get() == stop) {
+        throw new ThreadFinishedException("Stop");
+      }
+      startTick();
+    });
   }
 
   /**
@@ -56,47 +62,6 @@ public final class SerialClock extends AbstractClock {
       }
     } catch (ThreadFinishedException e) {
       // TODO 2009-12-11 mh: should not happen!!!
-    }
-  }
-
-  /**
-   * Runnable which increments the tick and executes the events for the new tick.
-   */
-  private class Counter implements Runnable {
-    @Override
-    public void run() {
-      final long tick = _tick.incrementAndGet();
-
-      // execute events first, if any
-      executeEvent(tick);
-    }
-  }
-
-  /**
-   * Runnable which increments the tick and executes the events for the new tick.
-   * Stops after a given number of ticks.
-   */
-  private class StopCounter extends Counter {
-    /**
-     * Tick to stop at.
-     */
-    private final long stop;
-
-    /**
-     * Constructor.
-     *
-     * @param ticks Stop after executing this number of ticks
-     */
-    public StopCounter(long ticks) {
-      stop = _tick.get() + 1 + ticks;
-    }
-
-    @Override
-    public final void run() {
-      if (_tick.get() == stop) {
-        throw new ThreadFinishedException("Stop");
-      }
-      super.run();
     }
   }
 }

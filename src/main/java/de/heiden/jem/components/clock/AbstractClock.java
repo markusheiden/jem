@@ -228,6 +228,16 @@ public abstract class AbstractClock implements Clock {
   }
 
   /**
+   * Start a new tick.
+   */
+  protected void startTick() {
+    // First increment tick.
+    // Second execute events.
+    executeEvent(_tick.incrementAndGet());
+    // Third execute components.
+  }
+
+  /**
    * Execute current event, if any.
    *
    * @param tick current clock tick

@@ -166,12 +166,7 @@ public class SerializedClock extends AbstractSynchronizedClock {
    * Execute 1 tick.
    */
   protected final void tick() throws InterruptedException {
-    // First increment tick.
-    long tick = _tick.incrementAndGet();
-    logger.debug("tick {}", tick);
-
-    // Second execute events.
-    executeEvent(tick);
+    startTick();
 
     // init finished tick lock
     _finishedTickLock.setTicksToSleep(1);
