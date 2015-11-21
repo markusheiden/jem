@@ -1,5 +1,7 @@
 package de.heiden.jem.components.clock;
 
+import java.util.IdentityHashMap;
+import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -26,6 +28,11 @@ public abstract class AbstractClock implements Clock {
    * Clocked components.
    */
   protected final SortedMap<Integer, ClockedComponent> _componentMap = new TreeMap<>();
+
+  /**
+   * Ticks.
+   */
+  protected final Map<ClockedComponent, Tick> _tickMap = new IdentityHashMap<>();
 
   /**
    * Events.
@@ -76,7 +83,11 @@ public abstract class AbstractClock implements Clock {
     assert !isStarted() : "Precondition: !isStarted()";
 
     logger.debug("add component {}", component.getName());
+
     Tick tick = createTick(component);
+    Tick removedTick = _tickMap.put(component, tick);
+    assert removedTick == null : "Check: no clocked component registered twice";
+
     ClockedComponent removed = _componentMap.put(position, component);
     assert removed == null : "Check: no duplicate positions";
 
