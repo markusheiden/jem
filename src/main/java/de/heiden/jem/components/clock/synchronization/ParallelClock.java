@@ -51,7 +51,7 @@ public class ParallelClock extends AbstractSynchronizedClock {
     try {
       _barrier.await();
     } catch (InterruptedException | BrokenBarrierException e) {
-      throw new RuntimeException("Thread has been stopped", e);
+      throw new ManualAbort();
     }
   }
 
