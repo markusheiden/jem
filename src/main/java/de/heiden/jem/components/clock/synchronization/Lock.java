@@ -1,5 +1,7 @@
 package de.heiden.jem.components.clock.synchronization;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 /**
  * A lock encapsulates the wait / notify mechanism to avoid missed
  * notifications.
@@ -14,17 +16,17 @@ public final class Lock {
    * Remembers if thread to sleep is already waiting.
    * Synchronized by {@link #_lock}.
    */
-  private boolean _waiting;
+  private boolean _waiting = false;
 
   /**
    * Remembers if thread has not already been waked up.
    */
-  private volatile boolean _noWakeup;
+  private final AtomicBoolean _noWakeup = new AtomicBoolean(true);
 
   /**
    * Object used as lock.
    */
-  private final Object _lock;
+  private final Object _lock = new Object();
 
   //
   //
@@ -40,26 +42,17 @@ public final class Lock {
     assert name != null : "name != null";
 
     _name = name;
-    _waiting = false;
-    _noWakeup = true;
-    _lock = new Object();
   }
 
   /**
    * Sleeps until waked up.
    */
   public void sleep() throws InterruptedException {
-    if (_noWakeup) {
-      // give other threads the chance to run to avoid wait of this thread
-      Thread.yield();
-    }
     synchronized (_lock) {
-      if (_noWakeup) {
+      if (_noWakeup.getAndSet(true)) {
         _waiting = true;
         _lock.wait();
         _waiting = false;
-      } else {
-        _noWakeup = true;
       }
     }
   }
@@ -74,7 +67,7 @@ public final class Lock {
       if (_waiting) {
         _lock.notify();
       } else {
-        _noWakeup = false;
+        _noWakeup.set(false);
       }
     }
   }
@@ -86,7 +79,7 @@ public final class Lock {
     synchronized (_lock) {
       while (!_waiting) {
         // Wait for sleep() being called
-        _lock.wait(1);
+        _lock.wait(0, 100);
       }
     }
   }
