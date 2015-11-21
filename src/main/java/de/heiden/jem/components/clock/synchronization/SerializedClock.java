@@ -106,9 +106,13 @@ public class SerializedClock extends AbstractSynchronizedClock {
           // Execute component threads.
           release();
           // Wait for component threads to finish.
+          // This acquire() has to take place before the first component acquires the semaphore again,
+          // to keep the correct order.
+          // How to enforce that? Currently we set this thread to max priority to make that (most likely) happen.
           acquire();
         }
       });
+      _threads[0].setPriority(Thread.MAX_PRIORITY);
       Thread.yield();
 
       _suspendEvent.waitForSuspend();
