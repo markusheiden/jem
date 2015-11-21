@@ -31,90 +31,39 @@ public class SerializedClock extends AbstractSynchronizedClock {
   private Lock[] _locks;
 
   /**
-   * Index of currently executed entry / clocked component.
+   * Lock to wait for last component to be executed.
    */
-  protected int _currentIndex;
-
-  /**
-   * Lock for sleeping until tick is finished.
-   */
-  protected final Lock _finishedTickLock;
+  private final Lock _finishedTickLock = new Lock("Finish tick");
 
   //
   // public
   //
 
-  /**
-   * Constructor.
-   */
-  public SerializedClock() {
-    _currentIndex = 0;
-    _finishedTickLock = new Lock();
-  }
-
   @Override
   protected Tick createTick(ClockedComponent component) {
-    // TODO 2009-04-27 mh: use own Tick instance for every thread
-    return this::waitForTick;
-  }
-
-  /**
-   * Wait for next tick. Called by clocked components.
-   */
-  private void waitForTick() {
-    waitForTick(1);
-  }
-
-  /**
-   * Wait for next tick. Called by clocked components.
-   */
-  private void waitForTick(int ticks) {
-    int currentIndex = _currentIndex;
-//    _logger.debug("wait for tick ({})", currentIndex);
-    Lock currentLock = _locks[currentIndex];
-    currentLock.setTicksToSleep(ticks);
-
-    int nextIndex = currentIndex + 1;
-    boolean started = false;
-    while (!started && nextIndex < _locks.length) {
-      // trigger next component
-//      _logger.debug("wakeup next ({})", nextIndex);
-      _currentIndex = nextIndex;
-      started = _locks[nextIndex++].wakeup();
-    }
-
-    if (!started) {
-      // trigger next tick
-//      _logger.debug("wakeup for next tick");
-      _finishedTickLock.wakeup();
-    }
-
-    // go to sleep
-//    _logger.debug("wait ({})", currentIndex);
-    try {
-      currentLock.sleep();
-    } catch (InterruptedException e) {
-      throw new RuntimeException("Thread has been stopped", e);
-    }
+    return new SerializedTick();
   }
 
   @Override
   protected void doInit() {
     // Create threads.
     List<ClockedComponent> components = new ArrayList<>(_componentMap.values());
+    SerializedTick[] ticks = new SerializedTick[components.size()];
     _locks = new Lock[components.size()];
     _threads = new Thread[components.size()];
     for (int i = 0; i < _threads.length; i++) {
       ClockedComponent component = components.get(i);
+      SerializedTick tick = (SerializedTick) _tickMap.get(component);
+      ticks[i] = tick;
 
       Lock lock = new Lock(component.getName());
+      tick._lock = _locks[i];
       _locks[i] = lock;
 
       _threads[i] = new Thread(() -> {
         try {
           logger.debug("wait for start of clock");
-          lock.setTicksToSleep(1);
-          lock.sleep();
+          lock.sleep(1);
 
           component.run();
         } catch (InterruptedException e) {
@@ -123,6 +72,14 @@ public class SerializedClock extends AbstractSynchronizedClock {
       }, component.getName());
       _threads[i].setDaemon(true);
     }
+
+    for (int i = 0; i < ticks.length; i++) {
+      ticks[i]._lock = _locks[i];
+    }
+    for (int i = 0; i < ticks.length - 1; i++) {
+      ticks[i]._nextLock = _locks[i + 1];
+    }
+    ticks[components.size() - 1]._nextLock = _finishedTickLock;
 
     // Just run this thread if no one else is able to run.
     Thread.currentThread().setPriority(Thread.currentThread().getPriority() - 1);
@@ -167,22 +124,8 @@ public class SerializedClock extends AbstractSynchronizedClock {
    */
   protected final void tick() throws InterruptedException {
     startTick();
-
-    // init finished tick lock
-    _finishedTickLock.setTicksToSleep(1);
-
-    // Third execute components.
-    int nextIndex = 0;
-    boolean started = false;
-    while (!started && nextIndex < _locks.length) {
-      _currentIndex = nextIndex;
-      started = _locks[nextIndex++].wakeup();
-    }
-
-    // wait for end of tick
-    if (started) {
-      _finishedTickLock.sleep();
-    }
+    _locks[0].wakeup();
+    _finishedTickLock.sleep(1);
   }
 
   @Override
@@ -191,5 +134,21 @@ public class SerializedClock extends AbstractSynchronizedClock {
       thread.interrupt();
     }
     Thread.yield();
+  }
+
+  private static class SerializedTick implements Tick {
+    private Lock _lock;
+
+    private Lock _nextLock;
+
+    @Override
+    public void waitForTick() {
+      try {
+        _nextLock.wakeup();
+        _lock.sleep(1);
+      } catch (InterruptedException e) {
+        throw new RuntimeException("Thread has been stopped", e);
+      }
+    }
   }
 }

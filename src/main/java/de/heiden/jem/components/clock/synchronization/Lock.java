@@ -58,23 +58,12 @@ public final class Lock {
   }
 
   /**
-   * Set number cycles to sleep.
-   *
-   * @param ticks ticks to sleep
-   * @require ticks > 0
-   */
-  public void setTicksToSleep(int ticks) {
-    assert ticks > 0 : "ticks > 0";
-
-    _ticks = ticks;
-  }
-
-  /**
    * Sleeps until waked up.
-   * Should only be used after setting ticks to sleep!
    */
-  public void sleep() throws InterruptedException {
-    if (_noWakeup && _ticks == 1) {
+  public void sleep(int ticks) throws InterruptedException {
+    _ticks = ticks;
+
+    if (_noWakeup && ticks == 1) {
       // give other threads the chance to run to avoid wait of this thread
       Thread.yield();
     }
@@ -120,7 +109,7 @@ public final class Lock {
     synchronized (_lock) {
       while (!_waiting) {
         // Wait for sleep() being called
-        _lock.wait(10);
+        _lock.wait(1);
       }
     }
   }
