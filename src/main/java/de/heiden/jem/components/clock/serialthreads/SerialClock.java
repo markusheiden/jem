@@ -1,6 +1,7 @@
 package de.heiden.jem.components.clock.serialthreads;
 
 import org.serialthreads.Executor;
+import org.serialthreads.Interrupt;
 import org.serialthreads.context.ChainedRunnable;
 import org.serialthreads.context.ThreadFinishedException;
 
@@ -14,7 +15,13 @@ import de.heiden.jem.components.clock.Tick;
 public final class SerialClock extends AbstractClock {
   @Override
   protected Tick createTick(ClockedComponent component) {
-    return new SerialClockTick();
+    // Serial threads do not support lambdas by now, so we are using an inner class here.
+    return new Tick() {
+      @Override
+      @Interrupt
+      public void waitForTick() {
+      }
+    };
   }
 
   @Override

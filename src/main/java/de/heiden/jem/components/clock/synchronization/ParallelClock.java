@@ -14,9 +14,9 @@ import de.heiden.jem.components.clock.ClockedComponent;
 import de.heiden.jem.components.clock.Tick;
 
 /**
- * Clock implemented with synchronization.
+ * Clock implemented with synchronization, executing component threads in parallel.
  */
-public class ParallelClock extends AbstractSynchronizedClock implements Tick {
+public class ParallelClock extends AbstractSynchronizedClock {
   /**
    * Logger.
    */
@@ -41,10 +41,22 @@ public class ParallelClock extends AbstractSynchronizedClock implements Tick {
   // public
   //
 
-
   @Override
   protected Tick createTick(ClockedComponent component) {
-    return this;
+    return this::waitForTick;
+  }
+
+  /**
+   * Wait for next tick. Called by clocked components.
+   */
+  private void waitForTick() {
+    assert isStarted() : "Precondition: isStarted()";
+
+    try {
+      _barrier.await();
+    } catch (InterruptedException | BrokenBarrierException e) {
+      throw new RuntimeException("Thread has been stopped", e);
+    }
   }
 
   /**
@@ -122,17 +134,6 @@ public class ParallelClock extends AbstractSynchronizedClock implements Tick {
       }
     } catch (InterruptedException e) {
       close();
-      throw new RuntimeException("Thread has been stopped", e);
-    }
-  }
-
-  @Override
-  public final void waitForTick() {
-    assert isStarted() : "Precondition: isStarted()";
-
-    try {
-      _barrier.await();
-    } catch (InterruptedException | BrokenBarrierException e) {
       throw new RuntimeException("Thread has been stopped", e);
     }
   }

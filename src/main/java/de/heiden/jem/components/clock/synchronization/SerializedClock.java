@@ -10,11 +10,11 @@ import de.heiden.jem.components.clock.ClockedComponent;
 import de.heiden.jem.components.clock.Tick;
 
 /**
- * Clock implemented with synchronization.
+ * Clock implemented with synchronization, executing component threads sequentially.
  * <p/>
  * TODO add / remove clocked components operation could not be execute while clock is running
  */
-public class SerializedClock extends AbstractSynchronizedClock implements Tick {
+public class SerializedClock extends AbstractSynchronizedClock {
   /**
    * Logger.
    */
@@ -52,18 +52,23 @@ public class SerializedClock extends AbstractSynchronizedClock implements Tick {
     _finishedTickLock = new Lock();
   }
 
+  @Override
+  protected Tick createTick(ClockedComponent component) {
+    // TODO 2009-04-27 mh: use own Tick instance for every thread
+    return this::waitForTick;
+  }
+
   /**
    * Wait for next tick. Called by clocked components.
    */
-  @Override
-  public void waitForTick() {
+  private void waitForTick() {
     waitForTick(1);
   }
 
   /**
    * Wait for next tick. Called by clocked components.
    */
-  public void waitForTick(int ticks) {
+  private void waitForTick(int ticks) {
     int currentIndex = _currentIndex;
 //    _logger.debug("wait for tick ({})", currentIndex);
     Lock currentLock = _locks[currentIndex];
@@ -91,12 +96,6 @@ public class SerializedClock extends AbstractSynchronizedClock implements Tick {
     } catch (InterruptedException e) {
       throw new RuntimeException("Thread has been stopped", e);
     }
-  }
-
-  @Override
-  protected Tick createTick(ClockedComponent component) {
-    // TODO 2009-04-27 mh: use own Tick instance for every thread
-    return this;
   }
 
   @Override
