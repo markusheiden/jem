@@ -66,22 +66,16 @@ public class ParallelClock extends AbstractSynchronizedClock {
 
     // Create threads.
     List<ClockedComponent> components = new ArrayList<>(_componentMap.values());
+    _barrier = new CyclicBarrier(components.size(), this::startTick);
     _threads = new Thread[components.size()];
     for (int i = 0; i < _threads.length; i++) {
       ClockedComponent component = components.get(i);
-      _threads[i] = new Thread(() -> {
+      _threads[i] = createStartedDaemonThread(component.getName(), () -> {
         logger.debug("starting {}", component.getName());
         ParallelClock.this.waitForTick();
         logger.debug("started {}", component.getName());
         component.run();
-      }, component.getName());
-      _threads[i].setDaemon(true);
-    }
-
-    // Start threads.
-    _barrier = new CyclicBarrier(components.size(), this::startTick);
-    for (Thread thread : _threads) {
-      thread.start();
+      });
     }
     Thread.yield();
 

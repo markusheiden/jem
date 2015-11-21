@@ -26,4 +26,14 @@ public abstract class AbstractSynchronizedClock extends AbstractClock {
   protected synchronized void executeEvent(long tick) {
     super.executeEvent(tick);
   }
+
+  /**
+   * Create started daemon thread.
+   */
+  protected Thread createStartedDaemonThread(String name, Runnable runnable) {
+    Thread thread = new Thread(runnable, name);
+    thread.setDaemon(true);
+    thread.start();
+    return thread;
+  }
 }
