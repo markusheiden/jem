@@ -109,9 +109,8 @@ public abstract class AbstractClock<E extends ClockEntry> implements Clock {
    * Init clock.
    */
   private void init() {
-    if (!_started.get()) {
+    if (!_started.getAndSet(true)) {
       doInit();
-      _started.set(true);
     }
   }
 
