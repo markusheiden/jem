@@ -63,7 +63,7 @@ public class SerializedClock extends AbstractSynchronizedClock {
       _threads[i] = new Thread(() -> {
         try {
           logger.debug("wait for start of clock");
-          lock.sleep(1);
+          lock.sleep();
 
           component.run();
         } catch (InterruptedException e) {
@@ -125,7 +125,7 @@ public class SerializedClock extends AbstractSynchronizedClock {
   protected final void tick() throws InterruptedException {
     startTick();
     _locks[0].wakeup();
-    _finishedTickLock.sleep(1);
+    _finishedTickLock.sleep();
   }
 
   @Override
@@ -145,7 +145,7 @@ public class SerializedClock extends AbstractSynchronizedClock {
     public void waitForTick() {
       try {
         _nextLock.wakeup();
-        _lock.sleep(1);
+        _lock.sleep();
       } catch (InterruptedException e) {
         throw new RuntimeException("Thread has been stopped", e);
       }

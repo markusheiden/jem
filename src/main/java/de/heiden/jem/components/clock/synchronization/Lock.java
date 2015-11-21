@@ -11,14 +11,10 @@ public final class Lock {
   private final String _name;
 
   /**
-   * Numer of ticks to sleep.
-   */
-  private volatile int _ticks;
-
-  /**
    * Remembers if thread to sleep is already waiting.
+   * Synchronized by {@link #_lock}.
    */
-  private volatile boolean _waiting;
+  private boolean _waiting;
 
   /**
    * Remembers if thread has not already been waked up.
@@ -35,13 +31,6 @@ public final class Lock {
   //
 
   /**
-   * Constructor using a default name.
-   */
-  public Lock() {
-    this("Lock");
-  }
-
-  /**
    * Constructor.
    *
    * @param name Informal name of the lock.
@@ -51,7 +40,6 @@ public final class Lock {
     assert name != null : "name != null";
 
     _name = name;
-    _ticks = 0;
     _waiting = false;
     _noWakeup = true;
     _lock = new Object();
@@ -60,10 +48,8 @@ public final class Lock {
   /**
    * Sleeps until waked up.
    */
-  public void sleep(int ticks) throws InterruptedException {
-    _ticks = ticks;
-
-    if (_noWakeup && ticks == 1) {
+  public void sleep() throws InterruptedException {
+    if (_noWakeup) {
       // give other threads the chance to run to avoid wait of this thread
       Thread.yield();
     }
@@ -83,22 +69,13 @@ public final class Lock {
    *
    * @return Lock has been waked up.
    */
-  public boolean wakeup() {
-    int ticks = _ticks;
-    if (--ticks == 0) {
-      // really wakeup
-      synchronized (_lock) {
-        if (_waiting) {
-          _lock.notify();
-        } else {
-          _noWakeup = false;
-        }
-        return true;
+  public void wakeup() {
+    synchronized (_lock) {
+      if (_waiting) {
+        _lock.notify();
+      } else {
+        _noWakeup = false;
       }
-    } else {
-      // sleep farther
-      _ticks = ticks;
-      return false;
     }
   }
 
