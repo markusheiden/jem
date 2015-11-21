@@ -2,7 +2,7 @@ package de.heiden.jem.components.clock.serialthreads;
 
 import org.serialthreads.Executor;
 import org.serialthreads.Interrupt;
-import org.serialthreads.context.ChainedRunnable;
+import org.serialthreads.context.IRunnable;
 import org.serialthreads.context.ThreadFinishedException;
 
 import de.heiden.jem.components.clock.AbstractClock;
@@ -26,45 +26,33 @@ public final class SerialClock extends AbstractClock {
 
   @Override
   protected final void doRun() {
-    Counter counter = new Counter();
-    createChain(counter);
-    run(counter);
+    run(new Counter());
   }
 
   @Override
   protected final void doRun(int ticks) {
     assert ticks >= 0 : "Precondition: ticks >= 0";
 
-    StopCounter counter = new StopCounter(ticks);
-    createChain(counter);
-    run(counter);
-  }
-
-  /**
-   * Create a chain of runnables from the component.
-   * This method needs no return value, because first is (the start of) the chain.
-   *
-   * @param first First runnable
-   */
-  private void createChain(ChainedRunnable first) {
-    // prepend first to chain
-    ChainedRunnable[] chain = ChainedRunnable.chain(_componentMap.values());
-    first.next = chain[0];
-    chain[chain.length - 1].next = first;
+    run(new StopCounter(ticks));
   }
 
   /**
    * Execute runnables.
    *
-   * @param chain Runnables as chain
+   * @param startTick Runnable executed to start a new tick.
    */
   @Executor
-  private void run(ChainedRunnable chain) {
-    ChainedRunnable runnable = chain;
+  private void run(final Runnable startTick) {
+    final ClockedComponent[] components =
+      _componentMap.values().toArray(new ClockedComponent[_componentMap.size()]);
+
     try {
       //noinspection InfiniteLoopStatement
       while (true) {
-        runnable = runnable.run();
+        startTick.run();
+        for (IRunnable runnable : components) {
+          runnable.run();
+        }
       }
     } catch (ThreadFinishedException e) {
       // TODO 2009-12-11 mh: should not happen!!!
@@ -74,15 +62,13 @@ public final class SerialClock extends AbstractClock {
   /**
    * Runnable which increments the tick and executes the events for the new tick.
    */
-  private class Counter extends ChainedRunnable {
+  private class Counter implements Runnable {
     @Override
-    public final ChainedRunnable run() {
+    public final void run() {
       final long tick = _tick.incrementAndGet();
 
       // execute events first, if any
       executeEvent(tick);
-
-      return next;
     }
   }
 
@@ -90,7 +76,7 @@ public final class SerialClock extends AbstractClock {
    * Runnable which increments the tick and executes the events for the new tick.
    * Stops after a given number of ticks.
    */
-  private class StopCounter extends ChainedRunnable {
+  private class StopCounter implements Runnable {
     /**
      * Tick to stop at.
      */
@@ -106,7 +92,7 @@ public final class SerialClock extends AbstractClock {
     }
 
     @Override
-    public final ChainedRunnable run() {
+    public final void run() {
       final long tick = _tick.incrementAndGet();
 
       if (tick == stop) {
@@ -116,8 +102,6 @@ public final class SerialClock extends AbstractClock {
 
       // execute events first, if any
       executeEvent(tick);
-
-      return next;
     }
   }
 }
