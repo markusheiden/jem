@@ -36,9 +36,24 @@ public class SerializedClock extends AbstractSynchronizedClock {
    */
   private final SuspendEvent _suspendEvent = new SuspendEvent();
 
-  //
-  // public
-  //
+  /**
+   * Acquire permit from semaphore.
+   */
+  private void acquire() {
+    try {
+      _semaphore.acquire();
+    } catch (InterruptedException e) {
+      throw new ManualAbort();
+    }
+
+  }
+
+  /**
+   * Release permit of semaphore.
+   */
+  private void release() {
+    _semaphore.release();
+  }
 
   @Override
   protected Tick createTick(ClockedComponent component) {
@@ -49,15 +64,11 @@ public class SerializedClock extends AbstractSynchronizedClock {
    * Wait for next tick. Called by clocked components.
    */
   private void waitForTick() {
-    try {
-      // Let other components run.
-      _semaphore.release();
-      // Wait for next tick.
-      _semaphore.acquire();
-      // Run again.
-    } catch (InterruptedException e) {
-      throw new ManualAbort();
-    }
+    // Let other components run.
+    release();
+    // Wait for next tick.
+    acquire();
+    // Run again.
   }
 
   @Override
@@ -67,7 +78,7 @@ public class SerializedClock extends AbstractSynchronizedClock {
       addClockEvent(0, _suspendEvent);
 
       // Block semaphore for first.
-      _semaphore.acquire();
+      acquire();
 
       List<ClockedComponent> components = new ArrayList<>(_componentMap.values());
       _threads = new Thread[1 + components.size()];
@@ -76,12 +87,8 @@ public class SerializedClock extends AbstractSynchronizedClock {
 
         _threads[i] = createStartedDaemonThread(component.getName(), () -> {
           logger.debug("starting {}", component.getName());
-          try {
-            // Wait for first tick.
-            _semaphore.acquire();
-          } catch (InterruptedException e) {
-            throw new ManualAbort();
-          }
+          // Wait for first tick.
+          acquire();
           logger.debug("started {}", component.getName());
           component.run();
         });
@@ -97,13 +104,9 @@ public class SerializedClock extends AbstractSynchronizedClock {
         while (true) {
           startTick();
           // Execute component threads.
-          _semaphore.release();
+          release();
           // Wait for component threads to finish.
-          try {
-            _semaphore.acquire();
-          } catch (InterruptedException e) {
-            throw new ManualAbort();
-          }
+          acquire();
         }
       });
       Thread.yield();
