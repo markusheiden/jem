@@ -1,15 +1,13 @@
 package de.heiden.jem.models.c64.components.cpu;
 
-import junit.framework.TestCase;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import de.heiden.jem.components.bus.LogEntry;
 import de.heiden.jem.components.bus.LoggingBus;
 import de.heiden.jem.components.bus.WordBus;
-import de.heiden.jem.components.clock.synchronization.SerializedClock;
+import de.heiden.jem.components.clock.synchronization.SequentialClock;
 import de.heiden.jem.models.c64.components.memory.RAM;
+import junit.framework.TestCase;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Test.
@@ -20,7 +18,7 @@ public class CPU6510Test extends TestCase {
    */
   private final Logger logger = LoggerFactory.getLogger(getClass());
 
-  private SerializedClock _clock;
+  private SequentialClock _clock;
   private RAM _ram;
   private LoggingBus _loggingBus;
   private WordBus _bus;
@@ -83,7 +81,7 @@ public class CPU6510Test extends TestCase {
 
     logger.debug("set up");
 
-    _clock = new SerializedClock();
+    _clock = new SequentialClock();
     _ram = new RAM(0x10000);
     _loggingBus = new LoggingBus(_ram);
     _bus = new WordBus(_loggingBus);
