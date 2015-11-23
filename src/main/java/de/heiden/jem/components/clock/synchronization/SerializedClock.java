@@ -1,19 +1,18 @@
 package de.heiden.jem.components.clock.synchronization;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.Semaphore;
-
+import de.heiden.jem.components.clock.ClockedComponent;
+import de.heiden.jem.components.clock.Tick;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.heiden.jem.components.clock.ClockedComponent;
-import de.heiden.jem.components.clock.Tick;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.locks.LockSupport;
 
 /**
  * Clock implemented with synchronization, executing component threads sequentially.
- * <p/>
- * TODO add / remove clocked components operation could not be execute while clock is running
+ *
+ * TODO 2015-11-23 markus: Spurious wakeups are not handled.
  */
 public class SerializedClock extends AbstractSynchronizedClock {
   /**
@@ -24,97 +23,78 @@ public class SerializedClock extends AbstractSynchronizedClock {
   /**
    * Component threads.
    */
-  private Thread[] _threads;
+  private List<Thread> _componentThreads;
 
   /**
-   * Fair singleton semaphore for sequential execution of component threads.
+   * Tick thread.
    */
-  private final Semaphore _semaphore = new Semaphore(1, true);
+  private Thread _tickThread;
+
+  /**
+   * Blocker for parking of threads.
+   */
+  private final Object _blocker = new Object();
 
   /**
    * Event for suspending execution.
    */
   private final SuspendEvent _suspendEvent = new SuspendEvent();
 
-  /**
-   * Acquire permit from semaphore.
-   */
-  private void acquire() {
-    try {
-      _semaphore.acquire();
-    } catch (InterruptedException e) {
-      throw new ManualAbort();
-    }
-
-  }
-
-  /**
-   * Release permit of semaphore.
-   */
-  private void release() {
-    _semaphore.release();
-  }
-
   @Override
   protected Tick createTick(ClockedComponent component) {
-    return this::waitForTick;
-  }
-
-  /**
-   * Wait for next tick. Called by clocked components.
-   */
-  private void waitForTick() {
-    // Let other components run.
-    release();
-    // Wait for next tick.
-    acquire();
-    // Run again.
+    return new SerializedTick(_blocker);
   }
 
   @Override
   protected void doInit() {
-    try {
-      // Suspend execution at start of first tick.
-      addClockEvent(0, _suspendEvent);
+    // Suspend execution at start of first tick.
+    addClockEvent(0, _suspendEvent);
 
-      // Block semaphore for first.
-      acquire();
-
-      List<ClockedComponent> components = new ArrayList<>(_componentMap.values());
-      _threads = new Thread[1 + components.size()];
-      for (int i = 1; i < _threads.length; i++) {
-        ClockedComponent component = components.get(i - 1);
-
-        _threads[i] = createStartedDaemonThread(component.getName(), () -> {
-          logger.debug("starting {}", component.getName());
-          // Wait for first tick.
-          acquire();
-          logger.debug("started {}", component.getName());
-          component.run();
-        });
-        Thread.yield();
-
-        // Wait for thread to await permit.
-        while (_semaphore.getQueueLength() != i) {
-          Thread.sleep(1);
-        }
+    _componentThreads = new ArrayList<>(_componentMap.size());
+    SerializedTick previousTick = null;
+    for (ClockedComponent component : _componentMap.values()) {
+      Thread componentThread = createStartedDaemonThread(component.getName(), () -> executeComponent(component));
+      _componentThreads.add(componentThread);
+      if (previousTick != null) {
+        previousTick.nextThread = componentThread;
       }
-
-      _threads[0] = createStartedDaemonThread("Tick", () -> {
-        while (true) {
-          startTick();
-          // Execute component threads.
-          release();
-          // Wait for component threads to finish.
-          acquire();
-        }
-      });
       Thread.yield();
 
-      _suspendEvent.waitForSuspend();
+      previousTick = (SerializedTick) _tickMap.get(component);
+    }
 
-    } catch (InterruptedException e) {
-      throw new ManualAbort();
+    _tickThread = createDaemonThread("Tick", this::executeTicks);
+    previousTick.nextThread = _tickThread;
+    _tickThread.start();
+    Thread.yield();
+
+    _suspendEvent.waitForSuspend();
+  }
+
+  /**
+   * Execution of component.
+   */
+  private void executeComponent(ClockedComponent component) {
+    logger.debug("Starting {}.", component.getName());
+    // Wait for first tick.
+    LockSupport.park(_blocker);
+    logger.debug("Started {}.", component.getName());
+    component.run();
+  }
+
+  /**
+   * Execution of ticks.
+   */
+  private void executeTicks() {
+    final Thread firstThread = _componentThreads.get(0);
+    for (;;) {
+      startTick();
+      // Execute component threads.
+      LockSupport.unpark(firstThread);
+      // Wait for component threads to finish.
+      // There is no problem, if this thread is not parked when the last threads unparks it:
+      // In this case this park will not block, see LockSupport.unpark() javadoc.
+      LockSupport.park(_blocker);
     }
   }
 
@@ -132,9 +112,42 @@ public class SerializedClock extends AbstractSynchronizedClock {
 
   @Override
   protected void doClose() {
-    for (Thread thread : _threads) {
-      thread.interrupt();
-    }
+    _componentThreads.forEach(Thread::interrupt);
+    _tickThread.interrupt();
     Thread.yield();
+  }
+
+  /**
+   * Special tick, parking its thread but unparking the next thread before.
+   */
+  private static class SerializedTick implements Tick {
+    /**
+     * Thread of next component.
+     */
+    private Thread nextThread;
+
+    /**
+     * Blocker.
+     */
+    private final Object _blocker;
+
+    /**
+     * Constructor.
+     *
+     * @param blocker Blocker.
+     */
+    public SerializedTick(Object blocker) {
+      this._blocker = blocker;
+    }
+
+    @Override
+    public void waitForTick() {
+      // Execute next component thread.
+      LockSupport.unpark(nextThread);
+      // Wait for next tick.
+      // There is no problem, if this thread is not parked when the previous threads unparks it:
+      // In this case this park will not block, see LockSupport.unpark() javadoc.
+      LockSupport.park(_blocker);
+    }
   }
 }
