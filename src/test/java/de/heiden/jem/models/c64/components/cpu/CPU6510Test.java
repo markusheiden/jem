@@ -3,7 +3,7 @@ package de.heiden.jem.models.c64.components.cpu;
 import de.heiden.jem.components.bus.LogEntry;
 import de.heiden.jem.components.bus.LoggingBus;
 import de.heiden.jem.components.bus.WordBus;
-import de.heiden.jem.components.clock.synchronization.SequentialClock;
+import de.heiden.jem.components.clock.threads.SequentialClock;
 import de.heiden.jem.models.c64.components.memory.RAM;
 import junit.framework.TestCase;
 import org.slf4j.Logger;

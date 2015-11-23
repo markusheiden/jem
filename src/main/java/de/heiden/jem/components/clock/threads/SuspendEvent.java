@@ -1,9 +1,8 @@
-package de.heiden.jem.components.clock.synchronization;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+package de.heiden.jem.components.clock.threads;
 
 import de.heiden.jem.components.clock.ClockEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Event to suspend clock run.

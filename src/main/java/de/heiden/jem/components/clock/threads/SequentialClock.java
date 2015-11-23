@@ -1,4 +1,4 @@
-package de.heiden.jem.components.clock.synchronization;
+package de.heiden.jem.components.clock.threads;
 
 import de.heiden.jem.components.clock.ClockedComponent;
 import de.heiden.jem.components.clock.Tick;
