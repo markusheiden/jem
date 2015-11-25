@@ -85,11 +85,10 @@ public class SpinClock extends AbstractSynchronizedClock {
       startTick();
       // Execute component threads.
       _state.set(0);
-      Thread.yield();
       // Wait for component threads to finish tick.
-      while (_state.get() != numComponents) {
+      do {
         Thread.yield();
-      }
+      } while (_state.get() != numComponents);
     }
   }
 
@@ -144,11 +143,10 @@ public class SpinClock extends AbstractSynchronizedClock {
     public void waitForTick() {
       // Execute next component thread.
       _state.set(nextNumber);
-      Thread.yield();
       // Wait for next turn.
-      for (final int n = number; _state.get() != n;) {
+      do {
         Thread.yield();
-      }
+      } while (_state.get() != number);
     }
   }
 }
