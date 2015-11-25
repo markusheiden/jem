@@ -1,7 +1,6 @@
 package de.heiden.jem.models.c64.components.vic;
 
 import de.heiden.jem.components.bus.BusDevice;
-import de.heiden.jem.components.clock.Clock;
 import org.serialthreads.Interruptible;
 
 import java.util.Arrays;
@@ -16,10 +15,9 @@ public class DisplayUnitSimple extends AbstractDisplayUnit {
    * Hidden constructor.
    *
    * @param vic vic this display unit belongs to
-   * @param clock clock
    */
-  DisplayUnitSimple(VIC vic, Clock clock) {
-    super(vic, clock,
+  DisplayUnitSimple(VIC vic) {
+    super(vic,
       0,
       vic._lastX - vic._firstVisibleX + vic._lastVisibleX, vic._firstVBlank - vic._lastVBlank,
       vic._lastX - vic._firstVisibleX + vic._lastVisibleX, vic._firstVBlank - vic._lastVBlank);

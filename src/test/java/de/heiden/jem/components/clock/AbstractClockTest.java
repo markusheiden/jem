@@ -1,14 +1,14 @@
 package de.heiden.jem.components.clock;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Test for {@link AbstractClock}
@@ -108,13 +108,6 @@ public class AbstractClockTest {
    * Clock implementation for testing.
    */
   private static class TestClock extends AbstractClock {
-    @Override
-    protected Tick createTick(ClockedComponent component) {
-      return () -> {
-        // do nothing
-      };
-    }
-
     @Override
     protected void doRun() {
       throw new UnsupportedOperationException("Not implemented for test clock");

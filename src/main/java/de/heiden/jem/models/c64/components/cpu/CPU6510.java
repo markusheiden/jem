@@ -2,7 +2,6 @@ package de.heiden.jem.models.c64.components.cpu;
 
 import de.heiden.c64dt.util.HexUtil;
 import de.heiden.jem.components.bus.BusDevice;
-import de.heiden.jem.components.clock.Clock;
 import de.heiden.jem.components.clock.ClockedComponent;
 import de.heiden.jem.components.clock.Tick;
 import de.heiden.jem.components.ports.*;
@@ -35,9 +34,9 @@ public class CPU6510 implements ClockedComponent {
   protected final CPU6510State _state;
 
   /**
-   * Clock.
+   * Tick.
    */
-  protected final Tick _tick;
+  protected Tick _tick;
 
   /**
    * Bus.
@@ -71,13 +70,8 @@ public class CPU6510 implements ClockedComponent {
 
   /**
    * Constructor.
-   *
-   * @param clock system clock
-   * @require clock != null
    */
-  public CPU6510(Clock clock) {
-    assert clock != null : "clock != null";
-
+  public CPU6510() {
     _state = new CPU6510State();
 
     // TODO mh: connect to emulated hardware
@@ -125,9 +119,12 @@ public class CPU6510 implements ClockedComponent {
       }
     });
 
-    _tick = clock.addClockedComponent(Clock.CPU, this);
-
     logger.debug("start cpu");
+  }
+
+  @Override
+  public void setTick(Tick tick) {
+    _tick = tick;
   }
 
   /**

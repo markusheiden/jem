@@ -39,11 +39,6 @@ public class SpinClock extends AbstractSynchronizedClock {
   private final SuspendEvent _suspendEvent = new SuspendEvent();
 
   @Override
-  protected Tick createTick(ClockedComponent component) {
-    return new SpinTick(_state);
-  }
-
-  @Override
   protected void doInit() {
     // Suspend execution at start of first tick.
     addClockEvent(0, _suspendEvent);
@@ -51,7 +46,8 @@ public class SpinClock extends AbstractSynchronizedClock {
     _componentThreads = new ArrayList<>(_componentMap.size());
     int i = 0;
     for (ClockedComponent component : _componentMap.values()) {
-      SpinTick tick = (SpinTick) _tickMap.get(component);
+      SpinTick tick = new SpinTick(_state);
+      component.setTick(tick);
       tick.number = i++;
       tick.nextNumber = i;
 

@@ -3,6 +3,7 @@ package de.heiden.jem.models.c64.components.cpu;
 import de.heiden.jem.components.bus.LogEntry;
 import de.heiden.jem.components.bus.LoggingBus;
 import de.heiden.jem.components.bus.WordBus;
+import de.heiden.jem.components.clock.Clock;
 import de.heiden.jem.components.clock.threads.SequentialClock;
 import de.heiden.jem.models.c64.components.memory.RAM;
 import junit.framework.TestCase;
@@ -85,7 +86,7 @@ public class CPU6510Test extends TestCase {
     _ram = new RAM(0x10000);
     _loggingBus = new LoggingBus(_ram);
     _bus = new WordBus(_loggingBus);
-    _cpu = new CPU6510(_clock);
+    _cpu = _clock.addClockedComponent(Clock.CPU, new CPU6510());
     _cpu.connect(_bus);
 
     // Test code starts at $300

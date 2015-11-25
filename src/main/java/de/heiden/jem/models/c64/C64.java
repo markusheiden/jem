@@ -2,7 +2,7 @@ package de.heiden.jem.models.c64;
 
 import de.heiden.jem.components.clock.Clock;
 import de.heiden.jem.components.clock.RealTimeSlowDown;
-import de.heiden.jem.components.clock.threads.SpinClock;
+import de.heiden.jem.components.clock.serialthreads.SerialClock;
 import de.heiden.jem.models.c64.components.CIA6526;
 import de.heiden.jem.models.c64.components.cpu.C64Bus;
 import de.heiden.jem.models.c64.components.cpu.CPU6510;
@@ -66,7 +66,7 @@ public class C64 {
    * @param debug use debugger cpu?
    */
   public C64(boolean debug) throws Exception {
-    this(new SpinClock(), debug);
+    this(new SerialClock(), debug);
   }
 
   /**
@@ -92,7 +92,7 @@ public class C64 {
 
     _keyboard = new Keyboard(cia1.portA(), cia1.portB());
 
-    _cpu = debug ? new CPU6510Debugger(clock) : new CPU6510(clock);
+    _cpu = clock.addClockedComponent(Clock.CPU, debug ? new CPU6510Debugger() : new CPU6510());
     _cpuBus = new C64Bus(_cpu.getPort(), _ram, basic, _vic, colorRam, cia1, cia2, charset, kernel);
     _cpu.connect(_cpuBus);
     _cpu.getIRQ().connect(cia1.getIRQ());

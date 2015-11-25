@@ -1,11 +1,5 @@
 package de.heiden.jem.models.c64;
 
-import java.io.File;
-import java.io.OutputStream;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import de.heiden.jem.components.clock.Clock;
 import de.heiden.jem.components.clock.ClockEvent;
 import de.heiden.jem.components.clock.serialthreads.SerialClock;
@@ -25,6 +19,11 @@ import de.heiden.jem.models.c64.components.vic.VICBus;
 import de.heiden.jem.models.c64.gui.KeyListener;
 import de.heiden.jem.models.c64.gui.PCMapping;
 import de.heiden.jem.models.c64.util.ROMLoader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.OutputStream;
 
 /**
  * Modified C64 for better testability.
@@ -79,7 +78,7 @@ public class TestC64 {
 
     _keyboard = new Keyboard(cia1.portA(), cia1.portB());
 
-    _cpu = new CPU6510Debugger(_clock);
+    _cpu = _clock.addClockedComponent(Clock.CPU, new CPU6510Debugger());
     _cpuBus = new C64Bus(_cpu.getPort(), _ram, basic, _vic, colorRam, cia1, cia2, charset, kernel);
     _cpu.connect(_cpuBus);
     _cpu.getIRQ().connect(cia1.getIRQ());

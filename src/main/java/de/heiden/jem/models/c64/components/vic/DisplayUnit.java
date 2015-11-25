@@ -1,6 +1,5 @@
 package de.heiden.jem.models.c64.components.vic;
 
-import de.heiden.jem.components.clock.Clock;
 import org.serialthreads.Interruptible;
 
 /**
@@ -13,10 +12,9 @@ public class DisplayUnit extends AbstractDisplayUnit {
    * Hidden constructor.
    *
    * @param vic vic this display unit belongs to
-   * @param clock clock
    */
-  DisplayUnit(VIC vic, Clock clock) {
-    super(vic, clock,
+  DisplayUnit(VIC vic) {
+    super(vic,
       (vic._lastVBlank + 1) * vic._cyclesPerLine * 8,
       vic._cyclesPerLine * 8, vic._linesPerScreen,
       vic._lastX - vic._firstVisibleX + vic._lastVisibleX, vic._firstVBlank - (vic._lastVBlank + 1));

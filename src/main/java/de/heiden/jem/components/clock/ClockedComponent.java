@@ -10,4 +10,9 @@ public interface ClockedComponent extends IRunnable {
    * Name of component.
    */
   String getName();
+
+  /**
+   * Inject tick.
+   */
+  void setTick(Tick tick);
 }

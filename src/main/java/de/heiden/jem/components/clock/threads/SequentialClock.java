@@ -41,11 +41,6 @@ public class SequentialClock extends AbstractSynchronizedClock {
   private final SuspendEvent _suspendEvent = new SuspendEvent();
 
   @Override
-  protected Tick createTick(ClockedComponent component) {
-    return new SerializedTick(_blocker);
-  }
-
-  @Override
   protected void doInit() {
     // Suspend execution at start of first tick.
     addClockEvent(0, _suspendEvent);
@@ -53,6 +48,8 @@ public class SequentialClock extends AbstractSynchronizedClock {
     _componentThreads = new ArrayList<>(_componentMap.size());
     SerializedTick previousTick = null;
     for (ClockedComponent component : _componentMap.values()) {
+      SerializedTick tick = new SerializedTick(_blocker);
+      component.setTick(tick);
       Thread componentThread = createStartedDaemonThread(component.getName(), () -> executeComponent(component));
       _componentThreads.add(componentThread);
       if (previousTick != null) {
@@ -60,7 +57,7 @@ public class SequentialClock extends AbstractSynchronizedClock {
       }
       Thread.yield();
 
-      previousTick = (SerializedTick) _tickMap.get(component);
+      previousTick = tick;
     }
 
     _tickThread = createDaemonThread("Tick", this::executeTicks);

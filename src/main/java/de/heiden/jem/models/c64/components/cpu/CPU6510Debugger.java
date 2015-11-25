@@ -1,6 +1,5 @@
 package de.heiden.jem.models.c64.components.cpu;
 
-import de.heiden.jem.components.clock.Clock;
 import de.heiden.jem.models.c64.monitor.Monitor;
 import org.serialthreads.Interruptible;
 import org.slf4j.Logger;
@@ -45,13 +44,8 @@ public class CPU6510Debugger extends CPU6510 {
 
   /**
    * Constructor.
-   *
-   * @param clock system clock
-   * @require clock != null
    */
-  public CPU6510Debugger(Clock clock) {
-    super(clock);
-
+  public CPU6510Debugger() {
     _suspend = false;
     _suspended = false;
     _stop = false;

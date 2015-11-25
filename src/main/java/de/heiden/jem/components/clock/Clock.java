@@ -33,7 +33,7 @@ public interface Clock extends AutoCloseable {
    * @require position >= 0
    * @require !isStarted()
    */
-  Tick addClockedComponent(int position, ClockedComponent component);
+  <C extends ClockedComponent> C addClockedComponent(int position, C component);
 
   /**
    * Run this clock for ever as master clock.

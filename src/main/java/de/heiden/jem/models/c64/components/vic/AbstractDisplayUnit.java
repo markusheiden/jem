@@ -1,6 +1,5 @@
 package de.heiden.jem.models.c64.components.vic;
 
-import de.heiden.jem.components.clock.Clock;
 import de.heiden.jem.components.clock.ClockedComponent;
 import de.heiden.jem.components.clock.Tick;
 
@@ -9,7 +8,7 @@ import de.heiden.jem.components.clock.Tick;
  */
 public abstract class AbstractDisplayUnit implements ClockedComponent {
   protected final VIC _vic;
-  protected final Tick _tick;
+  protected Tick _tick;
 
   private final int _offset;
   private final int _lineLength;
@@ -40,12 +39,9 @@ public abstract class AbstractDisplayUnit implements ClockedComponent {
    * Hidden constructor.
    *
    * @param vic vic this display unit belongs to
-   * @param clock clock
    */
-  AbstractDisplayUnit(VIC vic, Clock clock,
-                      int offset, int lineLength, int lines, int width, int height) {
+  AbstractDisplayUnit(VIC vic, int offset, int lineLength, int lines, int width, int height) {
     _vic = vic;
-    _tick = clock.addClockedComponent(Clock.VIC_DISPLAY, this);
 
     _offset = offset;
     _lineLength = lineLength;
@@ -59,6 +55,11 @@ public abstract class AbstractDisplayUnit implements ClockedComponent {
     _screenSpare = new byte[size];
     _screenToDisplay = new byte[size];
     _screenDisplaying = _screenToDisplay;
+  }
+
+  @Override
+  public void setTick(Tick tick) {
+    _tick = tick;
   }
 
   @Override

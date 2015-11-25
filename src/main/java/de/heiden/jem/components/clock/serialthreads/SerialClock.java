@@ -1,29 +1,15 @@
 package de.heiden.jem.components.clock.serialthreads;
 
-import org.serialthreads.Executor;
-import org.serialthreads.Interrupt;
-import org.serialthreads.context.IRunnable;
-import org.serialthreads.context.ThreadFinishedException;
-
 import de.heiden.jem.components.clock.AbstractClock;
 import de.heiden.jem.components.clock.ClockedComponent;
-import de.heiden.jem.components.clock.Tick;
+import org.serialthreads.Executor;
+import org.serialthreads.context.IRunnable;
+import org.serialthreads.context.ThreadFinishedException;
 
 /**
  * Clock using serial threads.
  */
 public final class SerialClock extends AbstractClock {
-  @Override
-  protected Tick createTick(ClockedComponent component) {
-    // Serial threads do not support lambdas by now, so we are using an inner class here.
-    return new Tick() {
-      @Override
-      @Interrupt
-      public void waitForTick() {
-      }
-    };
-  }
-
   @Override
   protected final void doRun() {
     run(this::startTick);

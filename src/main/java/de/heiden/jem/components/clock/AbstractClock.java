@@ -3,8 +3,6 @@ package de.heiden.jem.components.clock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.IdentityHashMap;
-import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -28,11 +26,6 @@ public abstract class AbstractClock implements Clock {
    * Clocked components.
    */
   protected final SortedMap<Integer, ClockedComponent> _componentMap = new TreeMap<>();
-
-  /**
-   * Ticks.
-   */
-  protected final Map<ClockedComponent, Tick> _tickMap = new IdentityHashMap<>();
 
   /**
    * Events.
@@ -77,28 +70,18 @@ public abstract class AbstractClock implements Clock {
    * @ensure result != null
    */
   @Override
-  public synchronized Tick addClockedComponent(int position, ClockedComponent component) {
+  public synchronized <C extends ClockedComponent> C addClockedComponent(int position, C component) {
     assert component != null : "Precondition: component != null";
     assert position >= 0 : "Precondition: position >= 0";
     assert !isStarted() : "Precondition: !isStarted()";
 
     logger.debug("add component {}", component.getName());
 
-    Tick tick = createTick(component);
-    Tick removedTick = _tickMap.put(component, tick);
-    assert removedTick == null : "Check: no clocked component registered twice";
-
     ClockedComponent removed = _componentMap.put(position, component);
     assert removed == null : "Check: no duplicate positions";
 
-    assert tick != null: "Postcondition: result != null";
-    return tick;
+    return component;
   }
-
-  /**
-   * Create clock entry.
-   */
-  protected abstract Tick createTick(ClockedComponent component);
 
   @Override
   public final void run() {

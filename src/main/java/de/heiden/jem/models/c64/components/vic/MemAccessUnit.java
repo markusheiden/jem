@@ -1,6 +1,5 @@
 package de.heiden.jem.models.c64.components.vic;
 
-import de.heiden.jem.components.clock.Clock;
 import de.heiden.jem.components.clock.ClockedComponent;
 import de.heiden.jem.components.clock.Tick;
 import org.serialthreads.Interruptible;
@@ -11,8 +10,8 @@ import org.serialthreads.Interruptible;
  * TODO refactor dependencies
  */
 class MemAccessUnit implements ClockedComponent {
+  private Tick _tick;
   private final VIC _vic;
-  private final Tick _tick;
 
   protected int x;
   protected int y;
@@ -25,12 +24,9 @@ class MemAccessUnit implements ClockedComponent {
    * Constructor.
    *
    * @param vic vic this mem access unit belongs to
-   * @param clock clock
    */
-  MemAccessUnit(VIC vic, Clock clock) {
+  MemAccessUnit(VIC vic) {
     _vic = vic;
-
-    _tick = clock.addClockedComponent(Clock.VIC_MEM, this);
 
     x = 0;
     y = 0;
@@ -40,6 +36,11 @@ class MemAccessUnit implements ClockedComponent {
     sprites = new int[][]{
       new int[3], new int[3], new int[3], new int[3], new int[3], new int[3], new int[3], new int[3]
     };
+  }
+
+  @Override
+  public void setTick(Tick tick) {
+    _tick = tick;
   }
 
   @Override
