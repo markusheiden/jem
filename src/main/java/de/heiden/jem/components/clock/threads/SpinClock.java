@@ -60,17 +60,6 @@ public class SpinClock extends AbstractSynchronizedClock {
   }
 
   /**
-   * Execution of component.
-   */
-  private void executeComponent(ClockedComponent component, SpinTick tick) {
-    logger.debug("Starting {}.", component.getName());
-    // Wait for the first tick.
-    tick.waitForTick();
-    logger.debug("Started {}.", component.getName());
-    component.run();
-  }
-
-  /**
    * Execution of ticks.
    */
   private void executeTicks() {

@@ -1,6 +1,7 @@
 package de.heiden.jem.components.clock.threads;
 
 import de.heiden.jem.components.clock.ClockedComponent;
+import de.heiden.jem.components.clock.Tick;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,13 +64,9 @@ public class ParallelClock extends AbstractSynchronizedClock {
     _threads = new Thread[components.size()];
     for (int i = 0; i < _threads.length; i++) {
       ClockedComponent component = components.get(i);
-      component.setTick(this::waitForTick);
-      _threads[i] = createStartedDaemonThread(component.getName(), () -> {
-        logger.debug("starting {}", component.getName());
-        ParallelClock.this.waitForTick();
-        logger.debug("started {}", component.getName());
-        component.run();
-      });
+      Tick tick = this::waitForTick;
+      component.setTick(tick);
+      _threads[i] = createStartedDaemonThread(component.getName(), () -> executeComponent(component, tick));
     }
     Thread.yield();
 
