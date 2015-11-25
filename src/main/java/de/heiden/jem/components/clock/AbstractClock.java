@@ -222,7 +222,7 @@ public abstract class AbstractClock implements Clock {
   }
 
   /**
-   * Run component.
+   * Execute component thread.
    */
   protected final void executeComponent(ClockedComponent component, Tick tick) {
     logger.debug("starting {}", component.getName());

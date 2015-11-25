@@ -7,7 +7,7 @@ import org.serialthreads.context.IRunnable;
  */
 public interface ClockedComponent extends IRunnable {
   /**
-   * Name of component.
+   * Name of the component.
    */
   String getName();
 
