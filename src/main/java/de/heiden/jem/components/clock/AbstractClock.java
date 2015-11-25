@@ -1,14 +1,14 @@
 package de.heiden.jem.components.clock;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Base implementation for all clocks.
@@ -241,7 +241,7 @@ public abstract class AbstractClock implements Clock {
   /**
    * Start a new tick.
    */
-  protected void startTick() {
+  protected final void startTick() {
     // First increment tick.
     // Second execute events.
     executeEvent(_tick.incrementAndGet());

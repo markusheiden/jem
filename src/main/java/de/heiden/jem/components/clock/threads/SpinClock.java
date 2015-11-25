@@ -140,7 +140,7 @@ public class SpinClock extends AbstractSynchronizedClock {
     }
 
     @Override
-    public void waitForTick() {
+    public final void waitForTick() {
       // Execute next component thread.
       _state.set(nextNumber);
       // Wait for next turn.
