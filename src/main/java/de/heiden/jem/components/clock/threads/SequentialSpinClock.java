@@ -35,10 +35,13 @@ public class SequentialSpinClock extends AbstractSynchronizedClock {
     // Suspend execution at start of first tick.
     addClockEvent(0, _suspendEvent);
 
-    _componentThreads = new ArrayList<>(_componentMap.size());
-    int i = 0;
-    for (ClockedComponent component : _componentMap.values()) {
-      final int number = i++;
+    List<ClockedComponent> components = new ArrayList<>(_componentMap.values());
+    _componentThreads = new ArrayList<>(components.size());
+    for (int i = 0; i < components.size(); i++) {
+      final int number = i;
+      final int nextNumber = i + 1;
+
+      ClockedComponent component = components.get(number);
       Tick tick = () -> waitForTick(number);
       component.setTick(tick);
 
@@ -47,7 +50,7 @@ public class SequentialSpinClock extends AbstractSynchronizedClock {
       // Wait for component to reach first tick.
       do {
         Thread.yield();
-      } while (_state != i);
+      } while (_state != nextNumber);
     }
 
     _tickThread = createStartedDaemonThread("Tick", this::executeTicks);
