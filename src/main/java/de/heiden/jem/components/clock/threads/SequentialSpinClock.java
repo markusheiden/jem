@@ -38,17 +38,17 @@ public class SequentialSpinClock extends AbstractSynchronizedClock {
     List<ClockedComponent> components = new ArrayList<>(_componentMap.values());
     _componentThreads = new ArrayList<>(components.size());
     for (int i = 0; i < components.size(); i++) {
-      final int number = i;
-      final int nextNumber = i + 1;
+      final int state = i;
+      final int nextState = i + 1;
 
-      ClockedComponent component = components.get(number);
-      Tick tick = () -> waitForTick(number);
+      final ClockedComponent component = components.get(state);
+      Tick tick = () -> waitForTick(state);
       component.setTick(tick);
 
       // Start component.
       _componentThreads.add(createStartedDaemonThread(component.getName(), () -> executeComponent(component, tick)));
       // Wait for component to reach first tick.
-      waitForState(nextNumber);
+      waitForState(nextState);
     }
 
     _tickThread = createStartedDaemonThread("Tick", this::executeTicks);
@@ -60,36 +60,36 @@ public class SequentialSpinClock extends AbstractSynchronizedClock {
   /**
    * Tick.
    */
-  private void waitForTick(final int number) {
+  private void waitForTick(final int state) {
     // Execute next component thread.
-    _state = number + 1;
+    _state = state + 1;
     // Wait for next turn.
-    waitForState(number);
+    waitForState(state);
   }
 
   /**
    * Execution of ticks.
    */
   private void executeTicks() {
-    final int numComponents = _componentMap.size();
+    final int lastState = _componentMap.size();
     for (;;) {
       startTick();
       // Execute component threads.
       _state = 0;
       // Wait for component threads to finish tick.
-      waitForState(numComponents);
+      waitForState(lastState);
     }
   }
 
   /**
    * Busy wait until state is reached.
    *
-   * @param number State to reach.
+   * @param state State to reach.
    */
-  private void waitForState(final int number) {
+  private void waitForState(final int state) {
     do {
       Thread.yield();
-    } while (_state != number);
+    } while (_state != state);
   }
 
   @Override
