@@ -23,7 +23,7 @@ public class SpinClock extends AbstractSynchronizedClock {
   /**
    * Ordinal of thread to execute.
    */
-  private volatile int _state = -1;
+  private volatile int _state = 0;
 
   /**
    * Event for suspending execution.
@@ -38,10 +38,13 @@ public class SpinClock extends AbstractSynchronizedClock {
     _componentThreads = new ArrayList<>(_componentMap.size());
     int i = 0;
     for (ClockedComponent component : _componentMap.values()) {
-      SpinTick tick = new SpinTick(i++);
+      final int number = i++;
+      Tick tick = () -> waitForTick(number);
       component.setTick(tick);
 
+      // Start component.
       _componentThreads.add(createStartedDaemonThread(component.getName(), () -> executeComponent(component, tick)));
+      // Wait for component to reach first tick.
       do {
         Thread.yield();
       } while (_state != i);
@@ -51,6 +54,18 @@ public class SpinClock extends AbstractSynchronizedClock {
     Thread.yield();
 
     _suspendEvent.waitForSuspend();
+  }
+
+  /**
+   * Tick.
+   */
+  private void waitForTick(final int number) {
+    // Execute next component thread.
+    _state = number + 1;
+    // Wait for next turn.
+    do {
+      Thread.yield();
+    } while (_state != number);
   }
 
   /**
@@ -86,36 +101,5 @@ public class SpinClock extends AbstractSynchronizedClock {
     _componentThreads.forEach(Thread::interrupt);
     _tickThread.interrupt();
     Thread.yield();
-  }
-
-  /**
-   * Special tick, which busy wait on the next ticke.
-   */
-  private class SpinTick implements Tick {
-    /**
-     * Ordinal of this component.
-     */
-    private final int number;
-
-    /**
-     * Constructor.
-     *
-     * @param number Ordinal of this component.
-     */
-    public SpinTick(int number) {
-      this.number = number;
-    }
-
-    @Override
-    public final void waitForTick() {
-      final int n = number;
-
-      // Execute next component thread.
-      _state = n + 1;
-      // Wait for next turn.
-      do {
-        Thread.yield();
-      } while (_state != n);
-    }
   }
 }
