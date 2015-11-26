@@ -2,22 +2,14 @@ package de.heiden.jem.components.clock.threads;
 
 import de.heiden.jem.components.clock.ClockedComponent;
 import de.heiden.jem.components.clock.Tick;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Clock implemented without synchronization by using spin locks (busy wait).
  */
 public class SpinClock extends AbstractSynchronizedClock {
-  /**
-   * Logger.
-   */
-  private final Logger logger = LoggerFactory.getLogger(getClass());
-
   /**
    * Component threads.
    */
@@ -31,7 +23,7 @@ public class SpinClock extends AbstractSynchronizedClock {
   /**
    * Ordinal of thread to execute.
    */
-  private final AtomicInteger _state = new AtomicInteger(-1);
+  private volatile int _state = -1;
 
   /**
    * Event for suspending execution.
@@ -46,11 +38,13 @@ public class SpinClock extends AbstractSynchronizedClock {
     _componentThreads = new ArrayList<>(_componentMap.size());
     int i = 0;
     for (ClockedComponent component : _componentMap.values()) {
-      SpinTick tick = new SpinTick(_state, i++);
+      SpinTick tick = new SpinTick(i++);
       component.setTick(tick);
 
       _componentThreads.add(createStartedDaemonThread(component.getName(), () -> executeComponent(component, tick)));
-      Thread.yield();
+      do {
+        Thread.yield();
+      } while (_state != i);
     }
 
     _tickThread = createStartedDaemonThread("Tick", this::executeTicks);
@@ -67,11 +61,11 @@ public class SpinClock extends AbstractSynchronizedClock {
     for (;;) {
       startTick();
       // Execute component threads.
-      _state.set(0);
+      _state = 0;
       // Wait for component threads to finish tick.
       do {
         Thread.yield();
-      } while (_state.get() != numComponents);
+      } while (_state != numComponents);
     }
   }
 
@@ -97,12 +91,7 @@ public class SpinClock extends AbstractSynchronizedClock {
   /**
    * Special tick, which busy wait on the next ticke.
    */
-  private static class SpinTick implements Tick {
-    /**
-     * Ordinal of component to execute.
-     */
-    private final AtomicInteger _state;
-
+  private class SpinTick implements Tick {
     /**
      * Ordinal of this component.
      */
@@ -111,11 +100,9 @@ public class SpinClock extends AbstractSynchronizedClock {
     /**
      * Constructor.
      *
-     * @param state Ordinal of component to execute.
      * @param number Ordinal of this component.
      */
-    public SpinTick(AtomicInteger state, int number) {
-      this._state = state;
+    public SpinTick(int number) {
       this.number = number;
     }
 
@@ -124,11 +111,11 @@ public class SpinClock extends AbstractSynchronizedClock {
       final int n = number;
 
       // Execute next component thread.
-      _state.set(n + 1);
+      _state = n + 1;
       // Wait for next turn.
       do {
         Thread.yield();
-      } while (_state.get() != n);
+      } while (_state != n);
     }
   }
 }
