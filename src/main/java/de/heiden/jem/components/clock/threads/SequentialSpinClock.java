@@ -48,9 +48,7 @@ public class SequentialSpinClock extends AbstractSynchronizedClock {
       // Start component.
       _componentThreads.add(createStartedDaemonThread(component.getName(), () -> executeComponent(component, tick)));
       // Wait for component to reach first tick.
-      do {
-        Thread.yield();
-      } while (_state != nextNumber);
+      waitForState(nextNumber);
     }
 
     _tickThread = createStartedDaemonThread("Tick", this::executeTicks);
@@ -66,9 +64,7 @@ public class SequentialSpinClock extends AbstractSynchronizedClock {
     // Execute next component thread.
     _state = number + 1;
     // Wait for next turn.
-    do {
-      Thread.yield();
-    } while (_state != number);
+    waitForState(number);
   }
 
   /**
@@ -81,10 +77,19 @@ public class SequentialSpinClock extends AbstractSynchronizedClock {
       // Execute component threads.
       _state = 0;
       // Wait for component threads to finish tick.
-      do {
-        Thread.yield();
-      } while (_state != numComponents);
+      waitForState(numComponents);
     }
+  }
+
+  /**
+   * Busy wait until state is reached.
+   *
+   * @param number State to reach.
+   */
+  private void waitForState(final int number) {
+    do {
+      Thread.yield();
+    } while (_state != number);
   }
 
   @Override
