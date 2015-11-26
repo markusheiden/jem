@@ -7,9 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Clock implemented without synchronization by using spin locks (busy wait).
+ * Clock implemented without synchronization sequentially executing components by using spin locks (busy wait).
  */
-public class SpinClock extends AbstractSynchronizedClock {
+public class SequentialSpinClock extends AbstractSynchronizedClock {
   /**
    * Component threads.
    */
