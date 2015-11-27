@@ -2,8 +2,6 @@ package de.heiden.jem.components.clock.threads;
 
 import de.heiden.jem.components.clock.ClockedComponent;
 import de.heiden.jem.components.clock.Tick;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,24 +13,9 @@ import java.util.concurrent.CyclicBarrier;
  */
 public class ParallelClock extends AbstractSynchronizedClock {
   /**
-   * Logger.
-   */
-  private final Logger logger = LoggerFactory.getLogger(getClass());
-
-  /**
-   * Component threads.
-   */
-  private Thread[] _threads;
-
-  /**
    * Barrier for synchronizing all component threads.
    */
   private CyclicBarrier _barrier;
-
-  /**
-   * Event for suspending execution.
-   */
-  private final SuspendEvent _suspendEvent = new SuspendEvent();
 
   //
   // public
@@ -61,12 +44,11 @@ public class ParallelClock extends AbstractSynchronizedClock {
     // Create threads.
     List<ClockedComponent> components = new ArrayList<>(_componentMap.values());
     _barrier = new CyclicBarrier(components.size(), this::startTick);
-    _threads = new Thread[components.size()];
-    for (int i = 0; i < _threads.length; i++) {
-      ClockedComponent component = components.get(i);
+    _componentThreads = new ArrayList<>(components.size());
+    for (ClockedComponent component : components) {
       Tick tick = this::waitForTick;
       component.setTick(tick);
-      _threads[i] = createStartedDaemonThread(component.getName(), () -> executeComponent(component, tick));
+      _componentThreads.add(createStartedDaemonThread(component.getName(), () -> executeComponent(component, tick)));
     }
     Thread.yield();
 
@@ -88,11 +70,7 @@ public class ParallelClock extends AbstractSynchronizedClock {
 
   @Override
   protected void doClose() {
-    for (Thread thread : _threads) {
-      thread.interrupt();
-    }
-    Thread.yield();
+    super.doClose();
     _barrier.reset();
   }
-
 }

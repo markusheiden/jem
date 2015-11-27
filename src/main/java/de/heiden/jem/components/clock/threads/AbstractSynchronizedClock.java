@@ -3,10 +3,22 @@ package de.heiden.jem.components.clock.threads;
 import de.heiden.jem.components.clock.AbstractClock;
 import de.heiden.jem.components.clock.ClockEvent;
 
+import java.util.List;
+
 /**
  * Base implementation for all clocks using synchronization.
  */
 public abstract class AbstractSynchronizedClock extends AbstractClock {
+  /**
+   * Component threads.
+   */
+  protected List<Thread> _componentThreads;
+
+  /**
+   * Event for suspending execution.
+   */
+  protected final SuspendEvent _suspendEvent = new SuspendEvent();
+
   @Override
   public synchronized void addClockEvent(long tick, ClockEvent event) {
     super.addClockEvent(tick, event);
@@ -43,5 +55,11 @@ public abstract class AbstractSynchronizedClock extends AbstractClock {
     Thread thread = new Thread(runnable, name);
     thread.setDaemon(true);
     return thread;
+  }
+
+  @Override
+  protected void doClose() {
+    _componentThreads.forEach(Thread::interrupt);
+    Thread.yield();
   }
 }

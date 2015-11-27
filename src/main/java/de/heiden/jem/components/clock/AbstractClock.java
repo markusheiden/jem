@@ -15,7 +15,7 @@ public abstract class AbstractClock implements Clock {
   /**
    * Logger.
    */
-  private final Logger logger = LoggerFactory.getLogger(getClass());
+  protected final Logger logger = LoggerFactory.getLogger(getClass());
 
   /**
    * Has the clock been started?.

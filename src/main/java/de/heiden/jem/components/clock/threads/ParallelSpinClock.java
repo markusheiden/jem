@@ -11,24 +11,9 @@ import java.util.List;
  */
 public class ParallelSpinClock extends AbstractSynchronizedClock {
   /**
-   * Component threads.
-   */
-  private List<Thread> _componentThreads;
-
-  /**
    * Tick thread.
    */
   private Thread _tickThread;
-
-  /**
-   * Ordinals of threads to execute.
-   */
-  private volatile boolean[] _states;
-
-  /**
-   * Event for suspending execution.
-   */
-  private final SuspendEvent _suspendEvent = new SuspendEvent();
 
   @Override
   protected void doInit() {

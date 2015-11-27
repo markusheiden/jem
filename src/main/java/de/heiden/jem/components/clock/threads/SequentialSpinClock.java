@@ -11,11 +11,6 @@ import java.util.List;
  */
 public class SequentialSpinClock extends AbstractSynchronizedClock {
   /**
-   * Component threads.
-   */
-  private List<Thread> _componentThreads;
-
-  /**
    * Tick thread.
    */
   private Thread _tickThread;
@@ -24,11 +19,6 @@ public class SequentialSpinClock extends AbstractSynchronizedClock {
    * Ordinal of thread to execute.
    */
   private volatile int _state = 0;
-
-  /**
-   * Event for suspending execution.
-   */
-  private final SuspendEvent _suspendEvent = new SuspendEvent();
 
   @Override
   protected void doInit() {

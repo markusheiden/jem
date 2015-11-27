@@ -2,11 +2,8 @@ package de.heiden.jem.components.clock.threads;
 
 import de.heiden.jem.components.clock.ClockedComponent;
 import de.heiden.jem.components.clock.Tick;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.locks.LockSupport;
 
 /**
@@ -16,16 +13,6 @@ import java.util.concurrent.locks.LockSupport;
  */
 public class SequentialClock extends AbstractSynchronizedClock {
   /**
-   * Logger.
-   */
-  private final Logger logger = LoggerFactory.getLogger(getClass());
-
-  /**
-   * Component threads.
-   */
-  private List<Thread> _componentThreads;
-
-  /**
    * Tick thread.
    */
   private Thread _tickThread;
@@ -34,11 +21,6 @@ public class SequentialClock extends AbstractSynchronizedClock {
    * Blocker for parking of threads.
    */
   private final Object _blocker = new Object();
-
-  /**
-   * Event for suspending execution.
-   */
-  private final SuspendEvent _suspendEvent = new SuspendEvent();
 
   @Override
   protected void doInit() {
@@ -106,7 +88,7 @@ public class SequentialClock extends AbstractSynchronizedClock {
   /**
    * Special tick, parking its thread but unparking the next thread before.
    */
-  private static class SerializedTick implements Tick {
+  static final class SerializedTick implements Tick {
     /**
      * Thread of next component.
      */
