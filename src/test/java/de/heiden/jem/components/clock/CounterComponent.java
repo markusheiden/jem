@@ -26,8 +26,10 @@ public class CounterComponent implements ClockedComponent {
 
   @Override
   public void run() {
-    count++;
-    _tick.waitForTick();
+    for (;;) {
+      count++;
+      _tick.waitForTick();
+    }
   }
 
   /**

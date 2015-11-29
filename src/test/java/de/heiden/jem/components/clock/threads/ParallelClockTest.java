@@ -4,11 +4,11 @@ import de.heiden.jem.components.clock.Clock;
 import de.heiden.jem.components.clock.ClockTestBase;
 
 /**
- * Test for {@link SequentialSpinClock}.
+ * Test for {@link ParallelClock}.
  */
-public class SequentialSpinClockTest extends ClockTestBase {
+public class ParallelClockTest extends ClockTestBase {
   @Override
   protected Clock createClock() {
-    return new SequentialSpinClock();
+    return new ParallelClock();
   }
 }
