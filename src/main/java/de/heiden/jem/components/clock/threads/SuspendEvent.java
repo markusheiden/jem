@@ -16,7 +16,7 @@ public final class SuspendEvent extends ClockEvent {
   /**
    * Has the run been suspended?.
    */
-  private volatile boolean _suspended = false;
+  private boolean _suspended = false;
 
   /**
    * Monitor for synchronization.
