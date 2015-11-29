@@ -191,6 +191,10 @@ public abstract class AbstractClock implements Clock {
   @Override
   public void removeClockEvent(ClockEvent oldEvent) {
     assert oldEvent != null : "oldEvent != null";
+    if (oldEvent.next == null) {
+      // Event not registered -> Return early.
+      return;
+    }
 
 //    if (_logger.isDebugEnabled()) {
 //      _logger.debug("remove event {}", event);
@@ -206,18 +210,15 @@ public abstract class AbstractClock implements Clock {
       return;
     }
 
-    do {
-      final ClockEvent next = event.next;
-      if (next == oldEvent) {
-        event.next = oldEvent.next;
-        // _nextEventTick needs no update
-        oldEvent.next = null;
-        return;
-      }
+    // Search event directly before oldEvent.
+    ClockEvent nextEvent;
+    for (nextEvent = event.next; oldEvent != nextEvent; event = nextEvent, nextEvent = nextEvent.next) {
+      // search further
+    }
 
-      event = next;
-
-    } while (event != null);
+    event.next = oldEvent.next;
+    // _nextEventTick needs no update
+    oldEvent.next = null;
 
     // TODO mh: handle case that event is not registered?: oldEvent.next = null;
 
