@@ -16,47 +16,62 @@ public final class SuspendEvent extends ClockEvent {
   /**
    * Has the run been suspended?.
    */
-  private boolean _suspended = false;
+  private volatile boolean _suspended = false;
+
+  /**
+   * Monitor for synchronization.
+   */
+  private final Object _monitor;
 
   /**
    * Constructor.
+   *
+   * @param monitor Monitor for synchronization.
    */
-  public SuspendEvent() {
+  public SuspendEvent(Object monitor) {
     super("Suspend");
+
+    this._monitor = monitor;
   }
 
   @Override
-  public synchronized void execute(long tick) throws ManualAbort {
-    logger.info("Suspend at {}.", tick);
-    _suspended = true;
-    notifyAll();
-    try {
-      while (_suspended) {
-        wait();
+  public void execute(long tick) throws ManualAbort {
+    synchronized (_monitor) {
+      logger.info("Suspend at {}.", tick);
+      _suspended = true;
+      _monitor.notifyAll();
+      try {
+        while (_suspended) {
+          _monitor.wait();
+        }
+      } catch (InterruptedException e) {
+        throw new ManualAbort();
       }
-    } catch (InterruptedException e) {
-      throw new ManualAbort();
+      logger.info("Resume at {}.", tick);
     }
-    logger.info("Resume at {}.", tick);
   }
 
   /**
    * Resume execution, if suspended.
    */
-  public synchronized void resume() {
-    if (_suspended) {
-      _suspended = false;
-      notifyAll();
+  public void resume() {
+    synchronized (_monitor) {
+      if (_suspended) {
+        _suspended = false;
+        _monitor.notifyAll();
+      }
     }
   }
 
   /**
    * Wait for suspend.
    */
-  public synchronized void waitForSuspend() throws ManualAbort {
+  public void waitForSuspend() throws ManualAbort {
     try {
-      while (!_suspended) {
-        wait();
+      synchronized (_monitor) {
+        while (!_suspended) {
+          _monitor.wait();
+        }
       }
     } catch (InterruptedException e) {
       throw new ManualAbort();
