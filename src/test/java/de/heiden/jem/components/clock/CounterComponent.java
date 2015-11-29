@@ -41,4 +41,9 @@ public class CounterComponent implements ClockedComponent {
   public long getCount() {
     return count;
   }
+
+  @Override
+  public String toString() {
+    return Long.toString(count);
+  }
 }
