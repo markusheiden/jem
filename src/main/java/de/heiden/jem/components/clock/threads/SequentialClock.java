@@ -4,6 +4,7 @@ import de.heiden.jem.components.clock.ClockedComponent;
 import de.heiden.jem.components.clock.Tick;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.concurrent.locks.LockSupport;
 
 /**
@@ -27,9 +28,10 @@ public class SequentialClock extends AbstractSynchronizedClock {
     // Suspend execution at start of first tick.
     addClockEvent(0, _suspendEvent);
 
-    _componentThreads = new ArrayList<>(_componentMap.size());
+    Collection<ClockedComponent> components = _componentMap.values();
+    _componentThreads = new ArrayList<>(components.size());
     SerializedTick previousTick = null;
-    for (ClockedComponent component : _componentMap.values()) {
+    for (ClockedComponent component : components) {
       SerializedTick tick = new SerializedTick(_blocker);
       component.setTick(tick);
       Thread thread = createStartedDaemonThread(component.getName(), () -> executeComponent(component, tick));

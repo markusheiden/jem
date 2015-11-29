@@ -4,7 +4,7 @@ import de.heiden.jem.components.clock.ClockedComponent;
 import de.heiden.jem.components.clock.Tick;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 
@@ -42,7 +42,7 @@ public class ParallelClock extends AbstractSynchronizedClock {
     addClockEvent(0, _suspendEvent);
 
     // Create threads.
-    List<ClockedComponent> components = new ArrayList<>(_componentMap.values());
+    Collection<ClockedComponent> components = _componentMap.values();
     _barrier = new CyclicBarrier(components.size(), this::startTick);
     _componentThreads = new ArrayList<>(components.size());
     for (ClockedComponent component : components) {
