@@ -24,10 +24,19 @@ public abstract class ClockEvent {
   /**
    * Constructor.
    */
-  public ClockEvent(String name) {
+  protected ClockEvent(String name) {
     assert name != null : "name != null";
 
     this.name = name;
+  }
+
+  /**
+   * Constructor.
+   */
+  ClockEvent(String name, long tick) {
+    this(name);
+
+    this.tick = tick;
   }
 
   /**
