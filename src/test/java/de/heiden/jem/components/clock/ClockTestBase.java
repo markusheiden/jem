@@ -35,6 +35,9 @@ public abstract class ClockTestBase {
     }
   }
 
+  /**
+   * Create clock.
+   */
   protected abstract Clock createClock();
 
   /**
