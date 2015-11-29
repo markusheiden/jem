@@ -14,19 +14,9 @@ import java.util.concurrent.CyclicBarrier;
 public class ParallelClock extends AbstractSynchronizedClock {
   /**
    * Barrier for synchronizing all component threads.
+   * Package visible to avoid synthetic accessors.
    */
-  private CyclicBarrier _barrier;
-
-  /**
-   * Wait for next tick. Called by clocked components.
-   */
-  private void waitForTick() {
-    try {
-      _barrier.await();
-    } catch (InterruptedException | BrokenBarrierException e) {
-      throw new ManualAbort();
-    }
-  }
+  CyclicBarrier _barrier;
 
   /**
    * Start threads of all components.
@@ -42,7 +32,7 @@ public class ParallelClock extends AbstractSynchronizedClock {
     _barrier = new CyclicBarrier(components.size(), this::startTick);
     _componentThreads = new ArrayList<>(components.size());
     for (ClockedComponent component : components) {
-      Tick tick = this::waitForTick;
+      Tick tick = new ParallelTick();
       component.setTick(tick);
       _componentThreads.add(createStartedDaemonThread(component.getName(), () -> { // executeComponent(component, tick));
         logger.debug("starting {}", component.getName());
@@ -73,5 +63,19 @@ public class ParallelClock extends AbstractSynchronizedClock {
   protected void doClose() {
     super.doClose();
     _barrier.reset();
+  }
+
+  /**
+   * Special tick, waiting for the barrier.
+   */
+  private final class ParallelTick implements Tick {
+    @Override
+    public final void waitForTick() {
+      try {
+        _barrier.await();
+      } catch (InterruptedException | BrokenBarrierException e) {
+        throw new ManualAbort();
+      }
+    }
   }
 }

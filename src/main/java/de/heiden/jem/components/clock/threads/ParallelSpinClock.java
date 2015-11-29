@@ -84,9 +84,9 @@ public class ParallelSpinClock extends AbstractSynchronizedClock {
   }
 
   /**
-   * Special tick, waiting for its state..
+   * Special tick, waiting for its state.
    */
-  static final class ParallelSpinTick implements Tick {
+  private static final class ParallelSpinTick implements Tick {
     /**
      * State of tick.
      * True: Current tick finished, waiting for next tick.

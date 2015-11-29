@@ -18,6 +18,7 @@ public class SequentialClock extends AbstractSynchronizedClock {
 
   /**
    * Ordinal of component thread to execute.
+   * Package visible to avoid synthetic accessors.
    */
   volatile int _state = 0;
 
@@ -80,6 +81,7 @@ public class SequentialClock extends AbstractSynchronizedClock {
 
   /**
    * Busy wait until state is reached.
+   * Package visible to avoid synthetic accessors.
    *
    * @param state State to reach.
    */
