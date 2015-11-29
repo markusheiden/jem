@@ -1,5 +1,7 @@
 package de.heiden.jem.components.clock;
 
+import org.serialthreads.Interruptible;
+
 /**
  * Counter for clock tests.
  */
@@ -25,6 +27,7 @@ public class CounterComponent implements ClockedComponent {
   }
 
   @Override
+  @Interruptible
   public void run() {
     for (;;) {
       count++;

@@ -19,18 +19,18 @@ public abstract class ClockTestBase {
   @Test
   public void run() {
     int runs = 10;
-    int cycles = 10_000;
+    int cycles = 1000;
     for (int i = 0; i < runs; i++) {
-       run(cycles);
+      try (Clock clock = createClock()) {
+        run(clock, cycles);
+      }
     }
   }
 
   /**
    * Test run clock.
    */
-  private void run(int cycles) {
-    Clock clock = createClock();
-
+  private void run(Clock clock, int cycles) {
     int num = Runtime.getRuntime().availableProcessors() * 3;
     CounterComponent[] counters = new CounterComponent[num];
     for (int i = 0; i < num; i++) {
