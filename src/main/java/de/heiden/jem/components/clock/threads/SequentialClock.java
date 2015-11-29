@@ -18,11 +18,6 @@ public class SequentialClock extends AbstractSynchronizedClock {
    */
   private Thread _tickThread;
 
-  /**
-   * Blocker for parking of threads.
-   */
-  private final Object _blocker = new Object();
-
   @Override
   protected void doInit() {
     // Suspend execution at start of first tick.
@@ -32,7 +27,7 @@ public class SequentialClock extends AbstractSynchronizedClock {
     _componentThreads = new ArrayList<>(components.size());
     SerializedTick previousTick = null;
     for (ClockedComponent component : components) {
-      SerializedTick tick = new SerializedTick(_blocker);
+      SerializedTick tick = new SerializedTick();
       component.setTick(tick);
       Thread thread = createStartedDaemonThread(component.getName(), () -> executeComponent(component, tick));
       _componentThreads.add(thread);
@@ -67,7 +62,7 @@ public class SequentialClock extends AbstractSynchronizedClock {
       // Wait for component threads to finish.
       // There is no problem, if this thread is not parked when the last threads unparks it:
       // In this case this park will not block, see LockSupport.unpark() javadoc.
-      LockSupport.park(_blocker);
+      LockSupport.park(this);
     }
   }
 
@@ -99,20 +94,6 @@ public class SequentialClock extends AbstractSynchronizedClock {
      */
     private Thread nextThread;
 
-    /**
-     * Blocker.
-     */
-    private final Object _blocker;
-
-    /**
-     * Constructor.
-     *
-     * @param blocker Blocker.
-     */
-    public SerializedTick(Object blocker) {
-      this._blocker = blocker;
-    }
-
     @Override
     public void waitForTick() {
       // Execute next component thread.
@@ -120,7 +101,7 @@ public class SequentialClock extends AbstractSynchronizedClock {
       // Wait for next tick.
       // There is no problem, if this thread is not parked when the previous threads unparks it:
       // In this case this park will not block, see LockSupport.unpark() javadoc.
-      LockSupport.park(_blocker);
+      LockSupport.park(this);
     }
   }
 }
