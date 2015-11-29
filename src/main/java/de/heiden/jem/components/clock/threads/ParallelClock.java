@@ -66,7 +66,7 @@ public class ParallelClock extends AbstractSynchronizedClock {
 
   @Override
   protected void doClose() {
-    _barrier.reset();
     super.doClose();
+    _barrier.reset();
   }
 }
