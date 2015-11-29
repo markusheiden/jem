@@ -2,7 +2,7 @@ package de.heiden.jem.components.clock;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 /**
  * Test base for {@link Clock}s.
@@ -42,8 +42,16 @@ public abstract class ClockTestBase {
     clock.run(cycles);
 
     // Check that al components are executed exactly the specified amount of cycles.
+    boolean failure = false;
     for (int i = 0; i < counters.length; i++) {
-      assertEquals(cycles, counters[i].getCount());
+      failure |= counters[i].getCount() != cycles;
+    }
+
+    if (failure) {
+      for (int i = 0; i < counters.length; i++) {
+        System.out.println(String.format("Counter %d: %d", i, counters[i].getCount()));
+      }
+      fail("Not all counters are at " + cycles);
     }
   }
 }
