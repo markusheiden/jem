@@ -38,7 +38,12 @@ public class SequentialClock extends AbstractSynchronizedClock {
       component.setTick(tick);
 
       // Start component.
-      Thread thread = createStartedDaemonThread(component.getName(), () -> executeComponent(component, tick));
+      Thread thread = createStartedDaemonThread(component.getName(), () -> { // executeComponent(component, tick));
+        logger.debug("starting {}", component.getName());
+        tick.waitForTick();
+        logger.debug("started {}", component.getName());
+        component.run();
+      });
       _componentThreads.add(thread);
       if (previousTick != null) {
         previousTick._nextThread = thread;

@@ -236,12 +236,15 @@ public abstract class AbstractClock implements Clock {
   /**
    * Execute component thread.
    */
+/*
+  @Interruptible
   protected final void executeComponent(ClockedComponent component, Tick tick) {
     logger.debug("starting {}", component.getName());
     tick.waitForTick();
     logger.debug("started {}", component.getName());
     component.run();
   }
+*/
 
   /**
    * Start a new tick.
