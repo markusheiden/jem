@@ -17,8 +17,9 @@ public class SequentialSpinClock extends AbstractSynchronizedClock {
 
   /**
    * Ordinal of component thread to execute.
+   * Package visible to avoid synthetic accessors.
    */
-  private volatile int _state = 0;
+  volatile int _state = 0;
 
   @Override
   protected void doInit() {
@@ -69,10 +70,11 @@ public class SequentialSpinClock extends AbstractSynchronizedClock {
 
   /**
    * Busy wait until state is reached.
+   * Package visible to avoid synthetic accessors.
    *
    * @param state State to reach.
    */
-  private void waitForState(final int state) {
+  void waitForState(final int state) {
     do {
       Thread.yield();
     } while (_state != state);
@@ -99,7 +101,7 @@ public class SequentialSpinClock extends AbstractSynchronizedClock {
   /**
    * Special tick, waiting for its state.
    */
-  final class SequentialSpinTick implements Tick {
+  private final class SequentialSpinTick implements Tick {
     /**
      * Ordinal of component thread.
      */
@@ -110,7 +112,7 @@ public class SequentialSpinClock extends AbstractSynchronizedClock {
      *
      * @param state Ordinal of thread to execute.
      */
-    public SequentialSpinTick(int state) {
+    private SequentialSpinTick(int state) {
       this._tickState = state;
     }
 
