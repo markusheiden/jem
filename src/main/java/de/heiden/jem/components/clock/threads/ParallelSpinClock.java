@@ -45,11 +45,11 @@ public class ParallelSpinClock extends AbstractSynchronizedClock {
   /**
    * Execution of ticks.
    */
-  private void executeTicks(ParallelSpinTick[] ticks) {
+  private void executeTicks(final ParallelSpinTick[] ticks) {
     for (;;) {
       // Start new tick.
       startTick();
-      // Start all component threads.
+      // Execute all component threads.
       for (ParallelSpinTick tick : ticks) {
         tick.startTick();
       }
@@ -74,13 +74,12 @@ public class ParallelSpinClock extends AbstractSynchronizedClock {
 
   @Override
   protected void doClose() {
-    _componentThreads.forEach(Thread::interrupt);
     _tickThread.interrupt();
-    Thread.yield();
+    super.doClose();
   }
 
   /**
-   * Special tick.
+   * Special tick, waiting for its state..
    */
   static final class ParallelSpinTick implements Tick {
     /**

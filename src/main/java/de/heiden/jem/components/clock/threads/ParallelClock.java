@@ -17,10 +17,6 @@ public class ParallelClock extends AbstractSynchronizedClock {
    */
   private CyclicBarrier _barrier;
 
-  //
-  // public
-  //
-
   /**
    * Wait for next tick. Called by clocked components.
    */
@@ -70,7 +66,7 @@ public class ParallelClock extends AbstractSynchronizedClock {
 
   @Override
   protected void doClose() {
-    super.doClose();
     _barrier.reset();
+    super.doClose();
   }
 }

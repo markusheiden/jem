@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Clock implemented without synchronization sequentially executing components by using spin locks (busy wait).
+ * Clock implemented without synchronization sequentially executing component threads by using spin locks (busy wait).
  */
 public class SequentialSpinClock extends AbstractSynchronizedClock {
   /**
@@ -16,7 +16,7 @@ public class SequentialSpinClock extends AbstractSynchronizedClock {
   private Thread _tickThread;
 
   /**
-   * Ordinal of thread to execute.
+   * Ordinal of component thread to execute.
    */
   private volatile int _state = 0;
 
@@ -32,43 +32,33 @@ public class SequentialSpinClock extends AbstractSynchronizedClock {
       final int nextState = i + 1;
 
       ClockedComponent component = components.get(state);
-      Tick tick = () -> waitForTick(state);
+      SequentialSpinTick tick =  new SequentialSpinTick(state);
       component.setTick(tick);
 
       // Start component.
-      _componentThreads.add(createStartedDaemonThread(component.getName(), () -> executeComponent(component, tick)));
+      Thread thread = createStartedDaemonThread(component.getName(), () -> executeComponent(component, tick));
+      _componentThreads.add(thread);
       // Wait for component to reach first tick.
       waitForState(nextState);
     }
 
-    // Start thread manager.
-    _tickThread = createStartedDaemonThread("Tick", this::executeTicks);
+    // Start tick manager.
+    _tickThread = createStartedDaemonThread("Tick", () -> executeTicks(components.size()));
     Thread.yield();
 
     _suspendEvent.waitForSuspend();
   }
 
   /**
-   * Tick.
-   */
-  private void waitForTick(final int state) {
-    // Execute next component thread.
-    _state = state + 1;
-    // Wait for next turn.
-    waitForState(state);
-  }
-
-  /**
    * Execution of ticks.
    */
-  private void executeTicks() {
-    final int lastState = _componentMap.size();
+  private void executeTicks(final int state) {
     for (;;) {
       startTick();
-      // Execute component threads.
+      // Execute all component threads.
       _state = 0;
-      // Wait for component threads to finish tick.
-      waitForState(lastState);
+      // Wait for all component threads to finish tick.
+      waitForState(state);
     }
   }
 
@@ -97,8 +87,35 @@ public class SequentialSpinClock extends AbstractSynchronizedClock {
 
   @Override
   protected void doClose() {
-    _componentThreads.forEach(Thread::interrupt);
     _tickThread.interrupt();
-    Thread.yield();
+    super.doClose();
+  }
+
+  /**
+   * Special tick, waiting for its state.
+   */
+  final class SequentialSpinTick implements Tick {
+    /**
+     * Ordinal of component thread.
+     */
+    private final int _tickState;
+
+    /**
+     * Constructor.
+     *
+     * @param state Ordinal of thread to execute.
+     */
+    public SequentialSpinTick(int state) {
+      this._tickState = state;
+    }
+
+    @Override
+    public void waitForTick() {
+      final int tickState = _tickState;
+      // Execute next component thread.
+      _state = tickState + 1;
+      // Wait for next tick.
+      waitForState(tickState);
+    }
   }
 }

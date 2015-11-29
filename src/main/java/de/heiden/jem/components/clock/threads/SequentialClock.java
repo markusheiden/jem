@@ -4,13 +4,11 @@ import de.heiden.jem.components.clock.ClockedComponent;
 import de.heiden.jem.components.clock.Tick;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.locks.LockSupport;
 
 /**
- * Clock implemented with synchronization, executing component threads sequentially.
- *
- * TODO 2015-11-23 markus: Spurious wakeups are not handled.
+ * Clock implemented with synchronization sequentially executing component threads.
  */
 public class SequentialClock extends AbstractSynchronizedClock {
   /**
@@ -18,32 +16,42 @@ public class SequentialClock extends AbstractSynchronizedClock {
    */
   private Thread _tickThread;
 
+  /**
+   * Ordinal of component thread to execute.
+   */
+  private volatile int _state = 0;
+
   @Override
   protected void doInit() {
     // Suspend execution at start of first tick.
     addClockEvent(0, _suspendEvent);
 
-    Collection<ClockedComponent> components = _componentMap.values();
+    List<ClockedComponent> components = new ArrayList<>(_componentMap.values());
     _componentThreads = new ArrayList<>(components.size());
-    SerializedTick previousTick = null;
-    for (ClockedComponent component : components) {
-      SerializedTick tick = new SerializedTick();
+    SequentialTick previousTick = null;
+    for (int i = 0; i < components.size(); i++) {
+      final int state = i;
+      final int nextState = i + 1;
+
+      ClockedComponent component = components.get(state);
+      SequentialTick tick = new SequentialTick(state);
       component.setTick(tick);
+
+      // Start component.
       Thread thread = createStartedDaemonThread(component.getName(), () -> executeComponent(component, tick));
       _componentThreads.add(thread);
       if (previousTick != null) {
-        previousTick.nextThread = thread;
+        previousTick._nextThread = thread;
       }
       // Wait for component to reach first tick.
-      do {
-        Thread.yield();
-      } while (!thread.getState().equals(Thread.State.WAITING));
+      waitForState(nextState);
 
       previousTick = tick;
     }
 
-    _tickThread = createDaemonThread("Tick", this::executeTicks);
-    previousTick.nextThread = _tickThread;
+    // Start tick manager.
+    _tickThread = createDaemonThread("Tick", () -> executeTicks(components.size(), _componentThreads.get(0)));
+    previousTick._nextThread = _tickThread;
     _tickThread.start();
     Thread.yield();
 
@@ -53,55 +61,81 @@ public class SequentialClock extends AbstractSynchronizedClock {
   /**
    * Execution of ticks.
    */
-  private void executeTicks() {
-    final Thread firstThread = _componentThreads.get(0);
+  private void executeTicks(final int state, final Thread nextThread) {
     for (;;) {
       startTick();
       // Execute component threads.
-      LockSupport.unpark(firstThread);
-      // Wait for component threads to finish.
-      // There is no problem, if this thread is not parked when the last threads unparks it:
-      // In this case this park will not block, see LockSupport.unpark() javadoc.
-      LockSupport.park(this);
+      _state = 0;
+      // Execute component threads.
+      LockSupport.unpark(nextThread);
+      // Wait for component threads to finish tick.
+      waitForState(state);
     }
   }
 
+  /**
+   * Busy wait until state is reached.
+   *
+   * @param state State to reach.
+   */
+  private void waitForState(final int state) {
+    do {
+      // There is no problem, if this thread is not parked when the previous threads unparks it:
+      // In this case this park will not block, see LockSupport.unpark() javadoc.
+      LockSupport.park(this);
+    } while (_state != state);
+  }
+
   @Override
-  protected final void doRun(int ticks) {
+  protected void doRun(int ticks) {
     addClockEvent(_tick.get() + ticks, _suspendEvent);
     doRun();
   }
 
   @Override
-  protected final void doRun() {
+  protected void doRun() {
     _suspendEvent.resume();
     _suspendEvent.waitForSuspend();
   }
 
   @Override
   protected void doClose() {
-    _componentThreads.forEach(Thread::interrupt);
     _tickThread.interrupt();
-    Thread.yield();
+    super.doClose();
   }
 
   /**
-   * Special tick, parking its thread but unparking the next thread before.
+   * Special tick, waiting for its state and parking its thread but unparking the next thread before.
    */
-  static final class SerializedTick implements Tick {
+  final class SequentialTick implements Tick {
+    /**
+     * Ordinal of component thread.
+     */
+    private final int _tickState;
+
     /**
      * Thread of next component.
+     * First this is the current thread to avoid parking the thread executing {@link #doInit()}.
      */
-    private Thread nextThread;
+    private Thread _nextThread = Thread.currentThread();
+
+    /**
+     * Constructor.
+     *
+     * @param state Ordinal of thread to execute.
+     */
+    public SequentialTick(int state) {
+      this._tickState = state;
+    }
 
     @Override
     public void waitForTick() {
+      final int tickState = _tickState;
       // Execute next component thread.
-      LockSupport.unpark(nextThread);
+      _state = tickState + 1;
+      LockSupport.unpark(_nextThread);
       // Wait for next tick.
-      // There is no problem, if this thread is not parked when the previous threads unparks it:
-      // In this case this park will not block, see LockSupport.unpark() javadoc.
-      LockSupport.park(this);
+      waitForState(tickState);
     }
   }
 }
