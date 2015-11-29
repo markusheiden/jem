@@ -4,11 +4,18 @@ import de.heiden.jem.models.c64.C64;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Application for C64 emulation.
  */
 public class C64Application extends Application {
+  /**
+   * Logger.
+   */
+  private final Logger logger = LoggerFactory.getLogger(getClass());
+
   /**
    * C64.
    */
@@ -41,8 +48,9 @@ public class C64Application extends Application {
     thread = new Thread(() -> {
       try {
         c64.start();
+        logger.info("C64 stopped.");
       } catch (Exception e) {
-        e.printStackTrace();
+        logger.error("C64 failed.", e);
       }
     });
 
