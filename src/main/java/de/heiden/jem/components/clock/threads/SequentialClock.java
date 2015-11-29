@@ -19,7 +19,7 @@ public class SequentialClock extends AbstractSynchronizedClock {
   /**
    * Ordinal of component thread to execute.
    */
-  private volatile int _state = 0;
+  volatile int _state = 0;
 
   @Override
   protected void doInit() {
@@ -83,7 +83,7 @@ public class SequentialClock extends AbstractSynchronizedClock {
    *
    * @param state State to reach.
    */
-  private void waitForState(final int state) {
+  void waitForState(final int state) {
     do {
       // There is no problem, if this thread is not parked when the previous threads unparks it:
       // In this case this park will not block, see LockSupport.unpark() javadoc.
@@ -112,7 +112,7 @@ public class SequentialClock extends AbstractSynchronizedClock {
   /**
    * Special tick, waiting for its state and parking its thread but unparking the next thread before.
    */
-  final class SequentialTick implements Tick {
+  private final class SequentialTick implements Tick {
     /**
      * Ordinal of component thread.
      */
@@ -129,7 +129,7 @@ public class SequentialClock extends AbstractSynchronizedClock {
      *
      * @param state Ordinal of thread to execute.
      */
-    public SequentialTick(int state) {
+    private SequentialTick(int state) {
       this._tickState = state;
     }
 
