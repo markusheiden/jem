@@ -1,13 +1,12 @@
 package de.heiden.jem.components.clock;
 
-import de.heiden.jem.components.clock.threads.SequentialSpinClock;
 import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
 /**
- * Test for {@link SequentialSpinClock}.
+ * Test base for {@link Clock}s.
  */
 public abstract class ClockTestBase {
   /**
@@ -39,7 +38,7 @@ public abstract class ClockTestBase {
   protected abstract Clock createClock();
 
   /**
-   * Test for {@link SequentialSpinClock#run(int)}.
+   * Test for {@link Clock#run(int)}.
    */
   @Test
   public void run() {
