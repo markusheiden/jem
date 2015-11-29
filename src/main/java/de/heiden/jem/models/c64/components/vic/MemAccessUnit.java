@@ -48,7 +48,7 @@ class MemAccessUnit implements ClockedComponent {
   public final void run() {
     _vic.reset();
 
-    while (true) {
+    for (;;) {
       loadScreen();
     }
   }

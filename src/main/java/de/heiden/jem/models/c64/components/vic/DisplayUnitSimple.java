@@ -29,7 +29,7 @@ public class DisplayUnitSimple extends AbstractDisplayUnit {
     _vic.reset();
 
     //noinspection InfiniteLoopStatement
-    while (true) {
+    for (;;) {
       int ptr = 0;
 
       int raster = 0;

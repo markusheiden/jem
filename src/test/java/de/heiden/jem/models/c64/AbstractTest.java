@@ -122,7 +122,7 @@ public class AbstractTest {
   protected int waitFor(long maxCycles, String... strings) throws Exception {
     long end = getTick() + maxCycles;
 
-    while (true) {
+    for (;;) {
       for (int i = 0; i < strings.length; i++) {
         if (screen.contains(strings[i])) {
           System.out.flush();

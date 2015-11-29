@@ -204,7 +204,7 @@ public class CPU6510 implements ClockedComponent {
 
     final CPU6510State state = _state;
     //noinspection InfiniteLoopStatement
-    while (true) {
+    for (;;) {
       if (state.NMI) {
         nmi();
 
@@ -3036,7 +3036,7 @@ public class CPU6510 implements ClockedComponent {
       reportIllegalOpcode();
     }
     //noinspection InfiniteLoopStatement
-    while (true) {
+    for (;;) {
       _tick.waitForTick();
     }
   }
