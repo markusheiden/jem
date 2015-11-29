@@ -182,10 +182,18 @@ public abstract class AbstractClock implements Clock {
   }
 
   @Override
-  public void updateClockEvent(long tick, ClockEvent event) {
+  public void updateClockEvent(long tick, ClockEvent eventToUpdate) {
+    assert tick > getTick() : "tick > getTick()";
+    assert eventToUpdate != null : "eventToUpdate != null";
+    assert eventToUpdate.next != null : "eventToUpdate.next != null";
+    if (tick == eventToUpdate.tick) {
+      // Nothing to do -> Return early.
+      return;
+    }
+
     // TODO mh: check, if events needs to be moved. otherwise exit early.
-    removeClockEvent(event);
-    addClockEvent(tick, event);
+    removeClockEvent(eventToUpdate);
+    addClockEvent(tick, eventToUpdate);
   }
 
   @Override

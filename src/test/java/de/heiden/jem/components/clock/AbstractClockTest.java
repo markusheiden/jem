@@ -5,10 +5,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Test for {@link AbstractClock}
@@ -43,6 +40,36 @@ public class AbstractClockTest {
     // add event after first event -> next tick should not change
     clock.addClockEvent(3, event3);
     assertEquals(1, clock.getNextEventTick());
+  }
+
+  @Test
+  public void updateClockEvent() {
+    TestClock clock = new TestClock();
+    ClockEvent event10 = new TestClockEvent();
+    ClockEvent event20 = new TestClockEvent();
+    ClockEvent event30 = new TestClockEvent();
+
+    clock.addClockEvent(10, event10);
+    clock.addClockEvent(20, event20);
+    clock.addClockEvent(30, event30);
+
+    // Nothing to update.
+    clock.updateClockEvent(10, event10);
+    assertSame(event20, event10.next);
+    assertEquals(10, clock.getNextEventTick());
+    // event10 is still first, but the next event tick needs to be updated.
+    clock.updateClockEvent(11, event10);
+    assertSame(event20, event10.next);
+    assertEquals(11, clock.getNextEventTick());
+    // event10 is no longer the first event -> the next event (event20) takes its place.
+    clock.updateClockEvent(21, event10);
+    assertSame(event10, event20.next);
+    assertSame(event30, event10.next);
+    assertEquals(20, clock.getNextEventTick());
+    // event10 is now the last event.
+    clock.updateClockEvent(31, event10);
+    assertSame(event10, event30.next);
+    assertEquals(20, clock.getNextEventTick());
   }
 
   @Test
