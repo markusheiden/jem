@@ -169,18 +169,16 @@ public abstract class AbstractClock implements Clock {
       return;
     }
 
-    do {
-      final ClockEvent next = event.next;
-      if (next == null || tick <= next.tick) {
-        event.next = newEvent;
-        newEvent.next = next;
-        // _nextEventTick needs no update
-        return;
-      }
+    // Search event and nextEvent so that newEvent belongs in between.
+    ClockEvent nextEvent;
+    for (nextEvent = event.next; tick > nextEvent.tick; event = nextEvent, nextEvent = nextEvent.next) {
+      // search further
+    }
 
-      event = next;
-
-    } while (true);
+    newEvent.next = nextEvent;
+    event.next = newEvent;
+    // _nextEventTick needs no update
+    return;
   }
 
   @Override
