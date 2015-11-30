@@ -11,13 +11,13 @@ public abstract class ClockTestBase {
   /**
    * Create clock.
    */
-  protected abstract Clock createClock();
+  protected abstract Clock createClock() throws Exception;
 
   /**
    * Test for {@link Clock#run(int)}.
    */
   @Test
-  public void run() {
+  public void run() throws Exception {
     int runs = 10;
     int cycles = 1000;
     for (int i = 0; i < runs; i++) {
