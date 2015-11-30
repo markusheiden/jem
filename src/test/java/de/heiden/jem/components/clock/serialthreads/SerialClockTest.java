@@ -2,14 +2,14 @@ package de.heiden.jem.components.clock.serialthreads;
 
 import de.heiden.jem.components.clock.ClockTestBase;
 import org.junit.runner.RunWith;
-import org.serialthreads.agent.TransformingTestRunner;
+import org.serialthreads.agent.TransformingRunner;
 import org.serialthreads.transformer.IStrategy;
 import org.serialthreads.transformer.Strategies;
 
 /**
  * Test for {@link SerialClock}.
  */
-@RunWith(TransformingTestRunner.class)
+@RunWith(TransformingRunner.class)
 public class SerialClockTest extends ClockTestBase {
   /**
    * Transforming strategy.

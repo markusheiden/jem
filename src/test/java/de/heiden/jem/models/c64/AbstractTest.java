@@ -1,34 +1,39 @@
 package de.heiden.jem.models.c64;
 
 import org.junit.After;
-import org.junit.BeforeClass;
-import org.serialthreads.agent.TransformingClassLoader;
+import org.junit.runner.RunWith;
+import org.serialthreads.agent.TransformingRunner;
+import org.serialthreads.transformer.IStrategy;
 import org.serialthreads.transformer.Strategies;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
-import java.io.OutputStream;
 
 /**
  * Test support.
  */
+@RunWith(TransformingRunner.class)
 public class AbstractTest {
   /**
-   * Constructor for transformed test C64.
+   * Transforming strategy.
    */
-  private static Class<?> c64Class;
+  public static IStrategy getStrategy() {
+    return Strategies.DEFAULT;
+  }
+
+  /**
+   * Prefixes of classes to transform.
+   */
+  public static String[] getClassPrefixes() {
+    return new String[]{ "de.heiden.jem" };
+  }
 
   /**
    * Transformed test C64.
    */
-  private Object c64;
-
-  /**
-   * C64 clock.
-   */
-  private Object clock;
+  protected TestC64 c64;
 
   /**
    * Screen output of test C64.
@@ -50,12 +55,6 @@ public class AbstractTest {
    */
   private volatile Exception exception;
 
-  @BeforeClass
-  public static void setUpClass() throws Exception {
-    ClassLoader classLoader = new TransformingClassLoader(AbstractTest.class.getClassLoader(), Strategies.DEFAULT, "de.heiden.jem");
-    c64Class = classLoader.loadClass("de.heiden.jem.models.c64.TestC64");
-  }
-
   /**
    * Setup test C64.
    *
@@ -64,33 +63,23 @@ public class AbstractTest {
   protected void setUp(File program) throws Exception {
     screen = new ScreenBuffer();
 
-    c64 = c64Class.getConstructor(File.class).newInstance(program.getParentFile());
-    clock = c64Class.getMethod("getClock").invoke(c64);
-    c64Class.getMethod("setSystemOut", OutputStream.class).invoke(c64, screen);
-    systemIn = (KeyListener) c64Class.getMethod("getSystemIn").invoke(c64);
+    c64 = new TestC64(program.getParentFile());
+    c64.setSystemOut(screen);
+    systemIn = c64.getSystemIn();
 
     thread = new Thread(() -> {
       try {
-        c64Class.getMethod("start").invoke(c64);
+        c64.start();
       } catch (Exception e) {
         AbstractTest.this.exception = e;
       }
     }, program.getName());
   }
 
-  /**
-   * Add a patch to the cpu, to insert a RTS at the given address.
-   *
-   * @param addr Address to write RTS to
-   */
-  protected void rts(int addr) throws Exception {
-    c64Class.getMethod("rts", int.class).invoke(c64, addr);
-  }
-
   @After
   @SuppressWarnings("deprecation")
   public void tearDown() throws Exception {
-    c64Class.getMethod("setSystemOut", OutputStream.class).invoke(c64, (Object) null);
+    c64.setSystemOut(null);
     thread.interrupt();
     thread.join(1000);
     thread.stop();
@@ -165,6 +154,6 @@ public class AbstractTest {
    * Get current clock tick.
    */
   private Long getTick() throws Exception {
-    return (Long) clock.getClass().getMethod("getTick").invoke(clock);
+    return c64.getClock().getTick();
   }
 }
