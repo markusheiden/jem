@@ -10,7 +10,7 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameter;
 import org.junit.runners.Parameterized.Parameters;
 import org.junit.runners.Parameterized.UseParametersRunnerFactory;
-import org.serialthreads.agent.TransformingParametersRunnerFactory;
+import org.serialthreads.agent.ParametersTransformingRunnerFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -25,7 +25,7 @@ import static org.junit.Assume.assumeTrue;
  * Testsuite 2.15.
  */
 @RunWith(Parameterized.class)
-@UseParametersRunnerFactory(TransformingParametersRunnerFactory.class)
+@UseParametersRunnerFactory(ParametersTransformingRunnerFactory.class)
 public class Testsuite2_15 extends AbstractTest {
   /**
    * Ignored tests.
