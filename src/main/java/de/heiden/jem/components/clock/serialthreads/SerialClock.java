@@ -19,7 +19,7 @@ public final class SerialClock extends AbstractClock {
   protected final void doRun(int ticks) {
     assert ticks >= 0 : "Precondition: ticks >= 0";
 
-    final long stop = _tick.get() + 1 + ticks;
+    final long stop = _tick.get() + ticks;
     run(() -> {
       if (_tick.get() == stop) {
         throw new ThreadFinishedException("Stop");
