@@ -745,6 +745,7 @@
       </JAVADOC>
       <SOURCES>
         <root url="jar://$MAVEN_REPOSITORY$/junit/junit/4.12/junit-4.12-sources.jar!/" />
+        <root url="jar://$USER_HOME$/.ideaLibSources/junit-4.12-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="Maven: org.hamcrest:hamcrest-core:1.3">

@@ -72,6 +72,13 @@
       <version>${junit.version}</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.serialthreads</groupId>
+      <artifactId>serialthreads</artifactId>
+      <type>test-jar</type>
+      <version>${serialthreads.version}</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
 </project>
