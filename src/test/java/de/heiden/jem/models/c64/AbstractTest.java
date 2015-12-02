@@ -16,7 +16,7 @@ import java.io.File;
  */
 @RunWith(TransformingRunner.class)
 @Transform(transformer = FrequentInterruptsTransformer3.class, classPrefixes = "de.heiden.jem")
-public class AbstractTest {
+public abstract class AbstractTest {
   /**
    * Transformed test C64.
    */
