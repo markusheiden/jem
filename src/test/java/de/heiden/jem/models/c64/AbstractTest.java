@@ -2,9 +2,9 @@ package de.heiden.jem.models.c64;
 
 import org.junit.After;
 import org.junit.runner.RunWith;
+import org.serialthreads.agent.Transform;
 import org.serialthreads.agent.TransformingRunner;
-import org.serialthreads.transformer.IStrategy;
-import org.serialthreads.transformer.Strategies;
+import org.serialthreads.transformer.strategies.frequent3.FrequentInterruptsTransformer3;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -15,21 +15,8 @@ import java.io.File;
  * Test support.
  */
 @RunWith(TransformingRunner.class)
+@Transform(transformer = FrequentInterruptsTransformer3.class, classPrefixes = "de.heiden.jem")
 public class AbstractTest {
-  /**
-   * Transforming strategy.
-   */
-  public static IStrategy getStrategy() {
-    return Strategies.DEFAULT;
-  }
-
-  /**
-   * Prefixes of classes to transform.
-   */
-  public static String[] getClassPrefixes() {
-    return new String[]{ "de.heiden.jem" };
-  }
-
   /**
    * Transformed test C64.
    */
