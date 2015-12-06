@@ -74,7 +74,7 @@ public class SequentialSpinClock extends AbstractSynchronizedClock {
    *
    * @param state State to reach.
    */
-  void waitForState(final int state) {
+  final void waitForState(final int state) {
     do {
       Thread.yield();
     } while (_state != state);
