@@ -73,11 +73,10 @@ public class SequentialClock extends AbstractSynchronizedClock {
   private void executeTicks(final int state, final Thread nextThread) {
     for (;;) {
       startTick();
-      // Execute component threads.
+      // Execute all component threads.
       _state = 0;
-      // Execute component threads.
       LockSupport.unpark(nextThread);
-      // Wait for component threads to finish tick.
+      // Wait for all component threads to finish tick.
       waitForState(state);
     }
   }
@@ -88,7 +87,7 @@ public class SequentialClock extends AbstractSynchronizedClock {
    *
    * @param state State to reach.
    */
-  void waitForState(final int state) {
+  final void waitForState(final int state) {
     do {
       // There is no problem, if this thread is not parked when the previous threads unparks it:
       // In this case this park will not block, see LockSupport.unpark() javadoc.
