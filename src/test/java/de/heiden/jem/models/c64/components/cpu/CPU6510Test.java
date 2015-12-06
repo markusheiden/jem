@@ -49,10 +49,12 @@ public class CPU6510Test {
     _ram.write(0xA5, 0x0302); // dummy
     _ram.write(0x48, 0xFFFE); // BRK vector low
     _ram.write(0xFF, 0xFFFF); // BRK vector high
+    _ram.write(0xEA, 0xFF48); // NOP at BRK vector
 
     // Execute NOP
     _clock.run(2);
 
+    long startTick = _clock.getTick();
     CPU6510State expectedState = _cpu.getState().copy();
     assertEquals(0x0301, expectedState.PC);
 
@@ -71,14 +73,19 @@ public class CPU6510Test {
     // store status flag at stack
     executeOneTick(expectedState, new LogEntry(false, 0x0100 + expectedState.S--, expectedState.getP()));
 
-    // load low(vector)
+    // set I and load low(vector)
+    expectedState.I = true;
     executeOneTick(expectedState, new LogEntry(true, 0xFFFE, 0x48));
 
     // load high(vector)
-    expectedState.PC = 0xFF48;
     executeOneTick(expectedState, new LogEntry(true, 0xFFFF, 0xFF));
 
-    assertEquals(7, _clock.getTick());
+    // Check overall clock cycles.
+    assertEquals(startTick + 7, _clock.getTick());
+
+    // Check that NOP at BRK vector gets executed.
+    expectedState.PC = 0xFF48 + 1;
+    executeOneTick(expectedState, new LogEntry(true, 0xFF48, 0xEA));
   }
 
   /**
