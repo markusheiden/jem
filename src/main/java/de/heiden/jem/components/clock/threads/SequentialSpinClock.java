@@ -27,7 +27,6 @@ public class SequentialSpinClock extends AbstractSynchronizedClock {
     addClockEvent(0, _suspendEvent);
 
     List<ClockedComponent> components = new ArrayList<>(_componentMap.values());
-    _componentThreads = new ArrayList<>(components.size());
     for (int i = 0; i < components.size(); i++) {
       final int state = i;
       final int nextState = i + 1;
@@ -43,7 +42,6 @@ public class SequentialSpinClock extends AbstractSynchronizedClock {
         logger.debug("started {}", component.getName());
         component.run();
       });
-      _componentThreads.add(thread);
       // Wait for component to reach first tick.
       waitForState(nextState);
     }

@@ -28,7 +28,7 @@ public class SequentialClock extends AbstractSynchronizedClock {
     addClockEvent(0, _suspendEvent);
 
     List<ClockedComponent> components = new ArrayList<>(_componentMap.values());
-    _componentThreads = new ArrayList<>(components.size());
+    Thread firstThread = null;
     SequentialTick previousTick = null;
     for (int i = 0; i < components.size(); i++) {
       final int state = i;
@@ -45,7 +45,9 @@ public class SequentialClock extends AbstractSynchronizedClock {
         logger.debug("started {}", component.getName());
         component.run();
       });
-      _componentThreads.add(thread);
+      if (firstThread == null) {
+        firstThread = thread;
+      }
       if (previousTick != null) {
         previousTick._nextThread = thread;
       }
@@ -56,7 +58,8 @@ public class SequentialClock extends AbstractSynchronizedClock {
     }
 
     // Start tick manager.
-    _tickThread = createDaemonThread("Tick", () -> executeTicks(components.size(), _componentThreads.get(0)));
+    final Thread finalFirstThread = firstThread;
+    _tickThread = createDaemonThread("Tick", () -> executeTicks(components.size(), finalFirstThread));
     previousTick._nextThread = _tickThread;
     _tickThread.start();
     Thread.yield();

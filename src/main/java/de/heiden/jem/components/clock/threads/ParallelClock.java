@@ -3,7 +3,6 @@ package de.heiden.jem.components.clock.threads;
 import de.heiden.jem.components.clock.ClockedComponent;
 import de.heiden.jem.components.clock.Tick;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
@@ -29,16 +28,15 @@ public class ParallelClock extends AbstractSynchronizedClock {
     // Create threads.
     Collection<ClockedComponent> components = _componentMap.values();
     _barrier = new CyclicBarrier(components.size(), this::startTick);
-    _componentThreads = new ArrayList<>(components.size());
     for (ClockedComponent component : components) {
       Tick tick = new ParallelTick(_barrier);
       component.setTick(tick);
-      _componentThreads.add(createStartedDaemonThread(component.getName(), () -> { // executeComponent(component, tick));
+      createStartedDaemonThread(component.getName(), () -> { // executeComponent(component, tick));
         logger.debug("starting {}", component.getName());
         tick.waitForTick();
         logger.debug("started {}", component.getName());
         component.run();
-      }));
+      });
     }
     Thread.yield();
 

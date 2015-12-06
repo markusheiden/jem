@@ -21,7 +21,6 @@ public class ParallelSpinClock extends AbstractSynchronizedClock {
     addClockEvent(0, _suspendEvent);
 
     List<ClockedComponent> components = new ArrayList<>(_componentMap.values());
-    _componentThreads = new ArrayList<>(components.size());
     ParallelSpinTick[] ticks = new ParallelSpinTick[components.size()];
     for (int i = 0; i < components.size(); i++) {
       ClockedComponent component = components.get(i);
@@ -30,12 +29,12 @@ public class ParallelSpinClock extends AbstractSynchronizedClock {
       ticks[i] = tick;
 
       // Start component.
-      _componentThreads.add(createStartedDaemonThread(component.getName(), () -> { // executeComponent(component, tick));
+      createStartedDaemonThread(component.getName(), () -> { // executeComponent(component, tick));
         logger.debug("starting {}", component.getName());
         tick.waitForTick();
         logger.debug("started {}", component.getName());
         component.run();
-      }));
+      });
       // Wait for component to reach first tick.
       tick.waitForTickEnd();
     }

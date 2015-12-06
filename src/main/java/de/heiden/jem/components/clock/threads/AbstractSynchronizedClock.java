@@ -3,8 +3,6 @@ package de.heiden.jem.components.clock.threads;
 import de.heiden.jem.components.clock.AbstractClock;
 import de.heiden.jem.components.clock.ClockEvent;
 
-import java.util.List;
-
 /**
  * Base implementation for all clocks using synchronization.
  */
@@ -12,7 +10,7 @@ public abstract class AbstractSynchronizedClock extends AbstractClock {
   /**
    * Component threads.
    */
-  protected List<Thread> _componentThreads;
+  protected final ThreadGroup _componentThreads = new ThreadGroup(getClass().getSimpleName());
 
   /**
    * Monitor for synchronization.
@@ -65,7 +63,7 @@ public abstract class AbstractSynchronizedClock extends AbstractClock {
    * Create daemon thread.
    */
   protected Thread createDaemonThread(String name, Runnable runnable) {
-    Thread thread = new Thread(() -> {
+    Thread thread = new Thread(_componentThreads, () -> {
       try {
         runnable.run();
       } catch (ManualAbort e) {
@@ -80,7 +78,7 @@ public abstract class AbstractSynchronizedClock extends AbstractClock {
 
   @Override
   protected void doClose() {
-    _componentThreads.forEach(Thread::interrupt);
+    _componentThreads.interrupt();
     Thread.yield();
   }
 }
