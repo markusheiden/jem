@@ -1569,6 +1569,7 @@ public class CPU6510 implements ClockedComponent {
         @Interruptible
         public final void execute() // $8A: TXA (2) // no
         {
+          idleRead();
           _state.A = load(_state.X);
         }
       },
@@ -1696,6 +1697,7 @@ public class CPU6510 implements ClockedComponent {
         @Interruptible
         public final void execute() // $98: TYA (2) // no
         {
+          idleRead();
           _state.A = load(_state.Y);
         }
       },
@@ -1845,6 +1847,7 @@ public class CPU6510 implements ClockedComponent {
         @Interruptible
         public final void execute() // $A8: TAY (2) // no
         {
+          idleRead();
           _state.Y = load(_state.A);
         }
       },
@@ -1863,6 +1866,7 @@ public class CPU6510 implements ClockedComponent {
         @Interruptible
         public final void execute() // $AA: TAX (2) // no
         {
+          idleRead();
           _state.X = load(_state.A);
         }
       },
@@ -2008,6 +2012,7 @@ public class CPU6510 implements ClockedComponent {
         @Interruptible
         public final void execute() // $BA: TSX (2) // no
         {
+          idleRead();
           _state.X = load(_state.S);
         }
       },
@@ -2903,8 +2908,6 @@ public class CPU6510 implements ClockedComponent {
    */
   @Interruptible
   protected final int load(int value) {
-    idleRead(); // during operation
-
     _state.setZeroNegativeP(value);
     return value;
   }
@@ -3656,8 +3659,8 @@ public class CPU6510 implements ClockedComponent {
   /**
    * Interface for opcode implementations.
    */
-  private static interface Opcode {
+  private interface Opcode {
     @Interruptible
-    public void execute();
+    void execute();
   }
 }
