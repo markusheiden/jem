@@ -49,10 +49,10 @@ public class CPU6510Test {
     _ram.write(0xFF, 0xFFFF); // BRK vector high
     _ram.write(0xEA, 0xFF48); // NOP at BRK vector
 
-    // load opcode -> PC = 0x0302
+    // load opcode -> PC = 0x0301
     executeOneTick(expectedState, new LogEntry(true, expectedState.PC++, 0x00));
 
-    // load byte after opcode -> PC = 0x0303
+    // load byte after opcode -> PC = 0x0302
     executeOneTick(expectedState, new LogEntry(true, expectedState.PC++, 0xA5));
 
     // store high(PC) at stack
@@ -70,13 +70,33 @@ public class CPU6510Test {
 
     // load high(vector)
     executeOneTick(expectedState, new LogEntry(true, 0xFFFF, 0xFF));
+    expectedState.PC = 0xFF48;
 
     // Check overall clock cycles.
     assertEquals(startTick + 7, _clock.getTick());
 
     // Check that NOP at BRK vector gets executed.
-    expectedState.PC = 0xFF48 + 1;
-    executeOneTick(expectedState, new LogEntry(true, 0xFF48, 0xEA));
+    executeOneTick(expectedState, new LogEntry(true, expectedState.PC++, 0xEA));
+  }
+
+  /**
+   * Test opcode 0xA9: LDA #$XX.
+   */
+  @Test
+  public void test0xA9() {
+    _ram.write(0xA9, 0x0300); // LDA #$00
+    _ram.write(0x00, 0x0301);
+    _ram.write(0xEA, 0x0302); // NOP
+
+    // load opcode -> PC = 0x0301
+    executeOneTick(expectedState, new LogEntry(true, expectedState.PC++, 0xA9));
+
+    // load byte after opcode -> PC = 0x0302
+    executeOneTick(expectedState, new LogEntry(true, expectedState.PC++, 0x00));
+    expectedState.Z = true;
+
+    // NOP after LDA
+    executeOneTick(expectedState, new LogEntry(true, expectedState.PC++, 0xEA));
   }
 
   /**
