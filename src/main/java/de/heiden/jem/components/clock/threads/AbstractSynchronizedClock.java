@@ -11,6 +11,9 @@ public abstract class AbstractSynchronizedClock extends AbstractClock {
    * Component threads.
    */
   protected final ThreadGroup _componentThreads = new ThreadGroup(getClass().getSimpleName());
+  {
+    _componentThreads.setDaemon(false);
+  }
 
   /**
    * Monitor for synchronization.
