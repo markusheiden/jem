@@ -35,28 +35,19 @@ public class CPU6510Test {
   private WordBus _bus;
   private CPU6510 _cpu;
 
+  private long startTick;
+  private CPU6510State expectedState;
+
   /**
    * Test opcode 0x00: BRK.
    */
   @Test
   public void test0x00() {
-    // TODO check cpu state!
-
-    logger.debug("test 0x00");
-
-    _ram.write(0xEA, 0x0300); // NOP
-    _ram.write(0x00, 0x0301); // BRK
-    _ram.write(0xA5, 0x0302); // dummy
+    _ram.write(0x00, 0x0300); // BRK
+    _ram.write(0xA5, 0x0301); // dummy
     _ram.write(0x48, 0xFFFE); // BRK vector low
     _ram.write(0xFF, 0xFFFF); // BRK vector high
     _ram.write(0xEA, 0xFF48); // NOP at BRK vector
-
-    // Execute NOP
-    _clock.run(2);
-
-    long startTick = _clock.getTick();
-    CPU6510State expectedState = _cpu.getState().copy();
-    assertEquals(0x0301, expectedState.PC);
 
     // load opcode -> PC = 0x0302
     executeOneTick(expectedState, new LogEntry(true, expectedState.PC++, 0x00));
@@ -68,7 +59,7 @@ public class CPU6510Test {
     executeOneTick(expectedState, new LogEntry(false, 0x0100 + expectedState.S--, 0x03));
 
     // store low(PC) at stack
-    executeOneTick(expectedState, new LogEntry(false, 0x0100 + expectedState.S--, 0x03));
+    executeOneTick(expectedState, new LogEntry(false, 0x0100 + expectedState.S--, 0x02));
 
     // store status flag at stack
     executeOneTick(expectedState, new LogEntry(false, 0x0100 + expectedState.S--, expectedState.getP()));
@@ -110,6 +101,10 @@ public class CPU6510Test {
 
     // Execute reset sequence
     _clock.run(3);
+
+    // Store state at start of test.
+    startTick = _clock.getTick();
+    expectedState = new CPU6510State(0x0300, 0xFF, 0, 0, 0, 0, false, false);
   }
 
   /**
