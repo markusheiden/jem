@@ -11,7 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Test.
+ * Test for {@link CPU6510}.
  */
 public class CPU6510Test extends TestCase {
   /**
