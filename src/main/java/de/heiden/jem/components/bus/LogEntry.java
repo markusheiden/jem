@@ -56,6 +56,19 @@ public class LogEntry {
   }
 
   @Override
+  public boolean equals(Object o) {
+    return o instanceof LogEntry &&
+      _read == ((LogEntry) o)._read &&
+      _address == ((LogEntry) o)._address &&
+      _value == ((LogEntry) o)._value;
+  }
+
+  @Override
+  public int hashCode() {
+    return _address;
+  }
+
+  @Override
   public String toString() {
     return (_read ? "read from " : "write to ") + HexUtil.hexWord(_address) +
       " value " + HexUtil.hexByte(_value);

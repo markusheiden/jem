@@ -4,22 +4,32 @@ import de.heiden.jem.components.bus.LogEntry;
 import de.heiden.jem.components.bus.LoggingBus;
 import de.heiden.jem.components.bus.WordBus;
 import de.heiden.jem.components.clock.Clock;
-import de.heiden.jem.components.clock.threads.SequentialClock;
+import de.heiden.jem.components.clock.serialthreads.SerialClock;
 import de.heiden.jem.models.c64.components.memory.RAM;
-import junit.framework.TestCase;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.serialthreads.agent.Transform;
+import org.serialthreads.agent.TransformingRunner;
+import org.serialthreads.transformer.strategies.frequent3.FrequentInterruptsTransformer3;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Test for {@link CPU6510}.
  */
-public class CPU6510Test extends TestCase {
+@RunWith(TransformingRunner.class)
+@Transform(transformer = FrequentInterruptsTransformer3.class, classPrefixes = "de.heiden.jem")
+public class CPU6510Test {
   /**
    * Logger.
    */
   private final Logger logger = LoggerFactory.getLogger(getClass());
 
-  private SequentialClock _clock;
+  private Clock _clock;
   private RAM _ram;
   private LoggingBus _loggingBus;
   private WordBus _bus;
@@ -28,6 +38,7 @@ public class CPU6510Test extends TestCase {
   /**
    * Test opcode 0x00: BRK.
    */
+  @Test
   public void test0x00() {
     // TODO check cpu state!
 
@@ -40,10 +51,10 @@ public class CPU6510Test extends TestCase {
     _ram.write(0xFF, 0xFFFF); // BRK vector high
 
     // Execute NOP
-    _clock.run(1);
-//    assertEquals(0x0301, _cpu.getState().PC);
+    _clock.run(2);
 
     CPU6510State expectedState = _cpu.getState().copy();
+    assertEquals(0x0301, expectedState.PC);
 
     // load opcode -> PC = 0x0302
     executeOneTick(expectedState, new LogEntry(true, expectedState.PC++, 0x00));
@@ -52,13 +63,13 @@ public class CPU6510Test extends TestCase {
     executeOneTick(expectedState, new LogEntry(true, expectedState.PC++, 0xA5));
 
     // store high(PC) at stack
-    executeOneTick(expectedState, new LogEntry(false, expectedState.S--, 0x03));
+    executeOneTick(expectedState, new LogEntry(false, 0x0100 + expectedState.S--, 0x03));
 
     // store low(PC) at stack
-    executeOneTick(expectedState, new LogEntry(false, expectedState.S--, 0x03));
+    executeOneTick(expectedState, new LogEntry(false, 0x0100 + expectedState.S--, 0x03));
 
     // store status flag at stack
-    executeOneTick(expectedState, new LogEntry(false, expectedState.S--, expectedState.getP()));
+    executeOneTick(expectedState, new LogEntry(false, 0x0100 + expectedState.S--, expectedState.getP()));
 
     // load low(vector)
     executeOneTick(expectedState, new LogEntry(true, 0xFFFE, 0x48));
@@ -76,13 +87,11 @@ public class CPU6510Test extends TestCase {
    * Creates CPU test environment with 0x1000 bytes of RAM starting ab 0x0000.
    * PC is set to 0x300.
    */
-  @Override
-  protected void setUp() throws Exception {
-    super.setUp();
-
+  @Before
+  public void setUp() throws Exception {
     logger.debug("set up");
 
-    _clock = new SequentialClock();
+    _clock = new SerialClock();
     _ram = new RAM(0x10000);
     _loggingBus = new LoggingBus(_ram);
     _bus = new WordBus(_loggingBus);
@@ -93,7 +102,7 @@ public class CPU6510Test extends TestCase {
     _bus.writeWord(0xFFFC, 0x0300);
 
     // Execute reset sequence
-    _clock.run(2);
+    _clock.run(3);
   }
 
   /**
@@ -101,13 +110,11 @@ public class CPU6510Test extends TestCase {
    *
    * @throws Exception
    */
-  @Override
-  protected void tearDown() throws Exception {
+  @After
+  public void tearDown() throws Exception {
     logger.debug("tear down");
 
     _clock.close();
-
-    super.tearDown();
   }
 
   /**
