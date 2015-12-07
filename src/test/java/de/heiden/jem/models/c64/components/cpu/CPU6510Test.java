@@ -50,33 +50,33 @@ public class CPU6510Test {
     _ram.write(0xEA, 0xFF48); // NOP at BRK vector
 
     // load opcode -> PC = 0x0301
-    executeOneTick(expectedState, new LogEntry(true, expectedState.PC++, 0x00));
+    executeOneTick_readPC(expectedState, 0x00);
 
     // load byte after opcode -> PC = 0x0302
-    executeOneTick(expectedState, new LogEntry(true, expectedState.PC++, 0xA5));
+    executeOneTick_readPC(expectedState, 0xA5);
 
     // store high(PC) at stack
-    executeOneTick(expectedState, new LogEntry(false, 0x0100 + expectedState.S--, 0x03));
+    executeOneTick_push(expectedState, 0x03);
 
     // store low(PC) at stack
-    executeOneTick(expectedState, new LogEntry(false, 0x0100 + expectedState.S--, 0x02));
+    executeOneTick_push(expectedState, 0x02);
 
     // store status flag at stack
-    executeOneTick(expectedState, new LogEntry(false, 0x0100 + expectedState.S--, expectedState.getP()));
+    executeOneTick_push(expectedState, expectedState.getP());
 
     // set I and load low(vector)
     expectedState.I = true;
-    executeOneTick(expectedState, new LogEntry(true, 0xFFFE, 0x48));
+    executeOneTick_read(expectedState, 0xFFFE, 0x48);
 
     // load high(vector)
-    executeOneTick(expectedState, new LogEntry(true, 0xFFFF, 0xFF));
+    executeOneTick_read(expectedState, 0xFFFF, 0xFF);
     expectedState.PC = 0xFF48;
 
     // Check overall clock cycles.
     assertEquals(startTick + 7, _clock.getTick());
 
     // Check that NOP at BRK vector gets executed.
-    executeOneTick(expectedState, new LogEntry(true, expectedState.PC++, 0xEA));
+    executeOneTick_readPC(expectedState, 0xEA);
   }
 
   /**
@@ -89,16 +89,16 @@ public class CPU6510Test {
     _ram.write(0xEA, 0x0302); // NOP
 
     // load opcode -> PC = 0x0301
-    executeOneTick(expectedState, new LogEntry(true, expectedState.PC++, 0xA9));
+    executeOneTick_readPC(expectedState, 0xA9);
 
     // load byte after opcode -> PC = 0x0302
-    executeOneTick(expectedState, new LogEntry(true, expectedState.PC++, 0x00));
+    executeOneTick_readPC(expectedState, 0x00);
     expectedState.A = 0x00;
     expectedState.Z = true;
     expectedState.N = false;
 
     // NOP after LDA
-    executeOneTick(expectedState, new LogEntry(true, expectedState.PC++, 0xEA));
+    executeOneTick_readPC(expectedState, 0xEA);
   }
 
   /**
@@ -111,16 +111,16 @@ public class CPU6510Test {
     _ram.write(0xEA, 0x0302); // NOP
 
     // load opcode -> PC = 0x0301
-    executeOneTick(expectedState, new LogEntry(true, expectedState.PC++, 0xA9));
+    executeOneTick_readPC(expectedState, 0xA9);
 
     // load byte after opcode -> PC = 0x0302
-    executeOneTick(expectedState, new LogEntry(true, expectedState.PC++, 0x80));
+    executeOneTick_readPC(expectedState, 0x80);
     expectedState.A = 0x80;
     expectedState.Z = false;
     expectedState.N = true;
 
     // NOP after LDA
-    executeOneTick(expectedState, new LogEntry(true, expectedState.PC++, 0xEA));
+    executeOneTick_readPC(expectedState, 0xEA);
   }
 
   /**
@@ -164,7 +164,59 @@ public class CPU6510Test {
   }
 
   /**
-   * Execute one cpu cycle and check for expected cpu state.
+   * Execute one cpu cycle and check for expected cpu state and read of the value from the PC. Increments PC.
+   *
+   * @param expectedState expected state after execution.
+   * @param value value which has been read.
+   */
+  private void executeOneTick_readPC(CPU6510State expectedState, int value) {
+    executeOneTick(expectedState, new LogEntry(true, expectedState.PC++, value));
+  }
+
+  /**
+   * Execute one cpu cycle and check for expected cpu state and read of the value from the given address.
+   *
+   * @param expectedState expected state after execution.
+   * @param address accessed address.
+   * @param value value which has been read.
+   */
+  private void executeOneTick_read(CPU6510State expectedState, int address, int value) {
+    executeOneTick(expectedState, new LogEntry(true, address, value));
+  }
+
+  /**
+   * Execute one cpu cycle and check for expected cpu state and write of the value to the given address.
+   *
+   * @param expectedState expected state after execution.
+   * @param address accessed address.
+   * @param value value which has been written.
+   */
+  private void executeOneTick_write(CPU6510State expectedState, int address, int value) {
+    executeOneTick(expectedState, new LogEntry(false, address, value));
+  }
+
+  /**
+   * Execute one cpu cycle and check for expected cpu state and pop of the value from the stacks. Increments S.
+   *
+   * @param expectedState expected state after execution.
+   * @param value value which has been read.
+   */
+  private void executeOneTick_pop(CPU6510State expectedState, int value) {
+    executeOneTick(expectedState, new LogEntry(true, 0x0100 + ++expectedState.S, value));
+  }
+
+  /**
+   * Execute one cpu cycle and check for expected cpu state and push of the value onto the stack. Decrements S.
+   *
+   * @param expectedState expected state after execution.
+   * @param value value which has been written.
+   */
+  private void executeOneTick_push(CPU6510State expectedState, int value) {
+    executeOneTick(expectedState, new LogEntry(false, 0x0100 + expectedState.S--, value));
+  }
+
+  /**
+   * Execute one cpu cycle and check for expected cpu state and the given bus action.
    *
    * @param expectedState expected state after execution.
    * @param expectedLog expected bus activity
