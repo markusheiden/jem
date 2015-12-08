@@ -100,6 +100,24 @@ public class CPU6510Test {
   }
 
   /**
+   * Test opcode 0x8A: TXA.
+   */
+  @Test
+  public void test0x8A_80() {
+    state.A = 0x00;
+    state.X = 0x80;
+    state.Z = true;
+    state.N = false;
+    captureExpectedState();
+    stateAfter.X = 0x80;
+    stateAfter.A = 0x80;
+    stateAfter.Z = false;
+    stateAfter.N = true;
+
+    test_Txx(0x8A);
+  }
+
+  /**
    * Test opcode 0xA4: LDY #$00.
    */
   @Test
@@ -187,6 +205,42 @@ public class CPU6510Test {
     stateAfter.Z = false;
     stateAfter.N = true;
     test_LDx_IMM(0xA9, 0x80);
+  }
+
+  /**
+   * Test opcode 0xAA: TAX.
+   */
+  @Test
+  public void test0xAA_00() {
+    state.A = 0x00;
+    state.X = 0xFF;
+    state.Z = false;
+    state.N = true;
+    captureExpectedState();
+    stateAfter.X = 0x00;
+    stateAfter.A = 0x00;
+    stateAfter.Z = true;
+    stateAfter.N = false;
+
+    test_Txx(0xAA);
+  }
+
+  /**
+   * Test opcode 0xAA: TAX.
+   */
+  @Test
+  public void test0xAA_80() {
+    state.A = 0x80;
+    state.X = 0x00;
+    state.Z = true;
+    state.N = false;
+    captureExpectedState();
+    stateAfter.X = 0x80;
+    stateAfter.A = 0x80;
+    stateAfter.Z = false;
+    stateAfter.N = true;
+
+    test_Txx(0xAA);
   }
 
   /**
