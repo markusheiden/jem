@@ -36,7 +36,9 @@ public class CPU6510Test {
   private CPU6510 _cpu;
 
   private long startTick;
+  private CPU6510State state;
   private CPU6510State expectedState;
+  private CPU6510State stateAfter;
 
   /**
    * Test opcode 0x00: BRK.
@@ -80,15 +82,36 @@ public class CPU6510Test {
   }
 
   /**
+   * Test opcode 0x8A: TXA.
+   */
+  @Test
+  public void test0x8A_00() {
+    state.A = 0xFF;
+    state.X = 0x00;
+    state.Z = false;
+    state.N = true;
+    captureExpectedState();
+    stateAfter.X = 0x00;
+    stateAfter.A = 0x00;
+    stateAfter.Z = true;
+    stateAfter.N = false;
+
+    test_Txx(0x8A);
+  }
+
+  /**
    * Test opcode 0xA4: LDY #$00.
    */
   @Test
   public void test0xA0_00() {
-    CPU6510State stateAfter = expectedState.copy();
+    state.Y = 0xFF;
+    state.Z = false;
+    state.N = true;
+    captureExpectedState();
     stateAfter.Y = 0x00;
     stateAfter.Z = true;
     stateAfter.N = false;
-    test_LD_IMM(0xA0, 0x00, stateAfter);
+    test_LDx_IMM(0xA0, 0x00);
   }
 
   /**
@@ -96,11 +119,14 @@ public class CPU6510Test {
    */
   @Test
   public void test0xA0_80() {
-    CPU6510State stateAfter = expectedState.copy();
+    state.Y = 0x00;
+    state.Z = true;
+    state.N = false;
+    captureExpectedState();
     stateAfter.Y = 0x80;
     stateAfter.Z = false;
     stateAfter.N = true;
-    test_LD_IMM(0xA0, 0x80, stateAfter);
+    test_LDx_IMM(0xA0, 0x80);
   }
 
   /**
@@ -108,11 +134,14 @@ public class CPU6510Test {
    */
   @Test
   public void test0xA2_00() {
-    CPU6510State stateAfter = expectedState.copy();
+    state.X = 0xFF;
+    state.Z = false;
+    state.N = true;
+    captureExpectedState();
     stateAfter.X = 0x00;
     stateAfter.Z = true;
     stateAfter.N = false;
-    test_LD_IMM(0xA2, 0x00, stateAfter);
+    test_LDx_IMM(0xA2, 0x00);
   }
 
   /**
@@ -120,11 +149,14 @@ public class CPU6510Test {
    */
   @Test
   public void test0xA2_80() {
-    CPU6510State stateAfter = expectedState.copy();
+    state.X = 0x00;
+    state.Z = true;
+    state.N = false;
+    captureExpectedState();
     stateAfter.X = 0x80;
     stateAfter.Z = false;
     stateAfter.N = true;
-    test_LD_IMM(0xA2, 0x80, stateAfter);
+    test_LDx_IMM(0xA2, 0x80);
   }
 
   /**
@@ -132,11 +164,14 @@ public class CPU6510Test {
    */
   @Test
   public void test0xA9_00() {
-    CPU6510State stateAfter = expectedState.copy();
+    state.A = 0xFF;
+    state.Z = false;
+    state.N = true;
+    captureExpectedState();
     stateAfter.A = 0x00;
     stateAfter.Z = true;
     stateAfter.N = false;
-    test_LD_IMM(0xA9, 0x00, stateAfter);
+    test_LDx_IMM(0xA9, 0x00);
   }
 
   /**
@@ -144,30 +179,42 @@ public class CPU6510Test {
    */
   @Test
   public void test0xA9_80() {
-    CPU6510State stateAfter = expectedState.copy();
+    state.A = 0x00;
+    state.Z = true;
+    state.N = false;
+    captureExpectedState();
     stateAfter.A = 0x80;
     stateAfter.Z = false;
     stateAfter.N = true;
-    test_LD_IMM(0xA9, 0x80, stateAfter);
+    test_LDx_IMM(0xA9, 0x80);
   }
 
   /**
    * Test of LD? #$xx.
    */
-  public void test_LD_IMM(int opcode, int value, CPU6510State stateAfer) {
-    _ram.write(opcode, 0x0300); // LD #$xx
-    _ram.write(value, 0x0301);
-    _ram.write(0xEA, 0x0302); // NOP
-    stateAfer.PC = 0x0302;
+  private void test_LDx_IMM(int opcode, int value) {
+    writeRam(0x0300, opcode, value); // LD? #$xx, NOP
 
     // load opcode -> PC = 0x0301
     executeOneTick_readPC(expectedState, opcode);
-
     // load byte after opcode -> PC = 0x0302
     executeOneTick_readPC(expectedState, value);
+    // NOP after L??
+    checkStateAfter();
+  }
 
-    // NOP after LDA
-    executeOneTick_readPC(stateAfer, 0xEA);
+  /**
+   * Test of T??.
+   */
+  private void test_Txx(int opcode) {
+    writeRam(0x0300, opcode); // T??, NOP
+
+    // load opcode -> PC = 0x0301
+    executeOneTick_readPC(expectedState, opcode);
+    // idle read -> PC = 0x0301
+    executeOneTick_idleRead(expectedState, 0xEA);
+    // NOP after T??
+    checkStateAfter();
   }
 
   /**
@@ -195,6 +242,7 @@ public class CPU6510Test {
 
     // Store state at start of test.
     startTick = _clock.getTick();
+    state = _cpu.getState();
     expectedState = new CPU6510State(0x0300, 0xFF, 0, 0, 0, 0, false, false);
   }
 
@@ -211,6 +259,35 @@ public class CPU6510Test {
   }
 
   /**
+   * Capture current state as expected state and state after.
+   */
+  private void captureExpectedState() {
+    expectedState = state.copy();
+    expectedState.PC = 0x0300;
+    stateAfter = expectedState.copy();
+  }
+
+  /**
+   * Writer opcode with arguments to RAM. Append a NOP. Set PC after to address of NOP.
+   */
+  private void writeRam(int address, int... values) {
+    for (int value : values) {
+      _ram.write(value, address++);
+    }
+    stateAfter.PC = address;
+    _ram.write(0xEA, address);
+  }
+
+  /**
+   * Check state after execution of opcode. Checks that NOP after opcode gets executed.
+   */
+  private void checkStateAfter() {
+    // NOP after opcode.
+    executeOneTick_readPC(stateAfter, 0xEA);
+  }
+
+
+  /**
    * Execute one cpu cycle and check for expected cpu state and read of the value from the PC. Increments PC.
    *
    * @param expectedState expected state after execution.
@@ -218,6 +295,16 @@ public class CPU6510Test {
    */
   private void executeOneTick_readPC(CPU6510State expectedState, int value) {
     executeOneTick(expectedState, new LogEntry(true, expectedState.PC++, value));
+  }
+
+  /**
+   * Execute one cpu cycle and check for expected cpu state and read of the value from the PC. Increments PC.
+   *
+   * @param expectedState expected state after execution.
+   * @param value value which has been read.
+   */
+  private void executeOneTick_idleRead(CPU6510State expectedState, int value) {
+    executeOneTick(expectedState, new LogEntry(true, expectedState.PC, value));
   }
 
   /**
