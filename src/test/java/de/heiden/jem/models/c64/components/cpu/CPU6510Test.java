@@ -91,11 +91,10 @@ public class CPU6510Test {
     state.Z = false;
     state.N = true;
     captureExpectedState();
-    stateAfter.X = 0x00;
     stateAfter.A = 0x00;
+    stateAfter.X = 0x00;
     stateAfter.Z = true;
     stateAfter.N = false;
-
     test_Txx(0x8A);
   }
 
@@ -109,12 +108,45 @@ public class CPU6510Test {
     state.Z = true;
     state.N = false;
     captureExpectedState();
-    stateAfter.X = 0x80;
     stateAfter.A = 0x80;
+    stateAfter.X = 0x80;
     stateAfter.Z = false;
     stateAfter.N = true;
-
     test_Txx(0x8A);
+  }
+
+  /**
+   * Test opcode 0x98: TYA.
+   */
+  @Test
+  public void test0x98_00() {
+    state.A = 0xFF;
+    state.Y = 0x00;
+    state.Z = false;
+    state.N = true;
+    captureExpectedState();
+    stateAfter.A = 0x00;
+    stateAfter.Y = 0x00;
+    stateAfter.Z = true;
+    stateAfter.N = false;
+    test_Txx(0x98);
+  }
+
+  /**
+   * Test opcode 0x98: TYA.
+   */
+  @Test
+  public void test0x98_80() {
+    state.A = 0x00;
+    state.Y = 0x80;
+    state.Z = true;
+    state.N = false;
+    captureExpectedState();
+    stateAfter.A = 0x80;
+    stateAfter.Y = 0x80;
+    stateAfter.Z = false;
+    stateAfter.N = true;
+    test_Txx(0x98);
   }
 
   /**
@@ -178,6 +210,42 @@ public class CPU6510Test {
   }
 
   /**
+   * Test opcode 0xA8: TAY.
+   */
+  @Test
+  public void test0xA8_00() {
+    state.A = 0x00;
+    state.Y = 0xFF;
+    state.Z = false;
+    state.N = true;
+    captureExpectedState();
+    stateAfter.A = 0x00;
+    stateAfter.Y = 0x00;
+    stateAfter.Z = true;
+    stateAfter.N = false;
+
+    test_Txx(0xA8);
+  }
+
+  /**
+   * Test opcode 0xA8: TAY.
+   */
+  @Test
+  public void test0xA8_80() {
+    state.A = 0x80;
+    state.Y = 0x00;
+    state.Z = true;
+    state.N = false;
+    captureExpectedState();
+    stateAfter.A = 0x80;
+    stateAfter.Y = 0x80;
+    stateAfter.Z = false;
+    stateAfter.N = true;
+
+    test_Txx(0xA8);
+  }
+
+  /**
    * Test opcode 0xA9: LDA #$00.
    */
   @Test
@@ -217,11 +285,10 @@ public class CPU6510Test {
     state.Z = false;
     state.N = true;
     captureExpectedState();
-    stateAfter.X = 0x00;
     stateAfter.A = 0x00;
+    stateAfter.X = 0x00;
     stateAfter.Z = true;
     stateAfter.N = false;
-
     test_Txx(0xAA);
   }
 
@@ -235,11 +302,10 @@ public class CPU6510Test {
     state.Z = true;
     state.N = false;
     captureExpectedState();
-    stateAfter.X = 0x80;
     stateAfter.A = 0x80;
+    stateAfter.X = 0x80;
     stateAfter.Z = false;
     stateAfter.N = true;
-
     test_Txx(0xAA);
   }
 
