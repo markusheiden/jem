@@ -16,6 +16,8 @@ import org.serialthreads.transformer.strategies.frequent3.FrequentInterruptsTran
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.function.Consumer;
+
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -85,68 +87,36 @@ public class CPU6510Test {
    * Test opcode 0x8A: TXA.
    */
   @Test
-  public void test0x8A_00() {
-    state.A = 0xFF;
-    state.X = 0x00;
-    state.Z = false;
-    state.N = true;
-    captureExpectedState();
-    stateAfter.A = 0x00;
-    stateAfter.X = 0x00;
-    stateAfter.Z = true;
-    stateAfter.N = false;
-    test_Txx(0x8A);
-  }
-
-  /**
-   * Test opcode 0x8A: TXA.
-   */
-  @Test
-  public void test0x8A_80() {
-    state.A = 0x00;
-    state.X = 0x80;
-    state.Z = true;
-    state.N = false;
-    captureExpectedState();
-    stateAfter.A = 0x80;
-    stateAfter.X = 0x80;
-    stateAfter.Z = false;
-    stateAfter.N = true;
-    test_Txx(0x8A);
+  public void test0x8A() {
+    test_Txx(0x8A, value -> {
+      state.A = 0xFF;
+      state.X = value;
+      state.Z = !z(value);
+      state.N = !n(value);
+      captureExpectedState();
+      stateAfter.A = value;
+      stateAfter.X = value;
+      stateAfter.Z = z(value);
+      stateAfter.N = n(value);
+    });
   }
 
   /**
    * Test opcode 0x98: TYA.
    */
   @Test
-  public void test0x98_00() {
-    state.A = 0xFF;
-    state.Y = 0x00;
-    state.Z = false;
-    state.N = true;
-    captureExpectedState();
-    stateAfter.A = 0x00;
-    stateAfter.Y = 0x00;
-    stateAfter.Z = true;
-    stateAfter.N = false;
-    test_Txx(0x98);
-  }
-
-  /**
-   * Test opcode 0x98: TYA.
-   */
-  @Test
-  public void test0x98_80() {
-    state.A = 0x00;
-    state.Y = 0x80;
-    state.Z = true;
-    state.N = false;
-    captureExpectedState();
-    stateAfter.A = 0x80;
-    stateAfter.Y = 0x80;
-    stateAfter.Z = false;
-    stateAfter.N = true;
-    test_Txx(0x98);
+  public void test0x98() {
+    test_Txx(0x98, value -> {
+      state.A = 0xFF;
+      state.Y = value;
+      state.Z = !z(value);
+      state.N = !n(value);
+      captureExpectedState();
+      stateAfter.A = value;
+      stateAfter.Y = value;
+      stateAfter.Z = z(value);
+      stateAfter.N = n(value);
+    });
   }
 
   /**
@@ -213,36 +183,18 @@ public class CPU6510Test {
    * Test opcode 0xA8: TAY.
    */
   @Test
-  public void test0xA8_00() {
-    state.A = 0x00;
-    state.Y = 0xFF;
-    state.Z = false;
-    state.N = true;
-    captureExpectedState();
-    stateAfter.A = 0x00;
-    stateAfter.Y = 0x00;
-    stateAfter.Z = true;
-    stateAfter.N = false;
-
-    test_Txx(0xA8);
-  }
-
-  /**
-   * Test opcode 0xA8: TAY.
-   */
-  @Test
-  public void test0xA8_80() {
-    state.A = 0x80;
-    state.Y = 0x00;
-    state.Z = true;
-    state.N = false;
-    captureExpectedState();
-    stateAfter.A = 0x80;
-    stateAfter.Y = 0x80;
-    stateAfter.Z = false;
-    stateAfter.N = true;
-
-    test_Txx(0xA8);
+  public void test0xA8() {
+    test_Txx(0xA8, value -> {
+      state.A = value;
+      state.Y = 0xFF;
+      state.Z = !z(value);
+      state.N = !n(value);
+      captureExpectedState();
+      stateAfter.A = value;
+      stateAfter.Y = value;
+      stateAfter.Z = z(value);
+      stateAfter.N = n(value);
+    });
   }
 
   /**
@@ -279,41 +231,25 @@ public class CPU6510Test {
    * Test opcode 0xAA: TAX.
    */
   @Test
-  public void test0xAA_00() {
-    state.A = 0x00;
-    state.X = 0xFF;
-    state.Z = false;
-    state.N = true;
-    captureExpectedState();
-    stateAfter.A = 0x00;
-    stateAfter.X = 0x00;
-    stateAfter.Z = true;
-    stateAfter.N = false;
-    test_Txx(0xAA);
-  }
-
-  /**
-   * Test opcode 0xAA: TAX.
-   */
-  @Test
-  public void test0xAA_80() {
-    state.A = 0x80;
-    state.X = 0x00;
-    state.Z = true;
-    state.N = false;
-    captureExpectedState();
-    stateAfter.A = 0x80;
-    stateAfter.X = 0x80;
-    stateAfter.Z = false;
-    stateAfter.N = true;
-    test_Txx(0xAA);
+  public void test0xAA() {
+    test_Txx(0xAA, value -> {
+      state.A = value;
+      state.X = 0xFF;
+      state.Z = !z(value);
+      state.N = !n(value);
+      captureExpectedState();
+      stateAfter.A = value;
+      stateAfter.X = value;
+      stateAfter.Z = z(value);
+      stateAfter.N = n(value);
+    });
   }
 
   /**
    * Test of LD? #$xx.
    */
   private void test_LDx_IMM(int opcode, int value) {
-    writeRam(0x0300, opcode, value); // LD? #$xx, NOP
+    writeRam(opcode, value); // LD? #$xx, NOP
 
     // load opcode -> PC = 0x0301
     executeOneTick_readPC(expectedState, opcode);
@@ -326,15 +262,22 @@ public class CPU6510Test {
   /**
    * Test of T??.
    */
-  private void test_Txx(int opcode) {
-    writeRam(0x0300, opcode); // T??, NOP
+  private void test_Txx(int opcode, Consumer<Integer> stateProvider) {
+    for (int value = 0x00; value <= 0xFF; value++) {
+      // Compute states.
+      stateProvider.accept(value);
 
-    // load opcode -> PC = 0x0301
-    executeOneTick_readPC(expectedState, opcode);
-    // idle read -> PC = 0x0301
-    executeOneTick_idleRead(expectedState, 0xEA);
-    // NOP after T??
-    checkStateAfter();
+      // Setup code.
+      writeRam(opcode); // T??, NOP
+
+      // load opcode -> PC = 0x0301
+      executeOneTick_readPC(expectedState, opcode);
+      // idle read -> PC = 0x0301
+      executeOneTick_idleRead(expectedState, 0x4C);
+      // JMP after T??
+      checkStateAfter();
+      _clock.run(3 - 1);
+    }
   }
 
   /**
@@ -379,31 +322,48 @@ public class CPU6510Test {
   }
 
   /**
+   * Expected zero flag for value.
+   */
+  public boolean z(int value) {
+    return value == 0;
+  }
+
+  /**
+   * Expected negative flag for value.
+   */
+  public boolean n(int value) {
+    return (value & 0x80) != 0;
+  }
+
+  /**
    * Capture current state as expected state and state after.
    */
   private void captureExpectedState() {
     expectedState = state.copy();
-    expectedState.PC = 0x0300;
-    stateAfter = expectedState.copy();
+    stateAfter = state.copy();
   }
 
   /**
-   * Writer opcode with arguments to RAM. Append a NOP. Set PC after to address of NOP.
+   * Writer opcode with arguments to RAM at $0300. Append a JMP $0300. Set PC after to address of JMP.
    */
-  private void writeRam(int address, int... values) {
+  private void writeRam(int... values) {
+    int address = 0x0300;
+    expectedState.PC = address;
     for (int value : values) {
       _ram.write(value, address++);
     }
     stateAfter.PC = address;
-    _ram.write(0xEA, address);
+    _ram.write(0x4C, address++);
+    _ram.write(0x00, address++);
+    _ram.write(0x03, address++);
   }
 
   /**
    * Check state after execution of opcode. Checks that NOP after opcode gets executed.
    */
   private void checkStateAfter() {
-    // NOP after opcode.
-    executeOneTick_readPC(stateAfter, 0xEA);
+    // JMP after opcode.
+    executeOneTick_readPC(stateAfter, 0x4C);
   }
 
 
