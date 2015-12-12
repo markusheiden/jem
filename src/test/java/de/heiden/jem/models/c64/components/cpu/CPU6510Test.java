@@ -164,6 +164,30 @@ public class CPU6510Test {
   }
 
   /**
+   * Test opcode 0xAD: LDA $xxxx.
+   */
+  @Test
+  public void test0xAD() {
+    test_LDx_ABS(0xAD, CPU6510State::setA);
+  }
+
+  /**
+   * Test opcode 0xAE: LDX $xxxx.
+   */
+  @Test
+  public void test0xAE() {
+    test_LDx_ABS(0xAE, CPU6510State::setX);
+  }
+
+  /**
+   * Test opcode 0xAC: LDY $xxxx.
+   */
+  @Test
+  public void test0xAC() {
+    test_LDx_ABS(0xAC, CPU6510State::setY);
+  }
+
+  /**
    * Test of LD? #$xx.
    */
   private void test_LDx_IMM(int opcode, BiConsumer<CPU6510State, Integer> destination) {
@@ -182,9 +206,9 @@ public class CPU6510Test {
 
       writeRam(opcode, value); // LD? #$xx, JMP
 
-      // load opcode -> PC = 0x0301
+      // load opcode
       executeOneTick_readPC(expectedState, opcode);
-      // load byte after opcode -> PC = 0x0302
+      // load byte after opcode
       executeOneTick_readPC(expectedState, value);
       // NOP after L??
       checkStateAfter();
@@ -211,12 +235,45 @@ public class CPU6510Test {
       writeRam(opcode, 0xFF); // LD? $FF, JMP
       _ram.write(value, 0xFF);
 
-      // load opcode -> PC = 0x0301
+      // load opcode
       executeOneTick_readPC(expectedState, opcode);
-      // load zp address -> PC = 0x0302
+      // load zp address
       executeOneTick_readPC(expectedState, 0xFF);
       // load byte from zp address
       executeOneTick_read(expectedState, 0xFF, value);
+      // NOP after L??
+      checkStateAfter();
+    }
+  }
+
+  /**
+   * Test of LD? $xxxx.
+   */
+  private void test_LDx_ABS(int opcode, BiConsumer<CPU6510State, Integer> destination) {
+    for (int value = 0x00; value <= 0xFF; value++) {
+      // Set register which gets loaded to a different value.
+      state.A = value ^ 0xFF;
+      state.X = value ^ 0xFF;
+      state.Y = value ^ 0xFF;
+      // Set status which get changed to a different value.
+      state.Z = !z(value);
+      state.N = !n(value);
+      captureExpectedState();
+      destination.accept(stateAfter, value);
+      stateAfter.Z = z(value);
+      stateAfter.N = n(value);
+
+      writeRam(opcode, 0xFF, 0x00); // LD? $00FF, JMP
+      _ram.write(value, 0xFF);
+
+      // load opcode
+      executeOneTick_readPC(expectedState, opcode);
+      // load low nibble of address
+      executeOneTick_readPC(expectedState, 0xFF);
+      // load high nibble of address
+      executeOneTick_readPC(expectedState, 0x00);
+      // load byte from address
+      executeOneTick_read(expectedState, 0x00FF, value);
       // NOP after L??
       checkStateAfter();
     }
