@@ -116,11 +116,27 @@ public class CPU6510Test {
   }
 
   /**
+   * Test opcode 0xA4: LDY $xx.
+   */
+  @Test
+  public void test0xA4() {
+    test_LDx_ZP(0xA4, CPU6510State::setY);
+  }
+
+  /**
    * Test opcode 0xA5: LDA $xx.
    */
   @Test
   public void test0xA5() {
     test_LDx_ZP(0xA5, CPU6510State::setA);
+  }
+
+  /**
+   * Test opcode 0xA6: LDX $xx.
+   */
+  @Test
+  public void test0xA6() {
+    test_LDx_ZP(0xA6, CPU6510State::setX);
   }
 
   /**
