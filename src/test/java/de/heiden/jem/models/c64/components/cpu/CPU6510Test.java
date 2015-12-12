@@ -16,6 +16,7 @@ import org.serialthreads.transformer.strategies.frequent3.FrequentInterruptsTran
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import static org.junit.Assert.assertEquals;
@@ -124,15 +125,7 @@ public class CPU6510Test {
    */
   @Test
   public void test0xA0() {
-    test_LDx_IMM(0xA0, value -> {
-      state.Y = 0xFF;
-      state.Z = !z(value);
-      state.N = !n(value);
-      captureExpectedState();
-      stateAfter.Y = value;
-      stateAfter.Z = z(value);
-      stateAfter.N = n(value);
-    });
+    test_LDx_IMM(0xA0, CPU6510State::setY);
   }
 
   /**
@@ -140,12 +133,20 @@ public class CPU6510Test {
    */
   @Test
   public void test0xA2() {
-    test_LDx_IMM(0xA2, value -> {
-      state.X = 0xFF;
+    test_LDx_IMM(0xA2, CPU6510State::setX);
+  }
+
+  /**
+   * Test opcode 0xA5: LDA $xx.
+   */
+  @Test
+  public void test0xA5() {
+    test_LDx_ZP(0xA5, value -> {
+      state.A = 0xFF;
       state.Z = !z(value);
       state.N = !n(value);
       captureExpectedState();
-      stateAfter.X = value;
+      stateAfter.A = value;
       stateAfter.Z = z(value);
       stateAfter.N = n(value);
     });
@@ -174,15 +175,7 @@ public class CPU6510Test {
    */
   @Test
   public void test0xA9() {
-    test_LDx_IMM(0xA9, value -> {
-      state.A = 0xFF;
-      state.Z = !z(value);
-      state.N = !n(value);
-      captureExpectedState();
-      stateAfter.A = value;
-      stateAfter.Z = z(value);
-      stateAfter.N = n(value);
-    });
+    test_LDx_IMM(0xA9, CPU6510State::setA);
   }
 
   /**
@@ -206,10 +199,17 @@ public class CPU6510Test {
   /**
    * Test of LD? #$xx.
    */
-  private void test_LDx_IMM(int opcode, Consumer<Integer> stateProvider) {
+  private void test_LDx_IMM(int opcode, BiConsumer<CPU6510State, Integer> valueSetter) {
     for (int value = 0x00; value <= 0xFF; value++) {
-      // Compute states.
-      stateProvider.accept(value);
+      // Set register which gets loaded to a different value.
+      valueSetter.accept(state, value ^ 0xFF);
+      // Set status which get changed to a different value.
+      state.Z = !z(value);
+      state.N = !n(value);
+      captureExpectedState();
+      valueSetter.accept(stateAfter, value);
+      stateAfter.Z = z(value);
+      stateAfter.N = n(value);
 
       writeRam(opcode, value); // LD? #$xx, JMP
 
@@ -217,6 +217,28 @@ public class CPU6510Test {
       executeOneTick_readPC(expectedState, opcode);
       // load byte after opcode -> PC = 0x0302
       executeOneTick_readPC(expectedState, value);
+      // NOP after L??
+      checkStateAfter();
+    }
+  }
+
+  /**
+   * Test of LD? $xx.
+   */
+  private void test_LDx_ZP(int opcode, Consumer<Integer> stateProvider) {
+    for (int value = 0x00; value <= 0xFF; value++) {
+      // Compute states.
+      stateProvider.accept(value);
+
+      writeRam(opcode, 0xFF); // LD? $FF, JMP
+      _ram.write(value, 0xFF);
+
+      // load opcode -> PC = 0x0301
+      executeOneTick_readPC(expectedState, opcode);
+      // load zp address -> PC = 0x0302
+      executeOneTick_readPC(expectedState, 0xFF);
+      // load byte from zp address
+      executeOneTick_read(expectedState, 0xFF, value);
       // NOP after L??
       checkStateAfter();
     }

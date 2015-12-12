@@ -257,6 +257,52 @@ public final class CPU6510State {
   }
 
   //
+  // Register getter / setter for method reference access
+  //
+
+  /**
+   * A.
+   */
+  public int getA() {
+    return A;
+  }
+
+  /**
+   * Set A.
+   */
+  public void setA(int a) {
+    A = a;
+  }
+
+  /**
+   * X.
+   */
+  public int getX() {
+    return X;
+  }
+
+  /**
+   * Set X.
+   */
+  public void setX(int x) {
+    X = x;
+  }
+
+  /**
+   * Y.
+   */
+  public int getY() {
+    return Y;
+  }
+
+  /**
+   * Set Y.
+   */
+  public void setY(int y) {
+    Y = y;
+  }
+
+  //
   //
   //
 
