@@ -17,7 +17,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 import static org.junit.Assert.assertEquals;
 
@@ -89,17 +88,7 @@ public class CPU6510Test {
    */
   @Test
   public void test0x8A() {
-    test_Txx(0x8A, value -> {
-      state.A = 0xFF;
-      state.X = value;
-      state.Z = !z(value);
-      state.N = !n(value);
-      captureExpectedState();
-      stateAfter.A = value;
-      stateAfter.X = value;
-      stateAfter.Z = z(value);
-      stateAfter.N = n(value);
-    });
+    test_Txx(0x8A, CPU6510State::setX, CPU6510State::setA);
   }
 
   /**
@@ -107,17 +96,7 @@ public class CPU6510Test {
    */
   @Test
   public void test0x98() {
-    test_Txx(0x98, value -> {
-      state.A = 0xFF;
-      state.Y = value;
-      state.Z = !z(value);
-      state.N = !n(value);
-      captureExpectedState();
-      stateAfter.A = value;
-      stateAfter.Y = value;
-      stateAfter.Z = z(value);
-      stateAfter.N = n(value);
-    });
+    test_Txx(0x98, CPU6510State::setY, CPU6510State::setA);
   }
 
   /**
@@ -141,15 +120,7 @@ public class CPU6510Test {
    */
   @Test
   public void test0xA5() {
-    test_LDx_ZP(0xA5, value -> {
-      state.A = 0xFF;
-      state.Z = !z(value);
-      state.N = !n(value);
-      captureExpectedState();
-      stateAfter.A = value;
-      stateAfter.Z = z(value);
-      stateAfter.N = n(value);
-    });
+    test_LDx_ZP(0xA5, CPU6510State::setA);
   }
 
   /**
@@ -157,17 +128,7 @@ public class CPU6510Test {
    */
   @Test
   public void test0xA8() {
-    test_Txx(0xA8, value -> {
-      state.A = value;
-      state.Y = 0xFF;
-      state.Z = !z(value);
-      state.N = !n(value);
-      captureExpectedState();
-      stateAfter.A = value;
-      stateAfter.Y = value;
-      stateAfter.Z = z(value);
-      stateAfter.N = n(value);
-    });
+    test_Txx(0xA8, CPU6510State::setA, CPU6510State::setY);
   }
 
   /**
@@ -183,17 +144,7 @@ public class CPU6510Test {
    */
   @Test
   public void test0xAA() {
-    test_Txx(0xAA, value -> {
-      state.A = value;
-      state.X = 0xFF;
-      state.Z = !z(value);
-      state.N = !n(value);
-      captureExpectedState();
-      stateAfter.A = value;
-      stateAfter.X = value;
-      stateAfter.Z = z(value);
-      stateAfter.N = n(value);
-    });
+    test_Txx(0xAA, CPU6510State::setA, CPU6510State::setX);
   }
 
   /**
@@ -202,7 +153,9 @@ public class CPU6510Test {
   private void test_LDx_IMM(int opcode, BiConsumer<CPU6510State, Integer> valueSetter) {
     for (int value = 0x00; value <= 0xFF; value++) {
       // Set register which gets loaded to a different value.
-      valueSetter.accept(state, value ^ 0xFF);
+      state.A = value ^ 0xFF;
+      state.X = value ^ 0xFF;
+      state.Y = value ^ 0xFF;
       // Set status which get changed to a different value.
       state.Z = !z(value);
       state.N = !n(value);
@@ -225,10 +178,19 @@ public class CPU6510Test {
   /**
    * Test of LD? $xx.
    */
-  private void test_LDx_ZP(int opcode, Consumer<Integer> stateProvider) {
+  private void test_LDx_ZP(int opcode, BiConsumer<CPU6510State, Integer> valueSetter) {
     for (int value = 0x00; value <= 0xFF; value++) {
-      // Compute states.
-      stateProvider.accept(value);
+      // Set register which gets loaded to a different value.
+      state.A = value ^ 0xFF;
+      state.X = value ^ 0xFF;
+      state.Y = value ^ 0xFF;
+      // Set status which get changed to a different value.
+      state.Z = !z(value);
+      state.N = !n(value);
+      captureExpectedState();
+      valueSetter.accept(stateAfter, value);
+      stateAfter.Z = z(value);
+      stateAfter.N = n(value);
 
       writeRam(opcode, 0xFF); // LD? $FF, JMP
       _ram.write(value, 0xFF);
@@ -247,10 +209,20 @@ public class CPU6510Test {
   /**
    * Test of T??.
    */
-  private void test_Txx(int opcode, Consumer<Integer> stateProvider) {
+  private void test_Txx(int opcode, BiConsumer<CPU6510State, Integer> source, BiConsumer<CPU6510State, Integer> destination) {
     for (int value = 0x00; value <= 0xFF; value++) {
-      // Compute states.
-      stateProvider.accept(value);
+      // Set register which gets loaded to a different value.
+      state.A = value ^ 0xFF;
+      state.X = value ^ 0xFF;
+      state.Y = value ^ 0xFF;
+      source.accept(state, value);
+      // Set status which get changed to a different value.
+      state.Z = !z(value);
+      state.N = !n(value);
+      captureExpectedState();
+      destination.accept(stateAfter, value);
+      stateAfter.Z = z(value);
+      stateAfter.N = n(value);
 
       // Setup code.
       writeRam(opcode); // T??, JMP
