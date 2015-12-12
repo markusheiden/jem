@@ -150,7 +150,7 @@ public class CPU6510Test {
   /**
    * Test of LD? #$xx.
    */
-  private void test_LDx_IMM(int opcode, BiConsumer<CPU6510State, Integer> valueSetter) {
+  private void test_LDx_IMM(int opcode, BiConsumer<CPU6510State, Integer> destination) {
     for (int value = 0x00; value <= 0xFF; value++) {
       // Set register which gets loaded to a different value.
       state.A = value ^ 0xFF;
@@ -160,7 +160,7 @@ public class CPU6510Test {
       state.Z = !z(value);
       state.N = !n(value);
       captureExpectedState();
-      valueSetter.accept(stateAfter, value);
+      destination.accept(stateAfter, value);
       stateAfter.Z = z(value);
       stateAfter.N = n(value);
 
@@ -178,7 +178,7 @@ public class CPU6510Test {
   /**
    * Test of LD? $xx.
    */
-  private void test_LDx_ZP(int opcode, BiConsumer<CPU6510State, Integer> valueSetter) {
+  private void test_LDx_ZP(int opcode, BiConsumer<CPU6510State, Integer> destination) {
     for (int value = 0x00; value <= 0xFF; value++) {
       // Set register which gets loaded to a different value.
       state.A = value ^ 0xFF;
@@ -188,7 +188,7 @@ public class CPU6510Test {
       state.Z = !z(value);
       state.N = !n(value);
       captureExpectedState();
-      valueSetter.accept(stateAfter, value);
+      destination.accept(stateAfter, value);
       stateAfter.Z = z(value);
       stateAfter.N = n(value);
 
