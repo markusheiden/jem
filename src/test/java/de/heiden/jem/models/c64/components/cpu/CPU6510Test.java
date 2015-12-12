@@ -88,7 +88,7 @@ public class CPU6510Test {
    */
   @Test
   public void test0x8A() {
-    test_Txx(0x8A, CPU6510State::setX, CPU6510State::setA);
+    test_Txx(0x8A, CPU6510State::setX, CPU6510State::setA, true);
   }
 
   /**
@@ -96,7 +96,15 @@ public class CPU6510Test {
    */
   @Test
   public void test0x98() {
-    test_Txx(0x98, CPU6510State::setY, CPU6510State::setA);
+    test_Txx(0x98, CPU6510State::setY, CPU6510State::setA, true);
+  }
+
+  /**
+   * Test opcode 0x9A: TXS.
+   */
+  @Test
+  public void test0x9A() {
+    test_Txx(0x9A, CPU6510State::setX, CPU6510State::setS, false);
   }
 
   /**
@@ -144,7 +152,7 @@ public class CPU6510Test {
    */
   @Test
   public void test0xA8() {
-    test_Txx(0xA8, CPU6510State::setA, CPU6510State::setY);
+    test_Txx(0xA8, CPU6510State::setA, CPU6510State::setY, true);
   }
 
   /**
@@ -160,7 +168,7 @@ public class CPU6510Test {
    */
   @Test
   public void test0xAA() {
-    test_Txx(0xAA, CPU6510State::setA, CPU6510State::setX);
+    test_Txx(0xAA, CPU6510State::setA, CPU6510State::setX, true);
   }
 
   /**
@@ -185,6 +193,14 @@ public class CPU6510Test {
   @Test
   public void test0xAC() {
     test_LDx_ABS(0xAC, CPU6510State::setY);
+  }
+
+  /**
+   * Test opcode 0xBA: TSX.
+   */
+  @Test
+  public void test0xBA() {
+    test_Txx(0xBA, CPU6510State::setS, CPU6510State::setX, true);
   }
 
   /**
@@ -282,7 +298,7 @@ public class CPU6510Test {
   /**
    * Test of T??.
    */
-  private void test_Txx(int opcode, BiConsumer<CPU6510State, Integer> source, BiConsumer<CPU6510State, Integer> destination) {
+  private void test_Txx(int opcode, BiConsumer<CPU6510State, Integer> source, BiConsumer<CPU6510State, Integer> destination, boolean updateP) {
     for (int value = 0x00; value <= 0xFF; value++) {
       // Set register which gets loaded to a different value.
       state.A = value ^ 0xFF;
@@ -294,8 +310,10 @@ public class CPU6510Test {
       state.N = !n(value);
       captureExpectedState();
       destination.accept(stateAfter, value);
-      stateAfter.Z = z(value);
-      stateAfter.N = n(value);
+      if (updateP) {
+        stateAfter.Z = z(value);
+        stateAfter.N = n(value);
+      }
 
       // Setup code.
       writeRam(opcode); // T??, JMP

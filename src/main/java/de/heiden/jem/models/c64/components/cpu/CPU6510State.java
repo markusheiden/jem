@@ -302,6 +302,13 @@ public final class CPU6510State {
     Y = y;
   }
 
+  /**
+   * Set stack pointer.
+   */
+  public void setS(int s) {
+    S = s;
+  }
+
   //
   //
   //
