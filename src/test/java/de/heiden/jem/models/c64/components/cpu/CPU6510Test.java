@@ -322,8 +322,7 @@ public class CPU6510Test {
       executeOneTick_readPC(expectedState, value);
       // register and flags change
       destination.accept(expectedState, value);
-      expectedState.Z = z(value);
-      expectedState.N = n(value);
+      expectedZN(value);
       // Check state and jump back
       checkStateAfter();
     }
@@ -348,8 +347,7 @@ public class CPU6510Test {
       executeOneTick_read(expectedState, 0xFF, value);
       // register and flags change
       destination.accept(expectedState, value);
-      expectedState.Z = z(value);
-      expectedState.N = n(value);
+      expectedZN(value);
       // Check state and jump back
       checkStateAfter();
     }
@@ -376,8 +374,7 @@ public class CPU6510Test {
       executeOneTick_read(expectedState, 0x00FF, value);
       // register and flags change
       destination.accept(expectedState, value);
-      expectedState.Z = z(value);
-      expectedState.N = n(value);
+      expectedZN(value);
       // Check state and jump back
       checkStateAfter();
     }
@@ -408,12 +405,11 @@ public class CPU6510Test {
         // TODO test idle read
         // TODO test extra cycle, if crossing page boundary
         _clock.run(1);
-       // load byte from address
+        // load byte from address
         executeOneTick_read(expectedState, indexedAddress, value);
         // register and flags change
         destination.accept(expectedState, value);
-        expectedState.Z = z(value);
-        expectedState.N = n(value);
+        expectedZN(value);
         // Check state and jump back
         checkStateAfter();
       }
@@ -509,8 +505,7 @@ public class CPU6510Test {
       // register and flags change
       destination.accept(expectedState, value);
       if (updateP) {
-        expectedState.Z = z(value);
-        expectedState.N = n(value);
+        expectedZN(value);
       }
       // Check state and jump back
       checkStateAfter();
@@ -608,6 +603,14 @@ public class CPU6510Test {
     _ram.write(0x4C, address++);
     _ram.write(0x00, address++);
     _ram.write(0x03, address++);
+  }
+
+  /**
+   * Expect Z and N flag to be changed according to the given value.
+   */
+  private void expectedZN(int value) {
+    expectedState.Z = z(value);
+    expectedState.N = n(value);
   }
 
   /**
