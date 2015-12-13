@@ -19,6 +19,8 @@ import org.slf4j.LoggerFactory;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
+import static de.heiden.c64dt.util.ByteUtil.hi;
+import static de.heiden.c64dt.util.ByteUtil.lo;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -268,6 +270,14 @@ public class CPU6510Test {
     test_Txx(0xBA, CPU6510State::setS, CPU6510State::setX, true);
   }
 
+  /**
+   * Test opcode 0xBD: LDA $xxxx,X.
+   */
+  @Test
+  public void test0xBD() {
+    test_LDx_ABX(0xBD, CPU6510State::setA, CPU6510State::setX);
+  }
+
   //
   //
   //
@@ -346,6 +356,43 @@ public class CPU6510Test {
       expectedState.N = n(value);
       // Check state and jump back
       checkStateAfter();
+    }
+  }
+
+  /**
+   * Test of LD? $xxxx,X.
+   */
+  private void test_LDx_ABX(int opcode, BiConsumer<CPU6510State, Integer> destination, BiConsumer<CPU6510State, Integer> index) {
+    for (int i = 0x00; i <= 0xFF; i++) {
+      for (int value = 0x00; value <= 0xFF; value++) {
+        resetState(value);
+        index.accept(state, i);
+        captureExpectedState();
+
+        int address = 0x1080;
+        writeRam(opcode, lo(address), hi(address)); // LD? $xxxx,X JMP
+        int indexedAddress = address + i;
+        _ram.write(value, indexedAddress);
+
+        // load opcode
+        executeOneTick_readPC(expectedState, opcode);
+        // load low nibble of address
+        executeOneTick_readPC(expectedState, lo(address));
+        // load high nibble of address
+        executeOneTick_readPC(expectedState, hi(address));
+        // idle read
+        // TODO test idle reas
+        // TODO test extra cycle, if crossing page boundary
+        _clock.run(1);
+       // load byte from address
+        executeOneTick_read(expectedState, indexedAddress, value);
+        // register and flags change
+        destination.accept(expectedState, value);
+        expectedState.Z = z(value);
+        expectedState.N = n(value);
+        // Check state and jump back
+        checkStateAfter();
+      }
     }
   }
 
