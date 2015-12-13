@@ -16,7 +16,6 @@ import org.serialthreads.transformer.strategies.frequent3.FrequentInterruptsTran
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 import static de.heiden.c64dt.util.ByteUtil.hi;
@@ -309,7 +308,7 @@ public class CPU6510Test {
   /**
    * Test of LD? #$xx.
    */
-  private void test_LDx_IMM(int opcode, BiConsumer<CPU6510State, Integer> destination) {
+  private void test_LDx_IMM(int opcode, SetRegister destination) {
     for (int value = 0x00; value <= 0xFF; value++) {
       resetState(value);
       captureExpectedState();
@@ -321,7 +320,7 @@ public class CPU6510Test {
       // load byte after opcode
       executeOneTick_readPC(expectedState, value);
       // register and flags change
-      destination.accept(expectedState, value);
+      destination.set(expectedState, value);
       expectedZN(value);
       // Check state and jump back
       checkStateAfter();
@@ -331,7 +330,7 @@ public class CPU6510Test {
   /**
    * Test of LD? $xx.
    */
-  private void test_LDx_ZP(int opcode, BiConsumer<CPU6510State, Integer> destination) {
+  private void test_LDx_ZP(int opcode, SetRegister destination) {
     for (int value = 0x00; value <= 0xFF; value++) {
       resetState(value);
       captureExpectedState();
@@ -346,7 +345,7 @@ public class CPU6510Test {
       // load byte from zp address
       executeOneTick_read(expectedState, 0xFF, value);
       // register and flags change
-      destination.accept(expectedState, value);
+      destination.set(expectedState, value);
       expectedZN(value);
       // Check state and jump back
       checkStateAfter();
@@ -356,7 +355,7 @@ public class CPU6510Test {
   /**
    * Test of LD? $xxxx.
    */
-  private void test_LDx_ABS(int opcode, BiConsumer<CPU6510State, Integer> destination) {
+  private void test_LDx_ABS(int opcode, SetRegister destination) {
     for (int value = 0x00; value <= 0xFF; value++) {
       resetState(value);
       captureExpectedState();
@@ -373,7 +372,7 @@ public class CPU6510Test {
       // load byte from address
       executeOneTick_read(expectedState, 0x00FF, value);
       // register and flags change
-      destination.accept(expectedState, value);
+      destination.set(expectedState, value);
       expectedZN(value);
       // Check state and jump back
       checkStateAfter();
@@ -383,15 +382,15 @@ public class CPU6510Test {
   /**
    * Test of LD? $xxxx,X.
    */
-  private void test_LDx_ABx(int opcode, BiConsumer<CPU6510State, Integer> destination, BiConsumer<CPU6510State, Integer> index) {
+  private void test_LDx_ABx(int opcode, SetRegister destination, SetRegister index) {
     for (int i = 0x00; i <= 0xFF; i++) {
       for (int value = 0x00; value <= 0xFF; value++) {
         resetState(value);
-        index.accept(state, i);
+        index.set(state, i);
         captureExpectedState();
 
         int address = 0x1080;
-        writeRam(opcode, lo(address), hi(address)); // LD? $xxxx,X JMP
+        writeRam(opcode, lo(address), hi(address)); // LD? $xxxx,? JMP
         int indexedAddress = address + i;
         _ram.write(value, indexedAddress);
 
@@ -408,7 +407,7 @@ public class CPU6510Test {
         // load byte from address
         executeOneTick_read(expectedState, indexedAddress, value);
         // register and flags change
-        destination.accept(expectedState, value);
+        destination.set(expectedState, value);
         expectedZN(value);
         // Check state and jump back
         checkStateAfter();
@@ -419,11 +418,11 @@ public class CPU6510Test {
   /**
    * Test of PH?.
    */
-  private void test_PHx(int opcode, BiConsumer<CPU6510State, Integer> source, Function<Integer, Integer> modifier) {
+  private void test_PHx(int opcode, SetRegister source, Function<Integer, Integer> modifier) {
     // 256 values -> stack overflow will be tested too
     for (int value = 0x00; value <= 0xFF; value++) {
       resetState(value);
-      source.accept(state, value);
+      source.set(state, value);
       captureExpectedState();
 
       writeRam(opcode); // PHx, JMP
@@ -443,10 +442,10 @@ public class CPU6510Test {
   /**
    * Test of ST? $xx.
    */
-  private void test_STx_ZP(int opcode, BiConsumer<CPU6510State, Integer> source) {
+  private void test_STx_ZP(int opcode, SetRegister source) {
     for (int value = 0x00; value <= 0xFF; value++) {
       resetState(value);
-      source.accept(state, value);
+      source.set(state, value);
       captureExpectedState();
 
       writeRam(opcode, 0xFF); // ST? $FF, JMP
@@ -465,10 +464,10 @@ public class CPU6510Test {
   /**
    * Test of ST? $xxxx.
    */
-  private void test_STx_ABS(int opcode, BiConsumer<CPU6510State, Integer> source) {
+  private void test_STx_ABS(int opcode, SetRegister source) {
     for (int value = 0x00; value <= 0xFF; value++) {
       resetState(value);
-      source.accept(state, value);
+      source.set(state, value);
       captureExpectedState();
 
       writeRam(opcode, 0xFF, 0x00); // ST? $00FF, JMP
@@ -489,10 +488,10 @@ public class CPU6510Test {
   /**
    * Test of T??.
    */
-  private void test_Txx(int opcode, BiConsumer<CPU6510State, Integer> source, BiConsumer<CPU6510State, Integer> destination, boolean updateP) {
+  private void test_Txx(int opcode, SetRegister source, SetRegister destination, boolean updateP) {
     for (int value = 0x00; value <= 0xFF; value++) {
       resetState(value);
-      source.accept(state, value);
+      source.set(state, value);
       captureExpectedState();
 
       // Setup code.
@@ -503,7 +502,7 @@ public class CPU6510Test {
       // idle read
       executeOneTick_idleRead(expectedState);
       // register and flags change
-      destination.accept(expectedState, value);
+      destination.set(expectedState, value);
       if (updateP) {
         expectedZN(value);
       }
