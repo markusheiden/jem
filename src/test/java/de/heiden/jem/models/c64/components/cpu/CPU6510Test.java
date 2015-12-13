@@ -263,6 +263,14 @@ public class CPU6510Test {
   }
 
   /**
+   * Test opcode 0xB9: LDA $xxxx,Y.
+   */
+  @Test
+  public void test0xB9() {
+    test_LDx_ABx(0xB9, CPU6510State::setA, CPU6510State::setY);
+  }
+
+  /**
    * Test opcode 0xBA: TSX.
    */
   @Test
@@ -271,11 +279,27 @@ public class CPU6510Test {
   }
 
   /**
+   * Test opcode 0xBC: LDY $xxxx,X.
+   */
+  @Test
+  public void test0xBC() {
+    test_LDx_ABx(0xBC, CPU6510State::setY, CPU6510State::setX);
+  }
+
+  /**
    * Test opcode 0xBD: LDA $xxxx,X.
    */
   @Test
   public void test0xBD() {
-    test_LDx_ABX(0xBD, CPU6510State::setA, CPU6510State::setX);
+    test_LDx_ABx(0xBD, CPU6510State::setA, CPU6510State::setX);
+  }
+
+  /**
+   * Test opcode 0xBE: LDX $xxxx,Y.
+   */
+  @Test
+  public void test0xBE() {
+    test_LDx_ABx(0xBE, CPU6510State::setX, CPU6510State::setY);
   }
 
   //
@@ -362,7 +386,7 @@ public class CPU6510Test {
   /**
    * Test of LD? $xxxx,X.
    */
-  private void test_LDx_ABX(int opcode, BiConsumer<CPU6510State, Integer> destination, BiConsumer<CPU6510State, Integer> index) {
+  private void test_LDx_ABx(int opcode, BiConsumer<CPU6510State, Integer> destination, BiConsumer<CPU6510State, Integer> index) {
     for (int i = 0x00; i <= 0xFF; i++) {
       for (int value = 0x00; value <= 0xFF; value++) {
         resetState(value);
@@ -381,7 +405,7 @@ public class CPU6510Test {
         // load high nibble of address
         executeOneTick_readPC(expectedState, hi(address));
         // idle read
-        // TODO test idle reas
+        // TODO test idle read
         // TODO test extra cycle, if crossing page boundary
         _clock.run(1);
        // load byte from address
