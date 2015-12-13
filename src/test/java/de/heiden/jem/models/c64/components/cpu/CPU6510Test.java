@@ -8,6 +8,7 @@ import de.heiden.jem.components.clock.serialthreads.SerialClock;
 import de.heiden.jem.models.c64.components.memory.RAM;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.serialthreads.agent.Transform;
@@ -80,6 +81,15 @@ public class CPU6510Test {
 
     // Check that NOP at BRK vector gets executed.
     executeOneTick_readPC(expectedState, 0xEA);
+  }
+
+  /**
+   * Test opcode 0x08: PHP.
+   */
+  @Ignore
+  @Test
+  public void test0x08() {
+    test_PHx(0x08, CPU6510State::setP);
   }
 
   /**
@@ -343,6 +353,7 @@ public class CPU6510Test {
    * Test of PH?.
    */
   private void test_PHx(int opcode, BiConsumer<CPU6510State, Integer> source) {
+    // 256 values -> stack overflow will be tested too
     for (int value = 0x00; value <= 0xFF; value++) {
       resetState(value);
       source.accept(state, value);
@@ -353,7 +364,7 @@ public class CPU6510Test {
       // load opcode
       executeOneTick_readPC(expectedState, opcode);
       // idle read
-      executeOneTick_idleRead(expectedState, 0x4C);
+      executeOneTick_idleRead(expectedState);
       // write to stack, decrement S
       executeOneTick_push(expectedState, value);
       // Check state and jump back
@@ -419,10 +430,10 @@ public class CPU6510Test {
       // Setup code.
       writeRam(opcode); // T??, JMP
 
-      // load opcode -> PC = 0x0301
+      // load opcode
       executeOneTick_readPC(expectedState, opcode);
-      // idle read -> PC = 0x0301
-      executeOneTick_idleRead(expectedState, 0x4C);
+      // idle read
+      executeOneTick_idleRead(expectedState);
       // register and flags change
       destination.accept(expectedState, value);
       if (updateP) {
@@ -551,10 +562,9 @@ public class CPU6510Test {
    * Execute one cpu cycle and check for expected cpu state and read of the value from the PC. Increments PC.
    *
    * @param expectedState expected state after execution.
-   * @param value value which has been read.
    */
-  private void executeOneTick_idleRead(CPU6510State expectedState, int value) {
-    executeOneTick(expectedState, new LogEntry(true, expectedState.PC, value));
+  private void executeOneTick_idleRead(CPU6510State expectedState) {
+    executeOneTick(expectedState, new LogEntry(true, expectedState.PC, _ram.read(expectedState.PC)));
   }
 
   /**
