@@ -84,6 +84,30 @@ public class CPU6510Test {
   }
 
   /**
+   * Test opcode 0x84: STY $xx.
+   */
+  @Test
+  public void test0x84() {
+    test_STx_ZP(0x84, CPU6510State::setY);
+  }
+
+  /**
+   * Test opcode 0x85: STA $xx.
+   */
+  @Test
+  public void test0x85() {
+    test_STx_ZP(0x85, CPU6510State::setA);
+  }
+
+  /**
+   * Test opcode 0x86: STX $xx.
+   */
+  @Test
+  public void test0x86() {
+    test_STx_ZP(0x86, CPU6510State::setX);
+  }
+
+  /**
    * Test opcode 0x8A: TXA.
    */
   @Test
@@ -208,13 +232,7 @@ public class CPU6510Test {
    */
   private void test_LDx_IMM(int opcode, BiConsumer<CPU6510State, Integer> destination) {
     for (int value = 0x00; value <= 0xFF; value++) {
-      // Set register which gets loaded to a different value.
-      state.A = value ^ 0xFF;
-      state.X = value ^ 0xFF;
-      state.Y = value ^ 0xFF;
-      // Set status which get changed to a different value.
-      state.Z = !z(value);
-      state.N = !n(value);
+      resetState(value);
       captureExpectedState();
       destination.accept(stateAfter, value);
       stateAfter.Z = z(value);
@@ -226,7 +244,7 @@ public class CPU6510Test {
       executeOneTick_readPC(expectedState, opcode);
       // load byte after opcode
       executeOneTick_readPC(expectedState, value);
-      // NOP after L??
+      // Check state and jump back
       checkStateAfter();
     }
   }
@@ -236,13 +254,7 @@ public class CPU6510Test {
    */
   private void test_LDx_ZP(int opcode, BiConsumer<CPU6510State, Integer> destination) {
     for (int value = 0x00; value <= 0xFF; value++) {
-      // Set register which gets loaded to a different value.
-      state.A = value ^ 0xFF;
-      state.X = value ^ 0xFF;
-      state.Y = value ^ 0xFF;
-      // Set status which get changed to a different value.
-      state.Z = !z(value);
-      state.N = !n(value);
+      resetState(value);
       captureExpectedState();
       destination.accept(stateAfter, value);
       stateAfter.Z = z(value);
@@ -257,7 +269,7 @@ public class CPU6510Test {
       executeOneTick_readPC(expectedState, 0xFF);
       // load byte from zp address
       executeOneTick_read(expectedState, 0xFF, value);
-      // NOP after L??
+      // Check state and jump back
       checkStateAfter();
     }
   }
@@ -267,13 +279,7 @@ public class CPU6510Test {
    */
   private void test_LDx_ABS(int opcode, BiConsumer<CPU6510State, Integer> destination) {
     for (int value = 0x00; value <= 0xFF; value++) {
-      // Set register which gets loaded to a different value.
-      state.A = value ^ 0xFF;
-      state.X = value ^ 0xFF;
-      state.Y = value ^ 0xFF;
-      // Set status which get changed to a different value.
-      state.Z = !z(value);
-      state.N = !n(value);
+      resetState(value);
       captureExpectedState();
       destination.accept(stateAfter, value);
       stateAfter.Z = z(value);
@@ -290,7 +296,29 @@ public class CPU6510Test {
       executeOneTick_readPC(expectedState, 0x00);
       // load byte from address
       executeOneTick_read(expectedState, 0x00FF, value);
-      // NOP after L??
+      // Check state and jump back
+      checkStateAfter();
+    }
+  }
+
+  /**
+   * Test of ST? $xx.
+   */
+  private void test_STx_ZP(int opcode, BiConsumer<CPU6510State, Integer> source) {
+    for (int value = 0x00; value <= 0xFF; value++) {
+      resetState(value);
+      source.accept(state, value);
+      captureExpectedState();
+
+      writeRam(opcode, 0xFF); // ST? $FF, JMP
+
+      // load opcode
+      executeOneTick_readPC(expectedState, opcode);
+      // load zp address
+      executeOneTick_readPC(expectedState, 0xFF);
+      // write byte to zp address
+      executeOneTick_write(expectedState, 0xFF, value);
+      // Check state and jump back
       checkStateAfter();
     }
   }
@@ -300,14 +328,8 @@ public class CPU6510Test {
    */
   private void test_Txx(int opcode, BiConsumer<CPU6510State, Integer> source, BiConsumer<CPU6510State, Integer> destination, boolean updateP) {
     for (int value = 0x00; value <= 0xFF; value++) {
-      // Set register which gets loaded to a different value.
-      state.A = value ^ 0xFF;
-      state.X = value ^ 0xFF;
-      state.Y = value ^ 0xFF;
+      resetState(value);
       source.accept(state, value);
-      // Set status which get changed to a different value.
-      state.Z = !z(value);
-      state.N = !n(value);
       captureExpectedState();
       destination.accept(stateAfter, value);
       if (updateP) {
@@ -322,10 +344,14 @@ public class CPU6510Test {
       executeOneTick_readPC(expectedState, opcode);
       // idle read -> PC = 0x0301
       executeOneTick_idleRead(expectedState, 0x4C);
-      // JMP after T??
+      // Check state and jump back
       checkStateAfter();
     }
   }
+
+  //
+  // Setup and helper
+  //
 
   /**
    * Setup.
@@ -371,15 +397,28 @@ public class CPU6510Test {
   /**
    * Expected zero flag for value.
    */
-  public boolean z(int value) {
+  private boolean z(int value) {
     return value == 0;
   }
 
   /**
    * Expected negative flag for value.
    */
-  public boolean n(int value) {
+  private boolean n(int value) {
     return (value & 0x80) != 0;
+  }
+
+  /**
+   * Reset state.
+   */
+  private void resetState(int value){
+    // Set register which gets loaded to a different value.
+    state.A = value ^ 0xFF;
+    state.X = value ^ 0xFF;
+    state.Y = value ^ 0xFF;
+    // Set status which get changed to a different value.
+    state.Z = !z(value);
+    state.N = !n(value);
   }
 
   /**
