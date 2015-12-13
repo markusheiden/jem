@@ -40,7 +40,6 @@ public class CPU6510Test {
   private long startTick;
   private CPU6510State state;
   private CPU6510State expectedState;
-  private CPU6510State stateAfter;
 
   /**
    * Test opcode 0x00: BRK.
@@ -84,6 +83,14 @@ public class CPU6510Test {
   }
 
   /**
+   * Test opcode 0x48: PHA.
+   */
+  @Test
+  public void test0x48() {
+    test_PHx(0x48, CPU6510State::setA);
+  }
+
+  /**
    * Test opcode 0x84: STY $xx.
    */
   @Test
@@ -113,6 +120,30 @@ public class CPU6510Test {
   @Test
   public void test0x8A() {
     test_Txx(0x8A, CPU6510State::setX, CPU6510State::setA, true);
+  }
+
+  /**
+   * Test opcode 0x8C: STY $xxxx.
+   */
+  @Test
+  public void test0x8C() {
+    test_STx_ABS(0x8C, CPU6510State::setY);
+  }
+
+  /**
+   * Test opcode 0x8D: STA $xxxx.
+   */
+  @Test
+  public void test0x8D() {
+    test_STx_ABS(0x8D, CPU6510State::setA);
+  }
+
+  /**
+   * Test opcode 0x8E: STX $xxxx.
+   */
+  @Test
+  public void test0x8E() {
+    test_STx_ABS(0x8E, CPU6510State::setX);
   }
 
   /**
@@ -227,6 +258,10 @@ public class CPU6510Test {
     test_Txx(0xBA, CPU6510State::setS, CPU6510State::setX, true);
   }
 
+  //
+  //
+  //
+
   /**
    * Test of LD? #$xx.
    */
@@ -234,9 +269,6 @@ public class CPU6510Test {
     for (int value = 0x00; value <= 0xFF; value++) {
       resetState(value);
       captureExpectedState();
-      destination.accept(stateAfter, value);
-      stateAfter.Z = z(value);
-      stateAfter.N = n(value);
 
       writeRam(opcode, value); // LD? #$xx, JMP
 
@@ -244,6 +276,10 @@ public class CPU6510Test {
       executeOneTick_readPC(expectedState, opcode);
       // load byte after opcode
       executeOneTick_readPC(expectedState, value);
+      // register and flags change
+      destination.accept(expectedState, value);
+      expectedState.Z = z(value);
+      expectedState.N = n(value);
       // Check state and jump back
       checkStateAfter();
     }
@@ -256,9 +292,6 @@ public class CPU6510Test {
     for (int value = 0x00; value <= 0xFF; value++) {
       resetState(value);
       captureExpectedState();
-      destination.accept(stateAfter, value);
-      stateAfter.Z = z(value);
-      stateAfter.N = n(value);
 
       writeRam(opcode, 0xFF); // LD? $FF, JMP
       _ram.write(value, 0xFF);
@@ -269,6 +302,10 @@ public class CPU6510Test {
       executeOneTick_readPC(expectedState, 0xFF);
       // load byte from zp address
       executeOneTick_read(expectedState, 0xFF, value);
+      // register and flags change
+      destination.accept(expectedState, value);
+      expectedState.Z = z(value);
+      expectedState.N = n(value);
       // Check state and jump back
       checkStateAfter();
     }
@@ -281,9 +318,6 @@ public class CPU6510Test {
     for (int value = 0x00; value <= 0xFF; value++) {
       resetState(value);
       captureExpectedState();
-      destination.accept(stateAfter, value);
-      stateAfter.Z = z(value);
-      stateAfter.N = n(value);
 
       writeRam(opcode, 0xFF, 0x00); // LD? $00FF, JMP
       _ram.write(value, 0xFF);
@@ -296,6 +330,32 @@ public class CPU6510Test {
       executeOneTick_readPC(expectedState, 0x00);
       // load byte from address
       executeOneTick_read(expectedState, 0x00FF, value);
+      // register and flags change
+      destination.accept(expectedState, value);
+      expectedState.Z = z(value);
+      expectedState.N = n(value);
+      // Check state and jump back
+      checkStateAfter();
+    }
+  }
+
+  /**
+   * Test of PH?.
+   */
+  private void test_PHx(int opcode, BiConsumer<CPU6510State, Integer> source) {
+    for (int value = 0x00; value <= 0xFF; value++) {
+      resetState(value);
+      source.accept(state, value);
+      captureExpectedState();
+
+      writeRam(opcode); // PHx, JMP
+
+      // load opcode
+      executeOneTick_readPC(expectedState, opcode);
+      // idle read
+      executeOneTick_idleRead(expectedState, 0x4C);
+      // write to stack, decrement S
+      executeOneTick_push(expectedState, value);
       // Check state and jump back
       checkStateAfter();
     }
@@ -324,6 +384,30 @@ public class CPU6510Test {
   }
 
   /**
+   * Test of ST? $xxxx.
+   */
+  private void test_STx_ABS(int opcode, BiConsumer<CPU6510State, Integer> source) {
+    for (int value = 0x00; value <= 0xFF; value++) {
+      resetState(value);
+      source.accept(state, value);
+      captureExpectedState();
+
+      writeRam(opcode, 0xFF, 0x00); // ST? $00FF, JMP
+
+      // load opcode
+      executeOneTick_readPC(expectedState, opcode);
+      // load low nibble of address
+      executeOneTick_readPC(expectedState, 0xFF);
+      // load high nibble of address
+      executeOneTick_readPC(expectedState, 0x00);
+      // write byte to zp address
+      executeOneTick_write(expectedState, 0xFF, value);
+      // Check state and jump back
+      checkStateAfter();
+    }
+  }
+
+  /**
    * Test of T??.
    */
   private void test_Txx(int opcode, BiConsumer<CPU6510State, Integer> source, BiConsumer<CPU6510State, Integer> destination, boolean updateP) {
@@ -331,11 +415,6 @@ public class CPU6510Test {
       resetState(value);
       source.accept(state, value);
       captureExpectedState();
-      destination.accept(stateAfter, value);
-      if (updateP) {
-        stateAfter.Z = z(value);
-        stateAfter.N = n(value);
-      }
 
       // Setup code.
       writeRam(opcode); // T??, JMP
@@ -344,6 +423,12 @@ public class CPU6510Test {
       executeOneTick_readPC(expectedState, opcode);
       // idle read -> PC = 0x0301
       executeOneTick_idleRead(expectedState, 0x4C);
+      // register and flags change
+      destination.accept(expectedState, value);
+      if (updateP) {
+        expectedState.Z = z(value);
+        expectedState.N = n(value);
+      }
       // Check state and jump back
       checkStateAfter();
     }
@@ -426,7 +511,6 @@ public class CPU6510Test {
    */
   private void captureExpectedState() {
     expectedState = state.copy();
-    stateAfter = state.copy();
   }
 
   /**
@@ -438,7 +522,6 @@ public class CPU6510Test {
     for (int value : values) {
       _ram.write(value, address++);
     }
-    stateAfter.PC = address;
     _ram.write(0x4C, address++);
     _ram.write(0x00, address++);
     _ram.write(0x03, address++);
@@ -449,7 +532,7 @@ public class CPU6510Test {
    */
   private void checkStateAfter() {
     // JMP after opcode.
-    executeOneTick_readPC(stateAfter, 0x4C);
+    executeOneTick_readPC(expectedState, 0x4C);
     _clock.run(3 - 1);
   }
 
@@ -503,7 +586,9 @@ public class CPU6510Test {
    * @param value value which has been read.
    */
   private void executeOneTick_pop(CPU6510State expectedState, int value) {
-    executeOneTick(expectedState, new LogEntry(true, 0x0100 + ++expectedState.S, value));
+    expectedState.S = (expectedState.S + 1) & 0xFF;
+    LogEntry log = new LogEntry(true, 0x0100 + expectedState.S, value);
+    executeOneTick(expectedState, log);
   }
 
   /**
@@ -513,7 +598,9 @@ public class CPU6510Test {
    * @param value value which has been written.
    */
   private void executeOneTick_push(CPU6510State expectedState, int value) {
-    executeOneTick(expectedState, new LogEntry(false, 0x0100 + expectedState.S--, value));
+    LogEntry log = new LogEntry(false, 0x0100 + expectedState.S, value);
+    expectedState.S = (expectedState.S - 1) & 0xFF;
+    executeOneTick(expectedState, log);
   }
 
   /**

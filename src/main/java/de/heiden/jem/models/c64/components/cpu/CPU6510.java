@@ -952,6 +952,7 @@ public class CPU6510 implements ClockedComponent {
         @Interruptible
         public final void execute() // $48: PHA (3) // no
         {
+          idleRead();
           pushByte(_state.A);
         }
       },
