@@ -344,6 +344,7 @@ public class CPU6510 implements ClockedComponent {
         @Interruptible
         public final void execute() // $08: PHP (3) // no
         {
+          idleRead();
           pushByte(_state.getP());
         }
       },

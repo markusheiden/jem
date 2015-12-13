@@ -8,7 +8,6 @@ import de.heiden.jem.components.clock.serialthreads.SerialClock;
 import de.heiden.jem.models.c64.components.memory.RAM;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.serialthreads.agent.Transform;
@@ -18,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 import static org.junit.Assert.assertEquals;
 
@@ -86,10 +86,10 @@ public class CPU6510Test {
   /**
    * Test opcode 0x08: PHP.
    */
-  @Ignore
   @Test
   public void test0x08() {
-    test_PHx(0x08, CPU6510State::setP);
+    // TODO 2015-12-13 markus: Is this behaviour correct or are other flags changed too?
+    test_PHx(0x08, CPU6510State::setP, value -> value | 0x30);
   }
 
   /**
@@ -97,7 +97,7 @@ public class CPU6510Test {
    */
   @Test
   public void test0x48() {
-    test_PHx(0x48, CPU6510State::setA);
+    test_PHx(0x48, CPU6510State::setA, null);
   }
 
   /**
@@ -352,7 +352,7 @@ public class CPU6510Test {
   /**
    * Test of PH?.
    */
-  private void test_PHx(int opcode, BiConsumer<CPU6510State, Integer> source) {
+  private void test_PHx(int opcode, BiConsumer<CPU6510State, Integer> source, Function<Integer, Integer> modifier) {
     // 256 values -> stack overflow will be tested too
     for (int value = 0x00; value <= 0xFF; value++) {
       resetState(value);
@@ -366,7 +366,8 @@ public class CPU6510Test {
       // idle read
       executeOneTick_idleRead(expectedState);
       // write to stack, decrement S
-      executeOneTick_push(expectedState, value);
+      int expectedValue = modifier != null? modifier.apply(value) : value;
+      executeOneTick_push(expectedState, expectedValue);
       // Check state and jump back
       checkStateAfter();
     }
