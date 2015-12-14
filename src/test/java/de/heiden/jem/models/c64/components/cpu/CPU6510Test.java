@@ -16,6 +16,7 @@ import org.serialthreads.transformer.strategies.frequent3.FrequentInterruptsTran
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import static de.heiden.c64dt.util.ByteUtil.hi;
@@ -94,11 +95,35 @@ public class CPU6510Test {
   }
 
   /**
+   * Test opcode 0x09: ORA #$xx.
+   */
+  @Test
+  public void test0x09() {
+    test_xxA_IMM(0x09, (a, value) -> a | value);
+  }
+
+  /**
+   * Test opcode 0x29: AND #$xx.
+   */
+  @Test
+  public void test0x29() {
+    test_xxA_IMM(0x29, (a, value) -> a & value);
+  }
+
+  /**
    * Test opcode 0x48: PHA.
    */
   @Test
   public void test0x48() {
     test_PHx(0x48, CPU6510State::setA, null);
+  }
+
+  /**
+   * Test opcode 0x49: EOR #$xx.
+   */
+  @Test
+  public void test0x49() {
+    test_xxA_IMM(0x49, (a, value) -> a ^ value);
   }
 
   /**
@@ -304,6 +329,32 @@ public class CPU6510Test {
   //
   //
   //
+
+  /**
+   * Test of ??A #$xx.
+   */
+  private void test_xxA_IMM(int opcode, BiFunction<Integer, Integer, Integer> operator) {
+    for (int a = 0x00; a <= 0xFF; a++) {
+      for (int value = 0x00; value <= 0xFF; value++) {
+        resetState(value);
+        state.A = a;
+        captureExpectedState();
+
+        writeRam(opcode, value); // LD? #$xx, JMP
+
+        // load opcode
+        executeOneTick_readPC(expectedState, opcode);
+        // load byte after opcode
+        executeOneTick_readPC(expectedState, value);
+        // register and flags change
+        int result = operator.apply(a, value);
+        expectedState.A = result;
+        expectedZN(result);
+        // Check state and jump back
+        checkStateAfter();
+      }
+    }
+  }
 
   /**
    * Test of LD? #$xx.
