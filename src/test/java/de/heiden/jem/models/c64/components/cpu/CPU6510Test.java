@@ -340,12 +340,8 @@ public class CPU6510Test {
         state.A = a;
         captureExpectedState();
 
-        writeRam(opcode, value); // LD? #$xx, JMP
+        execute(opcode, value); // xxA #$xx, JMP
 
-        // load opcode
-        executeOneTick_readPC(expectedState, opcode);
-        // load byte after opcode
-        executeOneTick_readPC(expectedState, value);
         // register and flags change
         int result = operator.apply(a, value);
         expectedState.A = result;
@@ -364,12 +360,8 @@ public class CPU6510Test {
       resetState(value);
       captureExpectedState();
 
-      writeRam(opcode, value); // LD? #$xx, JMP
+      execute(opcode, value); // LD? #$xx, JMP
 
-      // load opcode
-      executeOneTick_readPC(expectedState, opcode);
-      // load byte after opcode
-      executeOneTick_readPC(expectedState, value);
       // register and flags change
       destination.set(expectedState, value);
       expectedZN(value);
@@ -386,13 +378,9 @@ public class CPU6510Test {
       resetState(value);
       captureExpectedState();
 
-      writeRam(opcode, 0xFF); // LD? $FF, JMP
       _ram.write(value, 0xFF);
+      execute(opcode, 0xFF); // LD? $FF, JMP
 
-      // load opcode
-      executeOneTick_readPC(expectedState, opcode);
-      // load zp address
-      executeOneTick_readPC(expectedState, 0xFF);
       // load byte from zp address
       executeOneTick_read(expectedState, 0xFF, value);
       // register and flags change
@@ -411,15 +399,9 @@ public class CPU6510Test {
       resetState(value);
       captureExpectedState();
 
-      writeRam(opcode, 0xFF, 0x00); // LD? $00FF, JMP
       _ram.write(value, 0xFF);
+      execute(opcode, 0xFF, 0x00); // LD? $00FF, JMP
 
-      // load opcode
-      executeOneTick_readPC(expectedState, opcode);
-      // load low nibble of address
-      executeOneTick_readPC(expectedState, 0xFF);
-      // load high nibble of address
-      executeOneTick_readPC(expectedState, 0x00);
       // load byte from address
       executeOneTick_read(expectedState, 0x00FF, value);
       // register and flags change
@@ -441,16 +423,10 @@ public class CPU6510Test {
         captureExpectedState();
 
         int address = 0x1080;
-        writeRam(opcode, lo(address), hi(address)); // LD? $xxxx,? JMP
         int indexedAddress = address + i;
         _ram.write(value, indexedAddress);
+        execute(opcode, lo(address), hi(address)); // LD? $xxxx,? JMP
 
-        // load opcode
-        executeOneTick_readPC(expectedState, opcode);
-        // load low nibble of address
-        executeOneTick_readPC(expectedState, lo(address));
-        // load high nibble of address
-        executeOneTick_readPC(expectedState, hi(address));
         // idle read
         // TODO test idle read
         // TODO test extra cycle, if crossing page boundary
@@ -476,10 +452,8 @@ public class CPU6510Test {
       source.set(state, value);
       captureExpectedState();
 
-      writeRam(opcode); // PHx, JMP
+      execute(opcode); // PHx, JMP
 
-      // load opcode
-      executeOneTick_readPC(expectedState, opcode);
       // idle read
       executeOneTick_idleRead(expectedState);
       // write to stack, decrement S
@@ -499,12 +473,8 @@ public class CPU6510Test {
       source.set(state, value);
       captureExpectedState();
 
-      writeRam(opcode, 0xFF); // ST? $FF, JMP
+      execute(opcode, 0xFF); // ST? $FF, JMP
 
-      // load opcode
-      executeOneTick_readPC(expectedState, opcode);
-      // load zp address
-      executeOneTick_readPC(expectedState, 0xFF);
       // write byte to zp address
       executeOneTick_write(expectedState, 0xFF, value);
       // Check state and jump back
@@ -521,14 +491,8 @@ public class CPU6510Test {
       source.set(state, value);
       captureExpectedState();
 
-      writeRam(opcode, 0xFF, 0x00); // ST? $00FF, JMP
+      execute(opcode, 0xFF, 0x00); // ST? $00FF, JMP
 
-      // load opcode
-      executeOneTick_readPC(expectedState, opcode);
-      // load low nibble of address
-      executeOneTick_readPC(expectedState, 0xFF);
-      // load high nibble of address
-      executeOneTick_readPC(expectedState, 0x00);
       // write byte to zp address
       executeOneTick_write(expectedState, 0xFF, value);
       // Check state and jump back
@@ -546,10 +510,8 @@ public class CPU6510Test {
       captureExpectedState();
 
       // Setup code.
-      writeRam(opcode); // T??, JMP
+      execute(opcode); // T??, JMP
 
-      // load opcode
-      executeOneTick_readPC(expectedState, opcode);
       // idle read
       executeOneTick_idleRead(expectedState);
       // register and flags change
@@ -642,17 +604,28 @@ public class CPU6510Test {
   }
 
   /**
-   * Writer opcode with arguments to RAM at $0300. Append a JMP $0300. Set PC after to address of JMP.
+   * Write opcode with arguments to RAM at $0300.
+   * Append a JMP $0300.
+   * Execute reading of opcode and its argument.
    */
-  private void writeRam(int... values) {
+  private void execute(int opcode, int... argument) {
     int address = 0x0300;
     expectedState.PC = address;
-    for (int value : values) {
-      _ram.write(value, address++);
+
+    _ram.write(opcode, address++);
+    for (int a : argument) {
+      _ram.write(a, address++);
     }
     _ram.write(0x4C, address++);
     _ram.write(0x00, address++);
     _ram.write(0x03, address++);
+
+    // execute opcode
+    executeOneTick_readPC(expectedState, opcode);
+    // execute read argument
+    for (int a : argument) {
+      executeOneTick_readPC(expectedState, a);
+    }
   }
 
   /**
