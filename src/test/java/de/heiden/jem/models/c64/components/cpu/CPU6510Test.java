@@ -444,8 +444,6 @@ public class CPU6510Test {
 
       execute(opcode); // IN?/DE?, JMP
 
-      // idle read
-      executeOneTick_idleRead(expectedState);
       // register and flags change
       int result = (value + increment) & 0xFF;
       destination.set(expectedState, result);
@@ -557,8 +555,6 @@ public class CPU6510Test {
 
       execute(opcode); // PHx, JMP
 
-      // idle read
-      executeOneTick_idleRead(expectedState);
       // write to stack, decrement S
       int expectedValue = modifier != null? modifier.apply(value) : value;
       executeOneTick_push(expectedState, expectedValue);
@@ -615,8 +611,6 @@ public class CPU6510Test {
       // Setup code.
       execute(opcode); // T??, JMP
 
-      // idle read
-      executeOneTick_idleRead(expectedState);
       // register and flags change
       destination.set(expectedState, value);
       if (updateP) {
@@ -711,13 +705,13 @@ public class CPU6510Test {
    * Append a JMP $0300.
    * Execute reading of opcode and its argument.
    */
-  private void execute(int opcode, int... argument) {
+  private void execute(int opcode, int... arguments) {
     int address = 0x0300;
     expectedState.PC = address;
 
     _ram.write(opcode, address++);
-    for (int a : argument) {
-      _ram.write(a, address++);
+    for (int argument : arguments) {
+      _ram.write(argument, address++);
     }
     _ram.write(0x4C, address++);
     _ram.write(0x00, address++);
@@ -726,8 +720,13 @@ public class CPU6510Test {
     // execute opcode
     executeOneTick_readPC(expectedState, opcode);
     // execute read argument
-    for (int a : argument) {
-      executeOneTick_readPC(expectedState, a);
+    if (arguments.length == 0) {
+      // No arguments -> Idle read instead of argument read.
+      executeOneTick_idleRead(expectedState);
+    } else {
+      for (int argument : arguments) {
+        executeOneTick_readPC(expectedState, argument);
+      }
     }
   }
 
