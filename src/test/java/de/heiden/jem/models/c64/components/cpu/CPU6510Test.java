@@ -86,6 +86,14 @@ public class CPU6510Test {
   }
 
   /**
+   * Test opcode 0x05: ORA $xx.
+   */
+  @Test
+  public void test0x05() {
+    test_xxA_ZP(0x05, (a, value) -> a | value);
+  }
+
+  /**
    * Test opcode 0x08: PHP.
    */
   @Test
@@ -103,11 +111,27 @@ public class CPU6510Test {
   }
 
   /**
+   * Test opcode 0x25: AND $xx.
+   */
+  @Test
+  public void test0x25() {
+    test_xxA_ZP(0x25, (a, value) -> a & value);
+  }
+
+  /**
    * Test opcode 0x29: AND #$xx.
    */
   @Test
   public void test0x29() {
     test_xxA_IMM(0x29, (a, value) -> a & value);
+  }
+
+  /**
+   * Test opcode 0x45: EOR $xx.
+   */
+  @Test
+  public void test0x45() {
+    test_xxA_ZP(0x45, (a, value) -> a ^ value);
   }
 
   /**
@@ -353,6 +377,31 @@ public class CPU6510Test {
   }
 
   /**
+   * Test of ??A $xx.
+   */
+  private void test_xxA_ZP(int opcode, BiFunction<Integer, Integer, Integer> operator) {
+    for (int a = 0x00; a <= 0xFF; a++) {
+      for (int value = 0x00; value <= 0xFF; value++) {
+        resetState(value);
+        state.A = a;
+        captureExpectedState();
+
+        _ram.write(value, 0x00FF);
+        execute(opcode, 0xFF); // xxA $xx, JMP
+
+        // load value from address
+        executeOneTick_read(expectedState, 0x00FF, value);
+        // register and flags change
+        int result = operator.apply(a, value);
+        expectedState.A = result;
+        expectedZN(result);
+        // Check state and jump back
+        checkStateAfter();
+      }
+    }
+  }
+
+  /**
    * Test of LD? #$xx.
    */
   private void test_LDx_IMM(int opcode, SetRegister destination) {
@@ -381,7 +430,7 @@ public class CPU6510Test {
       _ram.write(value, 0xFF);
       execute(opcode, 0xFF); // LD? $FF, JMP
 
-      // load byte from zp address
+      // load value from zp address
       executeOneTick_read(expectedState, 0xFF, value);
       // register and flags change
       destination.set(expectedState, value);
@@ -402,7 +451,7 @@ public class CPU6510Test {
       _ram.write(value, 0xFF);
       execute(opcode, 0xFF, 0x00); // LD? $00FF, JMP
 
-      // load byte from address
+      // load value from address
       executeOneTick_read(expectedState, 0x00FF, value);
       // register and flags change
       destination.set(expectedState, value);
