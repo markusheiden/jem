@@ -175,6 +175,14 @@ public class CPU6510Test {
   }
 
   /**
+   * Test opcode 0x88: DEX.
+   */
+  @Test
+  public void test0x88() {
+    test_increment(0x88, CPU6510State::setY, -1);
+  }
+
+  /**
    * Test opcode 0x8A: TXA.
    */
   @Test
@@ -350,6 +358,30 @@ public class CPU6510Test {
     test_LDx_ABx(0xBE, CPU6510State::setX, CPU6510State::setY);
   }
 
+  /**
+   * Test opcode 0xC8: INY.
+   */
+  @Test
+  public void test0xC8() {
+    test_increment(0xC8, CPU6510State::setY, 1);
+  }
+
+  /**
+   * Test opcode 0xCA: DEX.
+   */
+  @Test
+  public void test0xCA() {
+    test_increment(0xCA, CPU6510State::setX, -1);
+  }
+
+  /**
+   * Test opcode 0xE8: INX.
+   */
+  @Test
+  public void test0xE8() {
+    test_increment(0xE8, CPU6510State::setX, 1);
+  }
+
   //
   //
   //
@@ -398,6 +430,28 @@ public class CPU6510Test {
         // Check state and jump back
         checkStateAfter();
       }
+    }
+  }
+
+  /**
+   * Test of IN?/DE?.
+   */
+  private void test_increment(int opcode, SetRegister destination, int increment) {
+    for (int value = 0x00; value <= 0xFF; value++) {
+      resetState(value);
+      destination.set(state, value);
+      captureExpectedState();
+
+      execute(opcode); // IN?/DE?, JMP
+
+      // idle read
+      executeOneTick_idleRead(expectedState);
+      // register and flags change
+      int result = (value + increment) & 0xFF;
+      destination.set(expectedState, result);
+      expectedZN(result);
+      // Check state and jump back
+      checkStateAfter();
     }
   }
 
