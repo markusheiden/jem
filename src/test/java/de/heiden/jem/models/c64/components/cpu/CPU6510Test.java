@@ -479,11 +479,11 @@ public class CPU6510Test {
       resetState(value);
       captureExpectedState();
 
-      _ram.write(value, 0xFF);
+      _ram.write(value, 0x00FF);
       execute(opcode, 0xFF); // LD? $FF, JMP
 
       // load value from zp address
-      executeOneTick_read(expectedState, 0xFF, value);
+      executeOneTick_read(expectedState, 0x00FF, value);
       // register and flags change
       destination.set(expectedState, value);
       expectedZN(value);
@@ -500,7 +500,7 @@ public class CPU6510Test {
       resetState(value);
       captureExpectedState();
 
-      _ram.write(value, 0xFF);
+      _ram.write(value, 0x00FF);
       execute(opcode, 0xFF, 0x00); // LD? $00FF, JMP
 
       // load value from address
@@ -575,7 +575,7 @@ public class CPU6510Test {
       execute(opcode, 0xFF); // ST? $FF, JMP
 
       // write byte to zp address
-      executeOneTick_write(expectedState, 0xFF, value);
+      executeOneTick_write(expectedState, 0x00FF, value);
       // Check state and jump back
       checkAndJmpBack();
     }
@@ -593,7 +593,7 @@ public class CPU6510Test {
       execute(opcode, 0xFF, 0x00); // ST? $00FF, JMP
 
       // write byte to zp address
-      executeOneTick_write(expectedState, 0xFF, value);
+      executeOneTick_write(expectedState, 0x00FF, value);
       // Check state and jump back
       checkAndJmpBack();
     }
