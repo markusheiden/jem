@@ -16,6 +16,7 @@ import org.serialthreads.transformer.strategies.frequent3.FrequentInterruptsTran
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Random;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -33,6 +34,8 @@ public class CPU6510Test {
    * Logger.
    */
   private final Logger logger = LoggerFactory.getLogger(getClass());
+
+  private static final Random random = new Random();
 
   private Clock _clock;
   private RAM _ram;
@@ -390,8 +393,8 @@ public class CPU6510Test {
    * Test of ??A #$xx.
    */
   private void test_xxA_IMM(int opcode, BiFunction<Integer, Integer, Integer> operator) {
-    for (int a = 0x00; a <= 0xFF; a++) {
-      for (int value = 0x00; value <= 0xFF; value++) {
+    for (int a = 0x00; a <= 0xFF; a = inc(a)) {
+      for (int value = 0x00; value <= 0xFF; value = inc(value)) {
         resetState(value);
         state.A = a;
         captureExpectedState();
@@ -412,8 +415,8 @@ public class CPU6510Test {
    * Test of ??A $xx.
    */
   private void test_xxA_ZP(int opcode, BiFunction<Integer, Integer, Integer> operator) {
-    for (int a = 0x00; a <= 0xFF; a++) {
-      for (int value = 0x00; value <= 0xFF; value++) {
+    for (int a = 0x00; a <= 0xFF; a = inc(a)) {
+      for (int value = 0x00; value <= 0xFF; value = inc(value)) {
         resetState(value);
         state.A = a;
         captureExpectedState();
@@ -437,7 +440,7 @@ public class CPU6510Test {
    * Test of IN?/DE?.
    */
   private void test_increment(int opcode, SetRegister destination, int increment) {
-    for (int value = 0x00; value <= 0xFF; value++) {
+    for (int value = 0x00; value <= 0xFF; value = inc(value)) {
       resetState(value);
       destination.set(state, value);
       captureExpectedState();
@@ -457,7 +460,7 @@ public class CPU6510Test {
    * Test of LD? #$xx.
    */
   private void test_LDx_IMM(int opcode, SetRegister destination) {
-    for (int value = 0x00; value <= 0xFF; value++) {
+    for (int value = 0x00; value <= 0xFF; value = inc(value)) {
       resetState(value);
       captureExpectedState();
 
@@ -475,7 +478,7 @@ public class CPU6510Test {
    * Test of LD? $xx.
    */
   private void test_LDx_ZP(int opcode, SetRegister destination) {
-    for (int value = 0x00; value <= 0xFF; value++) {
+    for (int value = 0x00; value <= 0xFF; value = inc(value)) {
       resetState(value);
       captureExpectedState();
 
@@ -496,7 +499,7 @@ public class CPU6510Test {
    * Test of LD? $xxxx.
    */
   private void test_LDx_ABS(int opcode, SetRegister destination) {
-    for (int value = 0x00; value <= 0xFF; value++) {
+    for (int value = 0x00; value <= 0xFF; value = inc(value)) {
       resetState(value);
       captureExpectedState();
 
@@ -517,8 +520,8 @@ public class CPU6510Test {
    * Test of LD? $xxxx,X.
    */
   private void test_LDx_ABx(int opcode, SetRegister destination, SetRegister index) {
-    for (int i = 0x00; i <= 0xFF; i++) {
-      for (int value = 0x00; value <= 0xFF; value++) {
+    for (int i = 0x00; i <= 0xFF; i = inc(i)) {
+      for (int value = 0x00; value <= 0xFF; value = inc(value)) {
         resetState(value);
         index.set(state, i);
         captureExpectedState();
@@ -548,7 +551,7 @@ public class CPU6510Test {
    */
   private void test_PHx(int opcode, SetRegister source, Function<Integer, Integer> modifier) {
     // 256 values -> stack overflow will be tested too
-    for (int value = 0x00; value <= 0xFF; value++) {
+    for (int value = 0x00; value <= 0xFF; value = inc(value)) {
       resetState(value);
       source.set(state, value);
       captureExpectedState();
@@ -567,7 +570,7 @@ public class CPU6510Test {
    * Test of ST? $xx.
    */
   private void test_STx_ZP(int opcode, SetRegister source) {
-    for (int value = 0x00; value <= 0xFF; value++) {
+    for (int value = 0x00; value <= 0xFF; value = inc(value)) {
       resetState(value);
       source.set(state, value);
       captureExpectedState();
@@ -585,7 +588,7 @@ public class CPU6510Test {
    * Test of ST? $xxxx.
    */
   private void test_STx_ABS(int opcode, SetRegister source) {
-    for (int value = 0x00; value <= 0xFF; value++) {
+    for (int value = 0x00; value <= 0xFF; value = inc(value)) {
       resetState(value);
       source.set(state, value);
       captureExpectedState();
@@ -603,7 +606,7 @@ public class CPU6510Test {
    * Test of T??.
    */
   private void test_Txx(int opcode, SetRegister source, SetRegister destination, boolean updateP) {
-    for (int value = 0x00; value <= 0xFF; value++) {
+    for (int value = 0x00; value <= 0xFF; value = inc(value)) {
       resetState(value);
       source.set(state, value);
       captureExpectedState();
@@ -652,6 +655,14 @@ public class CPU6510Test {
     startTick = _clock.getTick();
     state = _cpu.getState();
     expectedState = new CPU6510State(0x0300, 0xFF, 0, 0, 0, 0, false, false);
+  }
+
+  /**
+   * Increment value by a random value between 1 and 4.
+   * Reduces the number different values to reduce test time.
+   */
+  private int inc(int value) {
+    return value + 1 + random.nextInt(4);
   }
 
   /**
