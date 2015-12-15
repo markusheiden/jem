@@ -114,6 +114,14 @@ public class CPU6510Test {
   }
 
   /**
+   * Test opcode 0x0D: ORA $xxxx.
+   */
+  @Test
+  public void test0x0D() {
+    test_xxA_ABS(0x0D, (a, value) -> a | value);
+  }
+
+  /**
    * Test opcode 0x25: AND $xx.
    */
   @Test
@@ -127,6 +135,14 @@ public class CPU6510Test {
   @Test
   public void test0x29() {
     test_xxA_IMM(0x29, (a, value) -> a & value);
+  }
+
+  /**
+   * Test opcode 0x2D: AND $xxxx.
+   */
+  @Test
+  public void test0x2D() {
+    test_xxA_ABS(0x2D, (a, value) -> a & value);
   }
 
   /**
@@ -151,6 +167,14 @@ public class CPU6510Test {
   @Test
   public void test0x49() {
     test_xxA_IMM(0x49, (a, value) -> a ^ value);
+  }
+
+  /**
+   * Test opcode 0x4D: EOR $xxxx.
+   */
+  @Test
+  public void test0x4D() {
+    test_xxA_ABS(0x4D, (a, value) -> a ^ value);
   }
 
   /**
@@ -423,6 +447,31 @@ public class CPU6510Test {
 
         _ram.write(value, 0x00FF);
         execute(opcode, 0xFF); // xxA $xx, JMP
+
+        // load value from address
+        executeOneTick_read(expectedState, 0x00FF, value);
+        // register and flags change
+        int result = operator.apply(a, value);
+        expectedState.A = result;
+        expectedZN(result);
+        // Check state and jump back
+        checkAndJmpBack();
+      }
+    }
+  }
+
+  /**
+   * Test of ??A $xxxx.
+   */
+  private void test_xxA_ABS(int opcode, BiFunction<Integer, Integer, Integer> operator) {
+    for (int a = 0x00; a <= 0xFF; a = inc(a)) {
+      for (int value = 0x00; value <= 0xFF; value = inc(value)) {
+        resetState(value);
+        state.A = a;
+        captureExpectedState();
+
+        _ram.write(value, 0x00FF);
+        execute(opcode, 0xFF, 0x00); // xxA $xxxx, JMP
 
         // load value from address
         executeOneTick_read(expectedState, 0x00FF, value);
