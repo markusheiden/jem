@@ -403,7 +403,7 @@ public class CPU6510Test {
         expectedState.A = result;
         expectedZN(result);
         // Check state and jump back
-        checkStateAfter();
+        checkAndJmpBack();
       }
     }
   }
@@ -428,7 +428,7 @@ public class CPU6510Test {
         expectedState.A = result;
         expectedZN(result);
         // Check state and jump back
-        checkStateAfter();
+        checkAndJmpBack();
       }
     }
   }
@@ -449,7 +449,7 @@ public class CPU6510Test {
       destination.set(expectedState, result);
       expectedZN(result);
       // Check state and jump back
-      checkStateAfter();
+      checkAndJmpBack();
     }
   }
 
@@ -467,7 +467,7 @@ public class CPU6510Test {
       destination.set(expectedState, value);
       expectedZN(value);
       // Check state and jump back
-      checkStateAfter();
+      checkAndJmpBack();
     }
   }
 
@@ -488,7 +488,7 @@ public class CPU6510Test {
       destination.set(expectedState, value);
       expectedZN(value);
       // Check state and jump back
-      checkStateAfter();
+      checkAndJmpBack();
     }
   }
 
@@ -509,7 +509,7 @@ public class CPU6510Test {
       destination.set(expectedState, value);
       expectedZN(value);
       // Check state and jump back
-      checkStateAfter();
+      checkAndJmpBack();
     }
   }
 
@@ -538,7 +538,7 @@ public class CPU6510Test {
         destination.set(expectedState, value);
         expectedZN(value);
         // Check state and jump back
-        checkStateAfter();
+        checkAndJmpBack();
       }
     }
   }
@@ -559,7 +559,7 @@ public class CPU6510Test {
       int expectedValue = modifier != null? modifier.apply(value) : value;
       executeOneTick_push(expectedState, expectedValue);
       // Check state and jump back
-      checkStateAfter();
+      checkAndJmpBack();
     }
   }
 
@@ -577,7 +577,7 @@ public class CPU6510Test {
       // write byte to zp address
       executeOneTick_write(expectedState, 0xFF, value);
       // Check state and jump back
-      checkStateAfter();
+      checkAndJmpBack();
     }
   }
 
@@ -595,7 +595,7 @@ public class CPU6510Test {
       // write byte to zp address
       executeOneTick_write(expectedState, 0xFF, value);
       // Check state and jump back
-      checkStateAfter();
+      checkAndJmpBack();
     }
   }
 
@@ -617,7 +617,7 @@ public class CPU6510Test {
         expectedZN(value);
       }
       // Check state and jump back
-      checkStateAfter();
+      checkAndJmpBack();
     }
   }
 
@@ -739,9 +739,9 @@ public class CPU6510Test {
   }
 
   /**
-   * Check state after execution of opcode. Checks that NOP after opcode gets executed.
+   * Check state and execute JMP.
    */
-  private void checkStateAfter() {
+  private void checkAndJmpBack() {
     // JMP after opcode.
     executeOneTick_readPC(expectedState, 0x4C);
     _clock.run(3 - 1);
