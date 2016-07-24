@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration status="WARN">
+<Configuration status="warn">
 <Appenders>
   <Console name="Console" target="SYSTEM_OUT">
     <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %-36.36logger{1} - %msg%n"/>
@@ -16,7 +16,7 @@
   <Logger name="de.heiden.jem.components.clock.RealTimeSlowDown" level="info"/>
   <Logger name="org.serialthreads.transformer.strategies.frequent3.MethodTransformer" level="error"/>
 
-  <Root level="info">
+  <Root level="warn">
     <AppenderRef ref="Console"/>
   </Root>
 </Loggers>
