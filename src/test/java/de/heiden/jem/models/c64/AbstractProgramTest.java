@@ -1,5 +1,6 @@
 package de.heiden.jem.models.c64;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assume.assumeTrue;
 
 import java.io.File;
@@ -50,6 +51,7 @@ public abstract class AbstractProgramTest extends AbstractTest {
    */
   protected static Collection<Object[]> createParameters(String resource, FilenameFilter filter) throws Exception {
     URL start = AbstractProgramTest.class.getResource(resource);
+    assertNotNull("Resource exists.", start);
     File testDir = new File(start.toURI()).getParentFile();
     File[] programs = testDir.listFiles(filter);
 
