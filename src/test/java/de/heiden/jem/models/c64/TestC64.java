@@ -1,5 +1,9 @@
 package de.heiden.jem.models.c64;
 
+import java.io.File;
+import java.io.OutputStream;
+
+import de.heiden.jem.components.bus.BusDevice;
 import de.heiden.jem.components.clock.Clock;
 import de.heiden.jem.components.clock.ClockEvent;
 import de.heiden.jem.components.clock.serialthreads.SerialClock;
@@ -19,9 +23,6 @@ import de.heiden.jem.models.c64.components.vic.VICBus;
 import de.heiden.jem.models.c64.gui.KeyListener;
 import de.heiden.jem.models.c64.gui.PCMapping;
 import de.heiden.jem.models.c64.util.ROMLoader;
-
-import java.io.File;
-import java.io.OutputStream;
 
 /**
  * Modified C64 for better testability.
@@ -108,6 +109,13 @@ public class TestC64 {
    */
   public Clock getClock() {
     return _clock;
+  }
+
+  /**
+   * Get bus.
+   */
+  public BusDevice getBus() {
+    return _cpuBus;
   }
 
   /**

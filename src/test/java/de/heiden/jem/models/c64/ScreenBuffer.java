@@ -30,9 +30,16 @@ public class ScreenBuffer extends OutputStream {
   public synchronized void write(int b) throws IOException {
     char c = charset.toChar((byte) b);
     if (c > 0) {
-      System.out.print(c);
-      screen.append(c);
+      writeChar(c);
     }
+  }
+
+  /**
+   * Write character to screen.
+   */
+  public synchronized void writeChar(char c) {
+    System.out.print(c);
+    screen.append(c);
   }
 
   /**
