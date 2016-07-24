@@ -19,7 +19,8 @@
     <c64dt.version>1.0-SNAPSHOT</c64dt.version>
 
     <junit.version>4.12</junit.version>
-    <logback.version>1.1.3</logback.version>
+    <log4j.version>2.6.2</log4j.version>
+    <slf4j.version>1.7.21</slf4j.version>
   </properties>
 
   <build>
@@ -48,9 +49,15 @@
 
   <dependencies>
     <dependency>
-      <groupId>ch.qos.logback</groupId>
-      <artifactId>logback-classic</artifactId>
-      <version>${logback.version}</version>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>${slf4j.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-core</artifactId>
+      <version>${log4j.version}</version>
+      <scope>runtime</scope>
     </dependency>
 
     <dependency>
