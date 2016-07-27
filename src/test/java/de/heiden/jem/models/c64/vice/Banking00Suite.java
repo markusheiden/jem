@@ -26,7 +26,7 @@ public class Banking00Suite extends AbstractProgramTest {
   protected void checkResult() throws Exception {
     // Just run for 2 seconds, because test program does never stop.
     int seconds = 2;
-    waitFor(seconds * 1000000);
+    int result = waitFor(seconds * 1000000);
 
     String log = console.toString();
     Matcher passed = Pattern.compile("passed        (\\d{8})").matcher(log);

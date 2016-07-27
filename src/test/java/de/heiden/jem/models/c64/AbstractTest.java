@@ -18,6 +18,16 @@ import java.io.File;
 @Transform(transformer = FrequentInterruptsTransformer3.class, classPrefixes = "de.heiden.jem")
 public abstract class AbstractTest {
   /**
+   * Return value for wait method in the case that no string matched.
+   */
+  protected static final int WAIT_NO_MATCH = -1;
+
+  /**
+   * Return value for wait method in the case that no string matched.
+   */
+  protected static final int WAIT_PROGRAM_END = -2;
+
+  /**
    * Transformed test C64.
    */
   protected TestC64 c64;
@@ -112,13 +122,18 @@ public abstract class AbstractTest {
         }
       }
 
-      if (getTick() >= end) {
-        // Timeout -> exit with -1
+      if (c64.hasEnded()) {
         System.out.flush();
-        return -1;
+        return WAIT_PROGRAM_END;
+      }
+
+      if (getTick() >= end) {
+        System.out.flush();
+        return WAIT_NO_MATCH;
       }
 
       if (exception != null) {
+        System.out.flush();
         // Abort on exceptions
         throw exception;
       }

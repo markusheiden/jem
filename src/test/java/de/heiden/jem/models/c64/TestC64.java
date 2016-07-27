@@ -1,8 +1,5 @@
 package de.heiden.jem.models.c64;
 
-import java.io.File;
-import java.io.OutputStream;
-
 import de.heiden.jem.components.bus.BusDevice;
 import de.heiden.jem.components.clock.Clock;
 import de.heiden.jem.components.clock.ClockEvent;
@@ -14,15 +11,15 @@ import de.heiden.jem.models.c64.components.keyboard.Keyboard;
 import de.heiden.jem.models.c64.components.memory.ColorRAM;
 import de.heiden.jem.models.c64.components.memory.RAM;
 import de.heiden.jem.models.c64.components.memory.ROM;
-import de.heiden.jem.models.c64.components.patch.LoadFile;
-import de.heiden.jem.models.c64.components.patch.Return;
-import de.heiden.jem.models.c64.components.patch.StopAtSystemIn;
-import de.heiden.jem.models.c64.components.patch.SystemOut;
+import de.heiden.jem.models.c64.components.patch.*;
 import de.heiden.jem.models.c64.components.vic.VIC6569PAL;
 import de.heiden.jem.models.c64.components.vic.VICBus;
 import de.heiden.jem.models.c64.gui.KeyListener;
 import de.heiden.jem.models.c64.gui.PCMapping;
 import de.heiden.jem.models.c64.util.ROMLoader;
+
+import java.io.File;
+import java.io.OutputStream;
 
 /**
  * Modified C64 for better testability.
@@ -40,6 +37,11 @@ public class TestC64 {
    * Buffer for capturing console output.
    */
   private final SystemOut systemOut = new SystemOut();
+
+  /**
+   * Detects when a (basic) program ends.
+   */
+  private final ProgramEndDetector programEnd = new ProgramEndDetector();
 
   /**
    * Constructor.
@@ -91,6 +93,7 @@ public class TestC64 {
 
     _cpu.add(systemOut);
     _cpu.add(new StopAtSystemIn());
+    _cpu.add(programEnd);
 
     _clock.addClockEvent(100000, new ClockEvent("Interrupt check") {
       @Override
@@ -147,5 +150,12 @@ public class TestC64 {
   public void start() throws Exception {
     _clock.run();
     _clock.close();
+  }
+
+  /**
+   * Has the program ended?.
+   */
+  public boolean hasEnded() {
+    return programEnd.hasEnded();
   }
 }

@@ -7,6 +7,8 @@ import org.serialthreads.agent.TransformingParameterized;
 
 import java.util.Collection;
 
+import static org.junit.Assert.assertEquals;
+
 /**
  * VICE test suite.
  */
@@ -21,9 +23,10 @@ public class Acid800Suite extends AbstractProgramTest {
   protected void checkResult() throws Exception {
     // Just run for 2 seconds, because test program does never stop.
     int seconds = 10;
-    waitFor(seconds * 1000000);
+    int result = waitFor(seconds * 1000000);
 
     String console = captureScreen();
     System.out.println(console);
+    assertEquals(WAIT_PROGRAM_END, result);
   }
 }
