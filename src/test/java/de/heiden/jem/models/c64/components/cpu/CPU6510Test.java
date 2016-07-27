@@ -44,8 +44,8 @@ public class CPU6510Test {
   private CPU6510 _cpu;
 
   private long startTick;
-  private CPU6510State state;
-  private CPU6510State expectedState;
+  CPU6510State state;
+  CPU6510State expectedState;
 
   /**
    * Test opcode 0x00: BRK.
@@ -674,6 +674,56 @@ public class CPU6510Test {
   }
 
   //
+  //
+  //
+
+  public static class TXA_Test extends ValueTest {
+    public TXA_Test() {
+      super(0x8A);
+    }
+
+    @Override
+    public void before(int value) {
+      state.X = value;
+    }
+    @Override
+    public void after(int value) {
+      expectedState.A = value;
+      expectedZN(value);
+    }
+  }
+
+  public static abstract class ValueTest extends CPU6510Test {
+    private int opcode;
+    private int[] arguments;
+
+    public ValueTest(int opcode, int... arguments) {
+      this.opcode = opcode;
+      this.arguments = arguments;
+    }
+
+    public abstract void before(int value);
+
+    @Test
+    public void test() {
+      for (int value = 0x00; value <= 0xFF; value = inc(value)) {
+        resetState(value);
+        before(value);
+        captureExpectedState();
+        // Setup code.
+        execute(opcode, arguments); // opcode, JMP
+        // register and flags change
+        after(value);
+        // Check state and jump back
+        checkAndJmpBack();
+      }
+    }
+
+    public abstract void after(int value);
+  }
+
+
+  //
   // Setup and helper
   //
 
@@ -710,7 +760,7 @@ public class CPU6510Test {
    * Increment value by a random value between 1 and 4.
    * Reduces the number different values to reduce test time.
    */
-  private int inc(int value) {
+  int inc(int value) {
     return value + 1 + random.nextInt(4);
   }
 
@@ -743,7 +793,7 @@ public class CPU6510Test {
   /**
    * Reset state.
    */
-  private void resetState(int value){
+  void resetState(int value){
     // Set register which gets loaded to a different value.
     state.A = value ^ 0xFF;
     state.X = value ^ 0xFF;
@@ -756,7 +806,7 @@ public class CPU6510Test {
   /**
    * Capture current state as expected state and state after.
    */
-  private void captureExpectedState() {
+  void captureExpectedState() {
     expectedState = state.copy();
   }
 
@@ -765,7 +815,7 @@ public class CPU6510Test {
    * Append a JMP $0300.
    * Execute reading of opcode and its argument.
    */
-  private void execute(int opcode, int... arguments) {
+  void execute(int opcode, int... arguments) {
     int address = 0x0300;
     expectedState.PC = address;
 
@@ -793,7 +843,7 @@ public class CPU6510Test {
   /**
    * Expect Z and N flag to be changed according to the given value.
    */
-  private void expectedZN(int value) {
+  void expectedZN(int value) {
     expectedState.Z = z(value);
     expectedState.N = n(value);
   }
@@ -801,7 +851,7 @@ public class CPU6510Test {
   /**
    * Check state and execute JMP.
    */
-  private void checkAndJmpBack() {
+  void checkAndJmpBack() {
     // JMP after opcode.
     executeOneTick_readPC(expectedState, 0x4C);
     _clock.run(3 - 1);

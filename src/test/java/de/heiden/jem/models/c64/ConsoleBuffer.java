@@ -1,14 +1,14 @@
 package de.heiden.jem.models.c64;
 
+import de.heiden.c64dt.charset.PetSCIICharset;
+
 import java.io.IOException;
 import java.io.OutputStream;
-
-import de.heiden.c64dt.charset.PetSCIICharset;
 
 /**
  * Buffer for C64 screen output
  */
-public class ScreenBuffer extends OutputStream {
+public class ConsoleBuffer extends OutputStream {
   /**
    * Charset.
    */

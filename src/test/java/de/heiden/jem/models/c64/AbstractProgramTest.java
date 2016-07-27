@@ -1,7 +1,13 @@
 package de.heiden.jem.models.c64;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assume.assumeTrue;
+import de.heiden.c64dt.assembler.CodeBuffer;
+import de.heiden.c64dt.assembler.Disassembler;
+import de.heiden.c64dt.assembler.Dumper;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized.Parameter;
+import org.serialthreads.agent.TransformingParameterized;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -11,15 +17,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized.Parameter;
-import org.serialthreads.agent.TransformingParameterized;
-
-import de.heiden.c64dt.assembler.CodeBuffer;
-import de.heiden.c64dt.assembler.Disassembler;
-import de.heiden.c64dt.assembler.Dumper;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assume.assumeTrue;
 
 /**
  * Base class for test defined via a program.
@@ -72,9 +71,9 @@ public abstract class AbstractProgramTest extends AbstractTest {
 
       thread.start();
       waitFor(2000000, "READY.");
-      screen.clear();
+      console.clear();
 
-      screen.setLower(true);
+      console.setLower(true);
       type("load\"" + programName + "\",8\n");
       // Skip further loads
       c64.rts(0xE16F);

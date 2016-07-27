@@ -1,11 +1,8 @@
 package de.heiden.jem.models.c64;
 
-import java.awt.*;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.io.File;
-import java.nio.ByteBuffer;
-
+import de.heiden.c64dt.charset.AbstractDecoder;
+import de.heiden.c64dt.charset.C64Charset;
+import de.heiden.jem.components.bus.BusDevice;
 import org.junit.After;
 import org.junit.runner.RunWith;
 import org.serialthreads.agent.Transform;
@@ -13,9 +10,11 @@ import org.serialthreads.agent.TransformingRunner;
 import org.serialthreads.transformer.strategies.frequent3.FrequentInterruptsTransformer3;
 import org.springframework.util.StringUtils;
 
-import de.heiden.c64dt.charset.AbstractDecoder;
-import de.heiden.c64dt.charset.C64Charset;
-import de.heiden.jem.components.bus.BusDevice;
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.io.File;
+import java.nio.ByteBuffer;
 
 /**
  * Test support.
@@ -29,9 +28,9 @@ public abstract class AbstractTest {
   protected TestC64 c64;
 
   /**
-   * Screen output of test C64.
+   * Console output of test C64.
    */
-  protected ScreenBuffer screen;
+  protected ConsoleBuffer console;
 
   /**
    * Keyboard input for test C64.
@@ -54,10 +53,10 @@ public abstract class AbstractTest {
    * @param program Program to load
    */
   protected void setUp(File program) throws Exception {
-    screen = new ScreenBuffer();
+    console = new ConsoleBuffer();
 
     c64 = new TestC64(program.getParentFile());
-    c64.setSystemOut(screen);
+    c64.setSystemOut(console);
     systemIn = c64.getSystemIn();
 
     thread = new Thread(() -> {
@@ -125,7 +124,7 @@ public abstract class AbstractTest {
 
     for (;;) {
       for (int i = 0; i < strings.length; i++) {
-        if (screen.contains(strings[i])) {
+        if (console.contains(strings[i])) {
           System.out.flush();
           return i;
         }
