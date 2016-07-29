@@ -9,10 +9,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized.Parameter;
 import org.serialthreads.agent.TransformingParameterized;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FilenameFilter;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -82,15 +79,22 @@ public abstract class AbstractProgramTest extends AbstractTest {
       checkResult();
 
     } catch (AssertionError | Exception e) {
-      // For debugging purposes disassemble test program
-      System.out.println();
-      System.out.println();
-      new Disassembler().disassemble(CodeBuffer.fromProgram(new FileInputStream(program)), new PrintWriter(System.out));
-      System.out.println();
-      new Dumper().dump(CodeBuffer.fromProgram(new FileInputStream(program)), new PrintWriter(System.out));
-      System.out.flush();
+      dumpProgram();
       throw e;
     }
+  }
+
+  /**
+   * For debugging purposes disassemble test program.
+   */
+  protected void dumpProgram() throws IOException {
+    System.out.flush();
+    System.out.println();
+    System.out.println();
+    new Disassembler().disassemble(CodeBuffer.fromProgram(new FileInputStream(program)), new PrintWriter(System.out));
+    System.out.println();
+    new Dumper().dump(CodeBuffer.fromProgram(new FileInputStream(program)), new PrintWriter(System.out));
+    System.out.flush();
   }
 
   /**
