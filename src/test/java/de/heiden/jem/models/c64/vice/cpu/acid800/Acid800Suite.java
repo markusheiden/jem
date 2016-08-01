@@ -1,4 +1,4 @@
-package de.heiden.jem.models.c64.vice;
+package de.heiden.jem.models.c64.vice.cpu.acid800;
 
 import de.heiden.jem.models.c64.AbstractProgramTest;
 import org.junit.runner.RunWith;
@@ -13,15 +13,16 @@ import static org.junit.Assert.assertEquals;
  * VICE test suite.
  */
 @RunWith(TransformingParameterized.class)
-public class Ram0001Suite extends AbstractProgramTest {
+public class Acid800Suite extends AbstractProgramTest {
   @Parameters(name = "{1}")
   public static Collection<Object[]> parameters() throws Exception {
-    return createParameters("/vice/ram0001/quicktest.prg", (dir, name) -> true);
+    return createParameters("/vice/cpu/acid800/cpu-decimal.prg", (dir, name) -> true);
   }
 
   @Override
   protected void checkResult() throws Exception {
-    int seconds = 10;
+    // Just run for 2 seconds, because test program does never stop.
+    int seconds = 100;
     int result = waitFor(seconds * 1000000);
 
     String console = captureScreen();
