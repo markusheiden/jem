@@ -24,19 +24,21 @@ public class Banking00Suite extends AbstractProgramTest {
 
   @Override
   protected void checkResult() throws Exception {
-    // Just run for 2 seconds, because test program does never stop.
-    int seconds = 2;
+    // Just run for 10 seconds, because the test program does never stop.
+    int seconds = 10;
     int result = waitFor(seconds * 1000000);
+    String screen = captureScreen();
+    System.out.println(screen);
 
-    String log = console.toString();
-    Matcher passed = Pattern.compile("passed        (\\d{8})").matcher(log);
-    Matcher ram = Pattern.compile("ram->io fails (\\d{8})").matcher(log);
-    Matcher io = Pattern.compile("io->ram fails (\\d{8})").matcher(log);
+    assertEquals(WAIT_NO_MATCH, result);
+    Matcher passed = Pattern.compile("passed        (\\p{XDigit}{8})").matcher(screen);
+    Matcher ram = Pattern.compile("ram->io fails (\\p{XDigit}{8})").matcher(screen);
+    Matcher io = Pattern.compile("io->ram fails (\\p{XDigit}{8})").matcher(screen);
 
     assertTrue("Result page is visible.", passed.find() && ram.find() && io.find());
-    int passes = Integer.parseInt(passed.group(1));
-    assertTrue("Check that more than one pass has been executed, but just executed " + passes + " passes.", passes > 1);
     assertEquals("ram -> io error counter is 0.", "00000000", ram.group(1));
     assertEquals("io -> ram error counter is 0.", "00000000", io.group(1));
+    int passes = Integer.parseInt(passed.group(1), 16);
+    assertTrue("Check that more than one pass has been executed, but just executed " + passes + " passes.", passes > 1);
   }
 }

@@ -75,6 +75,8 @@ public abstract class AbstractProgramTest extends AbstractTest {
       // Skip further loads
       c64.rts(0xE16F);
       type("run\n");
+      // Reset program end flag.
+      c64.hasEnded();
 
       checkResult();
 

@@ -23,7 +23,7 @@ public abstract class AbstractTest {
   protected static final int WAIT_NO_MATCH = -1;
 
   /**
-   * Return value for wait method in the case that no string matched.
+   * Return value for wait method in the case that the program terminated.
    */
   protected static final int WAIT_PROGRAM_END = -2;
 
@@ -112,7 +112,8 @@ public abstract class AbstractTest {
    * @return Index of string that appeared on screen or -1, if timeout
    */
   protected int waitFor(long maxCycles, String... strings) throws Exception {
-    long end = getTick() + maxCycles;
+    Long start = getTick();
+    long end = start + maxCycles;
 
     for (;;) {
       for (int i = 0; i < strings.length; i++) {
@@ -123,16 +124,19 @@ public abstract class AbstractTest {
       }
 
       if (c64.hasEnded()) {
+        System.out.println("Program end after " + (getTick() - start) + " ticks");
         System.out.flush();
         return WAIT_PROGRAM_END;
       }
 
       if (getTick() >= end) {
+        System.out.println("No match after " + (getTick() - start) + " ticks");
         System.out.flush();
         return WAIT_NO_MATCH;
       }
 
       if (exception != null) {
+        System.out.println("Exception after " + (getTick() - start) + " ticks");
         System.out.flush();
         // Abort on exceptions
         throw exception;
