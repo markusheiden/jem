@@ -1,4 +1,4 @@
-package de.heiden.jem.models.c64.vice;
+package de.heiden.jem.models.c64.vice.general.banking00;
 
 import de.heiden.jem.models.c64.AbstractProgramTest;
 import org.junit.runner.RunWith;
@@ -19,7 +19,7 @@ import static org.junit.Assert.assertTrue;
 public class Banking00Suite extends AbstractProgramTest {
   @Parameters(name = "{1}")
   public static Collection<Object[]> parameters() throws Exception {
-    return createParameters("/vice/banking00/banking00.prg", (dir, name) -> true);
+    return createParameters("/vice/general/banking00/banking00.prg", (dir, name) -> true);
   }
 
   @Override
