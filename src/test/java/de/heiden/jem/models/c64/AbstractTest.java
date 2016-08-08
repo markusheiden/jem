@@ -14,7 +14,9 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URL;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * Test support.
@@ -58,6 +60,41 @@ public abstract class AbstractTest {
   private volatile Exception exception;
 
   /**
+   * Load program and start it via "run".
+   */
+  protected void loadAndRun(String program) throws Exception {
+    URL url = getClass().getResource(program);
+    loadAndRun(Paths.get(url.toURI()));
+  }
+
+  /**
+   * Load program and start it via "run".
+   */
+  protected void loadAndRun(Path program) throws Exception {
+    setUp(program);
+
+    // Wait for boot to finish.
+    thread.start();
+    waitFor(2000000, "READY.");
+    console.clear();
+    console.setLower(true);
+
+    // Extract pure file name.
+    String programName = program.getFileName().toString();
+    programName = programName.substring(0, programName.indexOf(".prg"));
+    // Load program.
+    type("load\"" + programName + "\",8\n");
+    // Skip further loads
+    c64.rts(0xE16F);
+
+    // Reset program end flag.
+    c64.hasEnded();
+
+    // Start program.
+    type("run\n");
+  }
+
+  /**
    * Setup test C64.
    *
    * @param program Program to load
@@ -76,24 +113,6 @@ public abstract class AbstractTest {
         AbstractTest.this.exception = e;
       }
     }, program.getFileName().toString());
-  }
-
-  /**
-   * Load program and start it via "run".
-   */
-  protected void loadAndRun(String programName) throws Exception {
-    thread.start();
-    waitFor(2000000, "READY.");
-    console.clear();
-
-    console.setLower(true);
-    type("loadAndRun\"" + programName + "\",8\n");
-    // Skip further loads
-    c64.rts(0xE16F);
-
-    // Reset program end flag.
-    c64.hasEnded();
-    type("run\n");
   }
 
   /**

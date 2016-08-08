@@ -1,6 +1,5 @@
 package de.heiden.jem.models.c64;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized.Parameter;
@@ -34,11 +33,6 @@ public abstract class AbstractProgramSuiteTest extends AbstractTest {
   @Parameter(1)
   public String programName;
 
-  @Before
-  public void setUp() throws Exception {
-    setUp(program);
-  }
-
   /**
    * Create parameters.
    *
@@ -62,7 +56,7 @@ public abstract class AbstractProgramSuiteTest extends AbstractTest {
   public void test() throws Exception {
     try {
       assumeTrue(assumptions());
-      loadAndRun(programName);
+      loadAndRun(program);
       checkResult();
     } catch (AssertionError | Exception e) {
 

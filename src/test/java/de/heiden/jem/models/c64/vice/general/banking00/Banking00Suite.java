@@ -1,11 +1,10 @@
 package de.heiden.jem.models.c64.vice.general.banking00;
 
-import de.heiden.jem.models.c64.AbstractProgramSuiteTest;
+import de.heiden.jem.models.c64.AbstractTest;
+import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized.Parameters;
 import org.serialthreads.agent.TransformingParameterized;
 
-import java.util.Collection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -16,14 +15,11 @@ import static org.junit.Assert.assertTrue;
  * VICE test suite.
  */
 @RunWith(TransformingParameterized.class)
-public class Banking00Suite extends AbstractProgramSuiteTest {
-  @Parameters(name = "{1}")
-  public static Collection<Object[]> parameters() throws Exception {
-    return createParameters("/vice/general/banking00/banking00.prg", path -> true);
-  }
+public class Banking00Suite extends AbstractTest {
+  @Test
+  protected void banking00() throws Exception {
+    loadAndRun("/vice/general/banking00/banking00.prg");
 
-  @Override
-  protected void checkResult() throws Exception {
     // Just run for 10 seconds, because the test program does never stop.
     int seconds = 10;
     int result = waitFor(seconds * 1000000);

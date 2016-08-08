@@ -1,11 +1,9 @@
 package de.heiden.jem.models.c64.vice.cpu.acid800;
 
-import de.heiden.jem.models.c64.AbstractProgramSuiteTest;
+import de.heiden.jem.models.c64.AbstractTest;
+import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized.Parameters;
 import org.serialthreads.agent.TransformingParameterized;
-
-import java.util.Collection;
 
 import static org.junit.Assert.assertEquals;
 
@@ -13,14 +11,11 @@ import static org.junit.Assert.assertEquals;
  * VICE test suite.
  */
 @RunWith(TransformingParameterized.class)
-public class Acid800Suite extends AbstractProgramSuiteTest {
-  @Parameters(name = "{1}")
-  public static Collection<Object[]> parameters() throws Exception {
-    return createParameters("/vice/cpu/acid800/cpu-decimal.prg", path -> true);
-  }
+public class Acid800Suite extends AbstractTest {
+  @Test
+  protected void cpuDecimal() throws Exception {
+    loadAndRun("/vice/cpu/acid800/cpu-decimal.prg");
 
-  @Override
-  protected void checkResult() throws Exception {
     // Just run for 2 seconds, because test program does never stop.
     int seconds = 100;
     int result = waitFor(seconds * 1000000);
