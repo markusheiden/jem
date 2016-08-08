@@ -1,6 +1,6 @@
 package de.heiden.jem.models.c64.vice.general.banking00;
 
-import de.heiden.jem.models.c64.AbstractProgramTest;
+import de.heiden.jem.models.c64.AbstractProgramSuiteTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized.Parameters;
 import org.serialthreads.agent.TransformingParameterized;
@@ -16,10 +16,10 @@ import static org.junit.Assert.assertTrue;
  * VICE test suite.
  */
 @RunWith(TransformingParameterized.class)
-public class Banking00Suite extends AbstractProgramTest {
+public class Banking00Suite extends AbstractProgramSuiteTest {
   @Parameters(name = "{1}")
   public static Collection<Object[]> parameters() throws Exception {
-    return createParameters("/vice/general/banking00/banking00.prg", (dir, name) -> true);
+    return createParameters("/vice/general/banking00/banking00.prg", path -> true);
   }
 
   @Override

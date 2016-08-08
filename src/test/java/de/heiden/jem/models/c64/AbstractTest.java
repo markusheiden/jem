@@ -1,5 +1,8 @@
 package de.heiden.jem.models.c64;
 
+import de.heiden.c64dt.assembler.CodeBuffer;
+import de.heiden.c64dt.assembler.Disassembler;
+import de.heiden.c64dt.assembler.Dumper;
 import org.junit.After;
 import org.junit.runner.RunWith;
 import org.serialthreads.agent.Transform;
@@ -9,7 +12,9 @@ import org.serialthreads.transformer.strategies.frequent3.FrequentInterruptsTran
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.file.Path;
 
 /**
  * Test support.
@@ -57,10 +62,10 @@ public abstract class AbstractTest {
    *
    * @param program Program to load
    */
-  protected void setUp(File program) throws Exception {
+  protected void setUp(Path program) throws Exception {
     console = new ConsoleBuffer();
 
-    c64 = new TestC64(program.getParentFile());
+    c64 = new TestC64(program.getParent());
     c64.setSystemOut(console);
     systemIn = c64.getSystemIn();
 
@@ -70,7 +75,38 @@ public abstract class AbstractTest {
       } catch (Exception e) {
         AbstractTest.this.exception = e;
       }
-    }, program.getName());
+    }, program.getFileName().toString());
+  }
+
+  /**
+   * Load program and start it via "run".
+   */
+  protected void loadAndRun(String programName) throws Exception {
+    thread.start();
+    waitFor(2000000, "READY.");
+    console.clear();
+
+    console.setLower(true);
+    type("loadAndRun\"" + programName + "\",8\n");
+    // Skip further loads
+    c64.rts(0xE16F);
+
+    // Reset program end flag.
+    c64.hasEnded();
+    type("run\n");
+  }
+
+  /**
+   * For debugging purposes disassemble test program.
+   */
+  protected void dumpProgram(byte[] program) throws IOException {
+    System.out.flush();
+    System.out.println();
+    System.out.println();
+    new Disassembler().disassemble(CodeBuffer.fromProgram(program), new PrintWriter(System.out));
+    System.out.println();
+    new Dumper().dump(CodeBuffer.fromProgram(program), new PrintWriter(System.out));
+    System.out.flush();
   }
 
   @After

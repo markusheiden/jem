@@ -8,7 +8,11 @@ import de.heiden.jem.models.c64.components.cpu.Patch;
 import de.heiden.jem.models.c64.util.FileUtil;
 import de.heiden.jem.models.c64.util.StringUtil;
 
-import java.io.*;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 /**
  * Replaces standard C64 load routine at $F4A5.
@@ -23,7 +27,7 @@ public class LoadFile extends Patch {
   /**
    * Base directory to load files from.
    */
-  private final File baseDir;
+  private final Path baseDir;
 
   /**
    * Constructor.
@@ -42,7 +46,7 @@ public class LoadFile extends Patch {
    *
    * @param baseDirectory Base directory to load files from
    */
-  public LoadFile(File baseDirectory) {
+  public LoadFile(Path baseDirectory) {
     super(0xF4C4);
 
     this.basePackage = null;
@@ -58,7 +62,7 @@ public class LoadFile extends Patch {
 
     try {
       InputStream file = baseDir != null ?
-        new FileInputStream(new File(baseDir, filename)) :
+        Files.newInputStream(baseDir.resolve(filename)) :
         getClass().getResourceAsStream(basePackage + "/" + filename);
       assert file != null : "file " + filename + " exists";
 

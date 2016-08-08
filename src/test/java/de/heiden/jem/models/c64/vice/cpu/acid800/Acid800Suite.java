@@ -1,6 +1,6 @@
 package de.heiden.jem.models.c64.vice.cpu.acid800;
 
-import de.heiden.jem.models.c64.AbstractProgramTest;
+import de.heiden.jem.models.c64.AbstractProgramSuiteTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized.Parameters;
 import org.serialthreads.agent.TransformingParameterized;
@@ -13,10 +13,10 @@ import static org.junit.Assert.assertEquals;
  * VICE test suite.
  */
 @RunWith(TransformingParameterized.class)
-public class Acid800Suite extends AbstractProgramTest {
+public class Acid800Suite extends AbstractProgramSuiteTest {
   @Parameters(name = "{1}")
   public static Collection<Object[]> parameters() throws Exception {
-    return createParameters("/vice/cpu/acid800/cpu-decimal.prg", (dir, name) -> true);
+    return createParameters("/vice/cpu/acid800/cpu-decimal.prg", path -> true);
   }
 
   @Override

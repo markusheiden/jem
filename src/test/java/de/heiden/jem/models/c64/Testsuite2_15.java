@@ -1,21 +1,21 @@
 package de.heiden.jem.models.c64;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized.Parameters;
+import org.serialthreads.agent.TransformingParameterized;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized.Parameters;
-import org.serialthreads.agent.TransformingParameterized;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Testsuite 2.15.
  */
 @RunWith(TransformingParameterized.class)
-public class Testsuite2_15 extends AbstractProgramTest {
+public class Testsuite2_15 extends AbstractProgramSuiteTest {
   /**
    * Ignored tests.
    */
@@ -25,10 +25,12 @@ public class Testsuite2_15 extends AbstractProgramTest {
 
   @Parameters(name = "{1}")
   public static Collection<Object[]> parameters() throws Exception {
-    return createParameters("/testsuite2.15/ start.prg", (dir, name) ->
-      !IGNORE.contains(name) &&
+    return createParameters("/testsuite2.15/ start.prg", path -> {
+      String name = path.getFileName().toString();
+      return !IGNORE.contains(name) &&
 //        name.startsWith("flipos") &&
-        name.endsWith(".prg"));
+        name.endsWith(".prg");
+    });
   }
 
   @Override

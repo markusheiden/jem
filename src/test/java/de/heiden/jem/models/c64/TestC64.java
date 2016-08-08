@@ -18,8 +18,8 @@ import de.heiden.jem.models.c64.gui.KeyListener;
 import de.heiden.jem.models.c64.gui.PCMapping;
 import de.heiden.jem.models.c64.util.ROMLoader;
 
-import java.io.File;
 import java.io.OutputStream;
+import java.nio.file.Path;
 
 /**
  * Modified C64 for better testability.
@@ -48,7 +48,7 @@ public class TestC64 {
    *
    * @param baseDirectory Base directory to load files from
    */
-  public TestC64(File baseDirectory) throws Exception {
+  public TestC64(Path baseDirectory) throws Exception {
     this();
 
     _cpu.add(new LoadFile(baseDirectory));
