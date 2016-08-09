@@ -58,8 +58,8 @@ public abstract class AbstractProgramSuiteTest extends AbstractTest {
       assumeTrue(assumptions());
       loadAndRun(program);
       checkResult();
-    } catch (AssertionError | Exception e) {
 
+    } catch (AssertionError | Exception e) {
       dumpProgram(Files.readAllBytes(program));
       throw e;
     }
