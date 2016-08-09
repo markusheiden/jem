@@ -3,7 +3,7 @@ package de.heiden.jem.models.c64.vice.general.banking00;
 import de.heiden.jem.models.c64.AbstractTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.serialthreads.agent.TransformingParameterized;
+import org.serialthreads.agent.TransformingRunner;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -14,10 +14,10 @@ import static org.junit.Assert.assertTrue;
 /**
  * VICE test suite.
  */
-@RunWith(TransformingParameterized.class)
+@RunWith(TransformingRunner.class)
 public class Banking00Suite extends AbstractTest {
   @Test
-  protected void banking00() throws Exception {
+  public void banking00() throws Exception {
     loadAndRun("/vice/general/banking00/banking00.prg");
 
     // Just run for 10 seconds, because the test program does never stop.
