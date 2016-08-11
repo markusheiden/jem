@@ -3,7 +3,10 @@ package de.heiden.jem.models.c64.components;
 import de.heiden.jem.components.bus.BusDevice;
 import de.heiden.jem.components.clock.Clock;
 import de.heiden.jem.components.clock.ClockEvent;
-import de.heiden.jem.components.ports.*;
+import de.heiden.jem.components.ports.InputOutputPort;
+import de.heiden.jem.components.ports.InputOutputPortImpl;
+import de.heiden.jem.components.ports.OutputPort;
+import de.heiden.jem.components.ports.OutputPortImpl;
 
 /**
  * CIA 6526.
@@ -151,16 +154,13 @@ public class CIA6526 implements BusDevice {
     // TODO add listener for events
 
     _portSerial = new InputOutputPortImpl();
-    _portSerial.addInputPortListener(new InputPortListener() {
-      @Override
-      public void inputPortChanged(int value, int mask) {
-        // receiveSerial(value);
-        if (_timerACNT) { // TODO check for raising edge of cnt
-          countTimerA();
-        }
-        if (_timerBCNT) { // TODO check for raising edge of cnt
-          countTimerA();
-        }
+    _portSerial.addInputPortListener((value, mask) -> {
+      // receiveSerial(value);
+      if (_timerACNT) { // TODO check for raising edge of cnt
+        countTimerA();
+      }
+      if (_timerBCNT) { // TODO check for raising edge of cnt
+        countTimerA();
       }
     });
 

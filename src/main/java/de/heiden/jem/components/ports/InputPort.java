@@ -10,7 +10,7 @@ public interface InputPort {
    * @param listener port listener
    * @require listener != null
    */
-  public void addInputPortListener(InputPortListener listener);
+  void addInputPortListener(PortListener listener);
 
   /**
    * Remove port listener.
@@ -18,7 +18,7 @@ public interface InputPort {
    * @param listener port listener
    * @require listener != null
    */
-  public void removeInputPortListener(InputPortListener listener);
+  void removeInputPortListener(PortListener listener);
 
   /**
    * Connect output port to this input port.
@@ -26,7 +26,7 @@ public interface InputPort {
    * @param port output port to connect to.
    * @require port != null
    */
-  public void connect(OutputPort port);
+  void connect(OutputPort port);
 
   /**
    * Disconnect output port from this input port.
@@ -34,16 +34,16 @@ public interface InputPort {
    * @param port output port to disconnect.
    * @require port != null
    */
-  public void disconnect(OutputPort port);
+  void disconnect(OutputPort port);
 
   /**
    * Data of this input port.
    */
-  public int inputData();
+  int inputData();
 
   /**
    * Mask of this input port.
    * Set bit means port bit is driven. Cleared bit means port bit is not driven.
    */
-  public int inputMask();
+  int inputMask();
 }

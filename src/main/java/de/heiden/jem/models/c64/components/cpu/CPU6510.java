@@ -57,11 +57,13 @@ public class CPU6510 implements ClockedComponent {
    * Port for interrupt.
    */
   private final InputPort _irq;
+  private boolean _irqState = false;
 
   /**
    * Port for nmi.
    */
   private final InputPort _nmi;
+  private boolean _nmiState = false;
 
   /**
    * Address -> Patch.
@@ -83,40 +85,30 @@ public class CPU6510 implements ClockedComponent {
 
 
     _irq = new InputPortImpl();
-    _irq.addInputPortListener(new InputPortListener() {
-      private boolean _irq = false;
-
-      @Override
-      public void inputPortChanged(int value, int mask) {
-        // irq is low active
-        boolean irq = (value & 0x01) == 0;
-        if (irq && !_irq) {
-          _state.triggerIRQ();
-        } else if (!irq) {
-          // normally irq will be reset when it is about to be executed,
-          // but if the irq is not being handled due to the I flag,
-          // then it will be reset when the interrupt request is cleared
-          _state.resetIRQ();
-        }
-        _irq = irq;
+    _irq.addInputPortListener((value, mask) -> {
+      // irq is low active
+      boolean irq = (value & 0x01) == 0;
+      if (irq && !_irqState) {
+        _state.triggerIRQ();
+      } else if (!irq) {
+        // normally irq will be reset when it is about to be executed,
+        // but if the irq is not being handled due to the I flag,
+        // then it will be reset when the interrupt request is cleared
+        _state.resetIRQ();
       }
+      _irqState = irq;
     });
 
     _nmi = new InputPortImpl();
-    _nmi.addInputPortListener(new InputPortListener() {
-      private boolean _nmi = false;
-
-      @Override
-      public void inputPortChanged(int value, int mask) {
-        // nmi is low active
-        boolean nmi = (value & 0x01) == 0;
-        if (nmi && !_nmi) {
-          _state.NMI = true;
-        } else if (!nmi) {
-          _state.NMI = false;
-        }
-        _nmi = nmi;
+    _nmi.addInputPortListener((value, mask) -> {
+      // nmi is low active
+      boolean nmi = (value & 0x01) == 0;
+      if (nmi && !_nmiState) {
+        _state.NMI = true;
+      } else if (!nmi) {
+        _state.NMI = false;
       }
+      _nmiState = nmi;
     });
 
     logger.debug("start cpu");

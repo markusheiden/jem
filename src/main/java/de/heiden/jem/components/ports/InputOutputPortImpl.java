@@ -37,24 +37,24 @@ public final class InputOutputPortImpl implements InputOutputPort {
   }
 
   /**
-   * Add port listener.
+   * Add input port listener.
    *
-   * @param listener port listener
+   * @param listener port listener.
    * @require listener != null
    */
   @Override
-  public void addInputPortListener(InputPortListener listener) {
+  public void addInputPortListener(PortListener listener) {
     _inputPort.addInputPortListener(listener);
   }
 
   /**
-   * Remove port listener.
+   * Remove input port listener.
    *
-   * @param listener port listener
+   * @param listener port listener.
    * @require listener != null
    */
   @Override
-  public void removeInputPortListener(InputPortListener listener) {
+  public void removeInputPortListener(PortListener listener) {
     _inputPort.removeInputPortListener(listener);
   }
 
@@ -76,24 +76,24 @@ public final class InputOutputPortImpl implements InputOutputPort {
   }
 
   /**
-   * Add port listener.
+   * Add output port listener.
    *
    * @param listener port listener
    * @require listener != null
    */
   @Override
-  public void addOutputPortListener(OutputPortListener listener) {
+  public void addOutputPortListener(PortListener listener) {
     _outputPort.addOutputPortListener(listener);
   }
 
   /**
-   * Remove port listener.
+   * Remove output port listener.
    *
    * @param listener port listener
    * @require listener != null
    */
   @Override
-  public void removeOutputPortListener(OutputPortListener listener) {
+  public void removeOutputPortListener(PortListener listener) {
     _outputPort.removeOutputPortListener(listener);
   }
 

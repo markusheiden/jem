@@ -4,7 +4,6 @@ import de.heiden.c64dt.util.HexUtil;
 import de.heiden.jem.components.bus.BusDevice;
 import de.heiden.jem.components.bus.NoBusDevice;
 import de.heiden.jem.components.ports.OutputPort;
-import de.heiden.jem.components.ports.OutputPortListener;
 import de.heiden.jem.models.c64.components.memory.Patchable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -87,20 +86,6 @@ public class C64Bus implements BusDevice, Patchable {
     assert kernel != null : "kernel != null";
 
     _cpu = cpu;
-    _cpu.addOutputPortListener(new OutputPortListener() {
-      @Override
-      public final void outputPortChanged(int value, int mask) {
-        // TODO 2010-10-08 mh: consider signals from expansion port
-        int mode = ((value << 2) | 0x03) & 0x1f;
-
-        BusDevice[] oldIoModeRead = _ioModeRead;
-        _ioModeRead = _ioModesRead[mode];
-        _ioModeWrite = _ioModesWrite[mode];
-        if (logger.isDebugEnabled() && oldIoModeRead != _ioModeRead) {
-          logger.debug("Changed bus mode to {}", HexUtil.hexBytePlain(mode));
-        }
-      }
-    });
 
     _ram = ram;
     _basic = basic;
@@ -214,6 +199,18 @@ public class C64Bus implements BusDevice, Patchable {
         ioModeWriteIo,   // 08 11110 11110
         ioModeWriteIo,   // 01 11111 11111
       };
+
+    _cpu.addOutputPortListener((value, mask) -> {
+      // TODO 2010-10-08 mh: consider signals from expansion port
+      int mode = ((value << 2) | 0x03) & 0x1f;
+
+      BusDevice[] oldIoModeRead = _ioModeRead;
+      _ioModeRead = _ioModesRead[mode];
+      _ioModeWrite = _ioModesWrite[mode];
+      if (logger.isDebugEnabled() && oldIoModeRead != _ioModeRead) {
+        logger.debug("Changed bus mode to {}", HexUtil.hexBytePlain(mode));
+      }
+    });
   }
 
   private BusDevice[] computeIoModeRead(BusDevice ram,

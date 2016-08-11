@@ -3,7 +3,6 @@ package de.heiden.jem.models.c64.components.keyboard;
 import de.heiden.jem.components.ports.InputOutputPort;
 import de.heiden.jem.components.ports.OutputPort;
 import de.heiden.jem.components.ports.OutputPortImpl;
-import de.heiden.jem.components.ports.OutputPortListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,25 +49,9 @@ public class Keyboard implements IKeyboard {
 
     // connect to input ports
     _port0 = port0;
-    _port0.addOutputPortListener(new OutputPortListener() {
-      /**
-       * Output port changed.
-       */
-      @Override
-      public void outputPortChanged(int value, int mask) {
-        updatePorts();
-      }
-    });
+    _port0.addOutputPortListener((value, mask) -> updatePorts());
     _port1 = port1;
-    _port1.addOutputPortListener(new OutputPortListener() {
-      /**
-       * Output port changed.
-       */
-      @Override
-      public void outputPortChanged(int value, int mask) {
-        updatePorts();
-      }
-    });
+    _port1.addOutputPortListener((value, mask) -> updatePorts());
 
     // connect matrix ports to input ports
     _matrixPort0 = new OutputPortImpl();

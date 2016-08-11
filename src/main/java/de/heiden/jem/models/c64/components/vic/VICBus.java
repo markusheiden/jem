@@ -2,7 +2,6 @@ package de.heiden.jem.models.c64.components.vic;
 
 import de.heiden.jem.components.bus.BusDevice;
 import de.heiden.jem.components.ports.OutputPort;
-import de.heiden.jem.components.ports.OutputPortListener;
 
 /**
  * VIC bus.
@@ -41,12 +40,7 @@ public class VICBus implements BusDevice {
     _ram = ram;
     _character = character;
 
-    cia2PortA.addOutputPortListener(new OutputPortListener() {
-      @Override
-      public void outputPortChanged(int value, int mask) {
-        _vicBase = ((value ^ 0xFF) & 0x03) << 14;
-      }
-    });
+    cia2PortA.addOutputPortListener((value, mask)  -> _vicBase = ((value ^ 0xFF) & 0x03) << 14);
   }
 
   /**

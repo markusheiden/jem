@@ -1,13 +1,21 @@
 package de.heiden.jem.components.ports;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Output port abstract implementation
  */
 public final class OutputPortImpl implements OutputPort {
   /**
-   * Listeners
+   * Output port listeners.
    */
-  private OutputPortListener _outputListeners;
+  private final List<PortListener> _outputListenerList = new ArrayList<>();
+
+  /**
+   * Output port listener array.
+   */
+  private PortListener[] _outputListeners = new PortListener[0];
 
   /**
    * Port data.
@@ -22,45 +30,29 @@ public final class OutputPortImpl implements OutputPort {
   /**
    * Add port listener.
    *
-   * @param newListener port listener
+   * @param listener port listener.
    * @require listener != null
    */
   @Override
-  public void addOutputPortListener(OutputPortListener newListener) {
-    assert newListener != null : "newListener != null";
-    assert newListener.next == null : "newListener.next == null";
+  public void addOutputPortListener(PortListener listener) {
+    assert listener != null : "listener != null";
 
-    OutputPortListener listener = _outputListeners;
-    if (listener == null) {
-      _outputListeners = newListener;
-    } else {
-      while (listener.next != null) {
-        listener = listener.next;
-      }
-      listener.next = newListener;
-    }
+    _outputListenerList.add(listener);
+    _outputListeners = _outputListenerList.toArray(new PortListener[_outputListenerList.size()]);
   }
 
   /**
    * Remove port listener.
    *
-   * @param oldListener port listener
+   * @param listener port listener.
    * @require listener != null
    */
   @Override
-  public void removeOutputPortListener(OutputPortListener oldListener) {
-    assert oldListener != null : "oldListener != null";
+  public void removeOutputPortListener(PortListener listener) {
+    assert listener != null : "listener != null";
 
-    OutputPortListener listener = _outputListeners;
-    if (listener == oldListener) {
-      _outputListeners = oldListener.next;
-    } else {
-      while (listener.next != oldListener) {
-        listener = listener.next;
-      }
-      listener.next = oldListener.next;
-    }
-    oldListener.next = null;
+    _outputListenerList.remove(listener);
+    _outputListeners = _outputListenerList.toArray(new PortListener[_outputListenerList.size()]);
   }
 
   /**
@@ -109,12 +101,10 @@ public final class OutputPortImpl implements OutputPort {
    * Notify all listeners.
    */
   protected final void notifyOutputPortListeners() {
-    OutputPortListener listener = _outputListeners;
     final int outputData = _outputData;
     final int outputMask = _outputMask;
-    while (listener != null) {
-      listener.outputPortChanged(outputData, outputMask);
-      listener = listener.next;
+    for (PortListener listener : _outputListeners) {
+      listener.portChanged(outputData, outputMask);
     }
   }
 }
