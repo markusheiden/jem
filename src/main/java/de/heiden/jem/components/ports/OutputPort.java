@@ -30,4 +30,19 @@ public interface OutputPort {
    * Set bit means port bit is output. Cleared bit means port bit is not driven.
    */
   int outputMask();
+
+  /**
+   * Set port output data.
+   *
+   * @param data new output value.
+   */
+  void setOutputData(int data);
+
+  /**
+   * Set port output mask.
+   * Set bit means port bit is output. Cleared bit means port bit is not driven.
+   *
+   * @param mask driven bits.
+   */
+  void setOutputMask(int mask);
 }

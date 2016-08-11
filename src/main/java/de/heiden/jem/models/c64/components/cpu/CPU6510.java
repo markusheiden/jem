@@ -3597,7 +3597,7 @@ public class CPU6510 implements ClockedComponent {
       throw new IllegalArgumentException("unreachable code");
     }
 
-    _portIn.setOutputData(_portOut.data() & 0xDF | 0x17);
+    _portIn.setOutputData(_portOut.outputData() & 0xDF | 0x17);
   }
 
   /**
@@ -3629,7 +3629,7 @@ public class CPU6510 implements ClockedComponent {
     if (addr == 0) {
       return _portOut.outputMask();
     } else if (addr == 1) {
-      return _portOut.data();
+      return _portOut.outputData();
     } else {
       throw new IllegalArgumentException("unreachable code");
     }

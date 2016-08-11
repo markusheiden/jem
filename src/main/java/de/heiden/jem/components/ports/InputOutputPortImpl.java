@@ -78,7 +78,7 @@ public final class InputOutputPortImpl implements InputOutputPort {
   /**
    * Add output port listener.
    *
-   * @param listener port listener
+   * @param listener port listener.
    * @require listener != null
    */
   @Override
@@ -89,7 +89,7 @@ public final class InputOutputPortImpl implements InputOutputPort {
   /**
    * Remove output port listener.
    *
-   * @param listener port listener
+   * @param listener port listener.
    * @require listener != null
    */
   @Override
@@ -103,7 +103,7 @@ public final class InputOutputPortImpl implements InputOutputPort {
   @Override
   public int outputData() {
     int mask = _outputPort.outputMask();
-    return _outputPort.outputData() & mask | _inputPort.inputData() & (0xFF - mask);
+    return _outputPort.outputData() & mask | _inputPort.inputData() & ~mask;
   }
 
   /**
@@ -118,6 +118,7 @@ public final class InputOutputPortImpl implements InputOutputPort {
   /**
    * Set port output data.
    */
+  @Override
   public void setOutputData(int data) {
     _outputPort.setOutputData(data);
   }
@@ -126,14 +127,8 @@ public final class InputOutputPortImpl implements InputOutputPort {
    * Set port output mask.
    * Set bit means port bit is output. Cleared bit means port bit is not driven.
    */
+  @Override
   public void setOutputMask(int mask) {
     _outputPort.setOutputMask(mask);
-  }
-
-  /**
-   * Consolidated value of data register.
-   */
-  public int data() {
-    return outputData() & outputMask() | inputData() & ~outputMask();
   }
 }

@@ -75,8 +75,9 @@ public final class OutputPortImpl implements OutputPort {
   /**
    * Set port output data.
    *
-   * @param data new output value
+   * @param data new output value.
    */
+  @Override
   public void setOutputData(int data) {
     _outputData = data;
     notifyOutputPortListeners();
@@ -86,8 +87,9 @@ public final class OutputPortImpl implements OutputPort {
    * Set port output mask.
    * Set bit means port bit is output. Cleared bit means port bit is not driven.
    *
-   * @param mask driven bits
+   * @param mask driven bits.
    */
+  @Override
   public void setOutputMask(int mask) {
     _outputMask = mask;
     notifyOutputPortListeners();
