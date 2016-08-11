@@ -48,6 +48,22 @@ public class CPU6510Test {
   CPU6510State expectedState;
 
   /**
+   * Test port.
+   */
+  @Test
+  public void testPort() {
+    _cpu.writePort(0x2F, 0x00);
+    _cpu.writePort(0x34, 0x01);
+    assertEquals(0xF4, _cpu.getPort().outputData());
+    _cpu.writePort(0x2E, 0x00);
+    _cpu.writePort(0x34, 0x01);
+    assertEquals(0xF5, _cpu.getPort().outputData());
+    _cpu.writePort(0x2F, 0x00);
+    _cpu.writePort(0x35, 0x01);
+    assertEquals(0xF5, _cpu.getPort().outputData());
+  }
+
+  /**
    * Test opcode 0x00: BRK.
    */
   @Test
