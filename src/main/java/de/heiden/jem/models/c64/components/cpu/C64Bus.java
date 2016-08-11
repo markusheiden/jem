@@ -3,6 +3,8 @@ package de.heiden.jem.models.c64.components.cpu;
 import de.heiden.c64dt.util.HexUtil;
 import de.heiden.jem.components.bus.BusDevice;
 import de.heiden.jem.components.bus.NoBusDevice;
+import de.heiden.jem.components.ports.InputPort;
+import de.heiden.jem.components.ports.InputPortImpl;
 import de.heiden.jem.components.ports.OutputPort;
 import de.heiden.jem.models.c64.components.memory.Patchable;
 import org.slf4j.Logger;
@@ -20,7 +22,7 @@ public class C64Bus implements BusDevice, Patchable {
    */
   private final Logger logger = LoggerFactory.getLogger(getClass());
 
-  private final OutputPort _cpu;
+  private final InputPort _cpu = new InputPortImpl();
 
   private final BusDevice _ram;
   private final BusDevice _basic;
@@ -46,7 +48,6 @@ public class C64Bus implements BusDevice, Patchable {
   /**
    * Constructor.
    *
-   * @param cpu CPU port
    * @param ram RAM
    * @param basic Basic ROM
    * @param vic VIC
@@ -66,7 +67,6 @@ public class C64Bus implements BusDevice, Patchable {
    * @require kernel != null
    */
   public C64Bus(
-    OutputPort cpu,
     BusDevice ram,
     BusDevice basic,
     BusDevice vic,
@@ -75,7 +75,6 @@ public class C64Bus implements BusDevice, Patchable {
     BusDevice cia2,
     BusDevice charset,
     BusDevice kernel) {
-    assert cpu != null : "cpu != null";
     assert ram != null : "ram != null";
     assert basic != null : "basic != null";
     assert vic != null : "vic != null";
@@ -84,8 +83,6 @@ public class C64Bus implements BusDevice, Patchable {
     assert cia2 != null : "cia2 != null";
     assert charset != null : "charset != null";
     assert kernel != null : "kernel != null";
-
-    _cpu = cpu;
 
     _ram = ram;
     _basic = basic;
@@ -200,7 +197,7 @@ public class C64Bus implements BusDevice, Patchable {
         ioModeWriteIo,   // 01 11111 11111
       };
 
-    _cpu.addOutputPortListener((value, mask) -> {
+    _cpu.addInputPortListener((value, mask) -> {
       // TODO 2010-10-08 mh: consider signals from expansion port
       int mode = ((value << 2) | 0x03) & 0x1f;
 
@@ -272,6 +269,13 @@ public class C64Bus implements BusDevice, Patchable {
   //
   // public
   //
+
+  /**
+   * Connect to cpu port.
+   */
+  public void connect(OutputPort cpu) {
+    _cpu.connect(cpu);
+  }
 
   /**
    * Read byte from bus device.
