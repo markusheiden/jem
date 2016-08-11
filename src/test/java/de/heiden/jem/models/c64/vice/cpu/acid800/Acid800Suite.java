@@ -16,9 +16,7 @@ public class Acid800Suite extends AbstractTest {
   public void cpuDecimal() throws Exception {
     loadAndRun("/vice/cpu/acid800/cpu-decimal.prg");
 
-    // Just run for 2 seconds, because test program does never stop.
-    int seconds = 100;
-    int result = waitFor(seconds * 1000000);
+    int result = waitSecondsFor(100);
 
     String console = captureScreen();
     System.out.println(console);

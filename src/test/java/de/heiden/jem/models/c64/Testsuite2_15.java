@@ -41,7 +41,7 @@ public class Testsuite2_15 extends AbstractProgramSuiteTest {
 
   @Override
   protected void checkResult() throws Exception {
-    int event = waitFor(999999999, "- ok", "right", "error");
+    int event = waitSecondsFor(999, "- ok", "right", "error");
     waitCycles(1000);
 
     // Assert that test program exits with "OK" message.

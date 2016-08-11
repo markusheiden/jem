@@ -20,9 +20,8 @@ public class Banking00Test extends AbstractTest {
   public void banking00() throws Exception {
     loadAndRun("/vice/general/banking00/banking00.prg");
 
-    // Just run for 10 seconds, because the test program does never stop.
-    int seconds = 1;
-    int result = waitFor(seconds * 1000000);
+    // Just run for 1 second, because the test program does never stop.
+    int result = waitSecondsFor(1);
     String screen = captureScreen();
     System.out.println(screen);
 

@@ -75,7 +75,7 @@ public abstract class AbstractTest {
 
     // Wait for boot to finish.
     thread.start();
-    waitFor(2000000, "READY.");
+    waitCyclesFor(2000000, "READY.");
     console.clear();
     console.setLower(true);
 
@@ -162,11 +162,22 @@ public abstract class AbstractTest {
   /**
    * Wait for a string to appear on screen.
    *
+   * @param maxSeconds Max seconds to wait. Assumes 1 MHz clock.
+   * @param strings Strings.
+   * @return Index of string that appeared on screen or -1, if timeout.
+   */
+  protected int waitSecondsFor(int maxSeconds, String... strings) throws Exception {
+    return waitCyclesFor(maxSeconds * 1000000L, strings);
+  }
+
+  /**
+   * Wait for a string to appear on screen.
+   *
    * @param maxCycles Max cycles to wait
    * @param strings Strings
    * @return Index of string that appeared on screen or -1, if timeout
    */
-  protected int waitFor(long maxCycles, String... strings) throws Exception {
+  protected int waitCyclesFor(long maxCycles, String... strings) throws Exception {
     Long start = getTick();
     long end = start + maxCycles;
 
