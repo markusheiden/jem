@@ -44,12 +44,12 @@ public class CPU6510 implements ClockedComponent {
   protected BusDevice _bus;
 
   /**
-   * Port at address $0000/$0001.
+   * Port at address $0000/$0001 controlled by this cpu.
    */
   private final InputOutputPortImpl _portOut;
 
   /**
-   * Input for port at address $0000/$0001.
+   * Input for port at address $0000/$0001 driven by surrounding hardware.
    */
   private final OutputPortImpl _portIn;
 
@@ -3596,7 +3596,7 @@ public class CPU6510 implements ClockedComponent {
    * @param value value
    * @param addr port address (0 or 1)
    */
-  private void writePort(int value, int addr) {
+  final void writePort(int value, int addr) {
     if (addr == 0) {
       _portOut.setOutputMask(value);
     } else if (addr == 1) {
