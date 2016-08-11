@@ -16,7 +16,7 @@ import static java.lang.System.arraycopy;
  * Data of a single executed opcode for execution tracing.
  * Simple data bean, which can be easily reused.
  */
-public class Trace {
+public final class Trace {
   /**
    * Address of opcode.
    */
@@ -30,7 +30,7 @@ public class Trace {
   /**
    * Byte representation of opcode incl. argument.
    */
-  public byte[] bytes = new byte[3];
+  public final byte[] bytes = new byte[3];
 
   /**
    * Read trace data from bus.
@@ -38,7 +38,7 @@ public class Trace {
    * @param pc PC, address to read from.
    * @param bus Bus.
    */
-  public final void read(int pc, BusDevice bus) {
+  public void read(int pc, BusDevice bus) {
     address = pc;
 
     Opcode opcode = OPCODES[bus.read(pc)];
