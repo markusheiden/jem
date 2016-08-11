@@ -3,7 +3,7 @@ package de.heiden.jem.components.ports;
 /**
  * Output port abstract implementation
  */
-public final class OutputPortImpl implements OutputPort {
+public class OutputPortImpl implements OutputPort {
   /**
    * Listeners
    */
@@ -76,7 +76,7 @@ public final class OutputPortImpl implements OutputPort {
    * Set bit means port bit is output. Cleared bit means port bit is not driven.
    */
   @Override
-  public int outputMask() {
+  public final int outputMask() {
     return _outputMask;
   }
 
@@ -110,7 +110,7 @@ public final class OutputPortImpl implements OutputPort {
    */
   protected final void notifyOutputPortListeners() {
     OutputPortListener listener = _outputListeners;
-    final int outputData = _outputData;
+    final int outputData = outputData();
     final int outputMask = _outputMask;
     while (listener != null) {
       listener.outputPortChanged(outputData, outputMask);

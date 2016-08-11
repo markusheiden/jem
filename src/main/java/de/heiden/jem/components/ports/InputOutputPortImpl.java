@@ -12,7 +12,13 @@ public final class InputOutputPortImpl implements InputOutputPort {
   /**
    * Output port.
    */
-  private final OutputPortImpl _outputPort = new OutputPortImpl();
+  private final OutputPortImpl _outputPort = new OutputPortImpl() {
+    @Override
+    public int outputData() {
+      int mask = outputMask();
+      return super.outputData() & mask | _inputPort.inputData() & (0xFF - mask);
+    }
+  };
 
   /**
    * Connect output port to this input port.
@@ -102,8 +108,7 @@ public final class InputOutputPortImpl implements InputOutputPort {
    */
   @Override
   public int outputData() {
-    int mask = _outputPort.outputMask();
-    return _outputPort.outputData() & mask | _inputPort.inputData() & (0xFF - mask);
+    return _outputPort.outputData();
   }
 
   /**
