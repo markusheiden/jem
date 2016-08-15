@@ -1,6 +1,5 @@
 package de.heiden.jem.models.c64;
 
-import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized.Parameter;
 import org.serialthreads.agent.TransformingParameterized;
@@ -14,7 +13,6 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assume.assumeTrue;
 
 /**
  * Base class for test defined via a program suite.
@@ -51,23 +49,4 @@ public abstract class AbstractProgramSuiteTest extends AbstractTest {
       })
       .collect(Collectors.toList());
   }
-
-  @Test
-  public void test() throws Exception {
-    assumeTrue(assumptions());
-    loadAndRun(program);
-    checkResult();
-  }
-
-  /**
-   * Assumptions.
-   */
-  protected boolean assumptions() {
-    return true;
-  }
-
-  /**
-   * Check output of test program.
-   */
-  protected abstract void checkResult() throws Exception;
 }

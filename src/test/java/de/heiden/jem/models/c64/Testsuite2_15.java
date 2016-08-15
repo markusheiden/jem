@@ -1,5 +1,6 @@
 package de.heiden.jem.models.c64;
 
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized.Parameters;
 import org.serialthreads.agent.TransformingParameterized;
@@ -10,6 +11,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assume.assumeTrue;
 
 /**
  * Testsuite 2.15.
@@ -33,14 +35,13 @@ public class Testsuite2_15 extends AbstractProgramSuiteTest {
     });
   }
 
-  @Override
-  protected boolean assumptions() {
+  @Test
+  public void test() throws Exception {
     // ignore some failing tests, because functionality has not been implemented yet
-    return !programName.startsWith("cia") && !programName.startsWith("cnt");
-  }
+    assumeTrue(!programName.startsWith("cia") && !programName.startsWith("cnt"));
 
-  @Override
-  protected void checkResult() throws Exception {
+    loadAndRun(program);
+
     int event = waitSecondsFor(999, "- ok", "right", "error");
     waitCycles(1000);
 
