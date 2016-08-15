@@ -54,15 +54,9 @@ public abstract class AbstractProgramSuiteTest extends AbstractTest {
 
   @Test
   public void test() throws Exception {
-    try {
-      assumeTrue(assumptions());
-      loadAndRun(program);
-      checkResult();
-
-    } catch (AssertionError | Exception e) {
-      dumpProgram(Files.readAllBytes(program));
-      throw e;
-    }
+    assumeTrue(assumptions());
+    loadAndRun(program);
+    checkResult();
   }
 
   /**

@@ -4,6 +4,9 @@ import de.heiden.c64dt.assembler.CodeBuffer;
 import de.heiden.c64dt.assembler.Disassembler;
 import de.heiden.c64dt.assembler.Dumper;
 import org.junit.After;
+import org.junit.Rule;
+import org.junit.rules.TestWatcher;
+import org.junit.runner.Description;
 import org.junit.runner.RunWith;
 import org.serialthreads.agent.Transform;
 import org.serialthreads.agent.TransformingRunner;
@@ -15,6 +18,7 @@ import java.awt.event.KeyListener;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URL;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -60,6 +64,11 @@ public abstract class AbstractTest {
   private volatile Exception exception;
 
   /**
+   * Program.
+   */
+  private byte[] bytes;
+
+  /**
    * Load program and start it via "run".
    */
   protected void loadAndRun(String program) throws Exception {
@@ -72,6 +81,8 @@ public abstract class AbstractTest {
    */
   protected void loadAndRun(Path program) throws Exception {
     setUp(program);
+
+    bytes = Files.readAllBytes(program);
 
     // Wait for boot to finish.
     thread.start();
@@ -115,16 +126,30 @@ public abstract class AbstractTest {
     }, program.getFileName().toString());
   }
 
+  @Rule
+  public final TestWatcher dumpOnFail = new TestWatcher() {
+    @Override
+    protected void failed(Throwable e, Description description) {
+      try {
+        dumpProgram();
+      } catch (Exception io) {
+        // ignore
+      } finally {
+        super.failed(e, description);
+      }
+    }
+  };
+
   /**
    * For debugging purposes disassemble test program.
    */
-  protected void dumpProgram(byte[] program) throws IOException {
+  protected void dumpProgram() throws IOException {
     System.out.flush();
     System.out.println();
     System.out.println();
-    new Disassembler().disassemble(CodeBuffer.fromProgram(program), new PrintWriter(System.out));
+    new Disassembler().disassemble(CodeBuffer.fromProgram(bytes), new PrintWriter(System.out));
     System.out.println();
-    new Dumper().dump(CodeBuffer.fromProgram(program), new PrintWriter(System.out));
+    new Dumper().dump(CodeBuffer.fromProgram(bytes), new PrintWriter(System.out));
     System.out.flush();
   }
 
