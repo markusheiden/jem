@@ -254,8 +254,9 @@ public class C64Bus implements BusDevice, Patchable {
     for (int i = 0xD0; i <= 0xD3; i++) {
       result[i] = _vic;
     }
+    // TODO markus 2016-08-16: Add SID...
     for (int i = 0xD4; i <= 0xD7; i++) {
-      result[i] = _noBusDevice;
+      result[i] = _ram;
     }
     for (int i = 0xD8; i <= 0xDB; i++) {
       result[i] = _colorRam;
