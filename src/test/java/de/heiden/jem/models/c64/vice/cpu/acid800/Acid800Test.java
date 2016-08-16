@@ -13,27 +13,26 @@ import static org.junit.Assert.assertSame;
  */
 @RunWith(TransformingRunner.class)
 public class Acid800Test extends AbstractTest {
+  private final Condition passed = inMemory(0xd7ff, 0x00);
+  private final Condition failed = inMemory(0xd7ff, 0xff);
+
   @Test
   public void cpuDecimal() throws Exception {
     loadAndRun("/vice/cpu/acid800/cpu-decimal.prg");
 
-    Condition result = waitSecondsFor(1);
+    Condition result = waitSecondsFor(1, passed, failed);
+    System.out.println(captureScreen());
 
-    String console = captureScreen();
-    System.out.println(console);
-
-    assertSame(programEnd, result);
+    assertSame(passed, result);
   }
 
   @Test
   public void cpuInsn() throws Exception {
     loadAndRun("/vice/cpu/acid800/cpu-insn.prg");
 
-    Condition result = waitSecondsFor(10);
+    Condition result = waitSecondsFor(10, passed, failed);
+    System.out.println(captureScreen());
 
-    String console = captureScreen();
-    System.out.println(console);
-
-    assertSame(programEnd, result);
+    assertSame(passed, result);
   }
 }

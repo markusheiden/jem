@@ -3,6 +3,7 @@ package de.heiden.jem.models.c64;
 import de.heiden.c64dt.assembler.CodeBuffer;
 import de.heiden.c64dt.assembler.Disassembler;
 import de.heiden.c64dt.assembler.Dumper;
+import de.heiden.c64dt.util.HexUtil;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.rules.TestWatcher;
@@ -193,10 +194,7 @@ public abstract class AbstractTest {
    * @return Condition that met or null, if timeout.
    */
   protected Condition waitCyclesFor(long maxCycles, Condition... conditions) throws Exception {
-    Long start = getTick();
-    long end = start + maxCycles;
-
-    for (;;) {
+    for (long start = getTick(), end = start + maxCycles;;) {
       for (Condition condition : conditions) {
         if (condition.test()) {
           System.out.flush();
@@ -262,6 +260,11 @@ public abstract class AbstractTest {
     public boolean test() throws Exception {
       return c64.hasEnded();
     }
+
+    @Override
+    public String toString() {
+      return "Program end";
+    }
   };
 
   /**
@@ -293,6 +296,11 @@ public abstract class AbstractTest {
     public boolean test() {
       return console.contains(text);
     }
+
+    @Override
+    public String toString() {
+      return "Console contains " + text;
+    }
   }
 
   /**
@@ -323,6 +331,55 @@ public abstract class AbstractTest {
     @Override
     public boolean test() throws Exception {
       return captureScreen().contains(text);
+    }
+
+    @Override
+    public String toString() {
+      return "Screen contains " + text;
+    }
+  }
+
+  /**
+   * Condition "value in memory".
+   */
+  protected Condition inMemory(int addr, int value) {
+    return new InMemory(addr, value);
+  }
+
+  /**
+   * Wait for value in memory
+   */
+  private class InMemory implements Condition {
+    /**
+     * Address to monitor.
+     */
+    private final int addr;
+
+    /**
+     * Value to wait for.
+     */
+    private final int value;
+
+    /**
+     * Constructor.
+     *
+     * @param addr Address to monitor.
+     * @param value Value to wait for.
+     */
+    public InMemory(int addr, int value) {
+      this.addr = addr;
+      this.value = value;
+    }
+
+    @Override
+    public boolean test() throws Exception {
+      System.out.println(addr + ": " + c64.getBus().read(addr));
+      return c64.getBus().read(addr) == value;
+    }
+
+    @Override
+    public String toString() {
+      return "Memory " + HexUtil.hexWord(addr) + " == " + HexUtil.hexByte(value);
     }
   }
 }
