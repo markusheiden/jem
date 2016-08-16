@@ -47,7 +47,7 @@ public class ScreenBuffer {
   public String capture() throws Exception {
     StringBuilder screen = new StringBuilder(41 * 25);
 
-    int addr = 0x0400;
+    int addr = this.addr;
     byte[] bytes = new byte[40];
     for (int r = 0; r < 25; r++) {
       for (int c = 0; c < 40; c++) {

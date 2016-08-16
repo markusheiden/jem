@@ -10,7 +10,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assume.assumeTrue;
 
 /**
@@ -42,11 +42,14 @@ public class Testsuite2_15 extends AbstractProgramSuiteTest {
 
     loadAndRun(program);
 
-    int event = waitSecondsFor(999, "- ok", "right", "error");
+    Condition ok = onConsole("- ok");
+    Condition right = onConsole("right");
+    Condition error = onConsole("error");
+    Condition event = waitSecondsFor(999, ok, right, error);
     waitCycles(1000);
 
     // Assert that test program exits with "OK" message.
     // Consider everything else (timeout, error messages) as a test failure.
-    assertEquals(0, event);
+    assertSame(ok, event);
   }
 }

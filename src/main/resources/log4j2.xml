@@ -15,6 +15,7 @@
 
   <Logger name="de.heiden.jem.components.clock.RealTimeSlowDown" level="info"/>
   <Logger name="org.serialthreads.transformer.strategies.frequent3.MethodTransformer" level="error"/>
+  <Logger name="de.heiden.jem.models.c64.components.cpu.CPU6510Debugger" level="debug"/>
 
   <Root level="warn">
     <AppenderRef ref="Console"/>

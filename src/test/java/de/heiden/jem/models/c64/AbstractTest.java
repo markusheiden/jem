@@ -29,16 +29,6 @@ import java.nio.file.Paths;
 @Transform(transformer = FrequentInterruptsTransformer3.class, classPrefixes = "de.heiden.jem")
 public abstract class AbstractTest {
   /**
-   * Return value for wait method in the case that no string matched.
-   */
-  protected static final int WAIT_NO_MATCH = -1;
-
-  /**
-   * Return value for wait method in the case that the program terminated.
-   */
-  protected static final int WAIT_PROGRAM_END = -2;
-
-  /**
    * Transformed test C64.
    */
   protected TestC64 c64;
@@ -86,7 +76,7 @@ public abstract class AbstractTest {
 
     // Wait for boot to finish.
     thread.start();
-    waitCyclesFor(3000000, "READY.");
+    waitCyclesFor(3000000, onConsole("READY."));
     console.clear();
     console.setLower(true);
 
@@ -185,45 +175,45 @@ public abstract class AbstractTest {
   }
 
   /**
-   * Wait for a string to appear on screen.
+   * Wait for a condition to happen.
    *
    * @param maxSeconds Max seconds to wait. Assumes 1 MHz clock.
-   * @param strings Strings.
-   * @return Index of string that appeared on screen or -1, if timeout.
+   * @param conditions Conditions.
+   * @return Condition that met or null, if timeout.
    */
-  protected int waitSecondsFor(int maxSeconds, String... strings) throws Exception {
-    return waitCyclesFor(maxSeconds * 1000000L, strings);
+  protected Condition waitSecondsFor(int maxSeconds, Condition... conditions) throws Exception {
+    return waitCyclesFor(maxSeconds * 1000000L, conditions);
   }
 
   /**
    * Wait for a string to appear on screen.
    *
    * @param maxCycles Max cycles to wait
-   * @param strings Strings
-   * @return Index of string that appeared on screen or -1, if timeout
+   * @param conditions Conditions.
+   * @return Condition that met or null, if timeout.
    */
-  protected int waitCyclesFor(long maxCycles, String... strings) throws Exception {
+  protected Condition waitCyclesFor(long maxCycles, Condition... conditions) throws Exception {
     Long start = getTick();
     long end = start + maxCycles;
 
     for (;;) {
-      for (int i = 0; i < strings.length; i++) {
-        if (console.contains(strings[i])) {
+      for (Condition condition : conditions) {
+        if (condition.test()) {
           System.out.flush();
-          return i;
+          return condition;
         }
       }
 
-      if (c64.hasEnded()) {
+      if (programEnd.test()) {
         System.out.println("Program end after " + (getTick() - start) + " ticks");
         System.out.flush();
-        return WAIT_PROGRAM_END;
+        return programEnd;
       }
 
       if (getTick() >= end) {
         System.out.println("No match after " + (getTick() - start) + " ticks");
         System.out.flush();
-        return WAIT_NO_MATCH;
+        return null;
       }
 
       if (exception != null) {
@@ -258,5 +248,81 @@ public abstract class AbstractTest {
    */
   private Long getTick() throws Exception {
     return c64.getClock().getTick();
+  }
+
+  //
+  // Conditions
+  //
+
+  /**
+   * Program end.
+   */
+  protected final Condition programEnd = new Condition() {
+    @Override
+    public boolean test() throws Exception {
+      return c64.hasEnded();
+    }
+  };
+
+  /**
+   * Condition "text on console".
+   */
+  protected Condition onConsole(String text) {
+    return new OnConsole(text);
+  }
+
+  /**
+   * Search for text in console.
+   */
+  private class OnConsole implements Condition {
+    /**
+     * Text.
+     */
+    private final String text;
+
+    /**
+     * Constructor.
+     *
+     * @param text Text.
+     */
+    public OnConsole(String text) {
+      this.text = text;
+    }
+
+    @Override
+    public boolean test() {
+      return console.contains(text);
+    }
+  }
+
+  /**
+   * Condition "text on screen".
+   */
+  protected Condition onScreen(String text) {
+    return new OnScreen(text);
+  }
+
+  /**
+   * Search for text in console.
+   */
+  private class OnScreen implements Condition {
+    /**
+     * Text.
+     */
+    private final String text;
+
+    /**
+     * Constructor.
+     *
+     * @param text Text.
+     */
+    public OnScreen(String text) {
+      this.text = text;
+    }
+
+    @Override
+    public boolean test() throws Exception {
+      return captureScreen().contains(text);
+    }
   }
 }

@@ -20,7 +20,7 @@ public class CPU6510Debugger extends CPU6510 {
   /**
    * PC to start tracing at.
    */
-  private int _tracePoint = -1;
+  private int _tracePoint = 0x2000;
   /**
    * Is tracing enabled?
    */
@@ -28,7 +28,7 @@ public class CPU6510Debugger extends CPU6510 {
   /**
    * How many opcodes to trace before java breakpoint.
    */
-  private int _count = 1000;
+  private int _count = 100;
 
   private boolean _suspend;
   private boolean _suspended;

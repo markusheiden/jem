@@ -1,6 +1,7 @@
 package de.heiden.jem.models.c64.vice.general.banking00;
 
 import de.heiden.jem.models.c64.AbstractTest;
+import de.heiden.jem.models.c64.Condition;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.serialthreads.agent.TransformingRunner;
@@ -9,6 +10,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -21,11 +23,11 @@ public class Banking00Test extends AbstractTest {
     loadAndRun("/vice/general/banking00/banking00.prg");
 
     // Just run for 1 second, because the test program does never stop.
-    int result = waitSecondsFor(1);
+    Condition result = waitSecondsFor(1);
     String screen = captureScreen();
     System.out.println(screen);
 
-    assertEquals(WAIT_NO_MATCH, result);
+    assertNull(result);
     Matcher passed = Pattern.compile("passed        (\\p{XDigit}{8})").matcher(screen);
     Matcher ram = Pattern.compile("ram->io fails (\\p{XDigit}{8})").matcher(screen);
     Matcher io = Pattern.compile("io->ram fails (\\p{XDigit}{8})").matcher(screen);
