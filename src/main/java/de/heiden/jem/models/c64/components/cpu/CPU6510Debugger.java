@@ -20,7 +20,7 @@ public class CPU6510Debugger extends CPU6510 {
   /**
    * PC to start tracing at.
    */
-  private int _tracePoint = 0x2000;
+  private int _tracePoint = -1;
   /**
    * Is tracing enabled?
    */
