@@ -1,4 +1,4 @@
-package de.heiden.jem.models.c64.vice.cpu.acid800;
+package de.heiden.jem.models.c64.vice;
 
 import de.heiden.jem.models.c64.AbstractTest;
 import de.heiden.jem.models.c64.Condition;
