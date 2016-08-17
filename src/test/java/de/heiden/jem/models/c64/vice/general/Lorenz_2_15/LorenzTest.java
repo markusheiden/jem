@@ -1,5 +1,7 @@
-package de.heiden.jem.models.c64;
+package de.heiden.jem.models.c64.vice.general.Lorenz_2_15;
 
+import de.heiden.jem.models.c64.AbstractProgramSuiteTest;
+import de.heiden.jem.models.c64.Condition;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized.Parameters;
@@ -17,7 +19,7 @@ import static org.junit.Assume.assumeTrue;
  * Testsuite 2.15.
  */
 @RunWith(TransformingParameterized.class)
-public class Testsuite2_15 extends AbstractProgramSuiteTest {
+public class LorenzTest extends AbstractProgramSuiteTest {
   /**
    * Ignored tests.
    */
@@ -27,7 +29,7 @@ public class Testsuite2_15 extends AbstractProgramSuiteTest {
 
   @Parameters(name = "{1}")
   public static Collection<Object[]> parameters() throws Exception {
-    return createParameters("/testsuite2.15/ start.prg", path -> {
+    return createParameters("/vice-emu-testprogs/general/Lorenz-2.15/src/start.prg", path -> {
       String name = path.getFileName().toString();
       return !IGNORE.contains(name) &&
 //        name.startsWith("flipos") &&
