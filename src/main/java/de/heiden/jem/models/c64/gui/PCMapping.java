@@ -70,6 +70,7 @@ public class PCMapping extends KeyMapping {
     _chars.put('O', new Key[]{LEFT_SHIFT, O});
     _chars.put('p', new Key[]{P});
     _chars.put('P', new Key[]{LEFT_SHIFT, P});
+    _chars.put('_', new Key[]{COMMODORE, P});
     _chars.put('q', new Key[]{Q});
     _chars.put('Q', new Key[]{LEFT_SHIFT, Q});
     _chars.put('r', new Key[]{R});
@@ -140,5 +141,7 @@ public class PCMapping extends KeyMapping {
     _keys.put(keyID(KeyEvent.KEY_LOCATION_STANDARD, KeyEvent.VK_DELETE), new Key[]{RESTORE});
 
     // TODO how to map LEFT_ARROW
+
+    _chars.put('-', new Key[]{MINUS});
   }
 }
