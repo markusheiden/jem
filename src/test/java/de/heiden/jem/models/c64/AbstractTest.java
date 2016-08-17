@@ -373,7 +373,6 @@ public abstract class AbstractTest {
 
     @Override
     public boolean test() throws Exception {
-      System.out.println(addr + ": " + c64.getBus().read(addr));
       return c64.getBus().read(addr) == value;
     }
 
