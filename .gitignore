@@ -3,5 +3,5 @@ target
 .gradle
 build
 
-src/test/vice-emu-testprogs
+src/test/resources/vice-emu-testprogs
 serialthreads.log
