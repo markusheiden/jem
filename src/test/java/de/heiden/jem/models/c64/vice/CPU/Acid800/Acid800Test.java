@@ -1,4 +1,4 @@
-package de.heiden.jem.models.c64.vice;
+package de.heiden.jem.models.c64.vice.CPU.Acid800;
 
 import de.heiden.jem.models.c64.AbstractTest;
 import de.heiden.jem.models.c64.Condition;
@@ -18,7 +18,7 @@ public class Acid800Test extends AbstractTest {
 
   @Test
   public void cpuDecimal() throws Exception {
-    loadAndRun("/vice/cpu/acid800/cpu-decimal.prg");
+    loadAndRun("/vice-emu-testprogs/CPU/Acid800/cpu_decimal.prg");
 
     Condition result = waitSecondsFor(1, passed, failed);
     System.out.println(captureScreen());
@@ -28,7 +28,7 @@ public class Acid800Test extends AbstractTest {
 
   @Test
   public void cpuInsn() throws Exception {
-    loadAndRun("/vice/cpu/acid800/cpu-insn.prg");
+    loadAndRun("/vice-emu-testprogs/CPU/Acid800/cpu_insn.prg");
 
     Condition result = waitSecondsFor(10, passed, failed);
     System.out.println(captureScreen());
