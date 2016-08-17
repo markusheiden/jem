@@ -24,7 +24,7 @@ public class LorenzTest extends AbstractProgramSuiteTest {
    * Ignored tests.
    */
   private static final Set<String> IGNORE = new HashSet<>(Arrays.asList(
-    "start.prg"
+    "start.prg", "finish.prg"
   ));
 
   @Parameters(name = "{1}")
