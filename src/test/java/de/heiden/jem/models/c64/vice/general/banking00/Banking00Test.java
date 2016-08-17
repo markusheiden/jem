@@ -20,7 +20,7 @@ import static org.junit.Assert.assertTrue;
 public class Banking00Test extends AbstractTest {
   @Test
   public void banking00() throws Exception {
-    loadAndRun("/vice/general/banking00/banking00.prg");
+    loadAndRun("/vice-emu-testprogs/general/banking00/banking00.prg");
 
     // Just run for 1 second, because the test program does never stop.
     Condition result = waitSecondsFor(1);
