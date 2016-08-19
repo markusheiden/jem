@@ -1,19 +1,20 @@
-package de.heiden.jem.models.c64.vice.general.Lorenz_2_15;
+package de.heiden.jem.models.c64.vice;
 
-import de.heiden.jem.models.c64.AbstractProgramSuiteTest;
-import de.heiden.jem.models.c64.Condition;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized.Parameters;
-import org.serialthreads.agent.TransformingParameterized;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assume.assumeTrue;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.junit.Assert.assertSame;
-import static org.junit.Assume.assumeTrue;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized.Parameters;
+import org.serialthreads.agent.TransformingParameterized;
+
+import de.heiden.jem.models.c64.AbstractProgramSuiteTest;
+import de.heiden.jem.models.c64.Condition;
 
 /**
  * Testsuite 2.15.

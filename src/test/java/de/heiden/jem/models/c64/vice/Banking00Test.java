@@ -1,17 +1,18 @@
-package de.heiden.jem.models.c64.vice.general.banking00;
-
-import de.heiden.jem.models.c64.AbstractTest;
-import de.heiden.jem.models.c64.Condition;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.serialthreads.agent.TransformingRunner;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+package de.heiden.jem.models.c64.vice;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.serialthreads.agent.TransformingRunner;
+
+import de.heiden.jem.models.c64.AbstractTest;
+import de.heiden.jem.models.c64.Condition;
 
 /**
  * VICE test suite.
