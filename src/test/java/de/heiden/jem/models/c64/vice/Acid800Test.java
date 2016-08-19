@@ -1,4 +1,4 @@
-package de.heiden.jem.models.c64.vice.CPU.Acid800;
+package de.heiden.jem.models.c64.vice;
 
 import static org.junit.Assert.assertSame;
 
