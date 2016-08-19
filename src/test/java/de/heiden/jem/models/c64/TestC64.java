@@ -1,5 +1,8 @@
 package de.heiden.jem.models.c64;
 
+import java.io.OutputStream;
+import java.nio.file.Path;
+
 import de.heiden.jem.components.bus.BusDevice;
 import de.heiden.jem.components.clock.Clock;
 import de.heiden.jem.components.clock.ClockEvent;
@@ -17,9 +20,6 @@ import de.heiden.jem.models.c64.components.vic.VICBus;
 import de.heiden.jem.models.c64.gui.KeyListener;
 import de.heiden.jem.models.c64.gui.PCMapping;
 import de.heiden.jem.models.c64.util.ROMLoader;
-
-import java.io.OutputStream;
-import java.nio.file.Path;
 
 /**
  * Modified C64 for better testability.
@@ -42,6 +42,11 @@ public class TestC64 {
    * Detects when a (basic) program ends.
    */
   private final ProgramEndDetector programEnd = new ProgramEndDetector();
+
+  /**
+   * Detects when a (basic) program ends.
+   */
+  private final BrkDetector brk = new BrkDetector();
 
   /**
    * Constructor.
@@ -158,5 +163,12 @@ public class TestC64 {
    */
   public boolean hasEnded() {
     return programEnd.hasEnded();
+  }
+
+  /**
+   * Has the program run into a BRK?.
+   */
+  public boolean hasBrk() {
+    return brk.hasBrk();
   }
 }

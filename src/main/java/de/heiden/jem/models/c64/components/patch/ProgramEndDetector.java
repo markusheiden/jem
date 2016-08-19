@@ -45,6 +45,6 @@ public class ProgramEndDetector extends Patch {
   protected int execute(CPU6510State state, BusDevice bus) {
     end = true;
     error = state.X;
-    return 0x8A;
+    return replaced;
   }
 }

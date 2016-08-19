@@ -287,6 +287,21 @@ public abstract class AbstractTest {
   };
 
   /**
+   * BRK.
+   */
+  protected final Condition brk = new Condition() {
+    @Override
+    public boolean test() throws Exception {
+      return c64.hasBrk();
+    }
+
+    @Override
+    public String toString() {
+      return "BRK";
+    }
+  };
+
+  /**
    * Condition "text on console".
    */
   protected Condition onConsole(String... texts) {

@@ -1,11 +1,13 @@
 package de.heiden.jem.models.c64;
 
+import java.nio.ByteBuffer;
+import java.nio.charset.UnmappableCharacterException;
+
+import org.springframework.util.StringUtils;
+
 import de.heiden.c64dt.charset.AbstractDecoder;
 import de.heiden.c64dt.charset.C64Charset;
 import de.heiden.jem.components.bus.BusDevice;
-import org.springframework.util.StringUtils;
-
-import java.nio.ByteBuffer;
 
 /**
  * Screen capture.
@@ -48,15 +50,19 @@ public class ScreenBuffer {
     StringBuilder screen = new StringBuilder(41 * 25);
 
     int addr = this.addr;
-    byte[] bytes = new byte[40];
+    byte[] bytes = new byte[1];
     for (int r = 0; r < 25; r++) {
       for (int c = 0; c < 40; c++) {
-        bytes[c] = (byte) bus.read(addr++);
+        bytes[0] = (byte) bus.read(addr++);
+        try {
+          screen.append(decoder.decode(ByteBuffer.wrap(bytes)));
+        } catch (UnmappableCharacterException e) {
+          screen.append("#");
+        }
       }
-      screen.append(decoder.decode(ByteBuffer.wrap(bytes))).append('\n');
+      screen.append('\n');
     }
 
     return StringUtils.trimTrailingWhitespace(screen.toString());
   }
-
 }
