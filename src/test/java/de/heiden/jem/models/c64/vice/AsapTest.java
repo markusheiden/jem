@@ -38,18 +38,18 @@ public class AsapTest extends AbstractProgramSuiteTest {
   /**
    * Condition for "test passed": Green border.
    */
-  private final Condition passed = onScreen("Pass", "pass");
+  private final Condition passed = inMemory(BORDER, GREEN);
 
   /**
    * Condition for "test failed": Red border.
    */
-  private final Condition failed = onScreen("FAIL");
+  private final Condition failed = inMemory(BORDER, RED);
 
   @Test
   public void test() throws Exception {
     loadAndRun(program);
 
-    Condition result = waitSecondsFor(3, passed, failed);
+    Condition result = waitSecondsFor(120, passed, failed);
     System.out.println(captureScreen());
 
     assertSame(passed, result);

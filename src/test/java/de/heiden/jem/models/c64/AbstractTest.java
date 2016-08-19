@@ -1,7 +1,5 @@
 package de.heiden.jem.models.c64;
 
-import static java.awt.SystemColor.text;
-
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -34,6 +32,21 @@ import de.heiden.c64dt.util.HexUtil;
 @RunWith(TransformingRunner.class)
 @Transform(transformer = FrequentInterruptsTransformer3.class, classPrefixes = "de.heiden.jem")
 public abstract class AbstractTest {
+  /**
+   * VIC border color.
+   */
+  protected static final int BORDER = 0xD020;
+
+  /**
+   * Color green.
+   */
+  protected static final int GREEN = 0x05;
+
+  /**
+   * Color red.
+   */
+  protected static final int RED = 0x0A;
+
   /**
    * Transformed test C64.
    */
@@ -203,6 +216,7 @@ public abstract class AbstractTest {
       for (Condition condition : conditions) {
         if (condition.test()) {
           System.out.flush();
+          System.out.println("Condition " + condition + " after " + (getTick() - start) + " ticks");
           return condition;
         }
       }
@@ -341,7 +355,7 @@ public abstract class AbstractTest {
 
     @Override
     public String toString() {
-      return "Screen contains " + text;
+      return "Screen contains " + StringUtils.arrayToCommaDelimitedString(texts);
     }
   }
 
