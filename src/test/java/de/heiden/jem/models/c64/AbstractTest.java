@@ -1,17 +1,6 @@
 package de.heiden.jem.models.c64;
 
-import de.heiden.c64dt.assembler.CodeBuffer;
-import de.heiden.c64dt.assembler.Disassembler;
-import de.heiden.c64dt.assembler.Dumper;
-import de.heiden.c64dt.util.HexUtil;
-import org.junit.After;
-import org.junit.Rule;
-import org.junit.rules.TestWatcher;
-import org.junit.runner.Description;
-import org.junit.runner.RunWith;
-import org.serialthreads.agent.Transform;
-import org.serialthreads.agent.TransformingRunner;
-import org.serialthreads.transformer.strategies.frequent3.FrequentInterruptsTransformer3;
+import static java.awt.SystemColor.text;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -22,6 +11,22 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
+
+import org.junit.After;
+import org.junit.Rule;
+import org.junit.rules.TestWatcher;
+import org.junit.runner.Description;
+import org.junit.runner.RunWith;
+import org.serialthreads.agent.Transform;
+import org.serialthreads.agent.TransformingRunner;
+import org.serialthreads.transformer.strategies.frequent3.FrequentInterruptsTransformer3;
+import org.springframework.util.StringUtils;
+
+import de.heiden.c64dt.assembler.CodeBuffer;
+import de.heiden.c64dt.assembler.Disassembler;
+import de.heiden.c64dt.assembler.Dumper;
+import de.heiden.c64dt.util.HexUtil;
 
 /**
  * Test support.
@@ -270,8 +275,8 @@ public abstract class AbstractTest {
   /**
    * Condition "text on console".
    */
-  protected Condition onConsole(String text) {
-    return new OnConsole(text);
+  protected Condition onConsole(String... texts) {
+    return new OnConsole(texts);
   }
 
   /**
@@ -281,56 +286,57 @@ public abstract class AbstractTest {
     /**
      * Text.
      */
-    private final String text;
+    private final String[] texts;
 
     /**
      * Constructor.
      *
-     * @param text Text.
+     * @param texts Texts.
      */
-    public OnConsole(String text) {
-      this.text = text;
+    public OnConsole(String... texts) {
+      this.texts = texts;
     }
 
     @Override
     public boolean test() {
-      return console.contains(text);
+      return Arrays.stream(texts).anyMatch(console::contains);
     }
 
     @Override
     public String toString() {
-      return "Console contains " + text;
+      return "Console contains " + StringUtils.arrayToCommaDelimitedString(texts);
     }
   }
 
   /**
    * Condition "text on screen".
    */
-  protected Condition onScreen(String text) {
-    return new OnScreen(text);
+  protected Condition onScreen(String... texts) {
+    return new OnScreen(texts);
   }
 
   /**
-   * Search for text in console.
+   * Search for texts in console.
    */
   private class OnScreen implements Condition {
     /**
      * Text.
      */
-    private final String text;
+    private final String[] texts;
 
     /**
      * Constructor.
      *
-     * @param text Text.
+     * @param texts Texts.
      */
-    public OnScreen(String text) {
-      this.text = text;
+    public OnScreen(String... texts) {
+      this.texts = texts;
     }
 
     @Override
     public boolean test() throws Exception {
-      return captureScreen().contains(text);
+      String screen = captureScreen();
+      return Arrays.stream(texts).anyMatch(screen::contains);
     }
 
     @Override
