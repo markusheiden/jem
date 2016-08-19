@@ -1,18 +1,19 @@
 package de.heiden.jem.models.c64.vice.CPU.Acid800;
 
-import de.heiden.jem.models.c64.AbstractProgramSuiteTest;
-import de.heiden.jem.models.c64.Condition;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.serialthreads.agent.TransformingParameterized;
+import static org.junit.Assert.assertSame;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.junit.Assert.assertSame;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.serialthreads.agent.TransformingParameterized;
+
+import de.heiden.jem.models.c64.AbstractProgramSuiteTest;
+import de.heiden.jem.models.c64.Condition;
 
 /**
  * VICE test suite.
@@ -35,14 +36,14 @@ public class Acid800Test extends AbstractProgramSuiteTest {
   }
 
   /**
-   * Condition for "test passed".
+   * Condition for "test passed": Green border.
    */
-  private final Condition passed = inMemory(0xd7ff, 0x00);
+  private final Condition passed = inMemory(0xd020, 0x05);
 
   /**
-   * Condition for "test failed".
+   * Condition for "test failed": Red border.
    */
-  private final Condition failed = inMemory(0xd7ff, 0xff);
+  private final Condition failed = inMemory(0xd020, 0x0a);
 
   @Test
   public void test() throws Exception {
