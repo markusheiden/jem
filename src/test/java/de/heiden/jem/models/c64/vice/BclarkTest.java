@@ -13,14 +13,14 @@ import de.heiden.jem.models.c64.AbstractProgramSuiteTest;
  * VICE test suite.
  */
 @RunWith(TransformingParameterized.class)
-public class AsapTest extends AbstractProgramSuiteTest {
+public class BclarkTest extends AbstractProgramSuiteTest {
   @Parameterized.Parameters(name = "{1}")
   public static Collection<Object[]> parameters() throws Exception {
-    return createParameters("/vice-emu-testprogs/CPU/asap/cpu_ane.prg");
+    return createParameters("/vice-emu-testprogs/CPU/bclark/decimalmode.prg");
   }
 
   @Test
   public void test() throws Exception {
-    testBorderResult(120, true);
+    testBorderResult(60, true);
   }
 }

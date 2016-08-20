@@ -1,6 +1,7 @@
 package de.heiden.jem.models.c64;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
 
 import java.net.URL;
 import java.nio.file.Files;
@@ -92,5 +93,23 @@ public abstract class AbstractProgramSuiteTest extends AbstractTest {
         return new Object[]{ program, programName };
       })
       .collect(Collectors.toList());
+  }
+
+  /**
+   * Load and run program, evaluate border color to determine test result.
+   *
+   * @param maxSeconds Max seconds to wait. Assumes 1 MHz clock.
+   */
+  protected void testBorderResult(int maxSeconds, boolean screenCapture) throws Exception {
+    loadAndRun(program);
+
+    Condition passed = greenBorder;
+    Condition failed = redBorder;
+    Condition result = waitSecondsFor(maxSeconds, passed, failed);
+    if (screenCapture) {
+      printScreen();
+    }
+
+    assertSame(passed, result);
   }
 }
