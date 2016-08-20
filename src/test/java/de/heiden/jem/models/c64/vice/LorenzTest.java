@@ -81,7 +81,7 @@ public class LorenzTest extends AbstractProgramSuiteTest {
   @Parameters(name = "{1}")
   public static Collection<Object[]> parameters() throws Exception {
     return createParameters("/vice-emu-testprogs/general/Lorenz-2.15/src/start.prg", IGNORE, programName ->
-//        name.startsWith("flipos") &&
+//      programName.equals("flipos"));
         true);
   }
 
