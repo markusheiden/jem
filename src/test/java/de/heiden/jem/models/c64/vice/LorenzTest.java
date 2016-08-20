@@ -26,7 +26,7 @@ public class LorenzTest extends AbstractProgramSuiteTest {
    */
   private static final Set<String> IGNORE = new HashSet<>(Arrays.asList(
     "start", "nextdisk1", "nextdisk2", "finish",
-    // Passing tests. Ignore them for first to get faster to the failing ones.
+    // Passing tests. Ignore them for now to get faster to the failing ones.
     "adca", "adcax", "adcay", "adcb", "adcix", "adciy", "adcz", "adczx",
     "alrb", "ancb",
     "anda", "andax", "anday", "andb", "andix", "andiy", "andz", "andzx",

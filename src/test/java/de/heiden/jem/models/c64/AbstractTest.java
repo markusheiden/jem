@@ -260,7 +260,7 @@ public abstract class AbstractTest {
   private void messageTimeSince(String message, long start) throws Exception {
     System.out.println();
     long ticks = getTick() - start;
-    System.out.println(String.format("%s after ~ %d second (%d ticks)", message, ticks / 1000000, ticks));
+    System.out.println(String.format("%s after ~ %d seconds (%d ticks)", message, ticks / 1000000, ticks));
     System.out.flush();
   }
 
