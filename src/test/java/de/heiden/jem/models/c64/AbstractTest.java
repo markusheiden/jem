@@ -187,6 +187,13 @@ public abstract class AbstractTest {
   }
 
   /**
+   * Capture screen at $0400 and print it to {@link System#out}.
+   */
+  public void printScreen() throws Exception {
+    System.out.println(captureScreen());
+  }
+
+  /**
    * Capture screen at $0400.
    */
   public String captureScreen() throws Exception {
