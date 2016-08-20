@@ -21,16 +21,15 @@ import de.heiden.jem.models.c64.Condition;
 @RunWith(TransformingParameterized.class)
 public class C64docTest extends AbstractProgramSuiteTest {
   /**
-   * Ignored tests.
+   * Skip long running test (> 10 min.).
    */
-  private static final Set<String> IGNORE = new HashSet<>(Arrays.asList(
-    // Skip long running test (> 10 min.).
+  private static final Set<String> LONG_RUNNING = new HashSet<>(Arrays.asList(
     "sbx", "vsbx"
   ));
 
   @Parameterized.Parameters(name = "{1}")
   public static Collection<Object[]> parameters() throws Exception {
-    return createParameters("/vice-emu-testprogs/CPU/64doc/dadc.prg", IGNORE);
+    return createParameters("/vice-emu-testprogs/CPU/64doc/dadc.prg", LONG_RUNNING);
   }
 
   @Test
