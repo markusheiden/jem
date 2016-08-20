@@ -1,9 +1,10 @@
 package de.heiden.jem.models.c64;
 
-import de.heiden.c64dt.charset.PetSCIICharset;
-
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import de.heiden.c64dt.charset.PetSCIICharset;
 
 /**
  * Buffer for C64 screen output
@@ -18,6 +19,8 @@ public class ConsoleBuffer extends OutputStream {
    * Buffer for screen output.
    */
   private final StringBuilder screen = new StringBuilder(1024);
+
+  private final AtomicInteger column = new AtomicInteger(0);
 
   /**
    * Upper and lower case chars?.
@@ -38,8 +41,18 @@ public class ConsoleBuffer extends OutputStream {
    * Write character to screen.
    */
   public synchronized void writeChar(char c) {
+    if (c == '\n') {
+      column.set(0);
+    } else {
+      column.incrementAndGet();
+    }
+
     System.out.print(c);
     screen.append(c);
+
+    if (column.get() >= 40) {
+      writeChar('\n');
+    }
   }
 
   /**
