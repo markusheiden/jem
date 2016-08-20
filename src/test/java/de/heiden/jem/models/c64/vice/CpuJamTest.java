@@ -1,6 +1,7 @@
 package de.heiden.jem.models.c64.vice;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
 
 import java.util.Collection;
 
@@ -26,5 +27,8 @@ public class CpuJamTest extends AbstractProgramSuiteTest {
     assertFalse(programName.equals("nojam"));
 
     testBorderResult(60, true);
+    // Check again, because the border is set to green some cycles before the end of the test.
+    waitCycles(100);
+    assertSame(greenBorder, waitCyclesFor(100, greenBorder));
   }
 }
