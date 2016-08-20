@@ -348,7 +348,7 @@ public abstract class AbstractTest {
 
     @Override
     public String toString() {
-      return "Console contains " + StringUtils.arrayToCommaDelimitedString(texts);
+      return "Console contains " + StringUtils.arrayToDelimitedString(texts, " or ");
     }
   }
 
@@ -385,7 +385,7 @@ public abstract class AbstractTest {
 
     @Override
     public String toString() {
-      return "Screen contains " + StringUtils.arrayToCommaDelimitedString(texts);
+      return "Screen contains " + StringUtils.arrayToDelimitedString(texts, " or ");
     }
   }
 
