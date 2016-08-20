@@ -66,7 +66,7 @@ public abstract class AbstractProgramSuiteTest extends AbstractTest {
    * @param filter Additional program name filter to use.
    */
   protected static Collection<Object[]> createParameters(String resource, Set<String> ignore, Predicate<String> filter) throws Exception {
-    return createParameters(resource, (Path path) -> {
+    return createParametersFromDirectory(resource, (Path path) -> {
       String filename = path.getFileName().toString();
       if (!filename.endsWith(PRG_SUFFIX)) {
         return false;
@@ -82,7 +82,7 @@ public abstract class AbstractProgramSuiteTest extends AbstractTest {
    * @param resource Classpath to directory with test programs.
    * @param filter File name filter to use.
    */
-  private static Collection<Object[]> createParameters(String resource, Predicate<Path> filter) throws Exception {
+  private static Collection<Object[]> createParametersFromDirectory(String resource, Predicate<Path> filter) throws Exception {
     URL start = AbstractProgramSuiteTest.class.getResource(resource);
     assertNotNull("Resource exists.", start);
     return Files.list(Paths.get(start.toURI()).getParent())

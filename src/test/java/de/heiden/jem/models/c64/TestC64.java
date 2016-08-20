@@ -1,7 +1,6 @@
 package de.heiden.jem.models.c64;
 
 import java.io.OutputStream;
-import java.nio.file.Path;
 
 import de.heiden.jem.components.bus.BusDevice;
 import de.heiden.jem.components.clock.Clock;
@@ -10,6 +9,7 @@ import de.heiden.jem.components.clock.serialthreads.SerialClock;
 import de.heiden.jem.models.c64.components.CIA6526;
 import de.heiden.jem.models.c64.components.cpu.C64Bus;
 import de.heiden.jem.models.c64.components.cpu.CPU6510Debugger;
+import de.heiden.jem.models.c64.components.cpu.Patch;
 import de.heiden.jem.models.c64.components.keyboard.Keyboard;
 import de.heiden.jem.models.c64.components.memory.ColorRAM;
 import de.heiden.jem.models.c64.components.memory.RAM;
@@ -47,17 +47,6 @@ public class TestC64 {
    * Detects when a (basic) program ends.
    */
   private final BrkDetector brk = new BrkDetector();
-
-  /**
-   * Constructor.
-   *
-   * @param baseDirectory Base directory to load files from
-   */
-  public TestC64(Path baseDirectory) throws Exception {
-    this();
-
-    _cpu.add(new LoadFile(baseDirectory));
-  }
 
   /**
    * Constructor.
@@ -111,6 +100,13 @@ public class TestC64 {
         _clock.addClockEvent(tick + 100000, this);
       }
     });
+  }
+
+  /**
+   * Add patch.
+   */
+  public void add(Patch patch) {
+    _cpu.add(patch);
   }
 
   /**
