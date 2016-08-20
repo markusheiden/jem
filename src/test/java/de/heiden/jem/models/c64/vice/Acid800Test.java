@@ -29,7 +29,7 @@ public class Acid800Test extends AbstractProgramSuiteTest {
     Condition passed = greenBorder;
     Condition failed = redBorder;
     Condition result = waitSecondsFor(1, passed, failed);
-    System.out.println(captureScreen());
+    printScreen();
 
     assertSame(passed, result);
   }
