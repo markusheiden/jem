@@ -21,6 +21,6 @@ public class Hmc6502Test extends AbstractProgramSuiteTest {
 
   @Test
   public void test() throws Exception {
-    testBorderResult(120, true);
+    testBorderResult(1, true);
   }
 }
