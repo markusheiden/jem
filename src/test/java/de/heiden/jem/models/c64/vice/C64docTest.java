@@ -49,8 +49,10 @@ public class C64docTest extends AbstractProgramSuiteTest {
   public void test() throws Exception {
     loadAndRun(program);
 
-    Condition result = waitSecondsFor(999, passed, failed);
-    System.out.println(captureScreen());
+    // Most need at max 21 seconds.
+    // sbx needs 5777 seconds.
+    // vsbx needs ? seconds.
+    Condition result = waitSecondsFor(9999, passed, failed);
 
     assertSame(passed, result);
   }
