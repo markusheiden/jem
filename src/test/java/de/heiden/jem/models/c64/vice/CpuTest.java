@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -15,12 +16,14 @@ import de.heiden.jem.models.c64.AbstractD64SuiteTest;
 /**
  * VICE test suite.
  */
+@Ignore
 @RunWith(TransformingParameterized.class)
 public class CpuTest extends AbstractD64SuiteTest {
   /**
    * Ignored tests.
    */
   private static final Set<String> IGNORE = new HashSet<>(Arrays.asList(
+    "start"
   ));
 
   @Parameterized.Parameters(name = "{1}")
