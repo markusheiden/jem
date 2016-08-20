@@ -98,7 +98,7 @@ public class LorenzTest extends AbstractProgramSuiteTest {
     loadAndRun(program);
 
     Condition passed = onConsole("- ok");
-    Condition failed = onConsole("right", "error");
+    Condition failed = onConsole("right", "error", " not ");
     Condition event = waitSecondsFor(999, passed, failed);
     waitCycles(1000);
 
