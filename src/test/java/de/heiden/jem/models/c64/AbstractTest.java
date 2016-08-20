@@ -101,10 +101,10 @@ public abstract class AbstractTest {
 
     setUp(programName);
     c64.add(new LoadFile(program.getParent()));
-    loadAndRun(programName, Files.readAllBytes(program));
+    doLoadAndRun(programName, Files.readAllBytes(program));
   }
 
-  protected void loadAndRun(String programName, byte[] bytes) throws Exception {
+  protected void doLoadAndRun(String programName, byte[] bytes) throws Exception {
     this.bytes = bytes;
 
     // Wait for boot to finish.

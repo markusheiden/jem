@@ -16,9 +16,9 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized.Parameter;
 import org.serialthreads.agent.TransformingParameterized;
 
-import de.heiden.c64dt.disk.File;
 import de.heiden.c64dt.disk.FileType;
 import de.heiden.c64dt.disk.d64.D64;
+import de.heiden.jem.models.c64.components.patch.LoadProgram;
 import de.heiden.jem.models.c64.util.StringUtil;
 
 /**
@@ -30,7 +30,7 @@ public abstract class AbstractD64SuiteTest extends AbstractTest {
    * Test program.
    */
   @Parameter(0)
-  public File program;
+  public byte[] program;
 
   /**
    * Test program filename, just for test naming purposes.
@@ -82,8 +82,17 @@ public abstract class AbstractD64SuiteTest extends AbstractTest {
     return d64.getDirectory().getFiles().stream()
       .filter(file -> file.getMode().getType().equals(FileType.PRG))
       .filter(file -> filter.test(StringUtil.read(file.getName())))
-      .map(file -> new Object[]{ file, StringUtil.read(file.getName()) })
+      .map(file -> new Object[]{ d64.read(file), StringUtil.read(file.getName()) })
       .collect(Collectors.toList());
+  }
+
+  /**
+   * Load program and start it via "run".
+   */
+  protected void loadAndRun(String programName, byte[] program) throws Exception {
+    setUp(programName);
+    c64.add(new LoadProgram(program));
+    doLoadAndRun(programName, program);
   }
 
   /**
