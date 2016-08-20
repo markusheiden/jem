@@ -26,6 +26,7 @@ import de.heiden.c64dt.assembler.Disassembler;
 import de.heiden.c64dt.assembler.Dumper;
 import de.heiden.c64dt.util.HexUtil;
 import de.heiden.jem.models.c64.components.patch.LoadFile;
+import de.heiden.jem.models.c64.components.patch.LoadProgram;
 
 /**
  * Test support.
@@ -84,7 +85,9 @@ public abstract class AbstractTest {
   private byte[] bytes;
 
   /**
-   * Load program and start it via "run".
+   * Load program from classpath and start it via "run".
+   *
+   * @param program Where to find program in classpath.
    */
   protected void loadAndRun(String program) throws Exception {
     URL url = getClass().getResource(program);
@@ -92,7 +95,9 @@ public abstract class AbstractTest {
   }
 
   /**
-   * Load program and start it via "run".
+   * Load program from {@link Path} and start it via "run".
+   *
+   * @param program Path to program file.
    */
   protected void loadAndRun(Path program) throws Exception {
     // Extract pure file name.
@@ -104,7 +109,25 @@ public abstract class AbstractTest {
     doLoadAndRun(programName, Files.readAllBytes(program));
   }
 
-  protected void doLoadAndRun(String programName, byte[] bytes) throws Exception {
+  /**
+   * Load the given program and start it via "run".
+   *
+   * @param programName Name of program.
+   * @param program Program.
+   */
+  protected void loadAndRun(String programName, byte[] program) throws Exception {
+    setUp(programName);
+    c64.add(new LoadProgram(program));
+    doLoadAndRun(programName, program);
+  }
+
+  /**
+   * Load program and start it via "run".
+   *
+   * @param programName Name of program.
+   * @param bytes Program.
+   */
+  private void doLoadAndRun(String programName, byte[] bytes) throws Exception {
     this.bytes = bytes;
 
     // Wait for boot to finish.
