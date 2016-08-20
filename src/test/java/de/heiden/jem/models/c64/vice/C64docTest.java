@@ -24,6 +24,8 @@ public class C64docTest extends AbstractProgramSuiteTest {
    * Ignored tests.
    */
   private static final Set<String> IGNORE = new HashSet<>(Arrays.asList(
+    // Skip long running test (> 10 min.).
+    "sbx.prg", "vsbx.prg"
   ));
 
   @Parameterized.Parameters(name = "{1}")
@@ -50,9 +52,10 @@ public class C64docTest extends AbstractProgramSuiteTest {
     loadAndRun(program);
 
     // Most need at max 21 seconds.
-    // sbx needs 5777 seconds.
-    // vsbx needs ? seconds.
-    Condition result = waitSecondsFor(9999, passed, failed);
+    // sbx needs 5778 seconds.
+    // vsbx needs 6856 seconds.
+    int seconds = programName.equals("sbx") || programName.equals("vsbx")? 7000 : 30;
+    Condition result = waitSecondsFor(seconds, passed, failed);
 
     assertSame(passed, result);
   }
