@@ -1,24 +1,31 @@
 package de.heiden.jem.models.c64;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized.Parameter;
-import org.serialthreads.agent.TransformingParameterized;
+import static org.junit.Assert.assertNotNull;
 
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertNotNull;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized.Parameter;
+import org.serialthreads.agent.TransformingParameterized;
 
 /**
  * Base class for test defined via a program suite.
  */
 @RunWith(TransformingParameterized.class)
 public abstract class AbstractProgramSuiteTest extends AbstractTest {
+  /**
+   * Program file suffix.
+   */
+  private static final String PRG_SUFFIX = ".prg";
+
   /**
    * Test program.
    */
@@ -35,9 +42,46 @@ public abstract class AbstractProgramSuiteTest extends AbstractTest {
    * Create parameters.
    *
    * @param resource Classpath to directory with test programs.
+   */
+  protected static Collection<Object[]> createParameters(String resource) throws Exception {
+    return createParameters(resource, Collections.emptySet());
+  }
+
+  /**
+   * Create parameters.
+   *
+   * @param resource Classpath to directory with test programs.
+   * @param ignore Program names to ignore.
+   */
+  protected static Collection<Object[]> createParameters(String resource, Set<String> ignore) throws Exception {
+    return createParameters(resource, ignore, programName -> true);
+  }
+
+  /**
+   * Create parameters.
+   *
+   * @param resource Classpath to directory with test programs.
+   * @param ignore Program names to ignore.
+   * @param filter Additional program name filter to use.
+   */
+  protected static Collection<Object[]> createParameters(String resource, Set<String> ignore, Predicate<String> filter) throws Exception {
+    return createParameters(resource, (Path path) -> {
+      String filename = path.getFileName().toString();
+      if (!filename.endsWith(PRG_SUFFIX)) {
+        return false;
+      }
+      String program = filename.substring(0, filename.length() - PRG_SUFFIX.length());
+      return !ignore.contains(program) && filter.test(program);
+    });
+  }
+
+  /**
+   * Create parameters.
+   *
+   * @param resource Classpath to directory with test programs.
    * @param filter File name filter to use.
    */
-  protected static Collection<Object[]> createParameters(String resource, Predicate<Path> filter) throws Exception {
+  private static Collection<Object[]> createParameters(String resource, Predicate<Path> filter) throws Exception {
     URL start = AbstractProgramSuiteTest.class.getResource(resource);
     assertNotNull("Resource exists.", start);
     return Files.list(Paths.get(start.toURI()).getParent())
