@@ -1,7 +1,7 @@
 package de.heiden.jem.models.c64.vice;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
-import static org.junit.Assume.assumeFalse;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -88,12 +88,12 @@ public class LorenzTest extends AbstractProgramSuiteTest {
   @Test
   public void test() throws Exception {
     // ignore some failing tests, because functionality has not been implemented yet
-    assumeFalse(programName.startsWith("cia"));
-    assumeFalse(programName.startsWith("cnt"));
-    assumeFalse(programName.startsWith("icr"));
-    assumeFalse(programName.startsWith("imr"));
-    assumeFalse(programName.startsWith("irq"));
-    assumeFalse(programName.startsWith("loadth"));
+    assertFalse(programName.startsWith("cia"));
+    assertFalse(programName.startsWith("cnt"));
+    assertFalse(programName.startsWith("icr"));
+    assertFalse(programName.startsWith("imr"));
+    assertFalse(programName.startsWith("irq"));
+    assertFalse(programName.startsWith("loadth"));
 
     loadAndRun(program);
 

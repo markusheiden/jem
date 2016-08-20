@@ -40,12 +40,17 @@ public abstract class AbstractTest {
   /**
    * Color green.
    */
+  protected static final int RED = 0x02;
+
+  /**
+   * Color green.
+   */
   protected static final int GREEN = 0x05;
 
   /**
    * Color red.
    */
-  protected static final int RED = 0x0A;
+  protected static final int LIGHT_RED = 0x0A;
 
   /**
    * Transformed test C64.
@@ -390,12 +395,17 @@ public abstract class AbstractTest {
   }
 
   /**
-   * Condition for "test passed": Green border.
+   * Green border. Usually "test passed".
    */
   protected final Condition greenBorder = inMemory(BORDER, GREEN);
 
   /**
-   * Condition for "test failed": Red border.
+   * Light red border. Usually "test failed".
+   */
+  protected final Condition lightRedBorder = inMemory(BORDER, LIGHT_RED);
+
+  /**
+   * Red border.  Usually "test failed".
    */
   protected final Condition redBorder = inMemory(BORDER, RED);
 
