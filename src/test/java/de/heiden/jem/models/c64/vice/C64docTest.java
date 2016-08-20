@@ -37,16 +37,6 @@ public class C64docTest extends AbstractProgramSuiteTest {
     });
   }
 
-  /**
-   * Condition for "test passed".
-   */
-  private final Condition passed = programEnd;
-
-  /**
-   * Condition for "test failed".
-   */
-  private final Condition failed = brk;
-
   @Test
   public void test() throws Exception {
     loadAndRun(program);
@@ -55,6 +45,8 @@ public class C64docTest extends AbstractProgramSuiteTest {
     // sbx needs 5778 seconds.
     // vsbx needs 6856 seconds.
     int seconds = programName.equals("sbx") || programName.equals("vsbx")? 7000 : 30;
+    Condition passed = programEnd;
+    Condition failed = brk;
     Condition result = waitSecondsFor(seconds, passed, failed);
 
     assertSame(passed, result);

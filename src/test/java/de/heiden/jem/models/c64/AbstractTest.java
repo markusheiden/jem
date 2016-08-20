@@ -381,6 +381,16 @@ public abstract class AbstractTest {
   }
 
   /**
+   * Condition for "test passed": Green border.
+   */
+  protected final Condition greenBorder = inMemory(BORDER, GREEN);
+
+  /**
+   * Condition for "test failed": Red border.
+   */
+  protected final Condition redBorder = inMemory(BORDER, RED);
+
+  /**
    * Condition "value in memory".
    */
   protected Condition inMemory(int addr, int value) {
