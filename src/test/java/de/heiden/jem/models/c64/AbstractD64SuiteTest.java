@@ -5,7 +5,6 @@ import static org.junit.Assert.assertSame;
 
 import java.net.URL;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Collections;
@@ -17,21 +16,21 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized.Parameter;
 import org.serialthreads.agent.TransformingParameterized;
 
+import de.heiden.c64dt.disk.File;
+import de.heiden.c64dt.disk.FileType;
+import de.heiden.c64dt.disk.d64.D64;
+import de.heiden.jem.models.c64.util.StringUtil;
+
 /**
  * Base class for test defined via a program suite.
  */
 @RunWith(TransformingParameterized.class)
-public abstract class AbstractProgramSuiteTest extends AbstractTest {
-  /**
-   * Program file suffix.
-   */
-  private static final String PRG_SUFFIX = ".prg";
-
+public abstract class AbstractD64SuiteTest extends AbstractTest {
   /**
    * Test program.
    */
   @Parameter(0)
-  public Path program;
+  public File program;
 
   /**
    * Test program filename, just for test naming purposes.
@@ -61,37 +60,29 @@ public abstract class AbstractProgramSuiteTest extends AbstractTest {
   /**
    * Create parameters.
    *
-   * @param resource Classpath to directory with test programs.
+   * @param resource Classpath to D64 image.
    * @param ignore Program names to ignore.
    * @param filter Additional program name filter to use.
    */
   protected static Collection<Object[]> createParameters(String resource, Set<String> ignore, Predicate<String> filter) throws Exception {
-    return createParametersFromDirectory(resource, (Path path) -> {
-      String filename = path.getFileName().toString();
-      if (!filename.endsWith(PRG_SUFFIX)) {
-        return false;
-      }
-      String program = filename.substring(0, filename.length() - PRG_SUFFIX.length());
-      return !ignore.contains(program) && filter.test(program);
-    });
+    return createParametersFromD64(resource, program -> !ignore.contains(program) && filter.test(program));
   }
 
   /**
    * Create parameters.
    *
-   * @param resource Classpath to directory with test programs.
-   * @param filter File name filter to use.
+   * @param resource Classpath to D64 image.
+   * @param filter Program name filter to use.
    */
-  private static Collection<Object[]> createParametersFromDirectory(String resource, Predicate<Path> filter) throws Exception {
-    URL start = AbstractProgramSuiteTest.class.getResource(resource);
+  public static Collection<Object[]> createParametersFromD64(String resource, Predicate<String> filter) throws Exception {
+    URL start = AbstractD64SuiteTest.class.getResource(resource);
     assertNotNull("Resource exists.", start);
-    return Files.list(Paths.get(start.toURI()).getParent())
-      .filter(filter)
-      .map(program -> {
-        String programName = program.getFileName().toString();
-        programName = programName.substring(0, programName.length() - ".prg".length());
-        return new Object[]{ program, programName };
-      })
+    D64 d64 = new D64(35, false);
+    d64.load(Files.newInputStream(Paths.get(start.toURI())));
+    return d64.getDirectory().getFiles().stream()
+      .filter(file -> file.getMode().getType().equals(FileType.PRG))
+      .filter(file -> filter.test(StringUtil.read(file.getName())))
+      .map(file -> new Object[]{ file, StringUtil.read(file.getName()) })
       .collect(Collectors.toList());
   }
 
@@ -101,7 +92,7 @@ public abstract class AbstractProgramSuiteTest extends AbstractTest {
    * @param maxSeconds Max seconds to wait. Assumes 1 MHz clock.
    */
   protected void testBorderResult(int maxSeconds, boolean screenCapture) throws Exception {
-    loadAndRun(program);
+    loadAndRun(programName, new byte[0]);
 
     Condition passed = greenBorder;
     Condition failed1 = lightRedBorder;

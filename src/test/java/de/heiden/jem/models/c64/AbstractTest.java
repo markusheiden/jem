@@ -25,6 +25,7 @@ import de.heiden.c64dt.assembler.CodeBuffer;
 import de.heiden.c64dt.assembler.Disassembler;
 import de.heiden.c64dt.assembler.Dumper;
 import de.heiden.c64dt.util.HexUtil;
+import de.heiden.jem.models.c64.components.patch.LoadFile;
 
 /**
  * Test support.
@@ -94,9 +95,17 @@ public abstract class AbstractTest {
    * Load program and start it via "run".
    */
   protected void loadAndRun(Path program) throws Exception {
-    setUp(program);
+    // Extract pure file name.
+    String programName = program.getFileName().toString();
+    programName = programName.substring(0, programName.indexOf(".prg"));
 
-    bytes = Files.readAllBytes(program);
+    setUp(programName);
+    c64.add(new LoadFile(program.getParent()));
+    loadAndRun(programName, Files.readAllBytes(program));
+  }
+
+  protected void loadAndRun(String programName, byte[] bytes) throws Exception {
+    this.bytes = bytes;
 
     // Wait for boot to finish.
     thread.start();
@@ -104,9 +113,6 @@ public abstract class AbstractTest {
     console.clear();
     console.setLower(true);
 
-    // Extract pure file name.
-    String programName = program.getFileName().toString();
-    programName = programName.substring(0, programName.indexOf(".prg"));
     // Load program.
     type("load\"" + programName + "\",8\n");
     // Skip further loads
@@ -122,12 +128,12 @@ public abstract class AbstractTest {
   /**
    * Setup test C64.
    *
-   * @param program Program to load
+   * @param threadName Name C64 thread.
    */
-  protected void setUp(Path program) throws Exception {
+  protected void setUp(String threadName) throws Exception {
     console = new ConsoleBuffer();
 
-    c64 = new TestC64(program.getParent());
+    c64 = new TestC64();
     c64.setSystemOut(console);
     systemIn = c64.getSystemIn();
 
@@ -137,7 +143,7 @@ public abstract class AbstractTest {
       } catch (Exception e) {
         AbstractTest.this.exception = e;
       }
-    }, program.getFileName().toString());
+    }, threadName);
   }
 
   @Rule
