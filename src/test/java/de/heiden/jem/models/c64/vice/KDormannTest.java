@@ -13,14 +13,14 @@ import de.heiden.jem.models.c64.AbstractProgramSuiteTest;
  * VICE test suite.
  */
 @RunWith(TransformingParameterized.class)
-public class Hmc6502Test extends AbstractProgramSuiteTest {
+public class KDormannTest extends AbstractProgramSuiteTest {
   @Parameterized.Parameters(name = "{1}")
   public static Collection<Object[]> parameters() throws Exception {
-    return createParameters("/vice-emu-testprogs/CPU/hmc6502/AllSuiteA.prg");
+    return createParameters("/vice-emu-testprogs/CPU/kdormann/6502_functional_test.prg");
   }
 
   @Test
   public void test() throws Exception {
-    testBorderResult(1, true);
+    testBorderResult(120, true);
   }
 }

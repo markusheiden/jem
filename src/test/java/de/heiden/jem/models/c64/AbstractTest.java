@@ -100,7 +100,7 @@ public abstract class AbstractTest {
 
     // Wait for boot to finish.
     thread.start();
-    waitCyclesFor(3000000, onConsole("READY."));
+    waitCyclesFor(3000000, onConsole("READY.\n"));
     console.clear();
     console.setLower(true);
 
