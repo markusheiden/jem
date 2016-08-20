@@ -30,11 +30,7 @@ public class C64docTest extends AbstractProgramSuiteTest {
 
   @Parameterized.Parameters(name = "{1}")
   public static Collection<Object[]> parameters() throws Exception {
-    return createParameters("/vice-emu-testprogs/CPU/64doc/dadc.prg", path -> {
-      String name = path.getFileName().toString();
-      return !IGNORE.contains(name) &&
-        name.endsWith(".prg");
-    });
+    return createParameters("/vice-emu-testprogs/CPU/64doc/dadc.prg", IGNORE);
   }
 
   @Test
