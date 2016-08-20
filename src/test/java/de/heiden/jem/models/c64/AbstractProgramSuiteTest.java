@@ -104,8 +104,9 @@ public abstract class AbstractProgramSuiteTest extends AbstractTest {
     loadAndRun(program);
 
     Condition passed = greenBorder;
-    Condition failed = redBorder;
-    Condition result = waitSecondsFor(maxSeconds, passed, failed);
+    Condition failed1 = lightRedBorder;
+    Condition failed2 = redBorder;
+    Condition result = waitSecondsFor(maxSeconds, passed, failed1, failed2);
     if (screenCapture) {
       printScreen();
     }
