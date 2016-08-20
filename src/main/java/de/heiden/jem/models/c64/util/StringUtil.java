@@ -30,4 +30,19 @@ public class StringUtil {
 
     return result.toString();
   }
+
+  /**
+   * Get string from byte representation.
+   *
+   * @param bytes Byte representation.
+   * @return String.
+   */
+  public static String read(byte[] bytes) {
+    StringBuilder result = new StringBuilder(bytes.length);
+    for (int i = 0; i < bytes.length; i++) {
+      result.append(charset.toChar(bytes[i]));
+    }
+
+    return result.toString();
+  }
 }
