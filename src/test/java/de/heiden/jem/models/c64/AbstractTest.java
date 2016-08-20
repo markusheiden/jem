@@ -215,27 +215,23 @@ public abstract class AbstractTest {
     for (long start = getTick(), end = start + maxCycles;;) {
       for (Condition condition : conditions) {
         if (condition.test()) {
-          System.out.println("Condition " + condition + " after " + timeSince(start));
-          System.out.flush();
+          messageTimeSince(condition.toString(), start);
           return condition;
         }
       }
 
       if (programEnd.test()) {
-        System.out.println("Program end after " + timeSince(start));
-        System.out.flush();
+        messageTimeSince("Program end", start);
         return programEnd;
       }
 
       if (getTick() >= end) {
-        System.out.println("No match after " + timeSince(start));
-        System.out.flush();
+        messageTimeSince("No match", start);
         return null;
       }
 
       if (exception != null) {
-        System.out.println("Exception after " + timeSince(start));
-        System.out.flush();
+        messageTimeSince("Exception", start);
         // Abort on exceptions
         throw exception;
       }
@@ -244,9 +240,14 @@ public abstract class AbstractTest {
     }
   }
 
-  private String timeSince(long start) throws Exception {
+  /**
+   * String representation of time since the given start timestamp.
+   */
+  private void messageTimeSince(String message, long start) throws Exception {
+    System.out.println();
     long ticks = getTick() - start;
-    return "~" + (ticks/1000000) + " seconds (" + ticks + " ticks)";
+    System.out.println(String.format("%s after ~ %d second (%d ticks)", message, ticks / 1000000, ticks);
+    System.out.flush();
   }
 
   /**
