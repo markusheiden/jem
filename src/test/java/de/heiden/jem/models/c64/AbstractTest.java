@@ -167,7 +167,7 @@ public abstract class AbstractTest {
     System.out.flush();
     System.out.println();
     System.out.println();
-    new Disassembler().disassemble(CodeBuffer.fromProgram(bytes), new PrintWriter(System.out));
+    new Disassembler().listAndDisassemble(CodeBuffer.fromProgram(bytes), new PrintWriter(System.out));
     System.out.println();
     new Dumper().dump(CodeBuffer.fromProgram(bytes), new PrintWriter(System.out));
     System.out.flush();
