@@ -10,7 +10,7 @@ public class StringUtil {
   /**
    * Charset.
    */
-  private static final PetSCIICharset charset = new PetSCIICharset();
+  private static final PetSCIICharset charset = new PetSCIICharset(false);
 
   /**
    * Read string from bus.
