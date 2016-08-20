@@ -35,20 +35,12 @@ public class Acid800Test extends AbstractProgramSuiteTest {
     });
   }
 
-  /**
-   * Condition for "test passed": Green border.
-   */
-  private final Condition passed = inMemory(BORDER, GREEN);
-
-  /**
-   * Condition for "test failed": Red border.
-   */
-  private final Condition failed = inMemory(BORDER, RED);
-
   @Test
   public void test() throws Exception {
     loadAndRun(program);
 
+    Condition passed = greenBorder;
+    Condition failed = redBorder;
     Condition result = waitSecondsFor(1, passed, failed);
     System.out.println(captureScreen());
 

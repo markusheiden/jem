@@ -45,14 +45,13 @@ public class LorenzTest extends AbstractProgramSuiteTest {
 
     loadAndRun(program);
 
-    Condition ok = onConsole("- ok");
-    Condition right = onConsole("right");
-    Condition error = onConsole("error");
-    Condition event = waitSecondsFor(999, ok, right, error);
+    Condition passed = onConsole("- ok");
+    Condition failed = onConsole("right", "error");
+    Condition event = waitSecondsFor(999, passed, failed);
     waitCycles(1000);
 
     // Assert that test program exits with "OK" message.
     // Consider everything else (timeout, error messages) as a test failure.
-    assertSame(ok, event);
+    assertSame(passed, event);
   }
 }
