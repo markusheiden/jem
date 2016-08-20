@@ -101,7 +101,7 @@ public abstract class AbstractD64SuiteTest extends AbstractTest {
    * @param maxSeconds Max seconds to wait. Assumes 1 MHz clock.
    */
   protected void testBorderResult(int maxSeconds, boolean screenCapture) throws Exception {
-    loadAndRun(programName, new byte[0]);
+    loadAndRun(programName, program);
 
     Condition passed = greenBorder;
     Condition failed1 = lightRedBorder;
