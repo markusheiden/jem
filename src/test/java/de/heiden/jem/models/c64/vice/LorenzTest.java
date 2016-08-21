@@ -1,20 +1,19 @@
 package de.heiden.jem.models.c64.vice;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertSame;
+import de.heiden.jem.models.c64.AbstractProgramSuiteTest;
+import de.heiden.jem.models.c64.Condition;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized.Parameters;
+import org.serialthreads.agent.TransformingParameterized;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized.Parameters;
-import org.serialthreads.agent.TransformingParameterized;
-
-import de.heiden.jem.models.c64.AbstractProgramSuiteTest;
-import de.heiden.jem.models.c64.Condition;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
 
 /**
  * Testsuite 2.15.
@@ -88,12 +87,12 @@ public class LorenzTest extends AbstractProgramSuiteTest {
   @Test
   public void test() throws Exception {
     // ignore some failing tests, because functionality has not been implemented yet
-    assertFalse(programName.startsWith("cia"));
-    assertFalse(programName.startsWith("cnt"));
-    assertFalse(programName.startsWith("icr"));
-    assertFalse(programName.startsWith("imr"));
-    assertFalse(programName.startsWith("irq"));
-    assertFalse(programName.startsWith("loadth"));
+    assertFalse("Not correctly implemented yet", programName.startsWith("cia"));
+    assertFalse("Not correctly implemented yet", programName.startsWith("cnt"));
+    assertFalse("Not correctly implemented yet", programName.startsWith("icr"));
+    assertFalse("Not correctly implemented yet", programName.startsWith("imr"));
+    assertFalse("Not correctly implemented yet", programName.startsWith("irq"));
+    assertFalse("Not correctly implemented yet", programName.startsWith("loadth"));
 
     loadAndRun(program);
 
