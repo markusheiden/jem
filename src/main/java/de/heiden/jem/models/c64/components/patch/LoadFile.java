@@ -45,11 +45,11 @@ public class LoadFile extends Patch {
 
       // Continue at $F5A9.
       state.PC = 0xF5A9;
+      return DO_NOT_EXECUTE;
 
     } catch (IOException e) {
       logger.error("Failed to load program.", e);
+      return RTS;
     }
-
-    return DO_NOT_EXECUTE;
   }
 }
