@@ -54,16 +54,17 @@ public class LoadFromDirectory extends Patch {
 
       // Continue at $F5A9: Successful load.
       state.PC = 0xF5A9;
+      return DO_NOT_EXECUTE;
 
     } catch (FileNotFoundException e) {
       logger.warn("File not found {}.", filename, e);
       state.PC = 0xF704;
-      return -1;
+      return DO_NOT_EXECUTE;
 
     } catch (IOException e) {
       logger.error("Failed to load {}.", filename, e);
+      return RTS;
     }
 
-    return DO_NOT_EXECUTE;
   }
 }

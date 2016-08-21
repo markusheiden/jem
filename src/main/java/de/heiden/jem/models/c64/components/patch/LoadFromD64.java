@@ -54,7 +54,7 @@ public class LoadFromD64 extends Patch {
     if (!file.isPresent()) {
       logger.warn("File not found {}.", StringUtil.read(name));
       state.PC = 0xF704;
-      return -1;
+      return DO_NOT_EXECUTE;
     }
 
     byte[] content = d64.read(file.get());
@@ -68,11 +68,11 @@ public class LoadFromD64 extends Patch {
 
       // Continue at $F5A9: Successful load.
       state.PC = 0xF5A9;
+      return DO_NOT_EXECUTE;
 
     } catch (IOException e) {
       logger.error("Failed to load {}.", file.toString(), e);
+      return RTS;
     }
-
-    return DO_NOT_EXECUTE;
   }
 }
