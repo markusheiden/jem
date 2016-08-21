@@ -19,6 +19,8 @@ import org.junit.runner.RunWith;
 import org.serialthreads.agent.Transform;
 import org.serialthreads.agent.TransformingRunner;
 import org.serialthreads.transformer.strategies.frequent3.FrequentInterruptsTransformer3;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 import de.heiden.c64dt.assembler.CodeBuffer;
@@ -34,6 +36,11 @@ import de.heiden.jem.models.c64.components.patch.LoadFromDirectory;
 @RunWith(TransformingRunner.class)
 @Transform(transformer = FrequentInterruptsTransformer3.class, classPrefixes = "de.heiden.jem")
 public abstract class AbstractTest {
+  /**
+   * Logger.
+   */
+  private final Logger log = LoggerFactory.getLogger(getClass());
+
   /**
    * VIC border color.
    */
@@ -282,13 +289,16 @@ public abstract class AbstractTest {
   }
 
   /**
-   * String representation of time since the given start timestamp.
+   * Log debug message including the time since the given start timestamp.
    */
   private void messageTimeSince(String message, long start) throws Exception {
+    // First flush system out.
     System.out.println();
-    long ticks = getTick() - start;
-    System.out.println(String.format("%s after ~ %d seconds (%d ticks)", message, ticks / 1000000, ticks));
     System.out.flush();
+
+    // Log debug message.
+    long ticks = getTick() - start;
+    log.debug("{} after ~ {} seconds ({} ticks)", message, ticks / 1000000, ticks);
   }
 
   /**
