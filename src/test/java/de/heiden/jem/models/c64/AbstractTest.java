@@ -285,8 +285,9 @@ public abstract class AbstractTest {
    * @param s String
    */
   protected void type(String s) throws Exception {
+    Button dummySource = new Button();
     for (char c : s.toCharArray()) {
-      KeyEvent event = new KeyEvent(new Button(), 0, 0, 0, 0, c, 0);
+      KeyEvent event = new KeyEvent(dummySource, 0, 0, 0, 0, c, 0);
       systemIn.keyPressed(event);
       waitCycles(21000); // wait at least one interrupt
       systemIn.keyReleased(event);
