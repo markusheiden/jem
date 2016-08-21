@@ -36,9 +36,10 @@ public class LoadFile extends Patch {
     WordBus wordBus = new WordBus(bus);
 
     try {
+      ByteArrayInputStream file = new ByteArrayInputStream(content);
       int endAddress = bus.read(0xB9) == 0 ?
-        FileUtil.read(new ByteArrayInputStream(content), wordBus.readWord(0xC3), bus) :
-        FileUtil.read(new ByteArrayInputStream(content), bus);
+        FileUtil.read(file, wordBus.readWord(0xC3), bus) :
+        FileUtil.read(file, bus);
 
       wordBus.writeWord(0xAE, endAddress);
 

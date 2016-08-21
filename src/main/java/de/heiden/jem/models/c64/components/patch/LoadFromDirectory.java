@@ -20,26 +20,9 @@ import java.nio.file.Path;
  */
 public class LoadFromDirectory extends Patch {
   /**
-   * Base package to load files from.
-   */
-  private final String basePackage;
-
-  /**
    * Base directory to load files from.
    */
   private final Path baseDir;
-
-  /**
-   * Constructor.
-   *
-   * @param basePackage Base package to load files from
-   */
-  public LoadFromDirectory(String basePackage) {
-    super(0xF4C4);
-
-    this.basePackage = basePackage;
-    this.baseDir = null;
-  }
 
   /**
    * Constructor.
@@ -49,7 +32,6 @@ public class LoadFromDirectory extends Patch {
   public LoadFromDirectory(Path baseDirectory) {
     super(0xF4C4);
 
-    this.basePackage = null;
     this.baseDir = baseDirectory;
   }
 
@@ -63,11 +45,7 @@ public class LoadFromDirectory extends Patch {
     }
 
     try {
-      InputStream file = baseDir != null ?
-        Files.newInputStream(baseDir.resolve(filename)) :
-        getClass().getResourceAsStream(basePackage + "/" + filename);
-      assert file != null : "file " + filename + " exists";
-
+      InputStream file = Files.newInputStream(baseDir.resolve(filename));
       int endAddress = bus.read(0xB9) == 0 ?
         FileUtil.read(file, wordBus.readWord(0xC3), bus) :
         FileUtil.read(file, bus);
