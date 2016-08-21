@@ -1,7 +1,11 @@
 package de.heiden.jem.models.c64;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
+import de.heiden.c64dt.disk.FileType;
+import de.heiden.c64dt.disk.d64.D64;
+import de.heiden.jem.models.c64.util.StringUtil;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized.Parameter;
+import org.serialthreads.agent.TransformingParameterized;
 
 import java.net.URL;
 import java.nio.file.Files;
@@ -12,13 +16,8 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized.Parameter;
-import org.serialthreads.agent.TransformingParameterized;
-
-import de.heiden.c64dt.disk.FileType;
-import de.heiden.c64dt.disk.d64.D64;
-import de.heiden.jem.models.c64.util.StringUtil;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
 
 /**
  * Base class for test defined via a program suite.
@@ -101,6 +100,6 @@ public abstract class AbstractD64SuiteTest extends AbstractTest {
       printScreen();
     }
 
-    assertSame(passed, result);
+    assertSame("Test failed", passed, result);
   }
 }
