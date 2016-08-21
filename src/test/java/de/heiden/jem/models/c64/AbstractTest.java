@@ -1,16 +1,11 @@
 package de.heiden.jem.models.c64;
 
-import java.awt.*;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Arrays;
-
+import de.heiden.c64dt.assembler.CodeBuffer;
+import de.heiden.c64dt.assembler.Disassembler;
+import de.heiden.c64dt.assembler.Dumper;
+import de.heiden.c64dt.util.HexUtil;
+import de.heiden.jem.models.c64.components.patch.LoadFile;
+import de.heiden.jem.models.c64.components.patch.LoadFromDirectory;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.rules.TestWatcher;
@@ -23,12 +18,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
-import de.heiden.c64dt.assembler.CodeBuffer;
-import de.heiden.c64dt.assembler.Disassembler;
-import de.heiden.c64dt.assembler.Dumper;
-import de.heiden.c64dt.util.HexUtil;
-import de.heiden.jem.models.c64.components.patch.LoadFile;
-import de.heiden.jem.models.c64.components.patch.LoadFromDirectory;
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Arrays;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
 
 /**
  * Test support.
@@ -92,13 +94,90 @@ public abstract class AbstractTest {
   private byte[] bytes;
 
   /**
+   * Create test C64.
+   *
+   * @param threadName Name C64 thread.
+   */
+  protected void createC64(String threadName) throws Exception {
+    c64 = new TestC64();
+    c64.setSystemOut(console);
+    systemIn = c64.getSystemIn();
+
+    thread = new Thread(() -> {
+      try {
+        c64.start();
+      } catch (Exception e) {
+        AbstractTest.this.exception = e;
+      }
+    }, threadName);
+    thread.start();
+
+    // Wait for boot to finish.
+    assertSame(ready, waitSecondsFor(3, ready));
+    waitCycles(100000);
+    // Reset program end flag.
+    c64.hasEnded();
+
+    console.clear();
+    console.setLower(true);
+  }
+
+  /**
+   * Convert classpath resource to {@link Path}.
+   */
+  protected Path path(String classpath) throws Exception {
+    URL url = getClass().getResource(classpath);
+    assertNotNull("Classpath resource " + classpath + " exists", url);
+    return Paths.get(url.toURI());
+  }
+
+  /**
+   * Load program relative.
+   *
+   * @param programName Name of program, without suffix.
+   * @param device Device to load from.
+   */
+  protected void load(String programName, int device) throws Exception {
+    load(programName, device, 0);
+  }
+
+  /**
+   * Load program absolute.
+   *
+   * @param programName Name of program, without suffix.
+   * @param device Device to load from.
+   */
+  protected void load(String programName, int device, int mode) throws Exception {
+    // Reset program end flag.
+    c64.hasEnded();
+
+    // Clear console to be able to wait for "READY.".
+    console.clear();
+
+    type("load\"" + programName + "\"," + device + "," + mode + "\n");
+    assertSame(ready, waitSecondsFor(10, ready));
+  }
+
+  /**
+   * Run program.
+   */
+  protected void run() throws Exception {
+    // Reset program end flag.
+    c64.hasEnded();
+
+    // Clear console.
+    console.clear();
+
+    type("run\n");
+  }
+
+  /**
    * Load program from classpath and start it via "run".
    *
    * @param program Where to find program in classpath.
    */
   protected void loadAndRun(String program) throws Exception {
-    URL url = getClass().getResource(program);
-    loadAndRun(Paths.get(url.toURI()));
+    loadAndRun(path(program));
   }
 
   /**
@@ -111,7 +190,7 @@ public abstract class AbstractTest {
     String programName = program.getFileName().toString();
     programName = programName.substring(0, programName.indexOf(".prg"));
 
-    setUp(programName);
+    createC64(programName);
     c64.add(new LoadFromDirectory(program.getParent()));
     doLoadAndRun(programName, Files.readAllBytes(program));
   }
@@ -123,7 +202,7 @@ public abstract class AbstractTest {
    * @param program Program.
    */
   protected void loadAndRun(String programName, byte[] program) throws Exception {
-    setUp(programName);
+    createC64(programName);
     c64.add(new LoadFile(program));
     doLoadAndRun(programName, program);
   }
@@ -137,41 +216,12 @@ public abstract class AbstractTest {
   private void doLoadAndRun(String programName, byte[] bytes) throws Exception {
     this.bytes = bytes;
 
-    // Wait for boot to finish.
-    thread.start();
-    waitCyclesFor(3000000, onConsole("READY.\n"));
-    console.clear();
-    console.setLower(true);
-
     // Load program.
-    type("load\"" + programName + "\",8\n");
+    load(programName, 8);
     // Skip further loads
     c64.rts(0xE16F);
 
-    // Reset program end flag.
-    c64.hasEnded();
-
-    // Start program.
-    type("run\n");
-  }
-
-  /**
-   * Setup test C64.
-   *
-   * @param threadName Name C64 thread.
-   */
-  protected void setUp(String threadName) throws Exception {
-    c64 = new TestC64();
-    c64.setSystemOut(console);
-    systemIn = c64.getSystemIn();
-
-    thread = new Thread(() -> {
-      try {
-        c64.start();
-      } catch (Exception e) {
-        AbstractTest.this.exception = e;
-      }
-    }, threadName);
+    run();
   }
 
   @Rule
@@ -366,6 +416,11 @@ public abstract class AbstractTest {
       return "BRK";
     }
   };
+
+  /**
+   * Wait for "READY." on console.
+   */
+  private final Condition ready = onConsole("ready.\n");
 
   /**
    * Condition "text on console".
