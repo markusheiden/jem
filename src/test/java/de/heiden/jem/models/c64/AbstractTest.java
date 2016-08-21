@@ -112,9 +112,12 @@ public abstract class AbstractTest {
     }, threadName);
     thread.start();
 
+    // Reset program end flag.
+    c64.hasEnded();
+
     // Wait for boot to finish.
-    assertSame(ready, waitSecondsFor(3, ready));
-    waitCycles(100000);
+    assertSame(programEnd, waitSecondsFor(3, programEnd));
+
     // Reset program end flag.
     c64.hasEnded();
 
