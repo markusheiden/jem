@@ -1,8 +1,9 @@
 package de.heiden.jem.models.c64.components.cpu;
 
-import de.heiden.jem.components.bus.BusDevice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import de.heiden.jem.components.bus.BusDevice;
 
 /**
  * Patch for escaping emulation.
@@ -12,6 +13,11 @@ public abstract class Patch {
    * Logger.
    */
   protected final Logger logger = LoggerFactory.getLogger(getClass());
+
+  /**
+   * RTS.
+   */
+  protected static final int RTS = 0x60;
 
   /**
    * Address to patch.

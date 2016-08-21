@@ -56,6 +56,6 @@ public class LoadFile extends Patch {
       logger.error("Failed to load program.", e);
     }
 
-    return 0x60; // rts
+    return RTS;
   }
 }

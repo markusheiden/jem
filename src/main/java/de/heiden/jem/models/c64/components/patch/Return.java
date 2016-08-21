@@ -19,7 +19,6 @@ public class Return extends Patch {
 
   @Override
   protected int execute(CPU6510State state, BusDevice bus) {
-    // RTS
-    return 0x60;
+    return RTS;
   }
 }

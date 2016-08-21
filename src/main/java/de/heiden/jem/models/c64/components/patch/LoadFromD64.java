@@ -73,6 +73,6 @@ public class LoadFromD64 extends Patch {
       logger.error("Failed to load {}", file.toString(), e);
     }
 
-    return 0x60; // rts
+    return RTS;
   }
 }

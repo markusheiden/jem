@@ -85,6 +85,6 @@ public class LoadFromDirectory extends Patch {
       logger.error("Failed to load {}", filename, e);
     }
 
-    return 0x60; // rts
+    return RTS;
   }
 }
