@@ -122,7 +122,6 @@ public abstract class AbstractTest {
     c64.hasEnded();
 
     console.clear();
-    console.setLower(true);
   }
 
   /**
