@@ -91,7 +91,6 @@ public class LorenzTest extends AbstractProgramSuiteTest {
     assertFalse("Not correctly implemented yet", programName.startsWith("cnt"));
     assertFalse("Not correctly implemented yet", programName.startsWith("icr"));
     assertFalse("Not correctly implemented yet", programName.startsWith("imr"));
-    assertFalse("Not correctly implemented yet", programName.startsWith("irq"));
     assertFalse("Not correctly implemented yet", programName.startsWith("loadth"));
 
     loadAndRun(program);
