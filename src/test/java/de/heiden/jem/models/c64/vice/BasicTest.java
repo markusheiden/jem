@@ -1,6 +1,5 @@
 package de.heiden.jem.models.c64.vice;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
 
 import java.util.Collection;
@@ -16,19 +15,17 @@ import de.heiden.jem.models.c64.AbstractProgramSuiteTest;
  * VICE test suite.
  */
 @RunWith(TransformingParameterized.class)
-public class CpuJamTest extends AbstractProgramSuiteTest {
+public class BasicTest extends AbstractProgramSuiteTest {
   @Parameterized.Parameters(name = "{1}")
   public static Collection<Object[]> parameters() throws Exception {
-    return createParameters("/vice-emu-testprogs/CPU/cpujam/nojam.prg");
+    return createParameters("/vice-emu-testprogs/C64/autostart/basic/basictest.prg");
   }
 
   @Test
   public void test() throws Exception {
-    assertFalse(programName.equals("nojam"));
-
-    testBorderResult(60, true);
+    testBorderResult(1, false);
     // Check again, because the border is set to green some cycles before the end of the test.
     waitSeconds(1);
-    assertSame(greenBorder, waitCyclesFor(1, greenBorder));
+    assertSame(greenBorder, waitCyclesFor(1, greenBorder, lightRedBorder));
   }
 }
