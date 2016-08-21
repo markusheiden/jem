@@ -493,7 +493,7 @@ public class CIA6526 implements BusDevice {
       if (mode == CR_MODE_O2) {
         // timer A enabled
         // start clock counting, if not already counting
-        if (!_timerACLK) {
+        if (!_timerACLK && _timerA > 0) {
           // count ticks
           _timerABase = _clock.getTick();
           _clock.addClockEvent(_timerABase + _timerA, _timerAUnderflowEvent);
@@ -593,7 +593,7 @@ public class CIA6526 implements BusDevice {
       {
         // timer B enabled and not counting timer A underflows
         // count ticks
-        if (!_timerBCLK) {
+        if (!_timerBCLK && _timerB > 0) {
           _timerBBase = _clock.getTick();
           _clock.addClockEvent(_timerBBase + _timerB, _timerBUnderflowEvent);
           _timerBCLK = true;
