@@ -17,6 +17,7 @@ import de.heiden.jem.models.c64.util.FileUtil;
 /**
  * Replaces standard C64 load routine at $F4A5.
  * Intercepts load routine at $F4C4 directly after printing "SEARCHING FOR".
+ * Loads files from a D64 image.
  */
 public class LoadFromD64 extends Patch {
   /**

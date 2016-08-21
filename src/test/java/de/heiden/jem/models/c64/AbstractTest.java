@@ -26,7 +26,7 @@ import de.heiden.c64dt.assembler.Disassembler;
 import de.heiden.c64dt.assembler.Dumper;
 import de.heiden.c64dt.util.HexUtil;
 import de.heiden.jem.models.c64.components.patch.LoadFile;
-import de.heiden.jem.models.c64.components.patch.LoadProgram;
+import de.heiden.jem.models.c64.components.patch.LoadFromDirectory;
 
 /**
  * Test support.
@@ -105,7 +105,7 @@ public abstract class AbstractTest {
     programName = programName.substring(0, programName.indexOf(".prg"));
 
     setUp(programName);
-    c64.add(new LoadFile(program.getParent()));
+    c64.add(new LoadFromDirectory(program.getParent()));
     doLoadAndRun(programName, Files.readAllBytes(program));
   }
 
@@ -117,7 +117,7 @@ public abstract class AbstractTest {
    */
   protected void loadAndRun(String programName, byte[] program) throws Exception {
     setUp(programName);
-    c64.add(new LoadProgram(program));
+    c64.add(new LoadFile(program));
     doLoadAndRun(programName, program);
   }
 
