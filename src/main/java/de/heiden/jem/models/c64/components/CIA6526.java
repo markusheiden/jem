@@ -492,14 +492,14 @@ public class CIA6526 implements BusDevice {
           _timerABase = _clock.getTick();
           _clock.addClockEvent(_timerABase + _timerA, _timerAUnderflowEvent);
           _timerACLK = true;
-          _timerACNT = false;
         }
+        _timerACNT = false;
       } else if (mode == CR_MODE_CNT) {
         // count CNT raising edges
         if (_timerACLK) {
           _clock.removeClockEvent(_timerAUnderflowEvent);
+          _timerACLK = false;
         }
-        _timerACLK = false;
         _timerACNT = true;
       }
     } else {
@@ -507,8 +507,8 @@ public class CIA6526 implements BusDevice {
       // stop clock counting, if counting
       if (_timerACLK) {
         _clock.removeClockEvent(_timerAUnderflowEvent);
+        _timerACLK = false;
       }
-      _timerACLK = false;
       _timerACNT = false;
     }
   }
