@@ -223,6 +223,24 @@ public abstract class AbstractTest {
     run();
   }
 
+  /**
+   * Evaluate border color to determine test result.
+   *
+   * @param maxSeconds Max seconds to wait. Assumes 1 MHz clock.
+   * @param screenCapture Capture screen and print it to {@link System#out}?.
+   */
+  protected final void doTestBorderResult(int maxSeconds, boolean screenCapture) throws Exception {
+    Condition passed = greenBorder;
+    Condition failed1 = lightRedBorder;
+    Condition failed2 = redBorder;
+    Condition result = waitSecondsFor(maxSeconds, passed, failed1, failed2);
+    if (screenCapture) {
+      printScreen();
+    }
+
+    assertSame("Test failed", passed, result);
+  }
+
   @Rule
   public final TestWatcher dumpOnFail = new TestWatcher() {
     @Override
