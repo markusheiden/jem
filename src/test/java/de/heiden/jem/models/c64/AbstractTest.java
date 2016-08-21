@@ -249,8 +249,6 @@ public abstract class AbstractTest {
         dumpProgram();
       } catch (Exception io) {
         // ignore
-      } finally {
-        super.failed(e, description);
       }
     }
   };
