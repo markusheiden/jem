@@ -84,9 +84,9 @@ public abstract class AbstractTest {
   protected Thread thread;
 
   /**
-   * Exception.
+   * Throwable from C64 thread, if any.
    */
-  private volatile Exception exception;
+  private volatile Throwable throwable;
 
   /**
    * Program.
@@ -106,8 +106,8 @@ public abstract class AbstractTest {
     thread = new Thread(() -> {
       try {
         c64.start();
-      } catch (Exception e) {
-        AbstractTest.this.exception = e;
+      } catch (Throwable t) {
+        AbstractTest.this.throwable = t;
       }
     }, threadName);
     thread.start();
@@ -345,10 +345,10 @@ public abstract class AbstractTest {
         return null;
       }
 
-      if (exception != null) {
+      if (throwable != null) {
         messageTimeSince("Exception", start);
-        // Abort on exceptions
-        throw exception;
+        // Abort on throwable from C64 thread.
+        throw new AssertionError(throwable);
       }
 
       waitCycles(10000);
@@ -384,7 +384,7 @@ public abstract class AbstractTest {
    */
   protected void waitCycles(long cycles) throws Exception {
     for (long end = getTick() + cycles; getTick() < end; ) {
-      if (exception != null) {
+      if (throwable != null) {
         // Early exit on exceptions, because the emulation has been halted
         return;
       }
