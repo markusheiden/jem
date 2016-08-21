@@ -1,10 +1,10 @@
 package de.heiden.jem.models.c64;
 
+import de.heiden.c64dt.charset.PetSCIICharset;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import de.heiden.c64dt.charset.PetSCIICharset;
 
 /**
  * Buffer for C64 screen output
@@ -13,7 +13,7 @@ public class ConsoleBuffer extends OutputStream {
   /**
    * Charset.
    */
-  private final PetSCIICharset charset = new PetSCIICharset();
+  private final PetSCIICharset charset = new PetSCIICharset(false);
 
   /**
    * Buffer for screen output.

@@ -1,11 +1,5 @@
 package de.heiden.jem.models.c64.components.patch;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-
 import de.heiden.c64dt.util.ByteUtil;
 import de.heiden.jem.components.bus.BusDevice;
 import de.heiden.jem.components.bus.WordBus;
@@ -13,6 +7,12 @@ import de.heiden.jem.models.c64.components.cpu.CPU6510State;
 import de.heiden.jem.models.c64.components.cpu.Patch;
 import de.heiden.jem.models.c64.util.FileUtil;
 import de.heiden.jem.models.c64.util.StringUtil;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 /**
  * Replaces standard C64 load routine at $F4A5.
@@ -59,7 +59,9 @@ public class LoadFromDirectory extends Patch {
     // Read filename from ($BB), length ($B7)
     WordBus wordBus = new WordBus(bus);
     String filename = StringUtil.read(bus, wordBus.readWord(0xBB), bus.read(0xB7));
-    filename = filename.toLowerCase() + ".prg";
+    if (!filename.contains(".")) {
+      filename = filename.toLowerCase() + ".prg";
+    }
 
     try {
       InputStream file = baseDir != null ?

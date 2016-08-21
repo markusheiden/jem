@@ -179,13 +179,16 @@
   </component>
   <component name="EclipseCodeFormatter">
     <option name="defaultSettings" value="true" />
+    <option name="eclipseVersion" value="ECLIPSE_44" />
     <option name="formatter" value="ECLIPSE" />
     <option name="id" value="1416827892794" />
     <option name="importOrderConfigFilePath" value="$USER_HOME$/s24-imports.importorder" />
     <option name="importOrderFromFile" value="true" />
     <option name="name" value="default" />
+    <option name="optimizeImports" value="false" />
     <option name="pathToConfigFileJava" value="$USER_HOME$/s24-codestyle.xml" />
     <option name="selectedJavaProfile" value="Shopping24 GmbH" />
+    <option name="useOldEclipseJavaFormatter" value="true" />
   </component>
   <component name="EclipseCompilerSettings">
     <option name="GENERATE_NO_WARNINGS" value="true" />
