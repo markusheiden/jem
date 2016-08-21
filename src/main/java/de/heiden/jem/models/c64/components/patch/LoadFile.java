@@ -1,15 +1,13 @@
 package de.heiden.jem.models.c64.components.patch;
 
-import java.io.ByteArrayInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-
-import de.heiden.c64dt.util.ByteUtil;
 import de.heiden.jem.components.bus.BusDevice;
 import de.heiden.jem.components.bus.WordBus;
 import de.heiden.jem.models.c64.components.cpu.CPU6510State;
 import de.heiden.jem.models.c64.components.cpu.Patch;
 import de.heiden.jem.models.c64.util.FileUtil;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 
 /**
  * Replaces standard C64 load routine at $F4A5.
@@ -44,18 +42,13 @@ public class LoadFile extends Patch {
 
       wordBus.writeWord(0xAE, endAddress);
 
-      state.C = false; // OK
-      state.X = ByteUtil.lo(endAddress);
-      state.Y = ByteUtil.hi(endAddress);
-
-    } catch (FileNotFoundException e) {
-      state.PC = 0xF704;
-      return -1;
+      // Continue at $F5A9.
+      state.PC = 0xF5A9;
 
     } catch (IOException e) {
       logger.error("Failed to load program.", e);
     }
 
-    return RTS;
+    return DO_NOT_EXECUTE;
   }
 }
