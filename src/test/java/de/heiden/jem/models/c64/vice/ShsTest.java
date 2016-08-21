@@ -1,15 +1,14 @@
 package de.heiden.jem.models.c64.vice;
 
-import static org.junit.Assert.assertFalse;
-
-import java.util.Collection;
-
+import de.heiden.jem.models.c64.AbstractProgramSuiteTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.serialthreads.agent.TransformingParameterized;
 
-import de.heiden.jem.models.c64.AbstractProgramSuiteTest;
+import java.util.Collection;
+
+import static org.junit.Assert.assertFalse;
 
 /**
  * VICE test suite.
@@ -24,7 +23,7 @@ public class ShsTest extends AbstractProgramSuiteTest {
   @Test
   public void test() throws Exception {
     // These test seem to run endless, let them fail fast for now.
-    assertFalse(programName.equals("shsabsy3"));
+    assertFalse("Not correctly implemented yet", programName.equals("shsabsy3"));
 
     testBorderResult(60, true);
   }
