@@ -12,7 +12,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
 
 /**
@@ -86,13 +85,6 @@ public class LorenzTest extends AbstractProgramSuiteTest {
 
   @Test
   public void test() throws Exception {
-    // ignore some failing tests, because functionality has not been implemented yet
-    assertFalse("Not correctly implemented yet", programName.startsWith("cia"));
-    assertFalse("Not correctly implemented yet", programName.startsWith("cnt"));
-    assertFalse("Not correctly implemented yet", programName.startsWith("icr"));
-    assertFalse("Not correctly implemented yet", programName.startsWith("imr"));
-    assertFalse("Not correctly implemented yet", programName.startsWith("loadth"));
-
     loadAndRun(program);
 
     Condition passed = onConsole("- ok");
