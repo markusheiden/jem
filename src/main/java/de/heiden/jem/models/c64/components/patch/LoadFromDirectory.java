@@ -1,6 +1,5 @@
 package de.heiden.jem.models.c64.components.patch;
 
-import de.heiden.c64dt.util.ByteUtil;
 import de.heiden.jem.components.bus.BusDevice;
 import de.heiden.jem.components.bus.WordBus;
 import de.heiden.jem.models.c64.components.cpu.CPU6510State;
@@ -75,18 +74,18 @@ public class LoadFromDirectory extends Patch {
 
       wordBus.writeWord(0xAE, endAddress);
 
-      state.C = false; // OK
-      state.X = ByteUtil.lo(endAddress);
-      state.Y = ByteUtil.hi(endAddress);
+      // Continue at $F5A9: Successful load.
+      state.PC = 0xF5A9;
 
     } catch (FileNotFoundException e) {
+      logger.warn("File not found {}.", filename, e);
       state.PC = 0xF704;
       return -1;
 
     } catch (IOException e) {
-      logger.error("Failed to load {}", filename, e);
+      logger.error("Failed to load {}.", filename, e);
     }
 
-    return RTS;
+    return DO_NOT_EXECUTE;
   }
 }

@@ -274,7 +274,7 @@ public class CPU6510 implements ClockedComponent {
           Patch patch = patches.get(_state.PC - 1);
           if (patch != null) {
             int opcode = patch.execute(_state, _bus);
-            if (opcode >= 0) {
+            if (opcode != Patch.DO_NOT_EXECUTE) {
               OPCODES[opcode].execute();
             }
           } else {
