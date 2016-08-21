@@ -62,7 +62,7 @@ public abstract class AbstractTest {
   /**
    * Console output of test C64.
    */
-  protected ConsoleBuffer console;
+  protected final ConsoleBuffer console = new ConsoleBuffer();
 
   /**
    * Keyboard input for test C64.
@@ -154,8 +154,6 @@ public abstract class AbstractTest {
    * @param threadName Name C64 thread.
    */
   protected void setUp(String threadName) throws Exception {
-    console = new ConsoleBuffer();
-
     c64 = new TestC64();
     c64.setSystemOut(console);
     systemIn = c64.getSystemIn();
@@ -250,7 +248,7 @@ public abstract class AbstractTest {
   /**
    * Wait for a string to appear on screen.
    *
-   * @param maxCycles Max cycles to wait
+   * @param maxCycles Max cycles to wait.
    * @param conditions Conditions.
    * @return Condition that met or null, if timeout.
    */
@@ -296,9 +294,18 @@ public abstract class AbstractTest {
   /**
    * Wait the given number of clock cycles.
    *
+   * @param seconds Seconds to wait. Assumes 1 MHz clock.
+   */
+  protected void waitSeconds(int seconds) throws Exception {
+    waitCycles(seconds * 1000000L);
+  }
+
+  /**
+   * Wait the given number of clock cycles.
+   *
    * @param cycles Cycles
    */
-  protected void waitCycles(int cycles) throws Exception {
+  protected void waitCycles(long cycles) throws Exception {
     for (long end = getTick() + cycles; getTick() < end; ) {
       if (exception != null) {
         // Early exit on exceptions, because the emulation has been halted

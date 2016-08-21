@@ -28,7 +28,7 @@ public class CpuJamTest extends AbstractProgramSuiteTest {
 
     testBorderResult(60, true);
     // Check again, because the border is set to green some cycles before the end of the test.
-    waitCycles(100);
-    assertSame(greenBorder, waitCyclesFor(100, greenBorder));
+    waitSeconds(1);
+    assertSame(greenBorder, waitCyclesFor(1, greenBorder));
   }
 }
