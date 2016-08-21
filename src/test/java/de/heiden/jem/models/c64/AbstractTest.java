@@ -147,16 +147,15 @@ public abstract class AbstractTest {
    * Load program absolute.
    *
    * @param programName Name of program, without suffix.
-   * @param device Device to load from.
+   * @param device Device address to load from.
+   * @param secondary Secondary address.
    */
-  protected void load(String programName, int device, int mode) throws Exception {
+  protected void load(String programName, int device, int secondary) throws Exception {
     // Reset program end flag.
     c64.hasEnded();
 
-    // Clear console to be able to wait for "READY.".
     console.clear();
-
-    type("load\"" + programName + "\"," + device + "," + mode + "\n");
+    type("load\"" + programName + "\"," + device + "," + secondary + "\n");
     assertSame(ready, waitSecondsFor(10, ready));
   }
 
@@ -167,9 +166,7 @@ public abstract class AbstractTest {
     // Reset program end flag.
     c64.hasEnded();
 
-    // Clear console.
     console.clear();
-
     type("run\n");
   }
 
