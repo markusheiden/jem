@@ -125,7 +125,7 @@ public class CIA6526 implements BusDevice {
       public void execute(long tick) {
         timerAUnderflow();
         _timerABase = tick;
-        if ((_controlA & CR_ONE_SHOT) == 0) {
+        if ((_controlA & CR_ONE_SHOT) == 0 && _timerA > 0) {
           // continuous mode -> restart timer.
           _clock.addClockEvent(_timerABase + _timerA, _timerAUnderflowEvent);
         } else {
@@ -141,7 +141,7 @@ public class CIA6526 implements BusDevice {
       public void execute(long tick) {
         timerBUnderflow();
         _timerBBase = tick;
-        if ((_controlB & CR_ONE_SHOT) == 0) {
+        if ((_controlB & CR_ONE_SHOT) == 0 && _timerB > 0) {
           // continuous mode -> restart timer.
           _clock.addClockEvent(_timerBBase + _timerB, _timerBUnderflowEvent);
         } else {
