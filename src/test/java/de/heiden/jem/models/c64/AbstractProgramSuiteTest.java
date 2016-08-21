@@ -1,7 +1,8 @@
 package de.heiden.jem.models.c64;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized.Parameter;
+import org.serialthreads.agent.TransformingParameterized;
 
 import java.net.URL;
 import java.nio.file.Files;
@@ -13,9 +14,8 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized.Parameter;
-import org.serialthreads.agent.TransformingParameterized;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
 
 /**
  * Base class for test defined via a program suite.
@@ -111,6 +111,6 @@ public abstract class AbstractProgramSuiteTest extends AbstractTest {
       printScreen();
     }
 
-    assertSame(passed, result);
+    assertSame("Test failed", passed, result);
   }
 }
