@@ -49,7 +49,9 @@ public class CIA6526 implements BusDevice {
 
   // system clock
   private final Clock _clock;
+  private final ClockEvent _timerALoadEvent;
   private final ClockEvent _timerAUnderflowEvent;
+  private final ClockEvent _timerBLoadEvent;
   private final ClockEvent _timerBUnderflowEvent;
 
   // address mask
@@ -68,7 +70,6 @@ public class CIA6526 implements BusDevice {
   private InputOutputPortImpl _portSerial;
 
   // timer A
-  private boolean _timerAIsRunning;
   private int _timerA; // LO: 0x04, HI 0x05
   private int _timerAInit; // LO: 0x04, HI 0x05
   private boolean _timerACLK; // increment timer A with clock?
@@ -76,7 +77,6 @@ public class CIA6526 implements BusDevice {
   private boolean _timerACNT; // increment timer A when raising edge at CNT?
 
   // timer B
-  private boolean _timerBIsRunning;
   private int _timerB; // LO: 0x06, HI 0x07
   private int _timerBInit; // LO: 0x04, HI 0x05
   private boolean _timerBCLK; // increment timer B with clock?
@@ -119,6 +119,14 @@ public class CIA6526 implements BusDevice {
 
     _clock = clock;
 
+    _timerALoadEvent = new ClockEvent("Timer A load") {
+      @Override
+      public void execute(long tick) {
+        _timerA = _timerAInit;
+        updateTimerAWrite();
+      }
+    };
+
     // event for timer a finished clock counting
     _timerAUnderflowEvent = new ClockEvent("Timer A underflow") {
       @Override
@@ -132,6 +140,14 @@ public class CIA6526 implements BusDevice {
           // one shot -> stop timer.
           _timerACLK = false;
         }
+      }
+    };
+
+    _timerBLoadEvent = new ClockEvent("Timer B load") {
+      @Override
+      public void execute(long tick) {
+        _timerB = _timerBInit;
+        updateTimerBWrite();
       }
     };
 
@@ -180,10 +196,6 @@ public class CIA6526 implements BusDevice {
    */
   public void reset() {
     // TODO
-    _timerAIsRunning = false;
-
-    _timerBIsRunning = false;
-
     _timeIsRunning = true;
     _timeLock = false;
   }
@@ -270,7 +282,7 @@ public class CIA6526 implements BusDevice {
       case 0x04: {
         _timerAInit = _timerAInit & 0xFF00 | value;
         if ((_controlA & CR_START) == 0) {
-          _timerA = _timerA & 0xFF00 | value;
+//          _timerA = _timerA & 0xFF00 | value;
         }
         updateTimerAWrite();
         break;
@@ -278,7 +290,8 @@ public class CIA6526 implements BusDevice {
       case 0x05: {
         _timerAInit = _timerAInit & 0x00FF | (value << 8);
         if ((_controlA & CR_START) == 0) {
-          _timerA = _timerA & 0x00FF | (value << 8);
+//          _timerA = _timerA & 0x00FF | (value << 8);
+          _timerA = _timerAInit;
         }
         updateTimerAWrite();
         break;
@@ -286,7 +299,7 @@ public class CIA6526 implements BusDevice {
       case 0x06: {
         _timerBInit = _timerBInit & 0xFF00 | value;
         if ((_controlB & CR_START) == 0) {
-          _timerB = _timerB & 0xFF00 | value;
+//          _timerB = _timerB & 0xFF00 | value;
         }
         updateTimerBWrite();
         break;
@@ -294,7 +307,8 @@ public class CIA6526 implements BusDevice {
       case 0x07: {
         _timerBInit = _timerBInit & 0x00FF | (value << 8);
         if ((_controlB & CR_START) == 0) {
-          _timerB = _timerB & 0x00FF | (value << 8);
+//          _timerB = _timerB & 0x00FF | (value << 8);
+          _timerB = _timerBInit;
         }
         updateTimerBWrite();
         break;
@@ -348,8 +362,7 @@ public class CIA6526 implements BusDevice {
       case 0x0E: {
         // load timer A
         if ((value & CR_LOAD) != 0) {
-          _timerA = _timerAInit;
-          updateTimerAWrite();
+          _clock.addClockEvent(_clock.getTick() + 2, _timerALoadEvent);
         }
         _controlA = value & (0xFF - CR_LOAD); // TODO correct?
         updateTimerAMode();
@@ -359,8 +372,7 @@ public class CIA6526 implements BusDevice {
       case 0x0F: {
         // load timer B
         if ((value & CR_LOAD) != 0) {
-          _timerB = _timerBInit;
-          updateTimerBWrite();
+          _clock.addClockEvent(_clock.getTick() + 2, _timerBLoadEvent);
         }
         _controlB = value & (0xFF - CR_LOAD); // TODO correct?
         updateTimerBMode();
