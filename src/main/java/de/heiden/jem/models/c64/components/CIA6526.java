@@ -269,21 +269,33 @@ public class CIA6526 implements BusDevice {
       }
       case 0x04: {
         _timerAInit = _timerAInit & 0xFF00 | value;
+        if ((_controlA & CR_START) == 0) {
+          _timerA = _timerA & 0xFF00 | value;
+        }
         updateTimerAWrite();
         break;
       }
       case 0x05: {
         _timerAInit = _timerAInit & 0x00FF | (value << 8);
+        if ((_controlA & CR_START) == 0) {
+          _timerA = _timerA & 0x00FF | (value << 8);
+        }
         updateTimerAWrite();
         break;
       }
       case 0x06: {
         _timerBInit = _timerBInit & 0xFF00 | value;
+        if ((_controlB & CR_START) == 0) {
+          _timerB = _timerB & 0xFF00 | value;
+        }
         updateTimerBWrite();
         break;
       }
       case 0x07: {
         _timerBInit = _timerBInit & 0x00FF | (value << 8);
+        if ((_controlB & CR_START) == 0) {
+          _timerB = _timerB & 0x00FF | (value << 8);
+        }
         updateTimerBWrite();
         break;
       }
@@ -493,29 +505,40 @@ public class CIA6526 implements BusDevice {
       if (mode == CR_MODE_O2) {
         // timer A enabled
         // start clock counting, if not already counting
-        if (!_timerACLK && _timerA > 0) {
-          // count ticks
-          _timerABase = _clock.getTick();
-          _clock.addClockEvent(_timerABase + _timerA, _timerAUnderflowEvent);
-          _timerACLK = true;
-        }
+        startTimerACLK();
         _timerACNT = false;
       } else if (mode == CR_MODE_CNT) {
         // count CNT raising edges
-        if (_timerACLK) {
-          _clock.removeClockEvent(_timerAUnderflowEvent);
-          _timerACLK = false;
-        }
+        stopTimerACLK();
         _timerACNT = true;
       }
     } else {
       // timer A disabled
       // stop clock counting, if counting
-      if (_timerACLK) {
-        _clock.removeClockEvent(_timerAUnderflowEvent);
-        _timerACLK = false;
-      }
+      stopTimerACLK();
       _timerACNT = false;
+    }
+  }
+
+  /**
+   * Start timer A CLK counting.
+   */
+  private void startTimerACLK() {
+    if (!_timerACLK && _timerA > 0) {
+      // count ticks, starting at next tick,
+      _timerABase = _clock.getTick() + 2;
+      _clock.addClockEvent(_timerABase + _timerA, _timerAUnderflowEvent);
+      _timerACLK = true;
+    }
+  }
+
+  /**
+   * Stop timer A CLK counting.
+   */
+  private void stopTimerACLK() {
+    if (_timerACLK) {
+      _clock.removeClockEvent(_timerAUnderflowEvent);
+      _timerACLK = false;
     }
   }
 
@@ -525,8 +548,11 @@ public class CIA6526 implements BusDevice {
   public void updateTimerARead() {
     if (_timerACLK) {
       long tick = _clock.getTick();
-      _timerA -= (int) (tick - _timerABase);
-      _timerABase = tick;
+      int diff = (int) (tick - _timerABase);
+      if (diff > 0) {
+        _timerA -= diff;
+        _timerABase = tick;
+      }
     }
   }
 
@@ -538,8 +564,7 @@ public class CIA6526 implements BusDevice {
       if (_timerA > 0) {
         _clock.updateClockEvent(_clock.getTick() + _timerA, _timerAUnderflowEvent);
       } else {
-        _clock.removeClockEvent(_timerAUnderflowEvent);
-        _timerACLK = false;
+        stopTimerACLK();
       }
     }
   }
@@ -597,29 +622,41 @@ public class CIA6526 implements BusDevice {
       if ((_controlB & 0x20) == 0) // Bit 5 cleared
       {
         // timer B enabled and not counting timer A underflows
-        // count ticks
-        if (!_timerBCLK && _timerB > 0) {
-          _timerBBase = _clock.getTick();
-          _clock.addClockEvent(_timerBBase + _timerB, _timerBUnderflowEvent);
-          _timerBCLK = true;
-          _timerBCNT = false;
-        }
+        // count ticks, starting at next tick,
+        startTimerBCLK();
+        _timerBCNT = false;
       } else {
         // count CNT raising edges
-        if (_timerBCLK) {
-          _clock.removeClockEvent(_timerBUnderflowEvent);
-        }
-        _timerBCLK = false;
+        stopTimerBCLK();
         _timerBCNT = true;
       }
     } else {
       // timer B disabled or counting timer A underflows
       // count CNT raising edges
-      if (_timerBCLK) {
-        _clock.removeClockEvent(_timerBUnderflowEvent);
-      }
-      _timerBCLK = false;
+      stopTimerBCLK();
       _timerBCNT = false;
+    }
+  }
+
+  /**
+   * Start timer B CLK counting.
+   */
+  private void startTimerBCLK() {
+    if (!_timerBCLK && _timerB > 0) {
+      // count ticks, starting at next tick,
+      _timerBBase = _clock.getTick() + 2;
+      _clock.addClockEvent(_timerBBase + _timerB, _timerBUnderflowEvent);
+      _timerBCLK = true;
+    }
+  }
+
+  /**
+   * Stop timer B CLK counting.
+   */
+  private void stopTimerBCLK() {
+    if (_timerBCLK) {
+      _clock.removeClockEvent(_timerBUnderflowEvent);
+      _timerBCLK = false;
     }
   }
 
@@ -629,8 +666,11 @@ public class CIA6526 implements BusDevice {
   public void updateTimerBRead() {
     if (_timerBCLK) {
       long tick = _clock.getTick();
-      _timerB -= (int) (tick - _timerBBase);
-      _timerBBase = tick;
+      int diff = (int) (tick - _timerBBase);
+      if (diff > 0) {
+        _timerB -= diff;
+        _timerBBase = tick;
+      }
     }
   }
 
@@ -642,8 +682,7 @@ public class CIA6526 implements BusDevice {
       if (_timerB > 0) {
         _clock.updateClockEvent(_clock.getTick() + _timerB, _timerBUnderflowEvent);
       } else {
-        _clock.removeClockEvent(_timerBUnderflowEvent);
-        _timerBCLK = false;
+        stopTimerBCLK();
       }
     }
   }
