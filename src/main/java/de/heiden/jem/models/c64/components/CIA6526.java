@@ -281,16 +281,12 @@ public class CIA6526 implements BusDevice {
       }
       case 0x04: {
         _timerAInit = _timerAInit & 0xFF00 | value;
-        if ((_controlA & CR_START) == 0) {
-//          _timerA = _timerA & 0xFF00 | value;
-        }
         updateTimerAWrite();
         break;
       }
       case 0x05: {
         _timerAInit = _timerAInit & 0x00FF | (value << 8);
         if ((_controlA & CR_START) == 0) {
-//          _timerA = _timerA & 0x00FF | (value << 8);
           _timerA = _timerAInit;
         }
         updateTimerAWrite();
@@ -298,16 +294,12 @@ public class CIA6526 implements BusDevice {
       }
       case 0x06: {
         _timerBInit = _timerBInit & 0xFF00 | value;
-        if ((_controlB & CR_START) == 0) {
-//          _timerB = _timerB & 0xFF00 | value;
-        }
         updateTimerBWrite();
         break;
       }
       case 0x07: {
         _timerBInit = _timerBInit & 0x00FF | (value << 8);
         if ((_controlB & CR_START) == 0) {
-//          _timerB = _timerB & 0x00FF | (value << 8);
           _timerB = _timerBInit;
         }
         updateTimerBWrite();
