@@ -86,8 +86,7 @@ public class CPU6510Debugger extends CPU6510 {
       if (_state.NMI || _state.IRQ && !_state.I) {
         logger.debug(Monitor.state(_state));
       } else {
-        logger.debug(Monitor.state(_state));
-        logger.debug(Monitor.disassemble(_state.PC, _bus));
+        logger.debug(Monitor.state(_state) + "  " + Monitor.disassemble(_state.PC, _bus));
       }
       if (_count-- == 0) {
         // dummy statement to set java breakpoint at
