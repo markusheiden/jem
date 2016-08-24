@@ -16,9 +16,9 @@ import de.heiden.jem.components.ports.OutputPortImpl;
  */
 public class CIA6526 implements BusDevice {
   public static final int PB6 = 0x40;
-  public static final int PB6_MASK = 0xFF - 0x40;
+  public static final int PB6_MASK = 0xFF - PB6;
   public static final int PB7 = 0x80;
-  public static final int PB7_MASK = 0xFF - 0x80;
+  public static final int PB7_MASK = 0xFF - PB7;
 
   private static final int PORTS_CNT = 1 << 1;
 
@@ -34,6 +34,7 @@ public class CIA6526 implements BusDevice {
   public static final int CR_UNDERFLOW_PB_TOGGLE = 0x04;
   public static final int CR_ONE_SHOT = 0x08;
   public static final int CR_LOAD = 0x10;
+  public static final int CR_LOAD_MASK = 0xFF - CR_LOAD;
 
   public static final int CR_MODE_O2 = 0x00;
   public static final int CR_MODE_CNT = 0x20;
@@ -356,7 +357,7 @@ public class CIA6526 implements BusDevice {
         if ((value & CR_LOAD) != 0) {
           _clock.addClockEvent(_clock.getTick() + 2, _timerALoadEvent);
         }
-        _controlA = value & (0xFF - CR_LOAD); // TODO correct?
+        _controlA = value & CR_LOAD_MASK; // TODO correct?
         updateTimerAMode();
         updatePortSerial();
         break;
@@ -366,7 +367,7 @@ public class CIA6526 implements BusDevice {
         if ((value & CR_LOAD) != 0) {
           _clock.addClockEvent(_clock.getTick() + 2, _timerBLoadEvent);
         }
-        _controlB = value & (0xFF - CR_LOAD); // TODO correct?
+        _controlB = value & CR_LOAD_MASK; // TODO correct?
         updateTimerBMode();
         break;
       }
