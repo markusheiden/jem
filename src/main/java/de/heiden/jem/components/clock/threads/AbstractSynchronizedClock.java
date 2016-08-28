@@ -47,9 +47,9 @@ public abstract class AbstractSynchronizedClock extends AbstractClock {
   }
 
   @Override
-  protected void executeEvent(long tick) {
+  protected void executeEvents(long tick) {
     synchronized (_monitor) {
-      super.executeEvent(tick);
+      super.executeEvents(tick);
     }
   }
 

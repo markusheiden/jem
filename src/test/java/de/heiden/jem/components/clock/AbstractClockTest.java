@@ -119,11 +119,11 @@ public class AbstractClockTest {
     assertEquals(0, executed.size());
 
     // Execute tick 1, which has no registered events -> nothing should happen
-    clock.executeEvent(1);
+    clock.executeEvents(1);
     assertEquals(0, executed.size());
 
     // Execute tick 2, which has two registered events -> both should be executed
-    clock.executeEvent(2);
+    clock.executeEvents(2);
     assertEquals(2, executed.size());
     assertTrue(executed.contains(event2a));
     assertNull(event2a.next);
