@@ -48,13 +48,13 @@ public abstract class AbstractClock implements Clock {
    * Constructor.
    */
   protected AbstractClock() {
-    _nextEventTick = Long.MAX_VALUE;
-    _events = new ClockEvent("End", _nextEventTick) {
+    _events = new ClockEvent("End", Long.MAX_VALUE) {
       @Override
       public void execute(long tick) {
         throw new IllegalStateException("End marker event may never be executed.");
       }
     };
+    _nextEventTick = _events.tick;
   }
 
   /**
