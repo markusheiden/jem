@@ -3,6 +3,8 @@ package de.heiden.jem.components.clock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.LinkedList;
+import java.util.ListIterator;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -30,32 +32,13 @@ public abstract class AbstractClock implements Clock {
   /**
    * Events.
    */
-  private ClockEvent _events;
-
-  /**
-   * Next event to look for.
-   * Needs not to be volatile, because only used by clock thread.
-   */
-  long _nextEventTick;
+  final LinkedList<ClockEvent> _events = new LinkedList<>();
 
   /**
    * Current tick.
    * Start at tick -1, because the first action when running is to increment the tick.
    */
   protected final AtomicLong _tick = new AtomicLong(-1);
-
-  /**
-   * Constructor.
-   */
-  protected AbstractClock() {
-    _events = new ClockEvent("End", Long.MAX_VALUE) {
-      @Override
-      public void execute(long tick) {
-        throw new IllegalStateException("End marker event may never be executed.");
-      }
-    };
-    _nextEventTick = _events.tick;
-  }
 
   /**
    * Has the clock been started?.
@@ -152,7 +135,6 @@ public abstract class AbstractClock implements Clock {
   public void addClockEvent(long tick, ClockEvent newEvent) {
     assert tick > getTick() : "tick > getTick()";
     assert newEvent != null : "newEvent != null";
-    assert newEvent.next == null : "newEvent.next == null";
 
 //    if (_logger.isDebugEnabled()) {
 //      _logger.debug("add event {} at {}", newEvent, tick);
@@ -160,32 +142,23 @@ public abstract class AbstractClock implements Clock {
 
     newEvent.tick = tick;
 
-    ClockEvent event = _events;
-
-    if (tick <= event.tick) {
-      newEvent.next = event;
-      _events = newEvent;
-      _nextEventTick = tick;
-      return;
+    ListIterator<ClockEvent> iter = _events.listIterator();
+    while (iter.hasNext()) {
+      ClockEvent next = iter.next();
+      if (tick < next.tick) {
+        iter.previous();
+        iter.add(newEvent);
+        return;
+      }
     }
 
-    // Search event and nextEvent so that newEvent belongs in between.
-    ClockEvent nextEvent;
-    for (nextEvent = event.next; tick > nextEvent.tick; event = nextEvent, nextEvent = nextEvent.next) {
-      // search further
-    }
-
-    newEvent.next = nextEvent;
-    event.next = newEvent;
-    // _nextEventTick needs no update
-    return;
+    iter.add(newEvent);
   }
 
   @Override
   public void updateClockEvent(long tick, ClockEvent eventToUpdate) {
     assert tick > getTick() : "tick > getTick()";
     assert eventToUpdate != null : "eventToUpdate != null";
-    assert eventToUpdate.next != null : "eventToUpdate.next != null";
     if (tick == eventToUpdate.tick) {
       // Nothing to do -> Return early.
       return;
@@ -199,38 +172,12 @@ public abstract class AbstractClock implements Clock {
   @Override
   public void removeClockEvent(ClockEvent oldEvent) {
     assert oldEvent != null : "oldEvent != null";
-    if (oldEvent.next == null) {
-      // Event not registered -> Return early.
-      return;
-    }
 
 //    if (_logger.isDebugEnabled()) {
 //      _logger.debug("remove event {}", event);
 //    }
 
-    ClockEvent event = _events;
-
-    if (oldEvent == event) {
-      final ClockEvent next = event.next;
-      _events = next;
-      _nextEventTick = next.tick;
-      oldEvent.next = null;
-      return;
-    }
-
-    // Search event directly before oldEvent.
-    ClockEvent nextEvent;
-    for (nextEvent = event.next; oldEvent != nextEvent; event = nextEvent, nextEvent = nextEvent.next) {
-      // search further
-    }
-
-    event.next = oldEvent.next;
-    // _nextEventTick needs no update
-    oldEvent.next = null;
-
-    // TODO mh: handle case that event is not registered?: oldEvent.next = null;
-
-    assert oldEvent.next == null : "oldEvent.next == null";
+    _events.remove(oldEvent);
   }
 
   /**
@@ -262,15 +209,9 @@ public abstract class AbstractClock implements Clock {
    * @param tick current clock tick
    */
   protected void executeEvents(long tick) {
-    while (_nextEventTick == tick) {
+    while (!_events.isEmpty() && _events.getFirst().tick == tick) {
       // get current event
-      final ClockEvent event = _events;
-
-      // remove it
-      final ClockEvent nextEvent = event.next;
-      _events = nextEvent;
-      _nextEventTick = nextEvent.tick;
-      event.next = null;
+      final ClockEvent event = _events.removeFirst();
 
       // execute it
 //      if (_logger.isDebugEnabled()) {
