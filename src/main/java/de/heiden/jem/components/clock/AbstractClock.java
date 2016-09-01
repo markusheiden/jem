@@ -157,7 +157,7 @@ public abstract class AbstractClock implements Clock {
     newEvent.tick = tick;
 
     // Search event position.
-    ListIterator<ClockEvent> iter = _events.listIterator();
+    final ListIterator<ClockEvent> iter = _events.listIterator();
     while (tick >= iter.next().tick) {
       // Check next event.
     }
@@ -171,13 +171,14 @@ public abstract class AbstractClock implements Clock {
   public void updateClockEvent(long tick, ClockEvent eventToUpdate) {
     assert tick > getTick() : "tick > getTick()";
     assert eventToUpdate != null : "eventToUpdate != null";
+
     if (tick == eventToUpdate.tick) {
       // Nothing to do -> Return early.
       return;
     }
 
     // TODO mh: check, if events needs to be moved. otherwise exit early.
-    removeClockEvent(eventToUpdate);
+    _events.remove(eventToUpdate);
     addClockEvent(tick, eventToUpdate);
   }
 
