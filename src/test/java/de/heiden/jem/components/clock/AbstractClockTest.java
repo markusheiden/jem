@@ -57,20 +57,15 @@ public class AbstractClockTest {
 
     // Nothing to update.
     clock.updateClockEvent(10, event10);
-//    assertSame(event20, event10.next);
     assertEquals(10, clock.getNextEventTick());
     // event10 is still first, but the next event tick needs to be updated.
     clock.updateClockEvent(11, event10);
-//    assertSame(event20, event10.next);
     assertEquals(11, clock.getNextEventTick());
     // event10 is no longer the first event -> the next event (event20) takes its place.
     clock.updateClockEvent(21, event10);
-//    assertSame(event10, event20.next);
-//    assertSame(event30, event10.next);
     assertEquals(20, clock.getNextEventTick());
     // event10 is now the last event.
     clock.updateClockEvent(31, event10);
-//    assertSame(event10, event30.next);
     assertEquals(20, clock.getNextEventTick());
   }
 
@@ -86,12 +81,10 @@ public class AbstractClockTest {
 
     clock.addClockEvent(1, event);
     assertEquals(1, clock.getNextEventTick());
-//    assertNotNull(event.next);
 
     // Remove first registered event -> next tick should be reset
     clock.removeClockEvent(event);
     assertEquals(Long.MAX_VALUE, clock.getNextEventTick());
-//    assertNull(event.next);
   }
 
   @Test

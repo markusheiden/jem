@@ -142,8 +142,7 @@ public abstract class AbstractClock implements Clock {
 
     newEvent.tick = tick;
 
-    ListIterator<ClockEvent> iter = _events.listIterator();
-    while (iter.hasNext()) {
+    for (ListIterator<ClockEvent> iter = _events.listIterator(); iter.hasNext();) {
       ClockEvent next = iter.next();
       if (tick < next.tick) {
         iter.previous();
@@ -152,7 +151,7 @@ public abstract class AbstractClock implements Clock {
       }
     }
 
-    iter.add(newEvent);
+    _events.add(newEvent);
   }
 
   @Override
