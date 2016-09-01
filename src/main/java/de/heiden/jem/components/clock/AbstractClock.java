@@ -41,6 +41,20 @@ public abstract class AbstractClock implements Clock {
   protected final AtomicLong _tick = new AtomicLong(-1);
 
   /**
+   * Constructor.
+   */
+  protected AbstractClock() {
+    ClockEvent endMarkerEvent = new ClockEvent("End") {
+      @Override
+      public void execute(long tick) {
+        throw new IllegalStateException("End marker event may never be executed.");
+      }
+    };
+    endMarkerEvent.tick = Long.MAX_VALUE;
+    _events.add(endMarkerEvent);
+  }
+
+  /**
    * Has the clock been started?.
    */
   @Override
@@ -142,16 +156,15 @@ public abstract class AbstractClock implements Clock {
 
     newEvent.tick = tick;
 
-    for (ListIterator<ClockEvent> iter = _events.listIterator(); iter.hasNext();) {
-      ClockEvent next = iter.next();
-      if (tick < next.tick) {
-        iter.previous();
-        iter.add(newEvent);
-        return;
-      }
+    // Search event position.
+    ListIterator<ClockEvent> iter = _events.listIterator();
+    while (tick >= iter.next().tick) {
+      // Check next event.
     }
 
-    _events.add(newEvent);
+    // Add event directly before its following event.
+    iter.previous();
+    iter.add(newEvent);
   }
 
   @Override
@@ -208,7 +221,7 @@ public abstract class AbstractClock implements Clock {
    * @param tick current clock tick
    */
   protected void executeEvents(long tick) {
-    while (!_events.isEmpty() && _events.getFirst().tick == tick) {
+    while (_events.getFirst().tick == tick) {
       // get current event
       final ClockEvent event = _events.removeFirst();
 

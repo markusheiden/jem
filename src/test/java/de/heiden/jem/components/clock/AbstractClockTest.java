@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -77,7 +76,6 @@ public class AbstractClockTest {
     // Remove not registered event -> nothing should happen
     clock.removeClockEvent(event);
     assertEquals(Long.MAX_VALUE, clock.getNextEventTick());
-    assertNull(event.next);
 
     clock.addClockEvent(1, event);
     assertEquals(1, clock.getNextEventTick());
@@ -121,9 +119,7 @@ public class AbstractClockTest {
     clock.executeEvents(2);
     assertEquals(2, executed.size());
     assertTrue(executed.contains(event2a));
-    assertNull(event2a.next);
     assertTrue(executed.contains(event2b));
-    assertNull(event2b.next);
   }
 
   /**
@@ -143,8 +139,8 @@ public class AbstractClockTest {
     /**
      * Tick, when the next event gets executed.
      */
-    public long getNextEventTick() {
-      return _events.isEmpty()? Long.MAX_VALUE : _events.getFirst().tick;
+    long getNextEventTick() {
+      return _events.getFirst().tick;
     }
   }
 
@@ -155,7 +151,7 @@ public class AbstractClockTest {
     /**
      * Constructor.
      */
-    public TestClockEvent() {
+    TestClockEvent() {
       super("Test event");
     }
 

@@ -16,27 +16,12 @@ public abstract class ClockEvent {
   long tick;
 
   /**
-   * Next clock event.
-   * Used for efficient list implementation in clocks.
-   */
-  ClockEvent next;
-
-  /**
    * Constructor.
    */
   protected ClockEvent(String name) {
     assert name != null : "name != null";
 
     this.name = name;
-  }
-
-  /**
-   * Constructor.
-   */
-  ClockEvent(String name, long tick) {
-    this(name);
-
-    this.tick = tick;
   }
 
   /**
