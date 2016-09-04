@@ -135,9 +135,9 @@ public class AbstractClockTest {
     clock.executeEvents(2);
     assertEquals(2, executed.size());
     assertTrue(executed.contains(event2a));
-//    assertNull(event2a.next);
+    assertNull(event2a.next);
     assertTrue(executed.contains(event2b));
-//    assertNull(event2b.next);
+    assertNull(event2b.next);
   }
 
   /**
@@ -152,6 +152,13 @@ public class AbstractClockTest {
     @Override
     protected void doRun(int ticks) {
       throw new UnsupportedOperationException("Not implemented for test clock");
+    }
+
+    /**
+     * Tick, when the next event gets executed.
+     */
+    final long getNextEventTick() {
+      return getNextEvent().tick;
     }
   }
 

@@ -145,7 +145,7 @@ public abstract class AbstractClock implements Clock {
   public void addClockEvent(long tick, ClockEvent newEvent) {
     assert tick > getTick() : "tick > getTick()";
     assert newEvent != null : "newEvent != null";
-//    assert newEvent.next == null : "newEvent.next == null";
+    assert newEvent.next == null : "newEvent.next == null";
 
 //    if (_logger.isDebugEnabled()) {
 //      _logger.debug("add event {} at {}", newEvent, tick);
@@ -169,7 +169,6 @@ public abstract class AbstractClock implements Clock {
 
     newEvent.next = nextEvent;
     event.next = newEvent;
-    // _nextEventTick needs no update
     return;
   }
 
@@ -177,7 +176,7 @@ public abstract class AbstractClock implements Clock {
   public void updateClockEvent(long tick, ClockEvent eventToUpdate) {
     assert tick > getTick() : "tick > getTick()";
     assert eventToUpdate != null : "eventToUpdate != null";
-//    assert eventToUpdate.next != null : "eventToUpdate.next != null";
+    assert eventToUpdate.next != null : "eventToUpdate.next != null";
     if (tick == eventToUpdate.tick) {
       // Nothing to do -> Return early.
       return;
@@ -203,8 +202,7 @@ public abstract class AbstractClock implements Clock {
     ClockEvent event = _events;
 
     if (oldEvent == event) {
-      final ClockEvent next = event.next;
-      _events = next;
+      _events = oldEvent.next;
       oldEvent.next = null;
       return;
     }
@@ -216,7 +214,6 @@ public abstract class AbstractClock implements Clock {
     }
 
     event.next = oldEvent.next;
-    // _nextEventTick needs no update
     oldEvent.next = null;
 
     // TODO mh: handle case that event is not registered?: oldEvent.next = null;
@@ -248,13 +245,6 @@ public abstract class AbstractClock implements Clock {
   }
 
   /**
-   * Tick, when the next event gets executed.
-   */
-  final long getNextEventTick() {
-    return _events.tick;
-  }
-
-  /**
    * Next event that gets executed.
    */
   final ClockEvent getNextEvent() {
@@ -273,7 +263,7 @@ public abstract class AbstractClock implements Clock {
 
       // Remove it.
       _events = event.next;
-//      event.next = null;
+      event.next = null;
 
       // Execute it.
 //      if (_logger.isDebugEnabled()) {
