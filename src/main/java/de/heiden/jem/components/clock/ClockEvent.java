@@ -31,15 +31,6 @@ public abstract class ClockEvent {
   }
 
   /**
-   * Constructor.
-   */
-  ClockEvent(String name, long tick) {
-    this(name);
-
-    this.tick = tick;
-  }
-
-  /**
    * Execute event.
    */
   public abstract void execute(long tick);
