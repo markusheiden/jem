@@ -269,7 +269,6 @@ public abstract class AbstractClock implements Clock {
       // remove it
       final ClockEvent nextEvent = event.next;
       _events = nextEvent;
-      _nextEventTick = nextEvent.tick;
       event.next = null;
 
       // execute it
@@ -278,6 +277,8 @@ public abstract class AbstractClock implements Clock {
 //      }
       event.execute(tick);
     }
+
+    _nextEventTick = _events.tick;
   }
 
   @Override
