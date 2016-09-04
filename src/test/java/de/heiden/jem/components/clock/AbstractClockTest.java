@@ -31,14 +31,17 @@ public class AbstractClockTest {
 
     // add first event -> next tick should be set to tick of this event
     clock.addClockEvent(2, event2);
+    assertSame(event2, clock.getNextEvent());
     assertEquals(2, clock.getNextEventTick());
 
     // add event before first event -> next tick should be set to tick of this event
     clock.addClockEvent(1, event1);
+    assertSame(event1, clock.getNextEvent());
     assertEquals(1, clock.getNextEventTick());
 
     // add event after first event -> next tick should not change
     clock.addClockEvent(3, event3);
+    assertSame(event1, clock.getNextEvent());
     assertEquals(1, clock.getNextEventTick());
   }
 
@@ -56,19 +59,23 @@ public class AbstractClockTest {
     // Nothing to update.
     clock.updateClockEvent(10, event10);
     assertSame(event20, event10.next);
+    assertSame(event10, clock.getNextEvent());
     assertEquals(10, clock.getNextEventTick());
     // event10 is still first, but the next event tick needs to be updated.
     clock.updateClockEvent(11, event10);
     assertSame(event20, event10.next);
+    assertSame(event10, clock.getNextEvent());
     assertEquals(11, clock.getNextEventTick());
     // event10 is no longer the first event -> the next event (event20) takes its place.
     clock.updateClockEvent(21, event10);
     assertSame(event10, event20.next);
     assertSame(event30, event10.next);
+    assertSame(event20, clock.getNextEvent());
     assertEquals(20, clock.getNextEventTick());
     // event10 is now the last event.
     clock.updateClockEvent(31, event10);
     assertSame(event10, event30.next);
+    assertSame(event20, clock.getNextEvent());
     assertEquals(20, clock.getNextEventTick());
   }
 
@@ -83,6 +90,7 @@ public class AbstractClockTest {
     assertNull(event.next);
 
     clock.addClockEvent(1, event);
+    assertSame(event, clock.getNextEvent());
     assertEquals(1, clock.getNextEventTick());
     assertNotNull(event.next);
 
@@ -104,6 +112,7 @@ public class AbstractClockTest {
 
     // Remove second registered event -> next tick should still be the tick of the first event
     clock.removeClockEvent(event2);
+    assertSame(event1, clock.getNextEvent());
     assertEquals(1, clock.getNextEventTick());
   }
 
@@ -126,9 +135,9 @@ public class AbstractClockTest {
     clock.executeEvents(2);
     assertEquals(2, executed.size());
     assertTrue(executed.contains(event2a));
-    assertNull(event2a.next);
+//    assertNull(event2a.next);
     assertTrue(executed.contains(event2b));
-    assertNull(event2b.next);
+//    assertNull(event2b.next);
   }
 
   /**
@@ -143,13 +152,6 @@ public class AbstractClockTest {
     @Override
     protected void doRun(int ticks) {
       throw new UnsupportedOperationException("Not implemented for test clock");
-    }
-
-    /**
-     * Tick, when the next event gets executed.
-     */
-    public long getNextEventTick() {
-      return _nextEventTick;
     }
   }
 

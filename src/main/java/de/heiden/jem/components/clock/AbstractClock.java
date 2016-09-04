@@ -36,7 +36,7 @@ public abstract class AbstractClock implements Clock {
    * Next event to look for.
    * Needs not to be volatile, because only used by clock thread.
    */
-  long _nextEventTick;
+  private long _nextEventTick;
 
   /**
    * Current tick.
@@ -152,7 +152,7 @@ public abstract class AbstractClock implements Clock {
   public void addClockEvent(long tick, ClockEvent newEvent) {
     assert tick > getTick() : "tick > getTick()";
     assert newEvent != null : "newEvent != null";
-    assert newEvent.next == null : "newEvent.next == null";
+//    assert newEvent.next == null : "newEvent.next == null";
 
 //    if (_logger.isDebugEnabled()) {
 //      _logger.debug("add event {} at {}", newEvent, tick);
@@ -185,7 +185,7 @@ public abstract class AbstractClock implements Clock {
   public void updateClockEvent(long tick, ClockEvent eventToUpdate) {
     assert tick > getTick() : "tick > getTick()";
     assert eventToUpdate != null : "eventToUpdate != null";
-    assert eventToUpdate.next != null : "eventToUpdate.next != null";
+//    assert eventToUpdate.next != null : "eventToUpdate.next != null";
     if (tick == eventToUpdate.tick) {
       // Nothing to do -> Return early.
       return;
@@ -257,6 +257,20 @@ public abstract class AbstractClock implements Clock {
   }
 
   /**
+   * Tick, when the next event gets executed.
+   */
+  final long getNextEventTick() {
+    return _events.tick;
+  }
+
+  /**
+   * Next event that gets executed.
+   */
+  final ClockEvent getNextEvent() {
+    return _events;
+  }
+
+  /**
    * Execute current events, if any.
    *
    * @param tick current clock tick
@@ -265,10 +279,10 @@ public abstract class AbstractClock implements Clock {
     while (_nextEventTick == tick) {
       // Get current event.
       final ClockEvent event = _events;
-
       // Remove it.
       _events = event.next;
-      event.next = null;
+      _nextEventTick = _events.tick;
+//      event.next = null;
 
       // Execute it.
 //      if (_logger.isDebugEnabled()) {
@@ -277,7 +291,6 @@ public abstract class AbstractClock implements Clock {
       event.execute(tick);
     }
 
-    _nextEventTick = _events.tick;
   }
 
   @Override
