@@ -216,10 +216,6 @@ public abstract class AbstractClock implements Clock {
 
     event.next = oldEvent.next;
     oldEvent.next = null;
-
-    // TODO mh: handle case that event is not registered?: oldEvent.next = null;
-
-    assert oldEvent.next == null : "oldEvent.next == null";
   }
 
   /**
