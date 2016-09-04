@@ -280,13 +280,12 @@ public abstract class AbstractClock implements Clock {
       return;
     }
 
-    while (true) {
+    do {
       // Get current event.
       final ClockEvent event = _events;
-      final ClockEvent nextEvent = event.next;
 
       // Remove it.
-      _events = nextEvent;
+      _events = event.next;
 //      event.next = null;
 
       // Execute it.
@@ -294,11 +293,7 @@ public abstract class AbstractClock implements Clock {
 //        _logger.debug("execute event {} at {}", event, tick);
 //      }
       event.execute(tick);
-
-      if (nextEvent.tick != tick) {
-        break;
-      }
-    }
+    } while (_events.tick == tick);
 
     _nextEventTick = _events.tick;
   }
