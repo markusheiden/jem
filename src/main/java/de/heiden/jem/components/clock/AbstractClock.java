@@ -33,12 +33,6 @@ public abstract class AbstractClock implements Clock {
   private ClockEvent _events;
 
   /**
-   * Next event to look for.
-   * Needs not to be volatile, because only used by clock thread.
-   */
-  private long _nextEventTick;
-
-  /**
    * Current tick.
    * Start at tick -1, because the first action when running is to increment the tick.
    */
@@ -54,7 +48,6 @@ public abstract class AbstractClock implements Clock {
         throw new IllegalStateException("End marker event may never be executed.");
       }
     };
-    _nextEventTick = _events.tick;
   }
 
   /**
@@ -165,7 +158,6 @@ public abstract class AbstractClock implements Clock {
     if (tick <= event.tick) {
       newEvent.next = event;
       _events = newEvent;
-      _nextEventTick = tick;
       return;
     }
 
@@ -213,7 +205,6 @@ public abstract class AbstractClock implements Clock {
     if (oldEvent == event) {
       final ClockEvent next = event.next;
       _events = next;
-      _nextEventTick = next.tick;
       oldEvent.next = null;
       return;
     }
@@ -276,11 +267,7 @@ public abstract class AbstractClock implements Clock {
    * @param tick current clock tick
    */
   protected void executeEvents(long tick) {
-    if (_nextEventTick != tick) {
-      return;
-    }
-
-    do {
+    while (_events.tick == tick) {
       // Get current event.
       final ClockEvent event = _events;
 
@@ -293,9 +280,7 @@ public abstract class AbstractClock implements Clock {
 //        _logger.debug("execute event {} at {}", event, tick);
 //      }
       event.execute(tick);
-    } while (_events.tick == tick);
-
-    _nextEventTick = _events.tick;
+    }
   }
 
   @Override
