@@ -276,12 +276,17 @@ public abstract class AbstractClock implements Clock {
    * @param tick current clock tick
    */
   protected void executeEvents(long tick) {
-    while (_nextEventTick == tick) {
+    if (_nextEventTick != tick) {
+      return;
+    }
+
+    while (true) {
       // Get current event.
       final ClockEvent event = _events;
+      final ClockEvent nextEvent = event.next;
+
       // Remove it.
-      _events = event.next;
-      _nextEventTick = _events.tick;
+      _events = nextEvent;
 //      event.next = null;
 
       // Execute it.
@@ -289,8 +294,13 @@ public abstract class AbstractClock implements Clock {
 //        _logger.debug("execute event {} at {}", event, tick);
 //      }
       event.execute(tick);
+
+      if (nextEvent.tick != tick) {
+        break;
+      }
     }
 
+    _nextEventTick = _events.tick;
   }
 
   @Override
