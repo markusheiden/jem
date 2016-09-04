@@ -1,9 +1,21 @@
 package de.heiden.jem.components.clock;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 /**
  * Clock event.
  */
 public abstract class ClockEvent implements Comparable<ClockEvent> {
+  /**
+   * Id sequence.
+   */
+  private static final AtomicInteger IDS = new AtomicInteger();
+
+  /**
+   * Id.
+   */
+  private final int id;
+
   /**
    * Name of event.
    */
@@ -21,6 +33,7 @@ public abstract class ClockEvent implements Comparable<ClockEvent> {
   protected ClockEvent(String name) {
     assert name != null : "name != null";
 
+    this.id = IDS.incrementAndGet();
     this.name = name;
   }
 
@@ -30,19 +43,19 @@ public abstract class ClockEvent implements Comparable<ClockEvent> {
   public abstract void execute(long tick);
 
   @Override
-  public final boolean equals(Object obj) {
-    return super.equals(obj);
+  public final boolean equals(Object o) {
+    return o instanceof ClockEvent && id == ((ClockEvent) o).id;
   }
 
   @Override
   public final int hashCode() {
-    return super.hashCode();
+    return id;
   }
 
   @Override
   public final int compareTo(ClockEvent o) {
     int result = Long.compare(tick, o.tick);
-    return result != 0? result : name.compareTo(o.name);
+    return result != 0? result : Integer.compare(id, o.id);
   }
 
   @Override
