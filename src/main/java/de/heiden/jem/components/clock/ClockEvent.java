@@ -3,7 +3,7 @@ package de.heiden.jem.components.clock;
 /**
  * Clock event.
  */
-public abstract class ClockEvent {
+public abstract class ClockEvent implements Comparable<ClockEvent> {
   /**
    * Name of event.
    */
@@ -28,6 +28,21 @@ public abstract class ClockEvent {
    * Execute event.
    */
   public abstract void execute(long tick);
+
+  @Override
+  public final boolean equals(Object obj) {
+    return super.equals(obj);
+  }
+
+  @Override
+  public final int hashCode() {
+    return super.hashCode();
+  }
+
+  @Override
+  public final int compareTo(ClockEvent o) {
+    return Long.compare(tick, o.tick);
+  }
 
   @Override
   public String toString() {

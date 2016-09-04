@@ -3,10 +3,9 @@ package de.heiden.jem.components.clock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.LinkedList;
-import java.util.ListIterator;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -32,7 +31,7 @@ public abstract class AbstractClock implements Clock {
   /**
    * Events.
    */
-  final LinkedList<ClockEvent> _events = new LinkedList<>();
+  final TreeSet<ClockEvent> _events = new TreeSet<>();
 
   /**
    * Current tick.
@@ -155,16 +154,8 @@ public abstract class AbstractClock implements Clock {
 //    }
 
     newEvent.tick = tick;
-
-    // Search event position.
-    final ListIterator<ClockEvent> iter = _events.listIterator();
-    while (tick >= iter.next().tick) {
-      // Check next event.
-    }
-
-    // Add event directly before its following event.
-    iter.previous();
-    iter.add(newEvent);
+    boolean added = _events.add(newEvent);
+    assert added : "added";
   }
 
   @Override
@@ -178,7 +169,8 @@ public abstract class AbstractClock implements Clock {
     }
 
     // TODO mh: check, if events needs to be moved. otherwise exit early.
-    _events.remove(eventToUpdate);
+    boolean removed = _events.remove(eventToUpdate);
+    assert removed : "removed";
     addClockEvent(tick, eventToUpdate);
   }
 
@@ -222,9 +214,9 @@ public abstract class AbstractClock implements Clock {
    * @param tick current clock tick
    */
   protected void executeEvents(long tick) {
-    while (_events.getFirst().tick == tick) {
+    while (_events.first().tick == tick) {
       // get current event
-      final ClockEvent event = _events.removeFirst();
+      final ClockEvent event = _events.pollFirst();
 
       // execute it
 //      if (_logger.isDebugEnabled()) {

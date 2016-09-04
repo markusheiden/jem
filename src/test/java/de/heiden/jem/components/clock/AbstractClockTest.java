@@ -140,7 +140,7 @@ public class AbstractClockTest {
      * Tick, when the next event gets executed.
      */
     long getNextEventTick() {
-      return _events.getFirst().tick;
+      return _events.first().tick;
     }
   }
 
