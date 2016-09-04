@@ -41,7 +41,8 @@ public abstract class ClockEvent implements Comparable<ClockEvent> {
 
   @Override
   public final int compareTo(ClockEvent o) {
-    return Long.compare(tick, o.tick);
+    int result = Long.compare(tick, o.tick);
+    return result != 0? result : name.compareTo(o.name);
   }
 
   @Override
