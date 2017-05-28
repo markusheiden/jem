@@ -700,6 +700,17 @@
   </component>
   <component name="WebServicesPlugin" addRequiredLibraries="true" />
   <component name="libraryTable">
+    <library name="Maven: de.heiden:c64dt:1.0-SNAPSHOT">
+      <CLASSES>
+        <root url="jar://$PROJECT_DIR$/../c64dt/pom.xml!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$PROJECT_DIR$/../c64dt/c64dt-1.0-SNAPSHOT-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$PROJECT_DIR$/../c64dt/c64dt-1.0-SNAPSHOT-sources.jar!/" />
+      </SOURCES>
+    </library>
     <library name="Maven: junit:junit:4.12">
       <CLASSES>
         <root url="jar://$MAVEN_REPOSITORY$/junit/junit/4.12/junit-4.12.jar!/" />
