@@ -19,8 +19,8 @@
     <c64dt.version>1.0-SNAPSHOT</c64dt.version>
 
     <junit.version>4.12</junit.version>
-    <log4j.version>2.6.2</log4j.version>
-    <slf4j.version>1.7.21</slf4j.version>
+    <log4j.version>2.8.2</log4j.version>
+    <slf4j.version>1.7.25</slf4j.version>
   </properties>
 
   <build>
