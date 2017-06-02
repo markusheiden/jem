@@ -47,13 +47,14 @@ public abstract class KeyMapping {
   }
 
   /**
-   * Get key for character.
+   * Get string representation for key.
    *
-   * @param c Character
-   * @return Key or null if key is not mapped
+   * @param e Key(Event)
+   * @return description of key
    */
-  public Key[] getKeys(char c) {
-    return _chars.get(String.valueOf(c));
+  public static String toString(KeyEvent e) {
+    String result = e.getText();
+    return result;
   }
 
   //
@@ -71,7 +72,7 @@ public abstract class KeyMapping {
    * @param c Character
    * @param keys C64 keys
    */
-  protected final void add(char c, Key... keys) {
+  protected final void addChar(char c, Key... keys) {
     _chars.put(String.valueOf(c), keys);
   }
 
@@ -81,7 +82,7 @@ public abstract class KeyMapping {
    * @param c Key code of special key
    * @param keys C64 keys
    */
-  protected final void add(KeyCode c, Key... keys) {
+  protected final void addCode(KeyCode c, Key... keys) {
     _keys.put(c, keys);
   }
 }
