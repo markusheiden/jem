@@ -10,8 +10,15 @@ import java.util.Map;
  * Mapping virtual keys <-> C64 keyboard matrix.
  */
 public abstract class KeyMapping {
-  protected final Map<Character, Key[]> _chars;
-  protected final Map<Integer, Key[]> _keys;
+  /**
+   * Mapping characters to C64 keys.
+   */
+  private final Map<Character, Key[]> _chars;
+
+  /**
+   * Mapping special keys to C64 keys.
+   */
+  private final Map<Integer, Key[]> _keys;
 
   /**
    * Constructor.
@@ -83,4 +90,25 @@ public abstract class KeyMapping {
    * Generate default key mapping.
    */
   protected abstract void generateKeyMapping();
+
+  /**
+   * Map a character to C64 keys.
+   *
+   * @param c Character
+   * @param keys C64 keys
+   */
+  protected final void addChar(char c, Key... keys) {
+    _chars.put(c, keys);
+  }
+
+  /**
+   * Map a special key to C64 keys.
+   *
+   * @param location Location of special key
+   * @param key Key code of special key
+   * @param keys C64 keys
+   */
+  protected final void addCode(int location, int key, Key... keys) {
+    _keys.put(keyID(location, key), keys);
+  }
 }
