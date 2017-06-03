@@ -1,7 +1,7 @@
 package de.heiden.jem.models.c64.gui.javafx.emulator;
 
+import de.heiden.jem.models.c64.components.keyboard.IKeyboard;
 import de.heiden.jem.models.c64.components.keyboard.Key;
-import de.heiden.jem.models.c64.components.keyboard.Keyboard;
 import javafx.scene.Scene;
 
 /**
@@ -15,7 +15,7 @@ public class KeyListener {
    * @param keyboard Keyboard
    * @param keyMapping Mapping from keys to C64 keys
    */
-  public static void attachTo(Scene scene, Keyboard keyboard, KeyMapping keyMapping) {
+  public static void attachTo(Scene scene, IKeyboard keyboard, KeyMapping keyMapping) {
     scene.setOnKeyPressed(e -> {
       Key[] keys = keyMapping.getKeys(e);
       if (keys != null) {
