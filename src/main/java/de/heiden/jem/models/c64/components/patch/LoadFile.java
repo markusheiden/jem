@@ -4,7 +4,7 @@ import de.heiden.jem.components.bus.BusDevice;
 import de.heiden.jem.components.bus.WordBus;
 import de.heiden.jem.models.c64.components.cpu.CPU6510State;
 import de.heiden.jem.models.c64.components.cpu.Patch;
-import de.heiden.jem.models.c64.util.FileUtil;
+import de.heiden.jem.models.c64.components.util.FileUtil;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

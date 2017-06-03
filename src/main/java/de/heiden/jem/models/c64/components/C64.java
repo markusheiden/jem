@@ -1,9 +1,8 @@
-package de.heiden.jem.models.c64;
+package de.heiden.jem.models.c64.components;
 
 import de.heiden.jem.components.clock.Clock;
 import de.heiden.jem.components.clock.RealTimeSlowDown;
 import de.heiden.jem.components.clock.serialthreads.SerialClock;
-import de.heiden.jem.models.c64.components.CIA6526;
 import de.heiden.jem.models.c64.components.cpu.C64Bus;
 import de.heiden.jem.models.c64.components.cpu.CPU6510;
 import de.heiden.jem.models.c64.components.cpu.CPU6510Debugger;
@@ -11,9 +10,9 @@ import de.heiden.jem.models.c64.components.keyboard.Keyboard;
 import de.heiden.jem.models.c64.components.memory.ColorRAM;
 import de.heiden.jem.models.c64.components.memory.RAM;
 import de.heiden.jem.models.c64.components.memory.ROM;
+import de.heiden.jem.models.c64.components.util.ROMLoader;
 import de.heiden.jem.models.c64.components.vic.VIC6569PAL;
 import de.heiden.jem.models.c64.components.vic.VICBus;
-import de.heiden.jem.models.c64.util.ROMLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
