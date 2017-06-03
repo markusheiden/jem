@@ -25,12 +25,29 @@ import java.io.OutputStream;
  * Modified C64 for better testability.
  */
 public class TestC64 {
+  /**
+   * Main clock.
+   */
   private final Clock _clock;
 
+  /**
+   * CPU bus.
+   */
   private C64Bus _cpuBus;
+
+  /**
+   * CPU.
+   */
   private final CPU6510Debugger _cpu;
 
+  /**
+   * Keyboard.
+   */
   private Keyboard _keyboard;
+
+  /**
+   * VIC.
+   */
   private final VIC6569PAL _vic;
 
   /**
