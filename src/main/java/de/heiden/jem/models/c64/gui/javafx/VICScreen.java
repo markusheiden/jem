@@ -1,4 +1,4 @@
-package de.heiden.jem.models.c64.javafx;
+package de.heiden.jem.models.c64.gui.javafx;
 
 import de.heiden.c64dt.javafx.C64ScreenComponent;
 import de.heiden.jem.models.c64.components.vic.AbstractDisplayUnit;
