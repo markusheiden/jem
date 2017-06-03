@@ -84,15 +84,15 @@ public class C64 {
     ROM kernel = ROMLoader.kernel(ROMLoader.DEFAULT_KERNEL);
     ROM charset = ROMLoader.character(ROMLoader.DEFAULT_CHARACTER);
 
-    CIA6526 cia1 = new CIA6526(clock);
-    CIA6526 cia2 = new CIA6526(clock);
+    CIA6526 cia1 = new CIA6526(_clock);
+    CIA6526 cia2 = new CIA6526(_clock);
 
     VICBus vicBus = new VICBus(cia2.portA(), _ram, charset);
-    _vic = new VIC6569PAL(clock, vicBus, colorRam);
+    _vic = new VIC6569PAL(_clock, vicBus, colorRam);
 
     _keyboard = new Keyboard(cia1.portA(), cia1.portB());
 
-    _cpu = clock.addClockedComponent(Clock.CPU, debug ? new CPU6510Debugger() : new CPU6510());
+    _cpu = _clock.addClockedComponent(Clock.CPU, debug ? new CPU6510Debugger() : new CPU6510());
     _cpuBus = new C64Bus(_ram, basic, _vic, colorRam, cia1, cia2, charset, kernel);
     _cpuBus.connect(_cpu.getPort());
     _cpu.connect(_cpuBus);
