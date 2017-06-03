@@ -1,6 +1,6 @@
 package de.heiden.jem.models.c64;
 
-import de.heiden.jem.models.c64.gui.javafx.C64Application;
+import de.heiden.jem.models.c64.gui.javafx.emulator.C64Application;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

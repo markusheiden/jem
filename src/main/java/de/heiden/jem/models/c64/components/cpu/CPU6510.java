@@ -6,7 +6,6 @@ import de.heiden.jem.components.clock.ClockedComponent;
 import de.heiden.jem.components.clock.Tick;
 import de.heiden.jem.components.ports.*;
 import de.heiden.jem.models.c64.components.memory.Patchable;
-import de.heiden.jem.models.c64.monitor.Monitor;
 import org.serialthreads.Interruptible;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

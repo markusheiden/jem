@@ -1,4 +1,4 @@
-package de.heiden.jem.models.c64.monitor.gui;
+package de.heiden.jem.models.c64.gui.swing.monitor;
 
 import de.heiden.c64dt.gui.JC64TextArea;
 import de.heiden.c64dt.util.HexUtil;

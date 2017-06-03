@@ -1,4 +1,4 @@
-package de.heiden.jem.models.c64.monitor.gui;
+package de.heiden.jem.models.c64.gui.swing.monitor;
 
 import de.heiden.jem.components.bus.BusDevice;
 import de.heiden.jem.models.c64.C64;

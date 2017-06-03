@@ -18,7 +18,7 @@ public class DebuggerStartup extends Startup {
   @Override
   public void start() {
     try {
-      Class<?> clazz = loadClass("de.heiden.jem.models.c64.monitor.gui.DebuggerGUI");
+      Class<?> clazz = loadClass("de.heiden.jem.models.c64.gui.swing.monitor.DebuggerGUI");
       Object debugger = clazz.newInstance();
 
       JFrame frame = new JFrame("C64 Debugger");
