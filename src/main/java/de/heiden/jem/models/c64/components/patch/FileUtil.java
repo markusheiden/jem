@@ -1,4 +1,4 @@
-package de.heiden.jem.models.c64.components.util;
+package de.heiden.jem.models.c64.components.patch;
 
 import de.heiden.c64dt.util.ByteUtil;
 import de.heiden.jem.components.bus.BusDevice;
