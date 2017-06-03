@@ -1,4 +1,4 @@
-package de.heiden.jem.models.c64.javafx;
+package de.heiden.jem.models.c64.gui.javafx;
 
 import javafx.scene.input.KeyCode;
 

@@ -1,4 +1,4 @@
-package de.heiden.jem.models.c64.gui;
+package de.heiden.jem.models.c64.gui.swing;
 
 import de.heiden.jem.models.c64.C64;
 
