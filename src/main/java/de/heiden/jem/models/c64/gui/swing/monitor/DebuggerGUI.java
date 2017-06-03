@@ -1,7 +1,7 @@
 package de.heiden.jem.models.c64.gui.swing.monitor;
 
 import de.heiden.jem.components.bus.BusDevice;
-import de.heiden.jem.models.c64.C64;
+import de.heiden.jem.models.c64.components.C64;
 import de.heiden.jem.models.c64.components.cpu.CPU6510Debugger;
 import de.heiden.jem.models.c64.components.cpu.DebuggerExit;
 import org.slf4j.Logger;

@@ -1,6 +1,6 @@
 package de.heiden.jem.models.c64.gui.swing.emulator;
 
-import de.heiden.jem.models.c64.C64;
+import de.heiden.jem.models.c64.components.C64;
 
 import javax.swing.*;
 

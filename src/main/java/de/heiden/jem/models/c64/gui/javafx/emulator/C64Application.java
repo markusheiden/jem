@@ -1,6 +1,6 @@
 package de.heiden.jem.models.c64.gui.javafx.emulator;
 
-import de.heiden.jem.models.c64.C64;
+import de.heiden.jem.models.c64.components.C64;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;

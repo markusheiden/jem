@@ -1,4 +1,4 @@
-package de.heiden.jem.models.c64.util;
+package de.heiden.jem.models.c64.components.util;
 
 import de.heiden.c64dt.charset.PetSCIICharset;
 import de.heiden.jem.components.bus.BusDevice;

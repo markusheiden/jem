@@ -2,7 +2,7 @@ package de.heiden.jem.models.c64;
 
 import de.heiden.c64dt.disk.FileType;
 import de.heiden.c64dt.disk.d64.D64;
-import de.heiden.jem.models.c64.util.StringUtil;
+import de.heiden.jem.models.c64.components.util.StringUtil;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized.Parameter;
 import org.serialthreads.agent.TransformingParameterized;

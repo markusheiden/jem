@@ -4,6 +4,7 @@ import de.heiden.c64dt.assembler.CodeBuffer;
 import de.heiden.c64dt.assembler.Disassembler;
 import de.heiden.c64dt.assembler.Dumper;
 import de.heiden.c64dt.util.HexUtil;
+import de.heiden.jem.models.c64.components.TestC64;
 import de.heiden.jem.models.c64.components.patch.LoadFile;
 import de.heiden.jem.models.c64.components.patch.LoadFromDirectory;
 import org.junit.After;

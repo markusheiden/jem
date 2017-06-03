@@ -1,10 +1,9 @@
-package de.heiden.jem.models.c64;
+package de.heiden.jem.models.c64.components;
 
 import de.heiden.jem.components.bus.BusDevice;
 import de.heiden.jem.components.clock.Clock;
 import de.heiden.jem.components.clock.ClockEvent;
 import de.heiden.jem.components.clock.serialthreads.SerialClock;
-import de.heiden.jem.models.c64.components.CIA6526;
 import de.heiden.jem.models.c64.components.cpu.C64Bus;
 import de.heiden.jem.models.c64.components.cpu.CPU6510Debugger;
 import de.heiden.jem.models.c64.components.cpu.Patch;
@@ -13,11 +12,11 @@ import de.heiden.jem.models.c64.components.memory.ColorRAM;
 import de.heiden.jem.models.c64.components.memory.RAM;
 import de.heiden.jem.models.c64.components.memory.ROM;
 import de.heiden.jem.models.c64.components.patch.*;
+import de.heiden.jem.models.c64.components.util.ROMLoader;
 import de.heiden.jem.models.c64.components.vic.VIC6569PAL;
 import de.heiden.jem.models.c64.components.vic.VICBus;
 import de.heiden.jem.models.c64.gui.swing.emulator.KeyListener;
 import de.heiden.jem.models.c64.gui.swing.emulator.PCMapping;
-import de.heiden.jem.models.c64.util.ROMLoader;
 
 import java.io.OutputStream;
 
