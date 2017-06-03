@@ -15,8 +15,8 @@ import de.heiden.jem.models.c64.components.memory.ROM;
 import de.heiden.jem.models.c64.components.patch.*;
 import de.heiden.jem.models.c64.components.vic.VIC6569PAL;
 import de.heiden.jem.models.c64.components.vic.VICBus;
-import de.heiden.jem.models.c64.gui.swing.KeyListener;
-import de.heiden.jem.models.c64.gui.swing.PCMapping;
+import de.heiden.jem.models.c64.gui.swing.emulator.KeyListener;
+import de.heiden.jem.models.c64.gui.swing.emulator.PCMapping;
 import de.heiden.jem.models.c64.util.ROMLoader;
 
 import java.io.OutputStream;

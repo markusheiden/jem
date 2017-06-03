@@ -1,4 +1,4 @@
-package de.heiden.jem.models.c64.gui.javafx;
+package de.heiden.jem.models.c64.gui.javafx.emulator;
 
 import de.heiden.jem.models.c64.C64;
 import javafx.application.Application;
