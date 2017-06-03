@@ -11,7 +11,7 @@ import de.heiden.jem.models.c64.components.keyboard.Keyboard;
 import de.heiden.jem.models.c64.components.memory.ColorRAM;
 import de.heiden.jem.models.c64.components.memory.RAM;
 import de.heiden.jem.models.c64.components.memory.ROM;
-import de.heiden.jem.models.c64.components.util.ROMLoader;
+import de.heiden.jem.models.c64.components.memory.ROMLoader;
 import de.heiden.jem.models.c64.components.vic.VIC6569PAL;
 import de.heiden.jem.models.c64.components.vic.VICBus;
 import org.slf4j.Logger;
