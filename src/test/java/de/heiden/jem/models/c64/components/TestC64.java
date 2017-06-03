@@ -4,6 +4,7 @@ import de.heiden.jem.components.bus.BusDevice;
 import de.heiden.jem.components.clock.Clock;
 import de.heiden.jem.components.clock.ClockEvent;
 import de.heiden.jem.components.clock.serialthreads.SerialClock;
+import de.heiden.jem.models.c64.components.cia.CIA6526;
 import de.heiden.jem.models.c64.components.cpu.C64Bus;
 import de.heiden.jem.models.c64.components.cpu.CPU6510Debugger;
 import de.heiden.jem.models.c64.components.cpu.Patch;

@@ -3,6 +3,7 @@ package de.heiden.jem.models.c64.components;
 import de.heiden.jem.components.clock.Clock;
 import de.heiden.jem.components.clock.RealTimeSlowDown;
 import de.heiden.jem.components.clock.serialthreads.SerialClock;
+import de.heiden.jem.models.c64.components.cia.CIA6526;
 import de.heiden.jem.models.c64.components.cpu.C64Bus;
 import de.heiden.jem.models.c64.components.cpu.CPU6510;
 import de.heiden.jem.models.c64.components.cpu.CPU6510Debugger;
