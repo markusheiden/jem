@@ -1,9 +1,9 @@
 package de.heiden.jem.models.c64.components.cpu;
 
+import de.heiden.c64dt.assembler.CodeBuffer;
 import de.heiden.c64dt.assembler.Disassembler;
 import de.heiden.c64dt.assembler.ICodeBuffer;
 import de.heiden.c64dt.assembler.Opcode;
-import de.heiden.c64dt.reassembler.CodeBuffer;
 import de.heiden.jem.components.bus.BusDevice;
 
 import java.io.IOException;
