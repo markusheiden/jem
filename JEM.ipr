@@ -568,11 +568,11 @@
   </component>
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/../c64dt/C64DT.iml" filepath="$PROJECT_DIR$/../c64dt/C64DT.iml" />
       <module fileurl="file://$PROJECT_DIR$/JEM.iml" filepath="$PROJECT_DIR$/JEM.iml" />
       <module fileurl="file://$PROJECT_DIR$/../serialthreads/SerialThreads.iml" filepath="$PROJECT_DIR$/../serialthreads/SerialThreads.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../c64dt/base/c64dt.iml" filepath="$PROJECT_DIR$/../c64dt/base/c64dt.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../c64dt/charset/c64dt (1).iml" filepath="$PROJECT_DIR$/../c64dt/charset/c64dt (1).iml" />
+      <module fileurl="file://$PROJECT_DIR$/../c64dt/base/base.iml" filepath="$PROJECT_DIR$/../c64dt/base/base.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../c64dt/c64dt.iml" filepath="$PROJECT_DIR$/../c64dt/c64dt.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../c64dt/charset/charset.iml" filepath="$PROJECT_DIR$/../c64dt/charset/charset.iml" />
     </modules>
   </component>
   <component name="ProjectResources">
