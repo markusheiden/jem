@@ -156,6 +156,7 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="assembler" />
         <module name="base" />
         <module name="browser" />
         <module name="byte" />
@@ -170,6 +171,7 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="1.8">
+      <module name="assembler" target="1.8" />
       <module name="base" target="1.8" />
       <module name="browser" target="1.8" />
       <module name="byte" target="1.8" />
@@ -219,7 +221,7 @@
   </component>
   <component name="Encoding" useUTFGuessing="true" native2AsciiForPropertiesFiles="false">
     <file url="file://$PROJECT_DIR$/../c64dt" charset="windows-1252" />
-    <file url="file://$PROJECT_DIR$/../c64dt/base" charset="windows-1252" />
+    <file url="file://$PROJECT_DIR$/../c64dt/assembler" charset="windows-1252" />
     <file url="file://$PROJECT_DIR$/../c64dt/browser" charset="windows-1252" />
     <file url="file://$PROJECT_DIR$/../c64dt/bytes" charset="windows-1252" />
     <file url="file://$PROJECT_DIR$/../c64dt/charset" charset="windows-1252" />
@@ -592,7 +594,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/JEM.iml" filepath="$PROJECT_DIR$/JEM.iml" />
       <module fileurl="file://$PROJECT_DIR$/../serialthreads/SerialThreads.iml" filepath="$PROJECT_DIR$/../serialthreads/SerialThreads.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../c64dt/base/base.iml" filepath="$PROJECT_DIR$/../c64dt/base/base.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../c64dt/assembler/assembler.iml" filepath="$PROJECT_DIR$/../c64dt/assembler/assembler.iml" />
       <module fileurl="file://$PROJECT_DIR$/../c64dt/browser/browser.iml" filepath="$PROJECT_DIR$/../c64dt/browser/browser.iml" />
       <module fileurl="file://$PROJECT_DIR$/../c64dt/bytes/bytes.iml" filepath="$PROJECT_DIR$/../c64dt/bytes/bytes.iml" />
       <module fileurl="file://$PROJECT_DIR$/../c64dt/c64dt.iml" filepath="$PROJECT_DIR$/../c64dt/c64dt.iml" />
