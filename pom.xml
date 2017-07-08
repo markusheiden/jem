@@ -73,8 +73,8 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>de.heiden</groupId>
-      <artifactId>c64dt</artifactId>
+      <groupId>de.heiden.c64dt</groupId>
+      <artifactId>parent</artifactId>
       <version>${c64dt.version}</version>
       <scope>compile</scope>
     </dependency>
