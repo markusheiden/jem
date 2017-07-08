@@ -1,7 +1,7 @@
 package de.heiden.jem.models.c64.gui.swing.monitor;
 
 import de.heiden.c64dt.assembler.Disassembler;
-import de.heiden.c64dt.gui.JC64TextArea;
+import de.heiden.c64dt.gui.swing.JC64TextArea;
 import de.heiden.jem.models.c64.components.cpu.CPU6510Debugger;
 import de.heiden.jem.models.c64.components.cpu.Trace;
 

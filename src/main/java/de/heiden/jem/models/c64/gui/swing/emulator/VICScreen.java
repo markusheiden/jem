@@ -1,6 +1,6 @@
 package de.heiden.jem.models.c64.gui.swing.emulator;
 
-import de.heiden.c64dt.gui.JC64ScreenComponent;
+import de.heiden.c64dt.gui.swing.JC64ScreenComponent;
 import de.heiden.jem.models.c64.components.vic.AbstractDisplayUnit;
 
 import java.awt.*;

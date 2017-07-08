@@ -1,7 +1,7 @@
 package de.heiden.jem.models.c64.gui.swing.monitor;
 
 import de.heiden.c64dt.bytes.HexUtil;
-import de.heiden.c64dt.gui.JC64TextArea;
+import de.heiden.c64dt.gui.swing.JC64TextArea;
 import de.heiden.jem.components.bus.BusDevice;
 
 import javax.swing.*;
