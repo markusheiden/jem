@@ -1,6 +1,6 @@
 package de.heiden.jem.components.bus;
 
-import de.heiden.c64dt.util.ByteUtil;
+import de.heiden.c64dt.bytes.ByteUtil;
 
 /**
  * Wrapper to enable word access to bus.

@@ -1,6 +1,6 @@
 package de.heiden.jem.models.c64.components.cpu;
 
-import de.heiden.c64dt.util.HexUtil;
+import de.heiden.c64dt.bytes.HexUtil;
 
 /**
  * State of CPU.

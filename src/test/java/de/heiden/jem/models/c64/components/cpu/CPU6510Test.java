@@ -20,8 +20,8 @@ import java.util.Random;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-import static de.heiden.c64dt.util.ByteUtil.hi;
-import static de.heiden.c64dt.util.ByteUtil.lo;
+import static de.heiden.c64dt.bytes.ByteUtil.hi;
+import static de.heiden.c64dt.bytes.ByteUtil.lo;
 import static org.junit.Assert.assertEquals;
 
 /**

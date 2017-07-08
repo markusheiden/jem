@@ -1,6 +1,6 @@
 package de.heiden.jem.components.bus;
 
-import de.heiden.c64dt.util.HexUtil;
+import de.heiden.c64dt.bytes.HexUtil;
 
 /**
  * LogEntry represents an single access to the bus.

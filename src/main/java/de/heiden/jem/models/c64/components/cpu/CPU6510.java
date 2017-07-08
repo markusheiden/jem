@@ -1,6 +1,6 @@
 package de.heiden.jem.models.c64.components.cpu;
 
-import de.heiden.c64dt.util.HexUtil;
+import de.heiden.c64dt.bytes.HexUtil;
 import de.heiden.jem.components.bus.BusDevice;
 import de.heiden.jem.components.clock.ClockedComponent;
 import de.heiden.jem.components.clock.Tick;

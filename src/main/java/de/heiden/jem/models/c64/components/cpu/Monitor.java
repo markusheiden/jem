@@ -1,7 +1,7 @@
 package de.heiden.jem.models.c64.components.cpu;
 
 import de.heiden.c64dt.assembler.Opcode;
-import de.heiden.c64dt.util.HexUtil;
+import de.heiden.c64dt.bytes.HexUtil;
 import de.heiden.jem.components.bus.BusDevice;
 
 /**
