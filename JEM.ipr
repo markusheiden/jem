@@ -162,6 +162,7 @@
         <module name="bytes" />
         <module name="c64dt (1)" />
         <module name="charset" />
+        <module name="disk" />
         <module name="drive" />
         <module name="gui" />
         <module name="JEM" />
@@ -177,6 +178,7 @@
       <module name="c64dt" target="1.8" />
       <module name="c64dt (1)" target="1.8" />
       <module name="charset" target="1.8" />
+      <module name="disk" target="1.8" />
       <module name="drive" target="1.8" />
       <module name="gui" target="1.8" />
       <module name="JEM" target="1.8" />
@@ -221,7 +223,7 @@
     <file url="file://$PROJECT_DIR$/../c64dt/browser" charset="windows-1252" />
     <file url="file://$PROJECT_DIR$/../c64dt/bytes" charset="windows-1252" />
     <file url="file://$PROJECT_DIR$/../c64dt/charset" charset="windows-1252" />
-    <file url="file://$PROJECT_DIR$/../c64dt/drive" charset="windows-1252" />
+    <file url="file://$PROJECT_DIR$/../c64dt/disk" charset="windows-1252" />
     <file url="file://$PROJECT_DIR$/../c64dt/gui" charset="windows-1252" />
     <file url="file://$PROJECT_DIR$/../c64dt/net" charset="windows-1252" />
     <file url="file://$PROJECT_DIR$/../c64dt/pom.xml" charset="windows-1252" />
@@ -595,7 +597,7 @@
       <module fileurl="file://$PROJECT_DIR$/../c64dt/bytes/bytes.iml" filepath="$PROJECT_DIR$/../c64dt/bytes/bytes.iml" />
       <module fileurl="file://$PROJECT_DIR$/../c64dt/c64dt.iml" filepath="$PROJECT_DIR$/../c64dt/c64dt.iml" />
       <module fileurl="file://$PROJECT_DIR$/../c64dt/charset/charset.iml" filepath="$PROJECT_DIR$/../c64dt/charset/charset.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../c64dt/drive/drive.iml" filepath="$PROJECT_DIR$/../c64dt/drive/drive.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../c64dt/disk/disk.iml" filepath="$PROJECT_DIR$/../c64dt/disk/disk.iml" />
       <module fileurl="file://$PROJECT_DIR$/../c64dt/gui/gui.iml" filepath="$PROJECT_DIR$/../c64dt/gui/gui.iml" />
       <module fileurl="file://$PROJECT_DIR$/../c64dt/net/net.iml" filepath="$PROJECT_DIR$/../c64dt/net/net.iml" />
     </modules>

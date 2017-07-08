@@ -86,7 +86,7 @@
     </dependency>
     <dependency>
       <groupId>de.heiden.c64dt</groupId>
-      <artifactId>drive</artifactId>
+      <artifactId>disk</artifactId>
       <version>${c64dt.version}</version>
       <scope>compile</scope>
     </dependency>
