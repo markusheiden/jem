@@ -2,7 +2,7 @@ package de.heiden.jem.models.c64.gui.swing.monitor;
 
 import de.heiden.c64dt.assembler.Disassembler;
 import de.heiden.c64dt.assembler.ICodeBuffer;
-import de.heiden.c64dt.gui.JC64List;
+import de.heiden.c64dt.gui.swing.JC64List;
 import de.heiden.jem.components.bus.BusDevice;
 
 import javax.swing.*;
