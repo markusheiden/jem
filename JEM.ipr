@@ -157,12 +157,14 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="c64dt" />
+        <module name="c64dt (1)" />
         <module name="JEM" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="1.8">
       <module name="C64DT" target="1.8" />
       <module name="c64dt" target="1.8" />
+      <module name="c64dt (1)" target="1.8" />
       <module name="JEM" target="1.8" />
       <module name="SerialThreads" target="1.8" />
     </bytecodeTargetLevel>
@@ -201,6 +203,7 @@
   <component name="Encoding" useUTFGuessing="true" native2AsciiForPropertiesFiles="false">
     <file url="file://$PROJECT_DIR$/../c64dt" charset="windows-1252" />
     <file url="file://$PROJECT_DIR$/../c64dt/base" charset="windows-1252" />
+    <file url="file://$PROJECT_DIR$/../c64dt/charset" charset="windows-1252" />
     <file url="file://$PROJECT_DIR$/../c64dt/pom.xml" charset="windows-1252" />
     <file url="file://$PROJECT_DIR$" charset="windows-1252" />
     <file url="file://$PROJECT_DIR$/pom.xml" charset="windows-1252" />
@@ -569,6 +572,7 @@
       <module fileurl="file://$PROJECT_DIR$/JEM.iml" filepath="$PROJECT_DIR$/JEM.iml" />
       <module fileurl="file://$PROJECT_DIR$/../serialthreads/SerialThreads.iml" filepath="$PROJECT_DIR$/../serialthreads/SerialThreads.iml" />
       <module fileurl="file://$PROJECT_DIR$/../c64dt/base/c64dt.iml" filepath="$PROJECT_DIR$/../c64dt/base/c64dt.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../c64dt/charset/c64dt (1).iml" filepath="$PROJECT_DIR$/../c64dt/charset/c64dt (1).iml" />
     </modules>
   </component>
   <component name="ProjectResources">
