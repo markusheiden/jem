@@ -74,7 +74,25 @@
     </dependency>
     <dependency>
       <groupId>de.heiden.c64dt</groupId>
-      <artifactId>parent</artifactId>
+      <artifactId>base</artifactId>
+      <version>${c64dt.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>de.heiden.c64dt</groupId>
+      <artifactId>bytes</artifactId>
+      <version>${c64dt.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>de.heiden.c64dt</groupId>
+      <artifactId>drive</artifactId>
+      <version>${c64dt.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>de.heiden.c64dt</groupId>
+      <artifactId>gui</artifactId>
       <version>${c64dt.version}</version>
       <scope>compile</scope>
     </dependency>

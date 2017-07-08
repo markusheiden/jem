@@ -1,6 +1,6 @@
 package de.heiden.jem.models.c64.components.patch;
 
-import de.heiden.c64dt.util.ByteUtil;
+import de.heiden.c64dt.bytes.ByteUtil;
 import de.heiden.jem.components.bus.BusDevice;
 
 import java.io.*;
