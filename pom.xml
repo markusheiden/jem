@@ -80,6 +80,12 @@
     </dependency>
     <dependency>
       <groupId>de.heiden.c64dt</groupId>
+      <artifactId>reassembler</artifactId>
+      <version>${c64dt.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>de.heiden.c64dt</groupId>
       <artifactId>bytes</artifactId>
       <version>${c64dt.version}</version>
       <scope>compile</scope>
