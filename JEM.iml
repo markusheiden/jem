@@ -28,10 +28,14 @@
     <orderEntry type="module" module-name="assembler" />
     <orderEntry type="module" module-name="charset" />
     <orderEntry type="library" name="Maven: org.springframework:spring-beans:4.3.9.RELEASE" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework:spring-core:4.3.9.RELEASE" level="project" />
+    <orderEntry type="library" name="Maven: commons-logging:commons-logging:1.2" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-context:4.3.9.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-aop:4.3.9.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-expression:4.3.9.RELEASE" level="project" />
-    <orderEntry type="library" name="Maven: org.springframework:spring-core:4.3.9.RELEASE" level="project" />
+    <orderEntry type="library" name="Maven: org.bitbucket.cowwoc:requirements-core:3.0.12" level="project" />
+    <orderEntry type="library" name="Maven: org.bitbucket.cowwoc:diff-match-patch:1.1" level="project" />
+    <orderEntry type="library" name="Maven: org.bitbucket.cowwoc:pouch:1.12" level="project" />
     <orderEntry type="module" module-name="bytes" />
     <orderEntry type="module" module-name="disk" />
     <orderEntry type="module" module-name="gui" />

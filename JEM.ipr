@@ -744,6 +744,17 @@
   </component>
   <component name="WebServicesPlugin" addRequiredLibraries="true" />
   <component name="libraryTable">
+    <library name="Maven: commons-logging:commons-logging:1.2">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/commons-logging/commons-logging/1.2/commons-logging-1.2.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/commons-logging/commons-logging/1.2/commons-logging-1.2-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/commons-logging/commons-logging/1.2/commons-logging-1.2-sources.jar!/" />
+      </SOURCES>
+    </library>
     <library name="Maven: junit:junit:4.12">
       <CLASSES>
         <root url="jar://$MAVEN_REPOSITORY$/junit/junit/4.12/junit-4.12.jar!/" />
@@ -787,6 +798,39 @@
       </JAVADOC>
       <SOURCES>
         <root url="jar://$MAVEN_REPOSITORY$/org/apache/logging/log4j/log4j-slf4j-impl/2.8.2/log4j-slf4j-impl-2.8.2-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: org.bitbucket.cowwoc:diff-match-patch:1.1">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/bitbucket/cowwoc/diff-match-patch/1.1/diff-match-patch-1.1.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/org/bitbucket/cowwoc/diff-match-patch/1.1/diff-match-patch-1.1-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/bitbucket/cowwoc/diff-match-patch/1.1/diff-match-patch-1.1-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: org.bitbucket.cowwoc:pouch:1.12">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/bitbucket/cowwoc/pouch/1.12/pouch-1.12.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/org/bitbucket/cowwoc/pouch/1.12/pouch-1.12-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/bitbucket/cowwoc/pouch/1.12/pouch-1.12-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: org.bitbucket.cowwoc:requirements-core:3.0.12">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/bitbucket/cowwoc/requirements-core/3.0.12/requirements-core-3.0.12.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/org/bitbucket/cowwoc/requirements-core/3.0.12/requirements-core-3.0.12-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/bitbucket/cowwoc/requirements-core/3.0.12/requirements-core-3.0.12-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="Maven: org.hamcrest:hamcrest-core:1.3">
