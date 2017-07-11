@@ -7,6 +7,7 @@ import de.heiden.c64dt.bytes.HexUtil;
 import de.heiden.jem.models.c64.components.TestC64;
 import de.heiden.jem.models.c64.components.patch.LoadFile;
 import de.heiden.jem.models.c64.components.patch.LoadFromDirectory;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.rules.TestWatcher;
@@ -17,7 +18,6 @@ import org.serialthreads.agent.TransformingRunner;
 import org.serialthreads.transformer.strategies.frequent3.FrequentInterruptsTransformer3;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -472,7 +472,7 @@ public abstract class AbstractTest {
 
     @Override
     public String toString() {
-      return "Console contains " + StringUtils.arrayToDelimitedString(texts, " or ");
+      return "Console contains " + StringUtils.join(texts, " or ");
     }
   }
 
@@ -509,7 +509,7 @@ public abstract class AbstractTest {
 
     @Override
     public String toString() {
-      return "Screen contains " + StringUtils.arrayToDelimitedString(texts, " or ");
+      return "Screen contains " + StringUtils.join(texts, " or ");
     }
   }
 
