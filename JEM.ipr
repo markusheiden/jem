@@ -833,15 +833,15 @@
         <root url="jar://$MAVEN_REPOSITORY$/org/bitbucket/cowwoc/pouch/1.12/pouch-1.12-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Maven: org.bitbucket.cowwoc:requirements-core:3.0.13">
+    <library name="Maven: org.bitbucket.cowwoc:requirements-core:4.0.0-RC">
       <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/org/bitbucket/cowwoc/requirements-core/3.0.13/requirements-core-3.0.13.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/bitbucket/cowwoc/requirements-core/4.0.0-RC/requirements-core-4.0.0-RC.jar!/" />
       </CLASSES>
       <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/org/bitbucket/cowwoc/requirements-core/3.0.13/requirements-core-3.0.13-javadoc.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/bitbucket/cowwoc/requirements-core/4.0.0-RC/requirements-core-4.0.0-RC-javadoc.jar!/" />
       </JAVADOC>
       <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/org/bitbucket/cowwoc/requirements-core/3.0.13/requirements-core-3.0.13-sources.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/bitbucket/cowwoc/requirements-core/4.0.0-RC/requirements-core-4.0.0-RC-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="Maven: org.hamcrest:hamcrest-core:1.3">
