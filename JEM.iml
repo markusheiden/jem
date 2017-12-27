@@ -30,6 +30,7 @@
     <orderEntry type="library" name="Maven: org.ow2.asm:asm:6.0" level="project" />
     <orderEntry type="library" name="Maven: org.ow2.asm:asm-tree:6.0" level="project" />
     <orderEntry type="library" name="Maven: org.ow2.asm:asm-analysis:6.0" level="project" />
+    <orderEntry type="library" name="Maven: org.ow2.asm:asm-util:6.0" level="project" />
     <orderEntry type="module" module-name="assembler" />
     <orderEntry type="module" module-name="charset" />
     <orderEntry type="library" name="Maven: commons-io:commons-io:2.6" level="project" />
