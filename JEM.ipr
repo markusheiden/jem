@@ -134,7 +134,6 @@
     </option>
   </component>
   <component name="CompilerConfiguration">
-    <option name="DEFAULT_COMPILER" value="Eclipse" />
     <resourceExtensions>
       <entry name=".+\.(properties|xml|html|dtd|tld)" />
       <entry name=".+\.(gif|png|jpeg|jpg)" />
@@ -172,18 +171,13 @@
         <module name="reassembler-gui" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel target="1.8">
+    <bytecodeTargetLevel target="9">
       <module name="assembler" target="9" />
-      <module name="base" target="1.8" />
       <module name="browser" target="9" />
-      <module name="byte" target="1.8" />
       <module name="bytes" target="9" />
-      <module name="C64DT" target="1.8" />
       <module name="c64dt" target="9" />
-      <module name="c64dt (1)" target="1.8" />
       <module name="charset" target="9" />
       <module name="disk" target="9" />
-      <module name="drive" target="1.8" />
       <module name="gui" target="9" />
       <module name="JEM" target="9" />
       <module name="net" target="9" />

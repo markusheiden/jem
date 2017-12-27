@@ -19,7 +19,7 @@ public class DebuggerStartup extends Startup {
   public void start() {
     try {
       Class<?> clazz = loadClass("de.heiden.jem.models.c64.gui.swing.monitor.DebuggerGUI");
-      Object debugger = clazz.newInstance();
+      Object debugger = clazz.getDeclaredConstructor().newInstance();
 
       JFrame frame = new JFrame("C64 Debugger");
       frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
