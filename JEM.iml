@@ -27,7 +27,9 @@
     <orderEntry type="library" name="Maven: org.bitbucket.cowwoc:requirements-core:4.0.0-RC" level="project" />
     <orderEntry type="library" name="Maven: org.bitbucket.cowwoc:diff-match-patch:1.1" level="project" />
     <orderEntry type="library" name="Maven: org.bitbucket.cowwoc:pouch:1.12" level="project" />
-    <orderEntry type="library" name="Maven: org.ow2.asm:asm-debug-all:6.0_BETA" level="project" />
+    <orderEntry type="library" name="Maven: org.ow2.asm:asm:6.0" level="project" />
+    <orderEntry type="library" name="Maven: org.ow2.asm:asm-tree:6.0" level="project" />
+    <orderEntry type="library" name="Maven: org.ow2.asm:asm-analysis:6.0" level="project" />
     <orderEntry type="module" module-name="assembler" />
     <orderEntry type="module" module-name="charset" />
     <orderEntry type="library" name="Maven: commons-io:commons-io:2.6" level="project" />
