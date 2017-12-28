@@ -7,7 +7,7 @@
       </pattern>
     </extension>
     <option name="MAIN_CLASS_NAME" value="de.heiden.jem.models.c64.StartupAgent" />
-    <option name="VM_PARAMETERS" value="-javaagent:../serialthreads/target/serialthreads-1.0-SNAPSHOT.jar" />
+    <option name="VM_PARAMETERS" value="-ea -javaagent:../serialthreads/target/serialthreads-1.0-SNAPSHOT.jar" />
     <option name="PROGRAM_PARAMETERS" value="" />
     <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
@@ -18,7 +18,7 @@
     <module name="JEM" />
     <envs />
     <method>
-      <option name="Maven.BeforeRunTask" enabled="true" file="$PROJECT_DIR$/../serialthreads/pom.xml" goal="jar:jar" />
+      <option name="Maven.BeforeRunTask" enabled="true" file="$PROJECT_DIR$/../serialthreads/pom.xml" goal="clean package" />
     </method>
   </configuration>
 </component>
