@@ -17,6 +17,8 @@
   <Logger name="org.serialthreads.transformer.strategies.frequent3.MethodTransformer" level="error"/>
   <Logger name="de.heiden.jem.models.c64.components.cpu.CPU6510Debugger" level="debug"/>
 
+  <Logger name="org.bitbucket.cowwoc.requirements.internal.core.terminal.NativeTerminal" level="error"/>
+
   <Root level="warn">
     <AppenderRef ref="Console"/>
   </Root>
