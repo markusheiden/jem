@@ -29,12 +29,7 @@ public class ParallelSpinClock extends AbstractSynchronizedClock {
       ticks[i] = tick;
 
       // Start component.
-      createStartedDaemonThread(component.getName(), () -> { // executeComponent(component, tick));
-        logger.debug("starting {}", component.getName());
-        tick.waitForTick();
-        logger.debug("started {}", component.getName());
-        component.run();
-      });
+      createStartedDaemonThread(component.getName(), () -> executeComponent(component, tick));
       // Wait for component to reach first tick.
       tick.waitForTickEnd();
     }

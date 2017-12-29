@@ -2,6 +2,8 @@ package de.heiden.jem.components.clock.threads;
 
 import de.heiden.jem.components.clock.AbstractClock;
 import de.heiden.jem.components.clock.ClockEvent;
+import de.heiden.jem.components.clock.ClockedComponent;
+import de.heiden.jem.components.clock.Tick;
 
 /**
  * Base implementation for all clocks using synchronization.
@@ -77,6 +79,13 @@ public abstract class AbstractSynchronizedClock extends AbstractClock {
     }, name);
     thread.setDaemon(true);
     return thread;
+  }
+
+  protected final void executeComponent(ClockedComponent component, Tick tick) {
+    logger.debug("starting {}", component.getName());
+    tick.waitForTick();
+    logger.debug("started {}", component.getName());
+    component.run();
   }
 
   @Override
