@@ -31,12 +31,7 @@ public class ParallelClock extends AbstractSynchronizedClock {
     for (ClockedComponent component : components) {
       Tick tick = new ParallelTick(_barrier);
       component.setTick(tick);
-      createStartedDaemonThread(component.getName(), () -> { // executeComponent(component, tick));
-        logger.debug("starting {}", component.getName());
-        tick.waitForTick();
-        logger.debug("started {}", component.getName());
-        component.run();
-      });
+      createStartedDaemonThread(component.getName(), () -> executeComponent(component, tick));
     }
     Thread.yield();
 

@@ -36,12 +36,7 @@ public class SequentialSpinClock extends AbstractSynchronizedClock {
       component.setTick(tick);
 
       // Start component.
-      Thread thread = createStartedDaemonThread(component.getName(), () -> { // executeComponent(component, tick));
-        logger.debug("starting {}", component.getName());
-        tick.waitForTick();
-        logger.debug("started {}", component.getName());
-        component.run();
-      });
+      createStartedDaemonThread(component.getName(), () -> executeComponent(component, tick));
       // Wait for component to reach first tick.
       waitForState(nextState);
     }
