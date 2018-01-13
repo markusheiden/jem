@@ -963,6 +963,17 @@
         <root url="jar://$MAVEN_REPOSITORY$/org/apache/logging/log4j/log4j-slf4j-impl/2.10.0/log4j-slf4j-impl-2.10.0-sources.jar!/" />
       </SOURCES>
     </library>
+    <library name="Maven: org.assertj:assertj-core:3.9.0">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/assertj/assertj-core/3.9.0/assertj-core-3.9.0.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/org/assertj/assertj-core/3.9.0/assertj-core-3.9.0-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/assertj/assertj-core/3.9.0/assertj-core-3.9.0-sources.jar!/" />
+      </SOURCES>
+    </library>
     <library name="Maven: org.bitbucket.cowwoc:diff-match-patch:1.1">
       <CLASSES>
         <root url="jar://$MAVEN_REPOSITORY$/org/bitbucket/cowwoc/diff-match-patch/1.1/diff-match-patch-1.1.jar!/" />
