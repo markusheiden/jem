@@ -181,6 +181,7 @@
       <module name="gui" target="9" />
       <module name="JEM" target="9" />
       <module name="net" target="9" />
+      <module name="parent" target="9" />
       <module name="reassembler" target="9" />
       <module name="reassembler-gui" target="9" />
       <module name="SerialThreads" target="9" />
@@ -749,6 +750,30 @@
     <output url="file://$PROJECT_DIR$/target/idea" />
   </component>
   <component name="ProjectRunConfigurationManager">
+    <configuration default="false" name="Startup -ea" type="Application" factoryName="Application">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="jacoco" />
+      <option name="MAIN_CLASS_NAME" value="de.heiden.jem.models.c64.Startup" />
+      <option name="VM_PARAMETERS" value="-ea -Dcom.sun.scenario.animation.vsync=true -Dcom.sun.scenario.animation.pulse=500" />
+      <option name="PROGRAM_PARAMETERS" value="" />
+      <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$/" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" value="" />
+      <option name="ENABLE_SWING_INSPECTOR" value="false" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <module name="JEM" />
+      <envs />
+      <RunnerSettings RunnerId="Debug">
+        <option name="DEBUG_PORT" value="59391" />
+        <option name="TRANSPORT" value="0" />
+        <option name="LOCAL" value="true" />
+      </RunnerSettings>
+      <RunnerSettings RunnerId="JProfiler" />
+      <RunnerSettings RunnerId="Run" />
+      <ConfigurationWrapper RunnerId="Debug" />
+      <ConfigurationWrapper RunnerId="Run" />
+      <method />
+    </configuration>
     <configuration default="false" name="Startup" type="Application" factoryName="Application">
       <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="jacoco" />
       <option name="MAIN_CLASS_NAME" value="de.heiden.jem.models.c64.Startup" />
@@ -773,30 +798,6 @@
       <ConfigurationWrapper RunnerId="Cover" />
       <ConfigurationWrapper RunnerId="Debug" />
       <ConfigurationWrapper RunnerId="JProfiler" />
-      <ConfigurationWrapper RunnerId="Run" />
-      <method />
-    </configuration>
-    <configuration default="false" name="Startup -ea" type="Application" factoryName="Application">
-      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="jacoco" />
-      <option name="MAIN_CLASS_NAME" value="de.heiden.jem.models.c64.Startup" />
-      <option name="VM_PARAMETERS" value="-ea -Dcom.sun.scenario.animation.vsync=true -Dcom.sun.scenario.animation.pulse=500" />
-      <option name="PROGRAM_PARAMETERS" value="" />
-      <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$/" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" value="" />
-      <option name="ENABLE_SWING_INSPECTOR" value="false" />
-      <option name="ENV_VARIABLES" />
-      <option name="PASS_PARENT_ENVS" value="true" />
-      <module name="JEM" />
-      <envs />
-      <RunnerSettings RunnerId="Debug">
-        <option name="DEBUG_PORT" value="59391" />
-        <option name="TRANSPORT" value="0" />
-        <option name="LOCAL" value="true" />
-      </RunnerSettings>
-      <RunnerSettings RunnerId="JProfiler" />
-      <RunnerSettings RunnerId="Run" />
-      <ConfigurationWrapper RunnerId="Debug" />
       <ConfigurationWrapper RunnerId="Run" />
       <method />
     </configuration>
