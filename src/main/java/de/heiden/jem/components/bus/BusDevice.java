@@ -12,7 +12,7 @@ public interface BusDevice {
    * @require value >= 0 && value < 0x100
    * @require address >= 0 && address < size()
    */
-  public void write(int value, int address);
+  void write(int value, int address);
 
   /**
    * Read byte from bus device.
@@ -21,5 +21,5 @@ public interface BusDevice {
    * @require address >= 0 && address < size()
    * @ensure result >= 0 && result < 0x100
    */
-  public int read(int address);
+  int read(int address);
 }
