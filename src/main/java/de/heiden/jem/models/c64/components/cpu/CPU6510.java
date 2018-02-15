@@ -231,7 +231,7 @@ public class CPU6510 implements ClockedComponent {
   @Interruptible
   protected void execute() {
 //      int b = readBytePC();
-//      Opcode opcode = opcodes[b];
+//      Opcode opcode = OPCODES[b];
 //      opcode.execute();
     OPCODES[readBytePC()].execute();
   }
