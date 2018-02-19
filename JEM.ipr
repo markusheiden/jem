@@ -219,20 +219,20 @@
     <option name="MAXIMUM_HEAP_SIZE" value="128" />
   </component>
   <component name="Encoding" useUTFGuessing="true" native2AsciiForPropertiesFiles="false">
-    <file url="file://$PROJECT_DIR$/../c64dt" charset="windows-1252" />
-    <file url="file://$PROJECT_DIR$/../c64dt/assembler" charset="windows-1252" />
-    <file url="file://$PROJECT_DIR$/../c64dt/browser" charset="windows-1252" />
-    <file url="file://$PROJECT_DIR$/../c64dt/bytes" charset="windows-1252" />
-    <file url="file://$PROJECT_DIR$/../c64dt/charset" charset="windows-1252" />
-    <file url="file://$PROJECT_DIR$/../c64dt/disk" charset="windows-1252" />
-    <file url="file://$PROJECT_DIR$/../c64dt/gui" charset="windows-1252" />
-    <file url="file://$PROJECT_DIR$/../c64dt/net" charset="windows-1252" />
+    <file url="file://$PROJECT_DIR$/../c64dt" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../c64dt/assembler" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../c64dt/browser" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../c64dt/bytes" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../c64dt/charset" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../c64dt/disk" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../c64dt/gui" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../c64dt/net" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/../c64dt/pom.xml" charset="windows-1252" />
-    <file url="file://$PROJECT_DIR$/../c64dt/reassembler" charset="windows-1252" />
-    <file url="file://$PROJECT_DIR$/../c64dt/reassembler-gui" charset="windows-1252" />
-    <file url="file://$PROJECT_DIR$" charset="windows-1252" />
+    <file url="file://$PROJECT_DIR$/../c64dt/reassembler" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../c64dt/reassembler-gui" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/pom.xml" charset="windows-1252" />
-    <file url="file://$PROJECT_DIR$/../serialthreads" charset="windows-1252" />
+    <file url="file://$PROJECT_DIR$/../serialthreads" charset="UTF-8" />
     <file url="PROJECT" charset="UTF-8" />
   </component>
   <component name="ExportToHTMLSettings">
@@ -997,15 +997,15 @@
         <root url="jar://$MAVEN_REPOSITORY$/org/bitbucket/cowwoc/pouch/1.12/pouch-1.12-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Maven: org.bitbucket.cowwoc:requirements-core:4.0.0-RC">
+    <library name="Maven: org.bitbucket.cowwoc:requirements-core:4.0.4-RC">
       <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/org/bitbucket/cowwoc/requirements-core/4.0.0-RC/requirements-core-4.0.0-RC.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/bitbucket/cowwoc/requirements-core/4.0.4-RC/requirements-core-4.0.4-RC.jar!/" />
       </CLASSES>
       <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/org/bitbucket/cowwoc/requirements-core/4.0.0-RC/requirements-core-4.0.0-RC-javadoc.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/bitbucket/cowwoc/requirements-core/4.0.4-RC/requirements-core-4.0.4-RC-javadoc.jar!/" />
       </JAVADOC>
       <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/org/bitbucket/cowwoc/requirements-core/4.0.0-RC/requirements-core-4.0.0-RC-sources.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/bitbucket/cowwoc/requirements-core/4.0.4-RC/requirements-core-4.0.4-RC-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="Maven: org.hamcrest:hamcrest-core:1.3">
@@ -1085,70 +1085,70 @@
         <root url="jar://$MAVEN_REPOSITORY$/org/slf4j/slf4j-api/1.7.25/slf4j-api-1.7.25-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Maven: org.springframework:spring-aop:5.0.2.RELEASE">
+    <library name="Maven: org.springframework:spring-aop:5.0.4.RELEASE">
       <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-aop/5.0.2.RELEASE/spring-aop-5.0.2.RELEASE.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-aop/5.0.4.RELEASE/spring-aop-5.0.4.RELEASE.jar!/" />
       </CLASSES>
       <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-aop/5.0.2.RELEASE/spring-aop-5.0.2.RELEASE-javadoc.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-aop/5.0.4.RELEASE/spring-aop-5.0.4.RELEASE-javadoc.jar!/" />
       </JAVADOC>
       <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-aop/5.0.2.RELEASE/spring-aop-5.0.2.RELEASE-sources.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-aop/5.0.4.RELEASE/spring-aop-5.0.4.RELEASE-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Maven: org.springframework:spring-beans:5.0.2.RELEASE">
+    <library name="Maven: org.springframework:spring-beans:5.0.4.RELEASE">
       <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-beans/5.0.2.RELEASE/spring-beans-5.0.2.RELEASE.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-beans/5.0.4.RELEASE/spring-beans-5.0.4.RELEASE.jar!/" />
       </CLASSES>
       <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-beans/5.0.2.RELEASE/spring-beans-5.0.2.RELEASE-javadoc.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-beans/5.0.4.RELEASE/spring-beans-5.0.4.RELEASE-javadoc.jar!/" />
       </JAVADOC>
       <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-beans/5.0.2.RELEASE/spring-beans-5.0.2.RELEASE-sources.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-beans/5.0.4.RELEASE/spring-beans-5.0.4.RELEASE-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Maven: org.springframework:spring-context:5.0.2.RELEASE">
+    <library name="Maven: org.springframework:spring-context:5.0.4.RELEASE">
       <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-context/5.0.2.RELEASE/spring-context-5.0.2.RELEASE.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-context/5.0.4.RELEASE/spring-context-5.0.4.RELEASE.jar!/" />
       </CLASSES>
       <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-context/5.0.2.RELEASE/spring-context-5.0.2.RELEASE-javadoc.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-context/5.0.4.RELEASE/spring-context-5.0.4.RELEASE-javadoc.jar!/" />
       </JAVADOC>
       <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-context/5.0.2.RELEASE/spring-context-5.0.2.RELEASE-sources.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-context/5.0.4.RELEASE/spring-context-5.0.4.RELEASE-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Maven: org.springframework:spring-core:5.0.2.RELEASE">
+    <library name="Maven: org.springframework:spring-core:5.0.4.RELEASE">
       <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-core/5.0.2.RELEASE/spring-core-5.0.2.RELEASE.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-core/5.0.4.RELEASE/spring-core-5.0.4.RELEASE.jar!/" />
       </CLASSES>
       <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-core/5.0.2.RELEASE/spring-core-5.0.2.RELEASE-javadoc.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-core/5.0.4.RELEASE/spring-core-5.0.4.RELEASE-javadoc.jar!/" />
       </JAVADOC>
       <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-core/5.0.2.RELEASE/spring-core-5.0.2.RELEASE-sources.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-core/5.0.4.RELEASE/spring-core-5.0.4.RELEASE-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Maven: org.springframework:spring-expression:5.0.2.RELEASE">
+    <library name="Maven: org.springframework:spring-expression:5.0.4.RELEASE">
       <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-expression/5.0.2.RELEASE/spring-expression-5.0.2.RELEASE.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-expression/5.0.4.RELEASE/spring-expression-5.0.4.RELEASE.jar!/" />
       </CLASSES>
       <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-expression/5.0.2.RELEASE/spring-expression-5.0.2.RELEASE-javadoc.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-expression/5.0.4.RELEASE/spring-expression-5.0.4.RELEASE-javadoc.jar!/" />
       </JAVADOC>
       <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-expression/5.0.2.RELEASE/spring-expression-5.0.2.RELEASE-sources.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-expression/5.0.4.RELEASE/spring-expression-5.0.4.RELEASE-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Maven: org.springframework:spring-jcl:5.0.2.RELEASE">
+    <library name="Maven: org.springframework:spring-jcl:5.0.4.RELEASE">
       <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-jcl/5.0.2.RELEASE/spring-jcl-5.0.2.RELEASE.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-jcl/5.0.4.RELEASE/spring-jcl-5.0.4.RELEASE.jar!/" />
       </CLASSES>
       <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-jcl/5.0.2.RELEASE/spring-jcl-5.0.2.RELEASE-javadoc.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-jcl/5.0.4.RELEASE/spring-jcl-5.0.4.RELEASE-javadoc.jar!/" />
       </JAVADOC>
       <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-jcl/5.0.2.RELEASE/spring-jcl-5.0.2.RELEASE-sources.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-jcl/5.0.4.RELEASE/spring-jcl-5.0.4.RELEASE-sources.jar!/" />
       </SOURCES>
     </library>
   </component>
