@@ -14,15 +14,16 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <maven.compiler.source>9</maven.compiler.source>
-    <maven.compiler.target>9</maven.compiler.target>
+    <maven.compiler.source>10</maven.compiler.source>
+    <maven.compiler.target>10</maven.compiler.target>
+
 
     <serialthreads.version>1.0-SNAPSHOT</serialthreads.version>
     <c64dt.version>1.0-SNAPSHOT</c64dt.version>
 
     <commons-lang3.version>3.7</commons-lang3.version>
     <junit.version>4.12</junit.version>
-    <log4j.version>2.10.0</log4j.version>
+    <log4j.version>2.11.1</log4j.version>
     <slf4j.version>1.7.25</slf4j.version>
   </properties>
 
