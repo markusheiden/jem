@@ -184,7 +184,7 @@
       <module name="parent" target="9" />
       <module name="reassembler" target="9" />
       <module name="reassembler-gui" target="9" />
-      <module name="SerialThreads" target="9" />
+      <module name="SerialThreads" target="10" />
     </bytecodeTargetLevel>
   </component>
   <component name="CopyrightManager" default="" />
@@ -218,7 +218,7 @@
     <option name="ADDITIONAL_OPTIONS_STRING" value="" />
     <option name="MAXIMUM_HEAP_SIZE" value="128" />
   </component>
-  <component name="Encoding" useUTFGuessing="true" native2AsciiForPropertiesFiles="false">
+  <component name="Encoding">
     <file url="file://$PROJECT_DIR$/../c64dt" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/../c64dt/assembler" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/../c64dt/browser" charset="UTF-8" />
@@ -746,7 +746,7 @@
   <component name="ProjectResources">
     <default-html-doctype>http://www.w3.org/1999/xhtml</default-html-doctype>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_9" default="false" project-jdk-name="9.0" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_10" default="false" project-jdk-name="10" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/target/idea" />
   </component>
   <component name="ProjectRunConfigurationManager">
@@ -942,6 +942,17 @@
         <root url="jar://$MAVEN_REPOSITORY$/org/apache/logging/log4j/log4j-api/2.10.0/log4j-api-2.10.0-sources.jar!/" />
       </SOURCES>
     </library>
+    <library name="Maven: org.apache.logging.log4j:log4j-api:2.11.1">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/apache/logging/log4j/log4j-api/2.11.1/log4j-api-2.11.1.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/org/apache/logging/log4j/log4j-api/2.11.1/log4j-api-2.11.1-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/apache/logging/log4j/log4j-api/2.11.1/log4j-api-2.11.1-sources.jar!/" />
+      </SOURCES>
+    </library>
     <library name="Maven: org.apache.logging.log4j:log4j-core:2.10.0">
       <CLASSES>
         <root url="jar://$MAVEN_REPOSITORY$/org/apache/logging/log4j/log4j-core/2.10.0/log4j-core-2.10.0.jar!/" />
@@ -951,6 +962,17 @@
       </JAVADOC>
       <SOURCES>
         <root url="jar://$MAVEN_REPOSITORY$/org/apache/logging/log4j/log4j-core/2.10.0/log4j-core-2.10.0-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: org.apache.logging.log4j:log4j-core:2.11.1">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/apache/logging/log4j/log4j-core/2.11.1/log4j-core-2.11.1.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/org/apache/logging/log4j/log4j-core/2.11.1/log4j-core-2.11.1-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/apache/logging/log4j/log4j-core/2.11.1/log4j-core-2.11.1-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="Maven: org.apache.logging.log4j:log4j-slf4j-impl:2.10.0">
@@ -964,15 +986,26 @@
         <root url="jar://$MAVEN_REPOSITORY$/org/apache/logging/log4j/log4j-slf4j-impl/2.10.0/log4j-slf4j-impl-2.10.0-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Maven: org.assertj:assertj-core:3.9.0">
+    <library name="Maven: org.apache.logging.log4j:log4j-slf4j-impl:2.11.1">
       <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/org/assertj/assertj-core/3.9.0/assertj-core-3.9.0.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/apache/logging/log4j/log4j-slf4j-impl/2.11.1/log4j-slf4j-impl-2.11.1.jar!/" />
       </CLASSES>
       <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/org/assertj/assertj-core/3.9.0/assertj-core-3.9.0-javadoc.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/apache/logging/log4j/log4j-slf4j-impl/2.11.1/log4j-slf4j-impl-2.11.1-javadoc.jar!/" />
       </JAVADOC>
       <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/org/assertj/assertj-core/3.9.0/assertj-core-3.9.0-sources.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/apache/logging/log4j/log4j-slf4j-impl/2.11.1/log4j-slf4j-impl-2.11.1-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: org.assertj:assertj-core:3.10.0">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/assertj/assertj-core/3.10.0/assertj-core-3.10.0.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/org/assertj/assertj-core/3.10.0/assertj-core-3.10.0-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/assertj/assertj-core/3.10.0/assertj-core-3.10.0-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="Maven: org.bitbucket.cowwoc:diff-match-patch:1.1">
@@ -1019,48 +1052,48 @@
         <root url="jar://$MAVEN_REPOSITORY$/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Maven: org.ow2.asm:asm-analysis:6.0">
+    <library name="Maven: org.ow2.asm:asm-analysis:6.2.1">
       <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/org/ow2/asm/asm-analysis/6.0/asm-analysis-6.0.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/ow2/asm/asm-analysis/6.2.1/asm-analysis-6.2.1.jar!/" />
       </CLASSES>
       <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/org/ow2/asm/asm-analysis/6.0/asm-analysis-6.0-javadoc.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/ow2/asm/asm-analysis/6.2.1/asm-analysis-6.2.1-javadoc.jar!/" />
       </JAVADOC>
       <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/org/ow2/asm/asm-analysis/6.0/asm-analysis-6.0-sources.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/ow2/asm/asm-analysis/6.2.1/asm-analysis-6.2.1-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Maven: org.ow2.asm:asm-tree:6.0">
+    <library name="Maven: org.ow2.asm:asm-tree:6.2.1">
       <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/org/ow2/asm/asm-tree/6.0/asm-tree-6.0.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/ow2/asm/asm-tree/6.2.1/asm-tree-6.2.1.jar!/" />
       </CLASSES>
       <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/org/ow2/asm/asm-tree/6.0/asm-tree-6.0-javadoc.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/ow2/asm/asm-tree/6.2.1/asm-tree-6.2.1-javadoc.jar!/" />
       </JAVADOC>
       <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/org/ow2/asm/asm-tree/6.0/asm-tree-6.0-sources.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/ow2/asm/asm-tree/6.2.1/asm-tree-6.2.1-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Maven: org.ow2.asm:asm-util:6.0">
+    <library name="Maven: org.ow2.asm:asm-util:6.2.1">
       <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/org/ow2/asm/asm-util/6.0/asm-util-6.0.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/ow2/asm/asm-util/6.2.1/asm-util-6.2.1.jar!/" />
       </CLASSES>
       <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/org/ow2/asm/asm-util/6.0/asm-util-6.0-javadoc.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/ow2/asm/asm-util/6.2.1/asm-util-6.2.1-javadoc.jar!/" />
       </JAVADOC>
       <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/org/ow2/asm/asm-util/6.0/asm-util-6.0-sources.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/ow2/asm/asm-util/6.2.1/asm-util-6.2.1-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Maven: org.ow2.asm:asm:6.0">
+    <library name="Maven: org.ow2.asm:asm:6.2.1">
       <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/org/ow2/asm/asm/6.0/asm-6.0.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/ow2/asm/asm/6.2.1/asm-6.2.1.jar!/" />
       </CLASSES>
       <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/org/ow2/asm/asm/6.0/asm-6.0-javadoc.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/ow2/asm/asm/6.2.1/asm-6.2.1-javadoc.jar!/" />
       </JAVADOC>
       <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/org/ow2/asm/asm/6.0/asm-6.0-sources.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/ow2/asm/asm/6.2.1/asm-6.2.1-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="Maven: org.slf4j:jcl-over-slf4j:1.7.25">
