@@ -6,7 +6,7 @@ import de.heiden.jem.components.clock.ClockTestBase;
 /**
  * Test for {@link SequentialClock}.
  */
-public class SequentialClockTest extends ClockTestBase {
+class SequentialClockTest extends ClockTestBase {
   @Override
   protected Clock createClock() {
     return new SequentialClock();
