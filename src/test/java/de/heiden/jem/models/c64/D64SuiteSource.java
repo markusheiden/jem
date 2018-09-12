@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 @ArgumentsSource(D64SuiteArgumentsProvider.class)
 public @interface D64SuiteSource {
   /**
-   * Classpath to directory with D64 image.
+   * Classpath to D64 image.
    */
   String resource();
 

@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 @ArgumentsSource(ProgramSuiteArgumentsProvider.class)
 public @interface ProgramSuiteSource {
   /**
-   * Classpath to directory with test programs.
+   * Classpath to file in directory with test programs.
    */
   String resource();
 
