@@ -11,10 +11,10 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 /**
  * VICE test suite.
  */
-public class ShaTest extends AbstractTest {
+class ShaTest extends AbstractTest {
   @ParameterizedTest(name = "{1}")
   @ProgramSuiteSource(resource = "/vice-emu-testprogs/CPU/sha/shaabsy1.prg")
-  public void test(Path program, String programName) throws Exception {
+  void test(Path program, String programName) throws Exception {
     // These test seem to run endless, let them fail fast for now.
     assertFalse(programName.equals("shaabsy3"), "Not correctly implemented yet");
     assertFalse(programName.equals("shazpy3"), "Not correctly implemented yet");

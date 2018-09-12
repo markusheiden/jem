@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 /**
  * Testsuite 2.15.
  */
-public class LorenzTest extends AbstractTest {
+class LorenzTest extends AbstractTest {
   @ParameterizedTest(name = "{1}")
   @ProgramSuiteSource(resource = "/vice-emu-testprogs/general/Lorenz-2.15/src/start.prg", ignore = {
     "start", "nextdisk1", "nextdisk2", "finish",
@@ -67,7 +67,7 @@ public class LorenzTest extends AbstractTest {
     "trap11", "trap12", "trap13", "trap14", "trap15", "trap16", "trap17",
     "tsxn", "txan", "txsn", "tyan"
   })
-  public void test(Path program, String programName) throws Exception {
+  void test(Path program, String programName) throws Exception {
     loadAndRun(program);
 
     Condition passed = onConsole("- ok");

@@ -17,9 +17,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * VICE test suite.
  */
 @ExtendWith(TransformingTestInstanceFactory.class)
-public class Banking00Test extends AbstractTest {
+class Banking00Test extends AbstractTest {
   @Test
-  public void banking00() throws Exception {
+  void banking00() throws Exception {
     loadAndRun("/vice-emu-testprogs/general/banking00/banking00.prg");
 
     // Just run for 1 second, because the test program does never stop.
