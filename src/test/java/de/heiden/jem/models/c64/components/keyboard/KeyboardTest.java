@@ -1,12 +1,15 @@
 package de.heiden.jem.models.c64.components.keyboard;
 
 import de.heiden.jem.components.ports.InputOutputPortImpl;
-import junit.framework.TestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Test.
  */
-public class KeyboardTest extends TestCase {
+class KeyboardTest {
   private InputOutputPortImpl _port0;
   private InputOutputPortImpl _port1;
 
@@ -18,7 +21,8 @@ public class KeyboardTest extends TestCase {
   /**
    * Test single key presses.
    */
-  public void testSingleKey() {
+  @Test
+  void testSingleKey() {
     _keyboard.press(Key.A);
     _port1.setOutputData(0x00); // port 1 is input
     _port1.setOutputMask(0x00);
@@ -65,7 +69,8 @@ public class KeyboardTest extends TestCase {
   /**
    * Test double key presses one on column or row.
    */
-  public void testDoubleKey() {
+  @Test
+  void testDoubleKey() {
     // TODO not implemented yet...
 /*
     _keyboard.pressed(KeyEvent.VK_2, KeyEvent.KEY_LOCATION_STANDARD);
@@ -96,9 +101,8 @@ public class KeyboardTest extends TestCase {
   /**
    * Setup.
    */
-  @Override
-  protected void setUp() throws Exception {
-    super.setUp();
+  @BeforeEach
+  void setUp() {
     // TODO create port instances
     _port0 = new InputOutputPortImpl();
     _port1 = new InputOutputPortImpl();
