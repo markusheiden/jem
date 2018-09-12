@@ -8,13 +8,11 @@ import de.heiden.jem.models.c64.components.TestC64;
 import de.heiden.jem.models.c64.components.patch.LoadFile;
 import de.heiden.jem.models.c64.components.patch.LoadFromDirectory;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.After;
-import org.junit.Rule;
-import org.junit.rules.TestWatcher;
-import org.junit.runner.Description;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.api.extension.TestExecutionExceptionHandler;
 import org.serialthreads.agent.Transform;
-import org.serialthreads.agent.TransformingRunner;
 import org.serialthreads.transformer.strategies.frequent3.FrequentInterruptsTransformer3;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,13 +28,13 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 /**
  * Test support.
  */
-@RunWith(TransformingRunner.class)
+@ExtendWith(AbstractTest.TestWatcher.class)
 @Transform(transformer = FrequentInterruptsTransformer3.class, classPrefixes = "de.heiden.jem")
 public abstract class AbstractTest {
   /**
@@ -130,7 +128,7 @@ public abstract class AbstractTest {
    */
   protected Path path(String classpath) throws Exception {
     URL url = getClass().getResource(classpath);
-    assertNotNull("Classpath resource " + classpath + " exists", url);
+    assertNotNull(url, "Classpath resource " + classpath + " exists");
     return Paths.get(url.toURI());
   }
 
@@ -169,6 +167,31 @@ public abstract class AbstractTest {
 
     console.clear();
     type("run\n");
+  }
+
+  /**
+   * Load and run program, evaluate border color to determine test result.
+   *
+   * @param program Path to program.
+   * @param maxSeconds Max seconds to wait. Assumes 1 MHz clock.
+   * @param screenCapture Capture screen and print it to {@link System#out}?.
+   */
+  protected void testBorderResult(Path program, int maxSeconds, boolean screenCapture) throws Exception {
+    loadAndRun(program);
+    doTestBorderResult(maxSeconds, screenCapture);
+  }
+
+  /**
+   * Load and run program, evaluate border color to determine test result.
+   *
+   * @param programName Name of program.
+   * @param program Program.
+   * @param maxSeconds Max seconds to wait. Assumes 1 MHz clock.
+   * @param screenCapture Capture screen and print it to {@link System#out}?.
+   */
+  protected void testBorderResult(String programName, byte[] program, int maxSeconds, boolean screenCapture) throws Exception {
+    loadAndRun(programName, program);
+    doTestBorderResult(maxSeconds, screenCapture);
   }
 
   /**
@@ -239,25 +262,27 @@ public abstract class AbstractTest {
       printScreen();
     }
 
-    assertSame("Test failed", passed, result);
+    assertSame(passed, result, "Test failed");
   }
 
-  @Rule
-  public final TestWatcher dumpOnFail = new TestWatcher() {
+  static class TestWatcher implements TestExecutionExceptionHandler {
     @Override
-    protected void failed(Throwable e, Description description) {
+    public void handleTestExecutionException(ExtensionContext context, Throwable throwable) throws Throwable {
       try {
-        dumpProgram();
+        AbstractTest test = (AbstractTest) context.getRequiredTestInstance();
+        test.dumpProgram();
       } catch (Exception io) {
         // ignore
+      } finally {
+        throw throwable;
       }
     }
-  };
+  }
 
   /**
    * For debugging purposes disassemble test program.
    */
-  protected void dumpProgram() throws IOException {
+  public void dumpProgram() throws IOException {
     System.out.flush();
     System.out.println();
     System.out.println();
@@ -268,7 +293,7 @@ public abstract class AbstractTest {
     System.out.flush();
   }
 
-  @After
+  @AfterEach
   @SuppressWarnings("deprecation")
   public void tearDown() throws Exception {
     if (c64 != null) {

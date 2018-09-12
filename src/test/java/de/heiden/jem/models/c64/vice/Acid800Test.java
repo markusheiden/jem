@@ -1,26 +1,18 @@
 package de.heiden.jem.models.c64.vice;
 
-import java.util.Collection;
+import de.heiden.jem.models.c64.AbstractTest;
+import de.heiden.jem.models.c64.ProgramSuiteSource;
+import org.junit.jupiter.params.ParameterizedTest;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.serialthreads.agent.TransformingParameterized;
-
-import de.heiden.jem.models.c64.AbstractProgramSuiteTest;
+import java.nio.file.Path;
 
 /**
  * VICE test suite.
  */
-@RunWith(TransformingParameterized.class)
-public class Acid800Test extends AbstractProgramSuiteTest {
-  @Parameterized.Parameters(name = "{1}")
-  public static Collection<Object[]> parameters() throws Exception {
-    return createParameters("/vice-emu-testprogs/CPU/Acid800/cpu_decimal.prg");
-  }
-
-  @Test
-  public void test() throws Exception {
-    testBorderResult(1, true);
+public class Acid800Test extends AbstractTest {
+  @ParameterizedTest(name = "{1}")
+  @ProgramSuiteSource(resource = "/vice-emu-testprogs/CPU/Acid800/cpu_decimal.prg")
+  public void test(Path program, String programName) throws Exception {
+    testBorderResult(program, 1, true);
   }
 }

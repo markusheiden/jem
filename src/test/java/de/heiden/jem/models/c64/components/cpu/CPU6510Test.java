@@ -6,12 +6,10 @@ import de.heiden.jem.components.bus.WordBus;
 import de.heiden.jem.components.clock.Clock;
 import de.heiden.jem.components.clock.serialthreads.SerialClock;
 import de.heiden.jem.models.c64.components.memory.RAM;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.serialthreads.agent.Transform;
-import org.serialthreads.agent.TransformingRunner;
 import org.serialthreads.transformer.strategies.frequent3.FrequentInterruptsTransformer3;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,12 +20,11 @@ import java.util.function.Function;
 
 import static de.heiden.c64dt.bytes.ByteUtil.hi;
 import static de.heiden.c64dt.bytes.ByteUtil.lo;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Test for {@link CPU6510}.
  */
-@RunWith(TransformingRunner.class)
 @Transform(transformer = FrequentInterruptsTransformer3.class, classPrefixes = "de.heiden.jem")
 public class CPU6510Test {
   /**
@@ -749,8 +746,8 @@ public class CPU6510Test {
    * Creates CPU test environment with 0x1000 bytes of RAM starting ab 0x0000.
    * PC is set to 0x300.
    */
-  @Before
-  public void setUp() throws Exception {
+  @BeforeEach
+  void setUp() {
     logger.debug("set up");
 
     _clock = new SerialClock();
@@ -785,8 +782,8 @@ public class CPU6510Test {
    *
    * @throws Exception
    */
-  @After
-  public void tearDown() throws Exception {
+  @AfterEach
+  void tearDown() {
     logger.debug("tear down");
 
     _clock.close();
