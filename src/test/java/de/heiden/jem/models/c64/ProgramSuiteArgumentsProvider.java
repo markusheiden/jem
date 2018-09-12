@@ -82,8 +82,7 @@ public class ProgramSuiteArgumentsProvider implements ArgumentsProvider, Annotat
       .map(program -> {
         String programName = program.getFileName().toString();
         programName = programName.substring(0, programName.length() - ".prg".length());
-        return new Object[]{ program, programName };
-      })
-      .map(Arguments::of);
+        return Arguments.of(program, programName);
+      });
   }
 }

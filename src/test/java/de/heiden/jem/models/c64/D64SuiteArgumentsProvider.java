@@ -83,7 +83,6 @@ public abstract class D64SuiteArgumentsProvider implements ArgumentsProvider, An
     return d64.getDirectory().getFiles().stream()
       .filter(file -> file.getMode().getType().equals(FileType.PRG))
       .filter(file -> filter.test(StringUtil.read(file.getName())))
-      .map(file -> new Object[]{ d64.read(file), StringUtil.read(file.getName()) })
-      .map(Arguments::of);
+      .map(file -> Arguments.of(d64.read(file), StringUtil.read(file.getName())));
   }
 }
