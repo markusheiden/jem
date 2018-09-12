@@ -12,10 +12,10 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 /**
  * VICE test suite.
  */
-public class CpuJamTest extends AbstractTest {
+class CpuJamTest extends AbstractTest {
   @ParameterizedTest(name = "{1}")
   @ProgramSuiteSource(resource = "/vice-emu-testprogs/CPU/cpujam/nojam.prg")
-  public void test(Path program, String programName) throws Exception {
+  void test(Path program, String programName) throws Exception {
     assertFalse(programName.equals("nojam"));
 
     testBorderResult(program, 60, true);

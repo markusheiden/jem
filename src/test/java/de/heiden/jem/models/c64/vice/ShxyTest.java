@@ -11,10 +11,10 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 /**
  * VICE test suite.
  */
-public class ShxyTest extends AbstractTest {
+class ShxyTest extends AbstractTest {
   @ParameterizedTest(name = "{1}")
   @ProgramSuiteSource(resource = "/vice-emu-testprogs/CPU/shxy/shx-t2.prg")
-  public void test(Path program, String programName) throws Exception {
+  void test(Path program, String programName) throws Exception {
     // These test seem to run endless, let them fail fast for now.
     assertFalse(programName.equals("shx-t2"), "Not correctly implemented yet");
     assertFalse(programName.equals("shxy3"), "Not correctly implemented yet");

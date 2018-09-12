@@ -17,13 +17,13 @@ public class AbstractClockTest {
   private final List<ClockEvent> executed = new ArrayList<>();
 
   @Test
-  public void constructor() {
+  void constructor() {
     TestClock clock = new TestClock();
     assertEquals(Long.MAX_VALUE, clock.getNextEventTick());
   }
 
   @Test
-  public void addClockEvent() {
+  void addClockEvent() {
     TestClock clock = new TestClock();
     ClockEvent event1 = new TestClockEvent();
     ClockEvent event2 = new TestClockEvent();
@@ -46,7 +46,7 @@ public class AbstractClockTest {
   }
 
   @Test
-  public void updateClockEvent() {
+  void updateClockEvent() {
     TestClock clock = new TestClock();
     ClockEvent event10 = new TestClockEvent();
     ClockEvent event20 = new TestClockEvent();
@@ -80,7 +80,7 @@ public class AbstractClockTest {
   }
 
   @Test
-  public void removeClockEvent_first() {
+  void removeClockEvent_first() {
     TestClock clock = new TestClock();
     ClockEvent event = new TestClockEvent();
 
@@ -101,7 +101,7 @@ public class AbstractClockTest {
   }
 
   @Test
-  public void removeClockEvent_many() {
+  void removeClockEvent_many() {
     TestClock clock = new TestClock();
     ClockEvent event1 = new TestClockEvent();
     ClockEvent event2 = new TestClockEvent();
@@ -117,7 +117,7 @@ public class AbstractClockTest {
   }
 
   @Test
-  public void execute() {
+  void execute() {
     TestClock clock = new TestClock();
     ClockEvent event2a = new TestClockEvent();
     clock.addClockEvent(2, event2a);
@@ -169,7 +169,7 @@ public class AbstractClockTest {
     /**
      * Constructor.
      */
-    public TestClockEvent() {
+    TestClockEvent() {
       super("Test event");
     }
 

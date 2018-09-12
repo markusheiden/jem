@@ -9,10 +9,10 @@ import java.nio.file.Path;
 /**
  * VICE test suite.
  */
-public class AsapTest extends AbstractTest {
+class AsapTest extends AbstractTest {
   @ParameterizedTest(name = "{1}")
   @ProgramSuiteSource(resource = "/vice-emu-testprogs/CPU/asap/cpu_ane.prg")
-  public void test(Path program, String programName) throws Exception {
+  void test(Path program, String programName) throws Exception {
     testBorderResult(program, 120, true);
   }
 }
