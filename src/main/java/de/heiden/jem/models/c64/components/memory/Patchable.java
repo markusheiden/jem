@@ -11,5 +11,5 @@ public interface Patchable {
    * @param address address to write byte to
    * @require value >= 0x00 && value < 0x100
    */
-  public void patch(int value, int address);
+  void patch(int value, int address);
 }
