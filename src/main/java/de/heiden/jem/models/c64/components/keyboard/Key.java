@@ -85,7 +85,7 @@ public enum Key {
   /**
    * Constructor for special key not mapped on the keyboard matrix.
    */
-  private Key() {
+  Key() {
     _row = -1;
     _column = -1;
   }
@@ -98,7 +98,7 @@ public enum Key {
    * @require row >= 0 && row < 8
    * @require column >= 0 && column < 8
    */
-  private Key(int row, int column) {
+  Key(int row, int column) {
     assert row >= 0 && row < 8 : "Precondition: row >= 0 && row < 8";
     assert column >= 0 && column < 8 : "Precondition: column >= 0 && column < 8";
 
