@@ -157,7 +157,7 @@ public class DebuggerGUI extends JPanel {
    * Suspend C64.
    */
   private void suspend() {
-    new SwingWorker<Object, Object>() {
+    new SwingWorker<>() {
       @Override
       protected Object doInBackground() throws Exception {
         try {
@@ -181,7 +181,7 @@ public class DebuggerGUI extends JPanel {
    * Resume C64.
    */
   private void resume() {
-    new SwingWorker<Object, Object>() {
+    new SwingWorker<>() {
       @Override
       protected Object doInBackground() throws Exception {
         try {
@@ -205,7 +205,7 @@ public class DebuggerGUI extends JPanel {
    * Stop C64.
    */
   private void stop() {
-    new SwingWorker<Object, Object>() {
+    new SwingWorker<>() {
       @Override
       protected Object doInBackground() throws Exception {
         try {
