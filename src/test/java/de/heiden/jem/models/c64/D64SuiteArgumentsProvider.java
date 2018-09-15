@@ -18,7 +18,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
-import static java.util.Collections.emptySet;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
@@ -52,8 +51,8 @@ public abstract class D64SuiteArgumentsProvider implements ArgumentsProvider, An
       throw new NullPointerException("Resource has to be specified.");
     }
 
-    ignore = !source.ignore().equals("NULL")?
-      new HashSet<>(asList(source.ignore())) : emptySet();
+    ignore = new HashSet<>(asList(source.ignore()));
+    ignore.remove("NULL");
     filter = !source.filter().equals("NULL")?
       Pattern.compile(source.filter()).asPredicate() : programName -> true;
   }
