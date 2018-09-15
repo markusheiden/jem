@@ -51,7 +51,7 @@ public final class InputPortImpl implements InputPort {
 
     PortListener listener = (value, mask) -> updateInputPort();
     _outputPortListeners.put(port, listener);
-    _outputPorts = _outputPortListeners.keySet().toArray(new OutputPort[_outputPortListeners.size()]);
+    _outputPorts = _outputPortListeners.keySet().toArray(new OutputPort[0]);
     port.addOutputPortListener(listener);
     updateInputPort();
   }
@@ -65,7 +65,7 @@ public final class InputPortImpl implements InputPort {
   @Override
   public void disconnect(OutputPort port) {
     PortListener listener = _outputPortListeners.remove(port);
-    _outputPorts = _outputPortListeners.keySet().toArray(new OutputPort[_outputPortListeners.size()]);
+    _outputPorts = _outputPortListeners.keySet().toArray(new OutputPort[0]);
     port.removeOutputPortListener(listener);
     updateInputPort();
   }
@@ -81,7 +81,7 @@ public final class InputPortImpl implements InputPort {
     assert listener != null : "listener != null";
 
     _inputListenerLists.add(listener);
-    _inputListeners = _inputListenerLists.toArray(new PortListener[_inputListenerLists.size()]);
+    _inputListeners = _inputListenerLists.toArray(new PortListener[0]);
   }
 
   /**
@@ -95,7 +95,7 @@ public final class InputPortImpl implements InputPort {
     assert listener != null : "listener != null";
 
     _inputListenerLists.remove(listener);
-    _inputListeners = _inputListenerLists.toArray(new PortListener[_inputListenerLists.size()]);
+    _inputListeners = _inputListenerLists.toArray(new PortListener[0]);
   }
 
   /**

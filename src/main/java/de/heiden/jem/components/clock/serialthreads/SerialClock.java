@@ -36,7 +36,7 @@ public final class SerialClock extends AbstractClock {
   @Executor
   private void run(final Runnable startTick) {
     final ClockedComponent[] components =
-      _componentMap.values().toArray(new ClockedComponent[_componentMap.size()]);
+      _componentMap.values().toArray(new ClockedComponent[0]);
 
     try {
       //noinspection InfiniteLoopStatement
