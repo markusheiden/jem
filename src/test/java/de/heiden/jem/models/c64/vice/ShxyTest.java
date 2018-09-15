@@ -6,7 +6,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 
 import java.nio.file.Path;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 /**
  * VICE test suite.
@@ -16,11 +16,11 @@ class ShxyTest extends AbstractTest {
   @ProgramSuiteSource(resource = "/vice-emu-testprogs/CPU/shxy/shx-t2.prg")
   void test(Path program, String programName) throws Exception {
     // These test seem to run endless, let them fail fast for now.
-    assertFalse(programName.equals("shx-t2"), "Not correctly implemented yet");
-    assertFalse(programName.equals("shxy3"), "Not correctly implemented yet");
-    assertFalse(programName.equals("shxy4"), "Not correctly implemented yet");
-    assertFalse(programName.equals("shyx3"), "Not correctly implemented yet");
-    assertFalse(programName.equals("shyx4"), "Not correctly implemented yet");
+    assertNotEquals("shx-t2", programName, "Not correctly implemented yet");
+    assertNotEquals("shxy3", programName, "Not correctly implemented yet");
+    assertNotEquals("shxy4", programName, "Not correctly implemented yet");
+    assertNotEquals("shyx3", programName, "Not correctly implemented yet");
+    assertNotEquals("shyx4", programName, "Not correctly implemented yet");
 
     testBorderResult(program, 60, true);
   }

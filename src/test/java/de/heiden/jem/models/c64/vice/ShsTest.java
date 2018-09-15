@@ -6,7 +6,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 
 import java.nio.file.Path;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 /**
  * VICE test suite.
@@ -16,7 +16,7 @@ class ShsTest extends AbstractTest {
   @ParameterizedTest(name = "{1}")
   void test(Path program, String programName) throws Exception {
     // These test seem to run endless, let them fail fast for now.
-    assertFalse(programName.equals("shsabsy3"), "Not correctly implemented yet");
+    assertNotEquals("shsabsy3", programName, "Not correctly implemented yet");
 
     testBorderResult(program, 60, true);
   }
