@@ -166,7 +166,7 @@ public class TestC64 {
   /**
    * Start emulation.
    */
-  public void start() throws Exception {
+  public void start() {
     _clock.run();
     _clock.close();
   }

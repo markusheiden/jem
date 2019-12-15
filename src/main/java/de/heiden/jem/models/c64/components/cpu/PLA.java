@@ -12,7 +12,7 @@ public class PLA {
   /**
    * All inputs of the pla in the correct order.
    */
-  public static enum Input {
+  public enum Input {
     CAS, // low active
     LORAM, // low active
     HIRAM, // low active
@@ -34,7 +34,7 @@ public class PLA {
   /**
    * All outputs of the pla in the correct order.
    */
-  public static enum Output {
+  public enum Output {
     RAM, // low active
     BASIC, // low active
     KERNAL, // low active

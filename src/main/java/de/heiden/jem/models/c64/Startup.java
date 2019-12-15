@@ -30,7 +30,7 @@ public class Startup {
    * Start application.
    */
   public void start() {
-    Thread.currentThread().setContextClassLoader(_classLoader);
+//    Thread.currentThread().setContextClassLoader(_classLoader);
 
     try {
       logger.debug("Loading c64");

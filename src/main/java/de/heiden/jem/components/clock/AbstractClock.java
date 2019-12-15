@@ -170,7 +170,6 @@ public abstract class AbstractClock implements Clock {
 
     newEvent.next = nextEvent;
     event.next = newEvent;
-    return;
   }
 
   @Override

@@ -3,10 +3,22 @@ package de.heiden.jem.components.clock.loom;
 import de.heiden.jem.components.clock.AbstractClock;
 import de.heiden.jem.components.clock.ClockedComponent;
 
+import static java.lang.Continuation.yield;
+
+/**
+ * Clock using {@link Continuation}s from project loom.
+ */
 public class ContinuationClock extends AbstractClock {
     @Override
     protected final void doRun() {
-        run(this::startTick);
+        Continuation[] continuations = createContinuations();
+        //noinspection InfiniteLoopStatement
+        for (;;) {
+            startTick();
+            for (Continuation continuation : continuations) {
+                continuation.run();
+            }
+        }
     }
 
     @Override
@@ -14,8 +26,8 @@ public class ContinuationClock extends AbstractClock {
         assert ticks >= 0 : "Precondition: ticks >= 0";
 
         Continuation[] continuations = createContinuations();
-
-        for (long stop = _tick.get() + ticks ;_tick.get() < stop;) {
+        for (final long stop = _tick.get() + ticks; _tick.get() < stop;) {
+            startTick();
             for (Continuation continuation : continuations) {
                 continuation.run();
             }
@@ -23,32 +35,16 @@ public class ContinuationClock extends AbstractClock {
     }
 
     /**
-     * Execute runnables.
-     *
-     * @param startTick Runnable executed to start a new tick.
+     * Create continuations.
      */
-    private void run(final Runnable startTick) {
-        Continuation[] continuations = createContinuations();
-
-        //noinspection InfiniteLoopStatement
-        for (;;) {
-            for (Continuation continuation : continuations) {
-                continuation.run();
-            }
-        }
-    }
-
     private Continuation[] createContinuations() {
-        ContinuationScope[] scopes = new ContinuationScope[_componentMap.size()];
-        Continuation[] continuations = new Continuation[_componentMap.size()];
-        int i = 0;
-        for (ClockedComponent component : _componentMap.values()) {
-            final ContinuationScope scope = new ContinuationScope("component" + i);
-            scopes[i] = scope;
-            continuations[i] = new Continuation(scopes[i], () -> {
-                component.run();
-                Continuation.yield(scope);
-            });
+        ClockedComponent[] components = _componentMap.values().toArray(new ClockedComponent[0]);
+        Continuation[] continuations = new Continuation[components.length];
+        for (int i = 0; i < components.length; i++) {
+            ClockedComponent component = components[i];
+            final var scope = new ContinuationScope("Component " + i + ": " + component.getName());
+            component.setTick(() -> yield(scope));
+            continuations[i] = new Continuation(scope, component::run);
         }
         return continuations;
     }

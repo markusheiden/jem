@@ -1,29 +1,21 @@
 package de.heiden.jem.models.c64.vice;
 
-import static org.junit.Assert.assertSame;
+import de.heiden.jem.models.c64.AbstractTest;
+import de.heiden.jem.models.c64.ProgramSuiteSource;
+import org.junit.jupiter.params.ParameterizedTest;
 
-import java.util.Collection;
+import java.nio.file.Path;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.serialthreads.agent.TransformingParameterized;
-
-import de.heiden.jem.models.c64.AbstractProgramSuiteTest;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 /**
  * VICE test suite.
  */
-@RunWith(TransformingParameterized.class)
-public class BasicTest extends AbstractProgramSuiteTest {
-  @Parameterized.Parameters(name = "{1}")
-  public static Collection<Object[]> parameters() throws Exception {
-    return createParameters("/vice-emu-testprogs/C64/autostart/basic/basictest.prg");
-  }
-
-  @Test
-  public void test() throws Exception {
-    testBorderResult(1, false);
+class BasicTest extends AbstractTest {
+  @ProgramSuiteSource(resource = "/vice-emu-testprogs/C64/autostart/basic/basictest.prg")
+  @ParameterizedTest(name = "{1}")
+  void test(Path program, String programName) throws Exception {
+    testBorderResult(program, 1, false);
     // Check again, because the border is set to green some cycles before the end of the test.
     waitSeconds(1);
     assertSame(greenBorder, waitCyclesFor(1, greenBorder, lightRedBorder));
