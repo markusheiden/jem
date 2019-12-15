@@ -9,12 +9,12 @@ public interface IKeyboard {
    *
    * @param key key
    */
-  public void press(Key key);
+  void press(Key key);
 
   /**
    * Execute key release on keyboard matrix.
    *
    * @param key key
    */
-  public void release(Key key);
+  void release(Key key);
 }

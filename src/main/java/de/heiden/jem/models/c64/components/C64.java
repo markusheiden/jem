@@ -2,7 +2,7 @@ package de.heiden.jem.models.c64.components;
 
 import de.heiden.jem.components.clock.Clock;
 import de.heiden.jem.components.clock.RealTimeSlowDown;
-import de.heiden.jem.components.clock.serialthreads.SerialClock;
+import de.heiden.jem.components.clock.loom.ContinuationClock;
 import de.heiden.jem.models.c64.components.cia.CIA6526;
 import de.heiden.jem.models.c64.components.cpu.C64Bus;
 import de.heiden.jem.models.c64.components.cpu.CPU6510;
@@ -66,7 +66,7 @@ public class C64 {
    * @param debug use debugger cpu?
    */
   public C64(boolean debug) throws Exception {
-    this(new SerialClock(), debug);
+    this(new ContinuationClock(), debug);
   }
 
   /**

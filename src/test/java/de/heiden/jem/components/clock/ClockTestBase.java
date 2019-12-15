@@ -1,8 +1,9 @@
 package de.heiden.jem.components.clock;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Test base for {@link Clock}s.
@@ -16,8 +17,9 @@ public abstract class ClockTestBase {
   /**
    * Test for {@link Clock#run(int)}.
    */
+  @Timeout(10)
   @Test
-  public void run() throws Exception {
+  void run() throws Exception {
     int runs = 10;
     int cycles = 1000;
     for (int i = 0; i < runs; i++) {

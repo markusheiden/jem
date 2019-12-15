@@ -1,28 +1,20 @@
 package de.heiden.jem.models.c64.vice;
 
-import de.heiden.jem.models.c64.AbstractProgramSuiteTest;
+import de.heiden.jem.models.c64.AbstractTest;
 import de.heiden.jem.models.c64.Condition;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized.Parameters;
-import org.serialthreads.agent.TransformingParameterized;
+import de.heiden.jem.models.c64.ProgramSuiteSource;
+import org.junit.jupiter.params.ParameterizedTest;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.nio.file.Path;
 
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 /**
  * Testsuite 2.15.
  */
-@RunWith(TransformingParameterized.class)
-public class LorenzTest extends AbstractProgramSuiteTest {
-  /**
-   * Ignored tests.
-   */
-  private static final Set<String> IGNORE = new HashSet<>(Arrays.asList(
+class LorenzTest extends AbstractTest {
+  @ParameterizedTest(name = "{1}")
+  @ProgramSuiteSource(resource = "/vice-emu-testprogs/general/Lorenz-2.15/src/start.prg", ignore = {
     "start", "nextdisk1", "nextdisk2", "finish",
     // Passing tests. Ignore them for now to get faster to the failing ones.
     "adca", "adcax", "adcay", "adcb", "adcix", "adciy", "adcz", "adczx",
@@ -74,17 +66,8 @@ public class LorenzTest extends AbstractProgramSuiteTest {
     "trap1", "trap2", "trap3", "trap4", "trap5", "trap6", "trap7", "trap8", "trap9", "trap10",
     "trap11", "trap12", "trap13", "trap14", "trap15", "trap16", "trap17",
     "tsxn", "txan", "txsn", "tyan"
-  ));
-
-  @Parameters(name = "{1}")
-  public static Collection<Object[]> parameters() throws Exception {
-    return createParameters("/vice-emu-testprogs/general/Lorenz-2.15/src/start.prg", IGNORE, programName ->
-//      programName.equals("flipos"));
-        true);
-  }
-
-  @Test
-  public void test() throws Exception {
+  })
+  void test(Path program, String programName) throws Exception {
     loadAndRun(program);
 
     Condition passed = onConsole("- ok");

@@ -6,12 +6,10 @@ import de.heiden.jem.components.bus.WordBus;
 import de.heiden.jem.components.clock.Clock;
 import de.heiden.jem.components.clock.serialthreads.SerialClock;
 import de.heiden.jem.models.c64.components.memory.RAM;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.serialthreads.agent.Transform;
-import org.serialthreads.agent.TransformingRunner;
 import org.serialthreads.transformer.strategies.frequent3.FrequentInterruptsTransformer3;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,14 +20,13 @@ import java.util.function.Function;
 
 import static de.heiden.c64dt.bytes.ByteUtil.hi;
 import static de.heiden.c64dt.bytes.ByteUtil.lo;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Test for {@link CPU6510}.
  */
-@RunWith(TransformingRunner.class)
 @Transform(transformer = FrequentInterruptsTransformer3.class, classPrefixes = "de.heiden.jem")
-public class CPU6510Test {
+class CPU6510Test {
   /**
    * Logger.
    */
@@ -51,7 +48,7 @@ public class CPU6510Test {
    * Test port.
    */
   @Test
-  public void testPort() {
+  void testPort() {
     _cpu.writePort(0x2F, 0x00);
     _cpu.writePort(0x34, 0x01);
     assertEquals(0xF4, _cpu.getPort().outputData());
@@ -67,7 +64,7 @@ public class CPU6510Test {
    * Test opcode 0x00: BRK.
    */
   @Test
-  public void test0x00() {
+  void test0x00() {
     _ram.write(0x00, 0x0300); // BRK
     _ram.write(0xA5, 0x0301); // dummy
     _ram.write(0x48, 0xFFFE); // BRK vector low
@@ -108,7 +105,7 @@ public class CPU6510Test {
    * Test opcode 0x05: ORA $xx.
    */
   @Test
-  public void test0x05() {
+  void test0x05() {
     test_xxA_ZP(0x05, (a, value) -> a | value);
   }
 
@@ -116,7 +113,7 @@ public class CPU6510Test {
    * Test opcode 0x08: PHP.
    */
   @Test
-  public void test0x08() {
+  void test0x08() {
     // TODO 2015-12-13 markus: Is this behaviour correct or are other flags changed too?
     test_PHx(0x08, CPU6510State::setP, value -> value | 0x30);
   }
@@ -125,7 +122,7 @@ public class CPU6510Test {
    * Test opcode 0x09: ORA #$xx.
    */
   @Test
-  public void test0x09() {
+  void test0x09() {
     test_xxA_IMM(0x09, (a, value) -> a | value);
   }
 
@@ -133,7 +130,7 @@ public class CPU6510Test {
    * Test opcode 0x0D: ORA $xxxx.
    */
   @Test
-  public void test0x0D() {
+  void test0x0D() {
     test_xxA_ABS(0x0D, (a, value) -> a | value);
   }
 
@@ -141,7 +138,7 @@ public class CPU6510Test {
    * Test opcode 0x25: AND $xx.
    */
   @Test
-  public void test0x25() {
+  void test0x25() {
     test_xxA_ZP(0x25, (a, value) -> a & value);
   }
 
@@ -149,7 +146,7 @@ public class CPU6510Test {
    * Test opcode 0x29: AND #$xx.
    */
   @Test
-  public void test0x29() {
+  void test0x29() {
     test_xxA_IMM(0x29, (a, value) -> a & value);
   }
 
@@ -157,7 +154,7 @@ public class CPU6510Test {
    * Test opcode 0x2D: AND $xxxx.
    */
   @Test
-  public void test0x2D() {
+  void test0x2D() {
     test_xxA_ABS(0x2D, (a, value) -> a & value);
   }
 
@@ -165,7 +162,7 @@ public class CPU6510Test {
    * Test opcode 0x45: EOR $xx.
    */
   @Test
-  public void test0x45() {
+  void test0x45() {
     test_xxA_ZP(0x45, (a, value) -> a ^ value);
   }
 
@@ -173,7 +170,7 @@ public class CPU6510Test {
    * Test opcode 0x48: PHA.
    */
   @Test
-  public void test0x48() {
+  void test0x48() {
     test_PHx(0x48, CPU6510State::setA, null);
   }
 
@@ -181,7 +178,7 @@ public class CPU6510Test {
    * Test opcode 0x49: EOR #$xx.
    */
   @Test
-  public void test0x49() {
+  void test0x49() {
     test_xxA_IMM(0x49, (a, value) -> a ^ value);
   }
 
@@ -189,7 +186,7 @@ public class CPU6510Test {
    * Test opcode 0x4D: EOR $xxxx.
    */
   @Test
-  public void test0x4D() {
+  void test0x4D() {
     test_xxA_ABS(0x4D, (a, value) -> a ^ value);
   }
 
@@ -197,7 +194,7 @@ public class CPU6510Test {
    * Test opcode 0x84: STY $xx.
    */
   @Test
-  public void test0x84() {
+  void test0x84() {
     test_STx_ZP(0x84, CPU6510State::setY);
   }
 
@@ -205,7 +202,7 @@ public class CPU6510Test {
    * Test opcode 0x85: STA $xx.
    */
   @Test
-  public void test0x85() {
+  void test0x85() {
     test_STx_ZP(0x85, CPU6510State::setA);
   }
 
@@ -213,7 +210,7 @@ public class CPU6510Test {
    * Test opcode 0x86: STX $xx.
    */
   @Test
-  public void test0x86() {
+  void test0x86() {
     test_STx_ZP(0x86, CPU6510State::setX);
   }
 
@@ -221,7 +218,7 @@ public class CPU6510Test {
    * Test opcode 0x88: DEX.
    */
   @Test
-  public void test0x88() {
+  void test0x88() {
     test_increment(0x88, CPU6510State::setY, -1);
   }
 
@@ -229,7 +226,7 @@ public class CPU6510Test {
    * Test opcode 0x8A: TXA.
    */
   @Test
-  public void test0x8A() {
+  void test0x8A() {
     test_Txx(0x8A, CPU6510State::setX, CPU6510State::setA, true);
   }
 
@@ -237,7 +234,7 @@ public class CPU6510Test {
    * Test opcode 0x8C: STY $xxxx.
    */
   @Test
-  public void test0x8C() {
+  void test0x8C() {
     test_STx_ABS(0x8C, CPU6510State::setY);
   }
 
@@ -245,7 +242,7 @@ public class CPU6510Test {
    * Test opcode 0x8D: STA $xxxx.
    */
   @Test
-  public void test0x8D() {
+  void test0x8D() {
     test_STx_ABS(0x8D, CPU6510State::setA);
   }
 
@@ -253,7 +250,7 @@ public class CPU6510Test {
    * Test opcode 0x8E: STX $xxxx.
    */
   @Test
-  public void test0x8E() {
+  void test0x8E() {
     test_STx_ABS(0x8E, CPU6510State::setX);
   }
 
@@ -261,7 +258,7 @@ public class CPU6510Test {
    * Test opcode 0x98: TYA.
    */
   @Test
-  public void test0x98() {
+  void test0x98() {
     test_Txx(0x98, CPU6510State::setY, CPU6510State::setA, true);
   }
 
@@ -269,7 +266,7 @@ public class CPU6510Test {
    * Test opcode 0x9A: TXS.
    */
   @Test
-  public void test0x9A() {
+  void test0x9A() {
     test_Txx(0x9A, CPU6510State::setX, CPU6510State::setS, false);
   }
 
@@ -277,7 +274,7 @@ public class CPU6510Test {
    * Test opcode 0xA0: LDY #$xx.
    */
   @Test
-  public void test0xA0() {
+  void test0xA0() {
     test_LDx_IMM(0xA0, CPU6510State::setY);
   }
 
@@ -285,7 +282,7 @@ public class CPU6510Test {
    * Test opcode 0xA2: LDX #$xx.
    */
   @Test
-  public void test0xA2() {
+  void test0xA2() {
     test_LDx_IMM(0xA2, CPU6510State::setX);
   }
 
@@ -293,7 +290,7 @@ public class CPU6510Test {
    * Test opcode 0xA4: LDY $xx.
    */
   @Test
-  public void test0xA4() {
+  void test0xA4() {
     test_LDx_ZP(0xA4, CPU6510State::setY);
   }
 
@@ -301,7 +298,7 @@ public class CPU6510Test {
    * Test opcode 0xA5: LDA $xx.
    */
   @Test
-  public void test0xA5() {
+  void test0xA5() {
     test_LDx_ZP(0xA5, CPU6510State::setA);
   }
 
@@ -309,7 +306,7 @@ public class CPU6510Test {
    * Test opcode 0xA6: LDX $xx.
    */
   @Test
-  public void test0xA6() {
+  void test0xA6() {
     test_LDx_ZP(0xA6, CPU6510State::setX);
   }
 
@@ -317,7 +314,7 @@ public class CPU6510Test {
    * Test opcode 0xA8: TAY.
    */
   @Test
-  public void test0xA8() {
+  void test0xA8() {
     test_Txx(0xA8, CPU6510State::setA, CPU6510State::setY, true);
   }
 
@@ -325,7 +322,7 @@ public class CPU6510Test {
    * Test opcode 0xA9: LDA #$xx.
    */
   @Test
-  public void test0xA9() {
+  void test0xA9() {
     test_LDx_IMM(0xA9, CPU6510State::setA);
   }
 
@@ -333,7 +330,7 @@ public class CPU6510Test {
    * Test opcode 0xAA: TAX.
    */
   @Test
-  public void test0xAA() {
+  void test0xAA() {
     test_Txx(0xAA, CPU6510State::setA, CPU6510State::setX, true);
   }
 
@@ -341,7 +338,7 @@ public class CPU6510Test {
    * Test opcode 0xAD: LDA $xxxx.
    */
   @Test
-  public void test0xAD() {
+  void test0xAD() {
     test_LDx_ABS(0xAD, CPU6510State::setA);
   }
 
@@ -349,7 +346,7 @@ public class CPU6510Test {
    * Test opcode 0xAE: LDX $xxxx.
    */
   @Test
-  public void test0xAE() {
+  void test0xAE() {
     test_LDx_ABS(0xAE, CPU6510State::setX);
   }
 
@@ -357,7 +354,7 @@ public class CPU6510Test {
    * Test opcode 0xAC: LDY $xxxx.
    */
   @Test
-  public void test0xAC() {
+  void test0xAC() {
     test_LDx_ABS(0xAC, CPU6510State::setY);
   }
 
@@ -365,7 +362,7 @@ public class CPU6510Test {
    * Test opcode 0xB9: LDA $xxxx,Y.
    */
   @Test
-  public void test0xB9() {
+  void test0xB9() {
     test_LDx_ABx(0xB9, CPU6510State::setA, CPU6510State::setY);
   }
 
@@ -373,7 +370,7 @@ public class CPU6510Test {
    * Test opcode 0xBA: TSX.
    */
   @Test
-  public void test0xBA() {
+  void test0xBA() {
     test_Txx(0xBA, CPU6510State::setS, CPU6510State::setX, true);
   }
 
@@ -381,7 +378,7 @@ public class CPU6510Test {
    * Test opcode 0xBC: LDY $xxxx,X.
    */
   @Test
-  public void test0xBC() {
+  void test0xBC() {
     test_LDx_ABx(0xBC, CPU6510State::setY, CPU6510State::setX);
   }
 
@@ -389,7 +386,7 @@ public class CPU6510Test {
    * Test opcode 0xBD: LDA $xxxx,X.
    */
   @Test
-  public void test0xBD() {
+  void test0xBD() {
     test_LDx_ABx(0xBD, CPU6510State::setA, CPU6510State::setX);
   }
 
@@ -397,7 +394,7 @@ public class CPU6510Test {
    * Test opcode 0xBE: LDX $xxxx,Y.
    */
   @Test
-  public void test0xBE() {
+  void test0xBE() {
     test_LDx_ABx(0xBE, CPU6510State::setX, CPU6510State::setY);
   }
 
@@ -405,7 +402,7 @@ public class CPU6510Test {
    * Test opcode 0xC8: INY.
    */
   @Test
-  public void test0xC8() {
+  void test0xC8() {
     test_increment(0xC8, CPU6510State::setY, 1);
   }
 
@@ -413,7 +410,7 @@ public class CPU6510Test {
    * Test opcode 0xCA: DEX.
    */
   @Test
-  public void test0xCA() {
+  void test0xCA() {
     test_increment(0xCA, CPU6510State::setX, -1);
   }
 
@@ -421,7 +418,7 @@ public class CPU6510Test {
    * Test opcode 0xE8: INX.
    */
   @Test
-  public void test0xE8() {
+  void test0xE8() {
     test_increment(0xE8, CPU6510State::setX, 1);
   }
 
@@ -749,8 +746,8 @@ public class CPU6510Test {
    * Creates CPU test environment with 0x1000 bytes of RAM starting ab 0x0000.
    * PC is set to 0x300.
    */
-  @Before
-  public void setUp() throws Exception {
+  @BeforeEach
+  void setUp() {
     logger.debug("set up");
 
     _clock = new SerialClock();
@@ -782,11 +779,9 @@ public class CPU6510Test {
 
   /**
    * Tear down.
-   *
-   * @throws Exception
    */
-  @After
-  public void tearDown() throws Exception {
+  @AfterEach
+  void tearDown() {
     logger.debug("tear down");
 
     _clock.close();

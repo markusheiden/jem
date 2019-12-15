@@ -1,39 +1,27 @@
 package de.heiden.jem.models.c64.vice;
 
-import static org.junit.Assert.assertSame;
+import de.heiden.jem.models.c64.AbstractTest;
+import de.heiden.jem.models.c64.Condition;
+import de.heiden.jem.models.c64.ProgramSuiteSource;
+import org.junit.jupiter.params.ParameterizedTest;
 
-import java.util.Arrays;
-import java.util.Collection;
+import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.serialthreads.agent.TransformingParameterized;
-
-import de.heiden.jem.models.c64.AbstractProgramSuiteTest;
-import de.heiden.jem.models.c64.Condition;
+import static java.util.Arrays.asList;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 /**
  * VICE test suite.
  */
-@RunWith(TransformingParameterized.class)
-public class C64docTest extends AbstractProgramSuiteTest {
-  /**
-   * Skip long running test (> 10 min.).
-   */
-  private static final Set<String> LONG_RUNNING = new HashSet<>(Arrays.asList(
-    "sbx", "vsbx"
-  ));
+class C64docTest extends AbstractTest {
+  private static final Set<String> LONG_RUNNING = new HashSet<>(asList("sbx", "vsbx"));
 
-  @Parameterized.Parameters(name = "{1}")
-  public static Collection<Object[]> parameters() throws Exception {
-    return createParameters("/vice-emu-testprogs/CPU/64doc/dadc.prg", LONG_RUNNING);
-  }
-
-  @Test
-  public void test() throws Exception {
+  // Skip long running test (> 10 min.) for now.
+  @ProgramSuiteSource(resource = "/vice-emu-testprogs/CPU/64doc/dadc.prg", ignore = { "sbx", "vsbx" })
+  @ParameterizedTest(name = "{1}")
+  void test(Path program, String programName) throws Exception {
     loadAndRun(program);
 
     // Most tests need at max 21 seconds.

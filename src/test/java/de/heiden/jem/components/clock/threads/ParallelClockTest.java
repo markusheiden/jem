@@ -6,7 +6,7 @@ import de.heiden.jem.components.clock.ClockTestBase;
 /**
  * Test for {@link ParallelClock}.
  */
-public class ParallelClockTest extends ClockTestBase {
+class ParallelClockTest extends ClockTestBase {
   @Override
   protected Clock createClock() {
     return new ParallelClock();

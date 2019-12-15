@@ -38,7 +38,7 @@ public final class OutputPortImpl implements OutputPort {
     assert listener != null : "listener != null";
 
     _outputListenerList.add(listener);
-    _outputListeners = _outputListenerList.toArray(new PortListener[_outputListenerList.size()]);
+    _outputListeners = _outputListenerList.toArray(new PortListener[0]);
   }
 
   /**
@@ -52,7 +52,7 @@ public final class OutputPortImpl implements OutputPort {
     assert listener != null : "listener != null";
 
     _outputListenerList.remove(listener);
-    _outputListeners = _outputListenerList.toArray(new PortListener[_outputListenerList.size()]);
+    _outputListeners = _outputListenerList.toArray(new PortListener[0]);
   }
 
   /**
