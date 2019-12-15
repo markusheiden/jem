@@ -17,7 +17,6 @@
     <maven.compiler.source>14</maven.compiler.source>
     <maven.compiler.target>14</maven.compiler.target>
 
-
     <serialthreads.version>1.0-SNAPSHOT</serialthreads.version>
     <c64dt.version>1.0-SNAPSHOT</c64dt.version>
 
