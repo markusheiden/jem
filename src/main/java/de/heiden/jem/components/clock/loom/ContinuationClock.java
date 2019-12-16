@@ -8,10 +8,10 @@ import static java.lang.Continuation.yield;
 /**
  * Clock using {@link Continuation}s from project loom.
  */
-public class ContinuationClock extends AbstractClock {
+public final class ContinuationClock extends AbstractClock {
     @Override
     protected final void doRun() {
-        Continuation[] continuations = createContinuations();
+        final var continuations = createContinuations();
         //noinspection InfiniteLoopStatement
         for (;;) {
             startTick();
@@ -25,7 +25,7 @@ public class ContinuationClock extends AbstractClock {
     protected final void doRun(int ticks) {
         assert ticks >= 0 : "Precondition: ticks >= 0";
 
-        Continuation[] continuations = createContinuations();
+        final var continuations = createContinuations();
         for (final long stop = _tick.get() + ticks; _tick.get() < stop;) {
             startTick();
             for (Continuation continuation : continuations) {
