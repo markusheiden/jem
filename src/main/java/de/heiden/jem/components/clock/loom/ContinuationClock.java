@@ -15,7 +15,7 @@ public final class ContinuationClock extends AbstractClock {
         //noinspection InfiniteLoopStatement
         for (;;) {
             startTick();
-            for (Continuation continuation : continuations) {
+            for (final Continuation continuation : continuations) {
                 continuation.run();
             }
         }
@@ -28,7 +28,7 @@ public final class ContinuationClock extends AbstractClock {
         final var continuations = createContinuations();
         for (final long stop = _tick.get() + ticks; _tick.get() < stop;) {
             startTick();
-            for (Continuation continuation : continuations) {
+            for (final Continuation continuation : continuations) {
                 continuation.run();
             }
         }
