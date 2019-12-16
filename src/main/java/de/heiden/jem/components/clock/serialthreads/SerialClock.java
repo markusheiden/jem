@@ -11,37 +11,35 @@ import org.serialthreads.context.ThreadFinishedException;
  */
 public final class SerialClock extends AbstractClock {
   @Override
-  protected final void doRun() {
-    run(this::startTick);
-  }
-
-  @Override
-  protected final void doRun(int ticks) {
-    assert ticks >= 0 : "Precondition: ticks >= 0";
-
-    final long stop = _tick.get() + ticks;
-    run(() -> {
-      if (_tick.get() == stop) {
-        throw new ThreadFinishedException("Stop");
-      }
-      startTick();
-    });
-  }
-
-  /**
-   * Execute runnables.
-   *
-   * @param startTick Runnable executed to start a new tick.
-   */
   @Executor
-  private void run(final Runnable startTick) {
+  protected final void doRun() {
     final ClockedComponent[] components =
-      _componentMap.values().toArray(new ClockedComponent[0]);
+            _componentMap.values().toArray(new ClockedComponent[0]);
 
     try {
       //noinspection InfiniteLoopStatement
       for (;;) {
-        startTick.run();
+        startTick();
+        for (final IRunnable runnable : components) {
+          runnable.run();
+        }
+      }
+    } catch (ThreadFinishedException e) {
+      // TODO 2009-12-11 mh: should not happen!!!
+    }
+  }
+
+  @Override
+  @Executor
+  protected final void doRun(int ticks) {
+    assert ticks >= 0 : "Precondition: ticks >= 0";
+
+    final ClockedComponent[] components =
+            _componentMap.values().toArray(new ClockedComponent[0]);
+
+    try {
+      for (final long stop = _tick.get() + ticks; _tick.get() < stop;) {
+        startTick();
         for (final IRunnable runnable : components) {
           runnable.run();
         }
