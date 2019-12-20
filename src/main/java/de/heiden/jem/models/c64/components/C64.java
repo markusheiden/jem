@@ -2,7 +2,6 @@ package de.heiden.jem.models.c64.components;
 
 import de.heiden.jem.components.clock.Clock;
 import de.heiden.jem.components.clock.RealTimeSlowDown;
-import de.heiden.jem.components.clock.loom.ContinuationClock;
 import de.heiden.jem.models.c64.components.cia.CIA6526;
 import de.heiden.jem.models.c64.components.cpu.C64Bus;
 import de.heiden.jem.models.c64.components.cpu.CPU6510;
@@ -55,27 +54,20 @@ public class C64 {
 
   /**
    * Constructor.
+   *
+   * @param clock Clock.
    */
-  public C64() throws Exception {
-    this(false);
+  public C64(Clock clock) throws Exception {
+    this(clock, false);
   }
 
   /**
    * Constructor.
    *
+   * @param clock Clock.
    * @param debug use debugger cpu?
    */
-  public C64(boolean debug) throws Exception {
-    this(new ContinuationClock(), debug);
-  }
-
-  /**
-   * Constructor.
-   *
-   * @param clock clock
-   * @param debug use debugger cpu?
-   */
-  private C64(Clock clock, boolean debug) throws Exception {
+  public C64(Clock clock, boolean debug) throws Exception {
     _clock = clock;
 
     RAM _ram = new RAM(0x10000);

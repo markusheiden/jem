@@ -1,6 +1,7 @@
 package de.heiden.jem.models.c64.gui.swing.monitor;
 
 import de.heiden.jem.components.bus.BusDevice;
+import de.heiden.jem.components.clock.serialthreads.SerialClock;
 import de.heiden.jem.models.c64.components.C64;
 import de.heiden.jem.models.c64.components.cpu.CPU6510Debugger;
 import de.heiden.jem.models.c64.components.cpu.DebuggerExit;
@@ -122,7 +123,7 @@ public class DebuggerGUI extends JPanel {
    */
   private void run() {
     try {
-      _c64 = new C64(true);
+      _c64 = new C64(new SerialClock(), true);
       _cpu = (CPU6510Debugger) _c64.getCpu();
       _bus = _c64.getCpuBus();
 

@@ -6,7 +6,7 @@
         <option name="ENABLED" value="true" />
       </pattern>
     </extension>
-    <option name="MAIN_CLASS_NAME" value="de.heiden.jem.models.c64.StartupAgent" />
+    <option name="MAIN_CLASS_NAME" value="de.heiden.jem.models.c64.C64SerialAgent" />
     <option name="VM_PARAMETERS" value="-ea -javaagent:../serialthreads/target/serialthreads-1.0-SNAPSHOT.jar" />
     <option name="PROGRAM_PARAMETERS" value="" />
     <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$" />

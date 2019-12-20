@@ -1,5 +1,6 @@
 package de.heiden.jem.models.c64.gui.javafx.emulator;
 
+import de.heiden.jem.components.clock.Clock;
 import de.heiden.jem.models.c64.components.C64;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -29,13 +30,13 @@ public class C64Application extends Application {
   /**
    * Start application.
    */
-  public void start() {
-    launch();
+  public static void start(String... args) {
+    launch(args);
   }
 
   @Override
   public void start(Stage stage) throws Exception {
-    c64 = new C64();
+    c64 = new C64(createClock());
 
     VICScreen screen = new VICScreen(c64.getVIC()._displayUnit);
 
@@ -58,6 +59,11 @@ public class C64Application extends Application {
     // JavaFX thread keeps vm running
     thread.setDaemon(true);
     thread.start();
+  }
+
+  protected Clock createClock() throws InstantiationException, IllegalAccessException, java.lang.reflect.InvocationTargetException, NoSuchMethodException, ClassNotFoundException {
+    final String clockClass = getParameters().getNamed().get("clock");
+    return (Clock) Class.forName(clockClass).getConstructor().newInstance();
   }
 
   @Override
