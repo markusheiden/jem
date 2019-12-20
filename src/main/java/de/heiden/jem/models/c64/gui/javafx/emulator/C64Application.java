@@ -61,8 +61,11 @@ public class C64Application extends Application {
     thread.start();
   }
 
-  protected Clock createClock() throws InstantiationException, IllegalAccessException, java.lang.reflect.InvocationTargetException, NoSuchMethodException, ClassNotFoundException {
+  protected Clock createClock() throws Exception {
     final String clockClass = getParameters().getNamed().get("clock");
+    if (clockClass == null) {
+      throw new IllegalArgumentException("Clock ");
+    }
     return (Clock) Class.forName(clockClass).getConstructor().newInstance();
   }
 
