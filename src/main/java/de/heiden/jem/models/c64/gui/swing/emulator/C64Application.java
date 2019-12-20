@@ -1,5 +1,6 @@
 package de.heiden.jem.models.c64.gui.swing.emulator;
 
+import de.heiden.jem.components.clock.Clock;
 import de.heiden.jem.models.c64.components.C64;
 
 import javax.swing.*;
@@ -8,6 +9,11 @@ import javax.swing.*;
  * Application for C64 emulation.
  */
 public class C64Application {
+  /**
+   * Clock.
+   */
+  private Clock clock;
+
   /**
    * C64.
    */
@@ -19,10 +25,19 @@ public class C64Application {
   private JFrame _frame;
 
   /**
+   * Constructor.
+   *
+   * @param clock Clock.
+   */
+  public C64Application(Clock clock) {
+    this.clock = clock;
+  }
+
+  /**
    * Start application.
    */
   public void start() throws Exception {
-    c64 = new C64();
+    c64 = new C64(clock);
 
     _frame = new JFrame("C64");
     _frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
