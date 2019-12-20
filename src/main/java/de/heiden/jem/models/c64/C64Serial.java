@@ -37,25 +37,11 @@ public class C64Serial {
 
     try {
       logger.debug("Loading c64");
-      Class<?> application = loadClass("de.heiden.jem.models.c64.StartupSerial$C64ApplicationSerial");
+      Class<?> application = loadClass(C64ApplicationSerial.class.getName());
       logger.debug("Starting c64");
       application.getMethod("start").invoke(null);
     } catch (Exception e) {
       logger.error("Unable to startup", e);
-    }
-  }
-
-  public static class C64ApplicationSerial extends C64Application {
-    /**
-     * Start application.
-     */
-    public static void start() {
-      launch();
-    }
-
-    @Override
-    protected Clock createClock() {
-      return new SerialClock();
     }
   }
 
@@ -73,5 +59,19 @@ public class C64Serial {
    */
   public static void main(String[] args) {
     new C64Serial().start();
+  }
+
+  public static class C64ApplicationSerial extends C64Application {
+    /**
+     * Start application.
+     */
+    public static void start() {
+      launch();
+    }
+
+    @Override
+    protected Clock createClock() {
+      return new SerialClock();
+    }
   }
 }
