@@ -14,7 +14,7 @@ public abstract class AbstractSynchronizedClock extends AbstractClock {
   /**
    * Component threads.
    */
-  protected final ThreadGroup _componentThreads = new ThreadGroup(getClass().getSimpleName());
+  private final ThreadGroup _componentThreads = new ThreadGroup(getClass().getSimpleName());
   {
     _componentThreads.setDaemon(false);
   }
@@ -102,9 +102,14 @@ public abstract class AbstractSynchronizedClock extends AbstractClock {
     Thread.yield();
   }
 
-  @Override
-  protected long incrementAndGetTick() {
-    return _tick.incrementAndGet();
+  /**
+   * Start a new tick.
+   */
+  protected final void startTick() {
+    // First increment tick.
+    // Second execute events.
+    executeEvents(_tick.incrementAndGet());
+    // Third execute components.
   }
 
   @Override

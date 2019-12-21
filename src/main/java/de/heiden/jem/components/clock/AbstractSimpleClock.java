@@ -18,9 +18,14 @@ public abstract class AbstractSimpleClock extends AbstractClock {
    */
   private long _tick = -1;
 
-  @Override
-  protected long incrementAndGetTick() {
-    return ++_tick;
+  /**
+   * Start a new tick.
+   */
+  protected final void startTick() {
+    // First increment tick.
+    // Second execute events.
+    executeEvents(++_tick);
+    // Third execute components.
   }
 
   @Override
