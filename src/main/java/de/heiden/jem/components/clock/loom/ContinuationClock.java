@@ -1,6 +1,6 @@
 package de.heiden.jem.components.clock.loom;
 
-import de.heiden.jem.components.clock.AbstractClock;
+import de.heiden.jem.components.clock.AbstractSimpleClock;
 import de.heiden.jem.components.clock.ClockedComponent;
 
 import static java.lang.Continuation.yield;
@@ -8,7 +8,7 @@ import static java.lang.Continuation.yield;
 /**
  * Clock using {@link Continuation}s from project loom.
  */
-public final class ContinuationClock extends AbstractClock {
+public final class ContinuationClock extends AbstractSimpleClock {
     @Override
     protected final void doRun() {
         final var continuations = createContinuations();
@@ -26,7 +26,7 @@ public final class ContinuationClock extends AbstractClock {
         assert ticks >= 0 : "Precondition: ticks >= 0";
 
         final var continuations = createContinuations();
-        for (final long stop = _tick.get() + ticks; _tick.get() < stop;) {
+        for (final long stop = getTick() + ticks; getTick() < stop;) {
             startTick();
             for (final Continuation continuation : continuations) {
                 continuation.run();

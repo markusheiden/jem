@@ -5,6 +5,8 @@ import de.heiden.jem.components.clock.ClockEvent;
 import de.heiden.jem.components.clock.ClockedComponent;
 import de.heiden.jem.components.clock.Tick;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 /**
  * Base implementation for all clocks using synchronization.
  */
@@ -26,6 +28,12 @@ public abstract class AbstractSynchronizedClock extends AbstractClock {
    * Event for suspending execution.
    */
   protected final SuspendEvent _suspendEvent = new SuspendEvent(_monitor);
+
+  /**
+   * Current tick.
+   * Start at tick -1, because the first action when running is to increment the tick.
+   */
+  private final AtomicLong _tick = new AtomicLong(-1);
 
   @Override
   public void addClockEvent(long tick, ClockEvent event) {
@@ -92,5 +100,15 @@ public abstract class AbstractSynchronizedClock extends AbstractClock {
   protected void doClose() {
     _componentThreads.interrupt();
     Thread.yield();
+  }
+
+  @Override
+  protected long incrementAndGetTick() {
+    return _tick.incrementAndGet();
+  }
+
+  @Override
+  public long getTick() {
+    return _tick.get();
   }
 }

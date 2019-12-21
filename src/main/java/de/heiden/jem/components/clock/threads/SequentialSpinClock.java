@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * Clock implemented without synchronization sequentially executing component threads by using spin locks (busy wait).
  */
-public class SequentialSpinClock extends AbstractSynchronizedClock {
+public final class SequentialSpinClock extends AbstractSynchronizedClock {
   /**
    * Tick thread.
    */
@@ -75,7 +75,7 @@ public class SequentialSpinClock extends AbstractSynchronizedClock {
 
   @Override
   protected void doRun(int ticks) {
-    addClockEvent(_tick.get() + ticks, _suspendEvent);
+    addClockEvent(getTick() + ticks, _suspendEvent);
     doRun();
   }
 

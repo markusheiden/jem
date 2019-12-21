@@ -1,6 +1,6 @@
 package de.heiden.jem.components.clock.serialthreads;
 
-import de.heiden.jem.components.clock.AbstractClock;
+import de.heiden.jem.components.clock.AbstractSimpleClock;
 import de.heiden.jem.components.clock.ClockedComponent;
 import org.serialthreads.Executor;
 import org.serialthreads.context.IRunnable;
@@ -9,7 +9,7 @@ import org.serialthreads.context.ThreadFinishedException;
 /**
  * Clock using serial threads.
  */
-public final class SerialClock extends AbstractClock {
+public final class SerialClock extends AbstractSimpleClock {
   @Override
   @Executor
   protected final void doRun() {
@@ -38,7 +38,7 @@ public final class SerialClock extends AbstractClock {
             _componentMap.values().toArray(new ClockedComponent[0]);
 
     try {
-      for (final long stop = _tick.get() + ticks; _tick.get() < stop;) {
+      for (final long stop = getTick() + ticks; getTick() < stop;) {
         startTick();
         for (final IRunnable runnable : components) {
           runnable.run();

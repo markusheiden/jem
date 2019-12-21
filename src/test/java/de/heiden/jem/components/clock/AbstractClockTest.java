@@ -143,7 +143,7 @@ public class AbstractClockTest {
   /**
    * Clock implementation for testing.
    */
-  private static class TestClock extends AbstractClock {
+  private static class TestClock extends AbstractSimpleClock {
     @Override
     protected void doRun() {
       throw new UnsupportedOperationException("Not implemented for test clock");

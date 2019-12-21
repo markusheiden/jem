@@ -6,7 +6,6 @@ import org.slf4j.LoggerFactory;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Base implementation for all clocks.
@@ -31,12 +30,6 @@ public abstract class AbstractClock implements Clock {
    * Events.
    */
   private ClockEvent _events;
-
-  /**
-   * Current tick.
-   * Start at tick -1, because the first action when running is to increment the tick.
-   */
-  protected final AtomicLong _tick = new AtomicLong(-1);
 
   /**
    * Constructor.
@@ -236,7 +229,7 @@ public abstract class AbstractClock implements Clock {
   protected final void startTick() {
     // First increment tick.
     // Second execute events.
-    executeEvents(_tick.incrementAndGet());
+    executeEvents(incrementAndGetTick());
     // Third execute components.
   }
 
@@ -272,8 +265,5 @@ public abstract class AbstractClock implements Clock {
     }
   }
 
-  @Override
-  public final long getTick() {
-    return _tick.get();
-  }
+  protected abstract long incrementAndGetTick();
 }
