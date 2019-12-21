@@ -224,16 +224,6 @@ public abstract class AbstractClock implements Clock {
 */
 
   /**
-   * Start a new tick.
-   */
-  protected final void startTick() {
-    // First increment tick.
-    // Second execute events.
-    executeEvents(incrementAndGetTick());
-    // Third execute components.
-  }
-
-  /**
    * Next event that gets executed.
    */
   final ClockEvent getNextEvent() {
@@ -264,6 +254,4 @@ public abstract class AbstractClock implements Clock {
       event.execute(tick);
     }
   }
-
-  protected abstract long incrementAndGetTick();
 }
