@@ -10,7 +10,7 @@ import java.util.concurrent.locks.LockSupport;
 /**
  * Clock implemented with synchronization sequentially executing component threads.
  */
-public class SequentialClock extends AbstractSynchronizedClock {
+public final class SequentialClock extends AbstractSynchronizedClock {
   /**
    * Tick thread.
    */
@@ -92,7 +92,7 @@ public class SequentialClock extends AbstractSynchronizedClock {
 
   @Override
   protected void doRun(int ticks) {
-    addClockEvent(_tick.get() + ticks, _suspendEvent);
+    addClockEvent(getTick() + ticks, _suspendEvent);
     doRun();
   }
 

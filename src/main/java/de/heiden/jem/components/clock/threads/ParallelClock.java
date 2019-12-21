@@ -10,7 +10,7 @@ import java.util.concurrent.CyclicBarrier;
 /**
  * Clock implemented with synchronization, executing component threads in parallel.
  */
-public class ParallelClock extends AbstractSynchronizedClock {
+public final class ParallelClock extends AbstractSynchronizedClock {
   /**
    * Barrier for synchronizing all component threads.
    */
@@ -41,7 +41,7 @@ public class ParallelClock extends AbstractSynchronizedClock {
 
   @Override
   protected final void doRun(int ticks) {
-    addClockEvent(_tick.get() + ticks, _suspendEvent);
+    addClockEvent(getTick() + ticks, _suspendEvent);
     doRun();
   }
 
