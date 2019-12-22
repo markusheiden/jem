@@ -207,18 +207,14 @@ public abstract class AbstractClock implements Clock {
 //      _logger.debug("remove event {}", event);
 //    }
 
-    if (oldEvent == _events) {
-      ClockEvent next = oldEvent.next;
-      _events = next;
-      oldEvent.previous = null;
-      oldEvent.next = null;
-      next.previous = null;
-      return;
-    }
-
     ClockEvent previous = oldEvent.previous;
     ClockEvent next = oldEvent.next;
-    previous.next = next;
+
+    if (previous == null) {
+      _events = next;
+    } else {
+      previous.next = next;
+    }
     oldEvent.previous = null;
     oldEvent.next = null;
     next.previous = previous;
