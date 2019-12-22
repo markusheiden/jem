@@ -16,6 +16,12 @@ public abstract class ClockEvent {
   long tick;
 
   /**
+   * Previous clock event.
+   * Used for efficient list implementation in clocks.
+   */
+  ClockEvent previous;
+
+  /**
    * Next clock event.
    * Used for efficient list implementation in clocks.
    */

@@ -119,6 +119,19 @@ public abstract class AbstractClock implements Clock {
    */
   protected abstract void doRun(int ticks);
 
+  /**
+   * Execute component thread.
+   */
+/*
+  @Interruptible
+  protected final void executeComponent(ClockedComponent component, Tick tick) {
+    logger.debug("starting {}", component.getName());
+    tick.waitForTick();
+    logger.debug("started {}", component.getName());
+    component.run();
+  }
+*/
+
   @Override
   public final void close() {
     try {
@@ -150,19 +163,22 @@ public abstract class AbstractClock implements Clock {
     ClockEvent event = _events;
 
     if (tick <= event.tick) {
-      newEvent.next = event;
       _events = newEvent;
+      newEvent.next = event;
+      event.previous = newEvent;
       return;
     }
 
     // Search event and nextEvent so that newEvent belongs in between.
-    ClockEvent nextEvent;
-    for (nextEvent = event.next; tick > nextEvent.tick; event = nextEvent, nextEvent = nextEvent.next) {
+    for (event = event.next; tick > event.tick; event = event.next) {
       // search further
     }
 
-    newEvent.next = nextEvent;
-    event.next = newEvent;
+    ClockEvent previous = event.previous;
+    previous.next = newEvent;
+    newEvent.previous = previous;
+    newEvent.next = event;
+    event.previous = newEvent;
   }
 
   @Override
@@ -192,36 +208,22 @@ public abstract class AbstractClock implements Clock {
 //      _logger.debug("remove event {}", event);
 //    }
 
-    ClockEvent event = _events;
-
-    if (oldEvent == event) {
-      _events = oldEvent.next;
+    if (oldEvent == _events) {
+      ClockEvent next = oldEvent.next;
+      _events = next;
+      oldEvent.previous = null;
       oldEvent.next = null;
+      next.previous = null;
       return;
     }
 
-    // Search event directly before oldEvent.
-    ClockEvent nextEvent;
-    for (nextEvent = event.next; oldEvent != nextEvent; event = nextEvent, nextEvent = nextEvent.next) {
-      // search further
-    }
-
-    event.next = oldEvent.next;
+    ClockEvent previous = oldEvent.previous;
+    ClockEvent next = oldEvent.next;
+    previous.next = next;
+    oldEvent.previous = null;
     oldEvent.next = null;
+    next.previous = previous;
   }
-
-  /**
-   * Execute component thread.
-   */
-/*
-  @Interruptible
-  protected final void executeComponent(ClockedComponent component, Tick tick) {
-    logger.debug("starting {}", component.getName());
-    tick.waitForTick();
-    logger.debug("started {}", component.getName());
-    component.run();
-  }
-*/
 
   /**
    * Next event that gets executed.
