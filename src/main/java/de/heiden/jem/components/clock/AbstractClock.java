@@ -210,10 +210,10 @@ public abstract class AbstractClock implements Clock {
     ClockEvent previous = oldEvent.previous;
     ClockEvent next = oldEvent.next;
 
-    if (previous == null) {
-      _events = next;
-    } else {
+    if (previous != null) {
       previous.next = next;
+    } else {
+      _events = next;
     }
     oldEvent.previous = null;
     oldEvent.next = null;
