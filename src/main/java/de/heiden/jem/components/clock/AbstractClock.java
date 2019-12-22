@@ -169,7 +169,6 @@ public abstract class AbstractClock implements Clock {
       return;
     }
 
-    // Search event and nextEvent so that newEvent belongs in between.
     for (event = event.next; tick > event.tick; event = event.next) {
       // search further
     }
