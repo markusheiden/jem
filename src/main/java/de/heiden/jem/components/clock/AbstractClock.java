@@ -152,7 +152,6 @@ public abstract class AbstractClock implements Clock {
   public void addClockEvent(long tick, ClockEvent newEvent) {
     assert tick > getTick() : "tick > getTick()";
     assert newEvent != null : "newEvent != null";
-//    assert newEvent.next == null : "newEvent.next == null";
 
 //    if (_logger.isDebugEnabled()) {
 //      _logger.debug("add event {} at {}", newEvent, tick);
@@ -160,31 +159,27 @@ public abstract class AbstractClock implements Clock {
 
     newEvent.tick = tick;
 
-    ClockEvent event = _events;
-
-    if (tick <= event.tick) {
-      _events = newEvent;
-      newEvent.next = event;
-      event.previous = newEvent;
-      return;
-    }
-
-    for (event = event.next; tick > event.tick; event = event.next) {
+    ClockEvent nextEvent = _events;
+    for (; tick > nextEvent.tick; nextEvent = nextEvent.next) {
       // search further
     }
 
-    ClockEvent previous = event.previous;
-    previous.next = newEvent;
-    newEvent.previous = previous;
-    newEvent.next = event;
-    event.previous = newEvent;
+    ClockEvent previousEvent = nextEvent.previous;
+    if (nextEvent == _events) {
+      _events = newEvent;
+    } else {
+      previousEvent.next = newEvent;
+      newEvent.previous = previousEvent;
+    }
+    newEvent.next = nextEvent;
+    nextEvent.previous = newEvent;
   }
 
   @Override
   public void updateClockEvent(long tick, ClockEvent eventToUpdate) {
     assert tick > getTick() : "tick > getTick()";
     assert eventToUpdate != null : "eventToUpdate != null";
-//    assert eventToUpdate.next != null : "eventToUpdate.next != null";
+
     if (tick == eventToUpdate.tick) {
       // Nothing to do -> Return early.
       return;
@@ -198,7 +193,10 @@ public abstract class AbstractClock implements Clock {
   @Override
   public void removeClockEvent(ClockEvent oldEvent) {
     assert oldEvent != null : "oldEvent != null";
-    if (oldEvent.next == null) {
+
+    ClockEvent previousEvent = oldEvent.previous;
+    ClockEvent nextEvent = oldEvent.next;
+    if (nextEvent == null) {
       // Event not registered -> Return early.
       return;
     }
@@ -207,17 +205,12 @@ public abstract class AbstractClock implements Clock {
 //      _logger.debug("remove event {}", event);
 //    }
 
-    ClockEvent previous = oldEvent.previous;
-    ClockEvent next = oldEvent.next;
-
-    if (previous != null) {
-      previous.next = next;
+    if (oldEvent == _events) {
+      _events = nextEvent;
     } else {
-      _events = next;
+      previousEvent.next = nextEvent;
     }
-    oldEvent.previous = null;
-    oldEvent.next = null;
-    next.previous = previous;
+    nextEvent.previous = previousEvent;
   }
 
   /**
@@ -241,8 +234,8 @@ public abstract class AbstractClock implements Clock {
       }
 
       // Remove it.
-      _events = event.next;
-//      event.next = null;
+      ClockEvent nextEvent = event.next;
+      _events = nextEvent;
 
       // Execute it.
 //      if (_logger.isDebugEnabled()) {
