@@ -31,16 +31,24 @@ public class AbstractClockTest {
 
     // add first event -> next tick should be set to tick of this event
     clock.addClockEvent(2, event2);
+    assertNull(event2.previous);
+    assertNotNull(event2.next);
     assertSame(event2, clock.getNextEvent());
     assertEquals(2, clock.getNextEventTick());
 
     // add event before first event -> next tick should be set to tick of this event
     clock.addClockEvent(1, event1);
+    assertNull(event1.previous);
+    assertSame(event2, event1.next);
+    assertSame(event1, event2.previous);
     assertSame(event1, clock.getNextEvent());
     assertEquals(1, clock.getNextEventTick());
 
     // add event after first event -> next tick should not change
     clock.addClockEvent(3, event3);
+    assertSame(event3, event2.next);
+    assertSame(event2, event3.previous);
+    assertNotNull(event3.next);
     assertSame(event1, clock.getNextEvent());
     assertEquals(1, clock.getNextEventTick());
   }
