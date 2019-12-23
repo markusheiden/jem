@@ -29,14 +29,14 @@ public class AbstractClockTest {
     ClockEvent event2 = new TestClockEvent();
     ClockEvent event3 = new TestClockEvent();
 
-    // add first event -> next tick should be set to tick of this event
+    // Add first event -> Next tick should be set to tick of this event.
     clock.addClockEvent(2, event2);
     assertNull(event2.previous);
     assertNotNull(event2.next);
     assertSame(event2, clock.getNextEvent());
     assertEquals(2, clock.getNextEventTick());
 
-    // add event before first event -> next tick should be set to tick of this event
+    // Add event before first event -> Next tick should be set to tick of this event.
     clock.addClockEvent(1, event1);
     assertNull(event1.previous);
     assertSame(event2, event1.next);
@@ -44,7 +44,7 @@ public class AbstractClockTest {
     assertSame(event1, clock.getNextEvent());
     assertEquals(1, clock.getNextEventTick());
 
-    // add event after first event -> next tick should not change
+    // Add event after first event -> Next tick should not change.
     clock.addClockEvent(3, event3);
     assertSame(event3, event2.next);
     assertSame(event2, event3.previous);
@@ -88,25 +88,52 @@ public class AbstractClockTest {
   }
 
   @Test
+  void removeClockEvent_notAdded() {
+    TestClock clock = new TestClock();
+    ClockEvent event1 = new TestClockEvent();
+    ClockEvent event2 = new TestClockEvent();
+
+    clock.addClockEvent(2, event2);
+
+    // Remove not registered event -> No change.
+    clock.removeClockEvent(event1);
+    assertNull(event1.previous);
+    assertNull(event1.next);
+    assertSame(event2, clock.getNextEvent());
+    assertEquals(2, clock.getNextEventTick());
+  }
+
+  @Test
+  void removeClockEvent_only() {
+    TestClock clock = new TestClock();
+    ClockEvent event1 = new TestClockEvent();
+
+    clock.addClockEvent(1, event1);
+
+    // Remove only registered event -> Next tick should be reset.
+    clock.removeClockEvent(event1);
+    assertNull(event1.previous);
+    assertNull(event1.next);
+    assertEquals(Long.MAX_VALUE, clock.getNextEventTick());
+  }
+
+  @Test
   void removeClockEvent_first() {
     TestClock clock = new TestClock();
-    ClockEvent event = new TestClockEvent();
+    ClockEvent event1 = new TestClockEvent();
+    ClockEvent event2 = new TestClockEvent();
 
-    // Remove not registered event -> nothing should happen
-    clock.removeClockEvent(event);
-    assertEquals(Long.MAX_VALUE, clock.getNextEventTick());
-    assertNull(event.previous);
-    assertNull(event.next);
+    clock.addClockEvent(1, event1);
+    clock.addClockEvent(2, event2);
 
-    clock.addClockEvent(1, event);
-    assertSame(event, clock.getNextEvent());
-    assertEquals(1, clock.getNextEventTick());
-
-    // Remove first registered event -> next tick should be reset
-    clock.removeClockEvent(event);
-    assertEquals(Long.MAX_VALUE, clock.getNextEventTick());
-    assertNull(event.previous);
-    assertNull(event.next);
+    // Remove first registered event -> Next tick should be reset.
+    clock.removeClockEvent(event1);
+    assertNull(event1.previous);
+    assertNull(event1.next);
+    assertNull(event2.previous);
+    assertNotNull(event2.next);
+    assertSame(event2, clock.getNextEvent());
+    assertEquals(2, clock.getNextEventTick());
   }
 
   @Test
