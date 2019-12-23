@@ -113,7 +113,6 @@ public class AbstractClockTest {
     // Remove only registered event -> Next tick should be reset.
     clock.removeClockEvent(event1);
     assertNull(event1.previous);
-    assertNull(event1.next);
     assertEquals(Long.MAX_VALUE, clock.getNextEventTick());
   }
 
@@ -129,7 +128,6 @@ public class AbstractClockTest {
     // Remove first registered event -> Next tick should be reset.
     clock.removeClockEvent(event1);
     assertNull(event1.previous);
-    assertNull(event1.next);
     assertNull(event2.previous);
     assertNotNull(event2.next);
     assertSame(event2, clock.getNextEvent());
@@ -151,8 +149,6 @@ public class AbstractClockTest {
     // Remove second registered event -> next tick should still be the tick of the first event
     clock.removeClockEvent(event2);
     assertSame(event3, event1.next);
-    assertNull(event2.previous);
-    assertNull(event2.next);
     assertSame(event1, event3.previous);
     assertSame(event1, clock.getNextEvent());
     assertEquals(1, clock.getNextEventTick());
@@ -177,9 +173,7 @@ public class AbstractClockTest {
     clock.executeEvents(2);
     assertEquals(2, executed.size());
     assertTrue(executed.contains(event2a));
-//    assertNull(event2a.next);
     assertTrue(executed.contains(event2b));
-//    assertNull(event2b.next);
   }
 
   /**
