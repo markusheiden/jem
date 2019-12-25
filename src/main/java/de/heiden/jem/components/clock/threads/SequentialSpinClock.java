@@ -28,8 +28,8 @@ public final class SequentialSpinClock extends AbstractSynchronizedClock {
 
     List<ClockedComponent> components = new ArrayList<>(_componentMap.values());
     for (int state = 0; state < components.size(); state++) {
-      ClockedComponent component = components.get(state);
-      SequentialSpinTick tick =  new SequentialSpinTick(state);
+      var component = components.get(state);
+      var tick = new SequentialSpinTick(state);
       component.setTick(tick);
 
       // Start component.
