@@ -27,10 +27,7 @@ public final class SequentialSpinClock extends AbstractSynchronizedClock {
     addClockEvent(0, _suspendEvent);
 
     List<ClockedComponent> components = new ArrayList<>(_componentMap.values());
-    for (int i = 0; i < components.size(); i++) {
-      final int state = i;
-      final int nextState = i + 1;
-
+    for (int state = 0; state < components.size(); state++) {
       ClockedComponent component = components.get(state);
       SequentialSpinTick tick =  new SequentialSpinTick(state);
       component.setTick(tick);
@@ -38,7 +35,7 @@ public final class SequentialSpinClock extends AbstractSynchronizedClock {
       // Start component.
       createStartedDaemonThread(component.getName(), () -> executeComponent(component, tick));
       // Wait for component to reach first tick.
-      waitForState(nextState);
+      waitForState(state + 1);
     }
 
     // Start tick manager.
@@ -51,13 +48,14 @@ public final class SequentialSpinClock extends AbstractSynchronizedClock {
   /**
    * Execution of ticks.
    */
-  private void executeTicks(final int state) {
-    for (;;) {
+  private void executeTicks(final int finalState) {
+    //noinspection InfiniteLoopStatement
+    while (true) {
       startTick();
       // Execute all component threads.
       _state = 0;
       // Wait for all component threads to finish tick.
-      waitForState(state);
+      waitForState(finalState);
     }
   }
 
@@ -103,7 +101,7 @@ public final class SequentialSpinClock extends AbstractSynchronizedClock {
     /**
      * Constructor.
      *
-     * @param state Ordinal of thread to execute.
+     * @param state Ordinal of component thread.
      */
     private SequentialSpinTick(int state) {
       this._tickState = state;
