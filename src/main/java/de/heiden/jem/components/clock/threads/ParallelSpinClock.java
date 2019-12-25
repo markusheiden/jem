@@ -4,7 +4,6 @@ import de.heiden.jem.components.clock.ClockedComponent;
 import de.heiden.jem.components.clock.Tick;
 
 import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Clock implemented without synchronization sequentially executing components by using spin locks (busy wait).
@@ -45,6 +44,7 @@ public final class ParallelSpinClock extends AbstractSynchronizedClock {
    * Execution of ticks.
    */
   private void executeTicks(final ParallelSpinTick[] ticks) {
+    //noinspection InfiniteLoopStatement
     while (true) {
       // Start new tick.
       startTick();
@@ -86,12 +86,12 @@ public final class ParallelSpinClock extends AbstractSynchronizedClock {
      * True: Current tick finished, waiting for next tick.
      * False: Start next tick.
      */
-    private final AtomicBoolean _state = new AtomicBoolean(false);
+    private volatile boolean _state = false;
 
     @Override
     public final void waitForTick() {
-      _state.set(true);
-      while (_state.get()) {
+      _state = true;
+      while (_state) {
         Thread.yield();
       }
     }
@@ -100,14 +100,14 @@ public final class ParallelSpinClock extends AbstractSynchronizedClock {
      * Start next tick.
      */
     final void startTick() {
-      _state.set(false);
+      _state = false;
     }
 
     /**
      * Wait for tick to finish.
      */
     final void waitForTickEnd() {
-      while (!_state.get()) {
+      while (!_state) {
         Thread.yield();
       }
     }
