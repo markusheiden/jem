@@ -60,7 +60,7 @@ public final class ParallelBarrierClock extends AbstractSynchronizedClock {
   /**
    * Special tick, waiting for the barrier.
    */
-  private final class ParallelTick implements Tick {
+  private static final class ParallelTick implements Tick {
     /**
      * Barrier for synchronizing all component threads.
      */
