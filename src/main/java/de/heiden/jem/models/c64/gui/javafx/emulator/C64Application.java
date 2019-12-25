@@ -62,7 +62,10 @@ public class C64Application extends Application {
     }
   }
 
-  protected Clock createClock() throws Exception {
+  /**
+   * Create clock via reflection from command line parameter "clock".
+   */
+  private Clock createClock() throws Exception {
     final String clockClass = getParameters().getNamed().get("clock");
     if (clockClass == null) {
       throw new IllegalArgumentException("Clock ");
