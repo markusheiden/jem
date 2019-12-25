@@ -26,7 +26,7 @@ public class DisplayUnit extends AbstractDisplayUnit {
     _vic.reset();
 
     //noinspection InfiniteLoopStatement
-    for (;;) {
+    while (true) {
       byte[] screen = _screenRender;
 
       int linesPerScreen = _vic._linesPerScreen;

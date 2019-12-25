@@ -13,7 +13,7 @@ public final class ContinuationClock extends AbstractSimpleClock {
     protected final void doRun() {
         final var continuations = createContinuations();
         //noinspection InfiniteLoopStatement
-        for (;;) {
+        while (true) {
             startTick();
             for (final Continuation continuation : continuations) {
                 continuation.run();
