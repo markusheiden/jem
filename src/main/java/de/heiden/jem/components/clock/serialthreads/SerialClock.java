@@ -18,7 +18,7 @@ public final class SerialClock extends AbstractSimpleClock {
 
     try {
       //noinspection InfiniteLoopStatement
-      for (;;) {
+      while (true) {
         startTick();
         for (final IRunnable runnable : components) {
           runnable.run();

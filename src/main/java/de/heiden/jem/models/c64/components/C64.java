@@ -130,7 +130,8 @@ public class C64 {
     _clock.run();
 
 //    final int ticks = 1000000;
-//    for (;;)
+//    //noinspection InfiniteLoopStatement
+//    while (true)
 //    {
 //      long time = System.currentTimeMillis();
 //      _clock.run(ticks);

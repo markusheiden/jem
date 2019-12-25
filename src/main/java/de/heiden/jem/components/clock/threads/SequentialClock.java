@@ -66,7 +66,8 @@ public final class SequentialClock extends AbstractSynchronizedClock {
    * Execution of ticks.
    */
   private void executeTicks(final int state, final Thread nextThread) {
-    for (;;) {
+    //noinspection InfiniteLoopStatement
+    while (true) {
       startTick();
       // Execute all component threads.
       _state = 0;

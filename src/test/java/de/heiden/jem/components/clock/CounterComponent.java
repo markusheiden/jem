@@ -29,7 +29,8 @@ public class CounterComponent implements ClockedComponent {
   @Override
   @Interruptible
   public void run() {
-    for (;;) {
+      //noinspection InfiniteLoopStatement
+      while (true) {
       count++;
       _tick.waitForTick();
     }
