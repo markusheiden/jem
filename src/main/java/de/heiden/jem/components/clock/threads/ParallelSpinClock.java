@@ -92,7 +92,7 @@ public final class ParallelSpinClock extends AbstractSynchronizedClock {
     public void waitForTick() {
       _state = true;
       do {
-        Thread.yield();
+        Thread.onSpinWait();
       } while (_state);
     }
 
@@ -108,7 +108,7 @@ public final class ParallelSpinClock extends AbstractSynchronizedClock {
      */
     void waitForTickEnd() {
       while (!_state) {
-        Thread.yield();
+        Thread.onSpinWait();
       }
     }
   }
