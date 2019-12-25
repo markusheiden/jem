@@ -46,19 +46,20 @@ public class C64Application extends Application {
     stage.setScene(scene);
     stage.show();
 
-    thread = new Thread(() -> {
-      try {
-        c64.start();
-        logger.info("C64 stopped.");
-      } catch (Exception e) {
-        logger.error("C64 failed.", e);
-      }
-    });
-
+    thread = new Thread(this::runC64);
     thread.setName("C64");
-    // JavaFX thread keeps vm running
+    // JavaFX thread keeps vm running.
     thread.setDaemon(true);
     thread.start();
+  }
+
+  private void runC64() {
+    try {
+      c64.start();
+      logger.info("C64 stopped.");
+    } catch (Exception e) {
+      logger.error("C64 failed.", e);
+    }
   }
 
   protected Clock createClock() throws Exception {
