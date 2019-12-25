@@ -4,11 +4,11 @@ import de.heiden.jem.components.clock.Clock;
 import de.heiden.jem.components.clock.ClockTestBase;
 
 /**
- * Test for {@link ParallelYieldClock}.
+ * Test for {@link ParallelBarrierClock}.
  */
-class ParallelYieldClockTest extends ClockTestBase {
+class ParallelBarrierClockTest extends ClockTestBase {
   @Override
   protected Clock createClock() {
-    return new ParallelYieldClock();
+    return new ParallelBarrierClock();
   }
 }

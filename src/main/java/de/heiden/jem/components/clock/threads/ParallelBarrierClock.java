@@ -10,7 +10,7 @@ import java.util.concurrent.CyclicBarrier;
 /**
  * Clock implemented with synchronization, executing component threads in parallel.
  */
-public final class ParallelYieldClock extends AbstractSynchronizedClock {
+public final class ParallelBarrierClock extends AbstractSynchronizedClock {
   /**
    * Barrier for synchronizing all component threads.
    */
