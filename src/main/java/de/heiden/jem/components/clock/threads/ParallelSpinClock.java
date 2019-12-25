@@ -91,9 +91,9 @@ public final class ParallelSpinClock extends AbstractSynchronizedClock {
     @Override
     public final void waitForTick() {
       _state = true;
-      while (_state) {
+      do {
         Thread.yield();
-      }
+      } while (_state);
     }
 
     /**
