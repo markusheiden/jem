@@ -89,7 +89,7 @@ public final class ParallelSpinClock extends AbstractSynchronizedClock {
     private volatile boolean _state = false;
 
     @Override
-    public final void waitForTick() {
+    public void waitForTick() {
       _state = true;
       do {
         Thread.yield();
@@ -99,14 +99,14 @@ public final class ParallelSpinClock extends AbstractSynchronizedClock {
     /**
      * Start next tick.
      */
-    final void startTick() {
+    void startTick() {
       _state = false;
     }
 
     /**
      * Wait for tick to finish.
      */
-    final void waitForTickEnd() {
+    void waitForTickEnd() {
       while (!_state) {
         Thread.yield();
       }
