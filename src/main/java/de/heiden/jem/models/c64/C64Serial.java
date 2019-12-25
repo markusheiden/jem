@@ -1,6 +1,5 @@
 package de.heiden.jem.models.c64;
 
-import de.heiden.jem.components.clock.Clock;
 import de.heiden.jem.components.clock.serialthreads.SerialClock;
 import de.heiden.jem.models.c64.gui.javafx.emulator.C64Application;
 import org.serialthreads.agent.TransformingClassLoader;
@@ -66,12 +65,7 @@ public class C64Serial {
      * Start application.
      */
     public static void start() {
-      launch();
-    }
-
-    @Override
-    protected Clock createClock() {
-      return new SerialClock();
+      launch("--clock=" + SerialClock.class.getName());
     }
   }
 }
