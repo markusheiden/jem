@@ -90,9 +90,9 @@ public abstract class AbstractSynchronizedClock extends AbstractClock {
   }
 
   protected final void executeComponent(ClockedComponent component, Tick tick) {
-    logger.debug("starting {}", component.getName());
+//    logger.debug("starting {}", component.getName());
     tick.waitForTick();
-    logger.debug("started {}", component.getName());
+//    logger.debug("started {}", component.getName());
     component.run();
   }
 
