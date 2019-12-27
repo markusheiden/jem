@@ -1,6 +1,6 @@
 package de.heiden.jem.models.c64;
 
-import de.heiden.jem.components.clock.loom.ContinuationClock;
+import de.heiden.jem.components.clock.loom.SequentialContinuationClock;
 import de.heiden.jem.models.c64.gui.javafx.emulator.C64Application;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +19,7 @@ public class C64Continuation {
    */
   public static void main(String[] args) {
     try {
-      C64Application.start("--clock=" + ContinuationClock.class.getName());
+      C64Application.start("--clock=" + SequentialContinuationClock.class.getName());
     } catch (Exception e) {
       logger.error("Unable to startup", e);
     }

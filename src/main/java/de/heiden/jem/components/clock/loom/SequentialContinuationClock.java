@@ -8,7 +8,7 @@ import static java.lang.Continuation.yield;
 /**
  * Clock using {@link Continuation}s from project loom.
  */
-public final class ContinuationClock extends AbstractSimpleClock {
+public final class SequentialContinuationClock extends AbstractSimpleClock {
     @Override
     protected final void doRun() {
         final var continuations = createContinuations();
