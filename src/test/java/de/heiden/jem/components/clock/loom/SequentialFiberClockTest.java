@@ -4,11 +4,11 @@ import de.heiden.jem.components.clock.Clock;
 import de.heiden.jem.components.clock.ClockTestBase;
 
 /**
- * Test for {@link ContinuationClock}.
+ * Test for {@link SequentialFiberClock}.
  */
-class ContinuationClockTest extends ClockTestBase {
+class SequentialFiberClockTest extends ClockTestBase {
   @Override
   protected Clock createClock() {
-    return new ContinuationClock();
+    return new SequentialFiberClock();
   }
 }
