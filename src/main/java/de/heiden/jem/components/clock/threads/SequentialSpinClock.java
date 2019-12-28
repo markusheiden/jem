@@ -1,10 +1,8 @@
 package de.heiden.jem.components.clock.threads;
 
-import de.heiden.jem.components.clock.ClockedComponent;
 import de.heiden.jem.components.clock.Tick;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Clock implemented without synchronization sequentially executing component threads by using spin locks (busy wait).
@@ -26,7 +24,7 @@ public final class SequentialSpinClock extends AbstractSynchronizedClock {
     // Suspend execution at start of first tick.
     addClockEvent(0, _suspendEvent);
 
-    List<ClockedComponent> components = new ArrayList<>(_componentMap.values());
+    var components = new ArrayList<>(_componentMap.values());
     for (int state = 0; state < components.size(); state++) {
       var component = components.get(state);
       var tick = new SequentialSpinTick(state);
