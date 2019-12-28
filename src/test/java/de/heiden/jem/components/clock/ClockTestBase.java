@@ -43,7 +43,7 @@ public abstract class ClockTestBase {
 
     clock.run(cycles);
 
-    // Check that al components are executed exactly the specified amount of cycles.
+    // Check that all components are executed exactly the specified amount of cycles.
     boolean failure = false;
     for (int i = 0; i < counters.length; i++) {
       failure |= counters[i].getCount() != cycles;
