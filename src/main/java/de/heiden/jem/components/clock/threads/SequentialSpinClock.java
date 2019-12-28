@@ -56,9 +56,9 @@ public final class SequentialSpinClock extends AbstractSynchronizedClock {
       // Execute all component threads.
       _state = 0;
       // Wait for all component threads to finish tick.
-      while (_state != finalState) {
+      do {
         Thread.onSpinWait();
-      }
+      } while (_state != finalState);
     }
   }
 
@@ -104,9 +104,9 @@ public final class SequentialSpinClock extends AbstractSynchronizedClock {
       // Execute next component thread.
       _state = tickState + 1;
       // Wait for next tick.
-      while (_state != tickState) {
+      do {
         Thread.onSpinWait();
-      }
+      } while (_state != tickState);
     }
   }
 }
