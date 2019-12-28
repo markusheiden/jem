@@ -86,28 +86,28 @@ public final class ParallelSpinClock extends AbstractSynchronizedClock {
      * True: Current tick finished, waiting for next tick.
      * False: Start next tick.
      */
-    private volatile boolean _state = false;
+    private volatile boolean tickEnd = false;
 
     @Override
     public void waitForTick() {
-      _state = true;
+      tickEnd = true;
       do {
         Thread.onSpinWait();
-      } while (_state);
+      } while (tickEnd);
     }
 
     /**
      * Start next tick.
      */
     void startTick() {
-      _state = false;
+      tickEnd = false;
     }
 
     /**
      * Wait for tick to finish.
      */
     void waitForTickEnd() {
-      while (!_state) {
+      while (!tickEnd) {
         Thread.onSpinWait();
       }
     }
