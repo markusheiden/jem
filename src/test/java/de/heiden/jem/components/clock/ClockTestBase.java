@@ -23,6 +23,7 @@ public abstract class ClockTestBase {
     int runs = 10;
     int cycles = 1000;
     for (int i = 0; i < runs; i++) {
+      System.out.println("Run " + i);
       try (Clock clock = createClock()) {
         run(clock, cycles);
       }
@@ -30,10 +31,18 @@ public abstract class ClockTestBase {
   }
 
   /**
+   * Number of counters to test with.
+   * Per default three times the number of processors to test context switch performance.
+   */
+  protected int numCounters() {
+    return Runtime.getRuntime().availableProcessors() * 3;
+  }
+
+  /**
    * Test run clock.
    */
   private void run(Clock clock, int cycles) {
-    int num = Runtime.getRuntime().availableProcessors() * 3;
+    int num = numCounters();
     CounterComponent[] counters = new CounterComponent[num];
     for (int i = 0; i < num; i++) {
       CounterComponent counter = new CounterComponent();
