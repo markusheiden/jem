@@ -6,7 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * C64 Startup with byte code transformation by an agent.
+ * C64 startup with {@link SerialClock} applying byte code transformation via an agent.
  */
 public class C64SerialAgent {
   /**
