@@ -63,6 +63,33 @@ public abstract class AbstractSynchronizedClock extends AbstractClock {
     }
   }
 
+  @Override
+  protected final void doRun(int ticks) {
+    addClockEvent(getTick() + ticks, _suspendEvent);
+    doRun();
+  }
+
+  @Override
+  protected final void doRun() {
+    _suspendEvent.resume();
+    _suspendEvent.waitForSuspend();
+  }
+
+  @Override
+  protected final void doInit() {
+    // Suspend execution at start of first tick.
+    addClockEvent(0, _suspendEvent);
+
+    doSynchronizedInit();
+
+    // Wait until all threads are at start of first click.
+    _suspendEvent.waitForSuspend();
+  }
+
+  protected void doSynchronizedInit() {
+    // overwrite, if needed
+  }
+
   /**
    * Create started daemon thread.
    */

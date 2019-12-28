@@ -18,11 +18,8 @@ public final class ParallelBarrierClock extends AbstractSynchronizedClock {
   /**
    * Start threads of all components.
    */
-  protected void doInit() {
+  protected void doSynchronizedInit() {
     logger.debug("starting components");
-
-    // Suspend execution at start of first tick.
-    addClockEvent(0, _suspendEvent);
 
     // Create threads.
     var components = _componentMap.values();
@@ -32,22 +29,6 @@ public final class ParallelBarrierClock extends AbstractSynchronizedClock {
       component.setTick(tick);
       createStartedDaemonThread(component.getName(), () -> executeComponent(component, tick));
     }
-    Thread.yield();
-
-    // Wait until all threads are at start of first click.
-    _suspendEvent.waitForSuspend();
-  }
-
-  @Override
-  protected final void doRun(int ticks) {
-    addClockEvent(getTick() + ticks, _suspendEvent);
-    doRun();
-  }
-
-  @Override
-  protected final void doRun() {
-    _suspendEvent.resume();
-    _suspendEvent.waitForSuspend();
   }
 
   @Override

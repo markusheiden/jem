@@ -15,10 +15,7 @@ public final class ParallelNotifyClock extends AbstractSynchronizedClock {
   private Thread _tickThread;
 
   @Override
-  protected void doInit() {
-    // Suspend execution at start of first tick.
-    addClockEvent(0, _suspendEvent);
-
+  protected void doSynchronizedInit() {
     var components = new ArrayList<>(_componentMap.values()).toArray(new ClockedComponent[0]);
     var ticks = new ParallelSpinTick[components.length];
     for (int i = 0; i < components.length; i++) {
@@ -35,9 +32,6 @@ public final class ParallelNotifyClock extends AbstractSynchronizedClock {
 
     // Start tick manager.
     _tickThread = createStartedDaemonThread("Tick", () -> executeTicks(ticks));
-    Thread.yield();
-
-    _suspendEvent.waitForSuspend();
   }
 
   /**
@@ -57,18 +51,6 @@ public final class ParallelNotifyClock extends AbstractSynchronizedClock {
         tick.waitForTickEnd();
       }
     }
-  }
-
-  @Override
-  protected void doRun(int ticks) {
-    addClockEvent(getTick() + ticks, _suspendEvent);
-    doRun();
-  }
-
-  @Override
-  protected void doRun() {
-    _suspendEvent.resume();
-    _suspendEvent.waitForSuspend();
   }
 
   @Override

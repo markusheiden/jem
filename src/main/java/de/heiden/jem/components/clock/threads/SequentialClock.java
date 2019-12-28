@@ -23,10 +23,7 @@ public final class SequentialClock extends AbstractSynchronizedClock {
   volatile int _state = 0;
 
   @Override
-  protected void doInit() {
-    // Suspend execution at start of first tick.
-    addClockEvent(0, _suspendEvent);
-
+  protected void doSynchronizedInit() {
     List<ClockedComponent> components = new ArrayList<>(_componentMap.values());
     Thread firstThread = null;
     SequentialTick previousTick = null;
@@ -57,9 +54,6 @@ public final class SequentialClock extends AbstractSynchronizedClock {
     _tickThread = createDaemonThread("Tick", () -> executeTicks(components.size(), finalFirstThread));
     previousTick._nextThread = _tickThread;
     _tickThread.start();
-    Thread.yield();
-
-    _suspendEvent.waitForSuspend();
   }
 
   /**
@@ -89,18 +83,6 @@ public final class SequentialClock extends AbstractSynchronizedClock {
       // In this case this park will not block, see LockSupport.unpark() javadoc.
       LockSupport.park(this);
     } while (_state != state);
-  }
-
-  @Override
-  protected void doRun(int ticks) {
-    addClockEvent(getTick() + ticks, _suspendEvent);
-    doRun();
-  }
-
-  @Override
-  protected void doRun() {
-    _suspendEvent.resume();
-    _suspendEvent.waitForSuspend();
   }
 
   @Override
