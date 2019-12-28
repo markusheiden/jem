@@ -4,15 +4,16 @@ import de.heiden.jem.components.clock.ClockedComponent;
 import de.heiden.jem.components.clock.Tick;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Clock implemented without synchronization sequentially executing components by using spin locks (busy wait).
  */
 public final class ParallelSpinClock extends AbstractSynchronizedClock {
   /**
-   * Tick thread.
+   * Threads.
    */
-  private Thread _tickThread;
+  private List<Thread> threads = new ArrayList<>();
 
   @Override
   protected void doSynchronizedInit() {
@@ -25,13 +26,13 @@ public final class ParallelSpinClock extends AbstractSynchronizedClock {
       ticks[i] = tick;
 
       // Start component.
-      createStartedDaemonThread(component.getName(), () -> executeComponent(component, tick));
+      threads.add(createStartedDaemonThread(component.getName(), () -> executeComponent(component, tick)));
       // Wait for component to reach first tick.
       tick.waitForTickEnd();
     }
 
     // Start tick manager.
-    _tickThread = createStartedDaemonThread("Tick", () -> executeTicks(ticks));
+    threads.add(createStartedDaemonThread("Tick", () -> executeTicks(ticks)));
   }
 
   /**
@@ -55,7 +56,7 @@ public final class ParallelSpinClock extends AbstractSynchronizedClock {
 
   @Override
   protected void doClose() {
-    _tickThread.interrupt();
+    threads.forEach(Thread::interrupt);
     super.doClose();
   }
 
