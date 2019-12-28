@@ -8,7 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * C64 Startup with byte code transformation by a class loader.
+ * C64 startup with {@link SerialClock} applying byte code transformation via a class loader.
  */
 public class C64Serial {
   /**

@@ -6,7 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * C64 Startup with continuations.
+ * C64 startup with {@link ParallelSpinClock}.
  */
 public class C64ParallelSpin {
   /**
