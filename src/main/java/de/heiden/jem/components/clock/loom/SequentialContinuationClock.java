@@ -41,7 +41,7 @@ public final class SequentialContinuationClock extends AbstractSimpleClock {
         ClockedComponent[] components = _componentMap.values().toArray(new ClockedComponent[0]);
         Continuation[] continuations = new Continuation[components.length];
         for (int i = 0; i < components.length; i++) {
-            ClockedComponent component = components[i];
+            final var component = components[i];
             final var scope = new ContinuationScope("Component " + i + ": " + component.getName());
             component.setTick(() -> yield(scope));
             continuations[i] = new Continuation(scope, component::run);
