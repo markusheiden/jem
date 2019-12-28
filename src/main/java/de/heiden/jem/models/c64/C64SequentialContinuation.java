@@ -8,11 +8,11 @@ import org.slf4j.LoggerFactory;
 /**
  * C64 Startup with continuations.
  */
-public class C64Continuation {
+public class C64SequentialContinuation {
   /**
    * Logger.
    */
-  private static final Logger logger = LoggerFactory.getLogger(C64Continuation.class);
+  private static final Logger logger = LoggerFactory.getLogger(C64SequentialContinuation.class);
 
   /**
    * Start application.
