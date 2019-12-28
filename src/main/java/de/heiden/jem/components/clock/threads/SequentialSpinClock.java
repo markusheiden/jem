@@ -20,10 +20,7 @@ public final class SequentialSpinClock extends AbstractSynchronizedClock {
   volatile int _state = 0;
 
   @Override
-  protected void doInit() {
-    // Suspend execution at start of first tick.
-    addClockEvent(0, _suspendEvent);
-
+  protected void doSynchronizedInit() {
     var components = new ArrayList<>(_componentMap.values());
     for (int state = 0; state < components.size(); state++) {
       var component = components.get(state);
@@ -40,8 +37,6 @@ public final class SequentialSpinClock extends AbstractSynchronizedClock {
 
     // Start tick manager.
     _tickThread = createStartedDaemonThread("Tick", () -> executeTicks(components.size()));
-
-    _suspendEvent.waitForSuspend();
   }
 
   /**
@@ -58,18 +53,6 @@ public final class SequentialSpinClock extends AbstractSynchronizedClock {
         Thread.onSpinWait();
       } while (_state != finalState);
     }
-  }
-
-  @Override
-  protected void doRun(int ticks) {
-    addClockEvent(getTick() + ticks, _suspendEvent);
-    doRun();
-  }
-
-  @Override
-  protected void doRun() {
-    _suspendEvent.resume();
-    _suspendEvent.waitForSuspend();
   }
 
   @Override
