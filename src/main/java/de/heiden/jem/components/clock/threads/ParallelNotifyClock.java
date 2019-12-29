@@ -9,11 +9,6 @@ import java.util.ArrayList;
  * Clock implemented without synchronization sequentially executing components by using spin locks (busy wait).
  */
 public final class ParallelNotifyClock extends AbstractSynchronizedClock {
-  /**
-   * Tick thread.
-   */
-  private Thread _tickThread;
-
   @Override
   protected void doSynchronizedInit() {
     var components = new ArrayList<>(_componentMap.values()).toArray(new ClockedComponent[0]);
@@ -31,7 +26,7 @@ public final class ParallelNotifyClock extends AbstractSynchronizedClock {
     }
 
     // Start tick manager.
-    _tickThread = createStartedDaemonThread("Tick", () -> executeTicks(ticks));
+    createStartedDaemonThread("Tick", () -> executeTicks(ticks));
   }
 
   /**
@@ -51,12 +46,6 @@ public final class ParallelNotifyClock extends AbstractSynchronizedClock {
         tick.waitForTickEnd();
       }
     }
-  }
-
-  @Override
-  protected void doClose() {
-    _tickThread.interrupt();
-    super.doClose();
   }
 
   /**
