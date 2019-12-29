@@ -25,7 +25,7 @@ public final class ParallelBarrierClock extends AbstractSynchronizedClock {
     var components = _componentMap.values();
     _barrier = new CyclicBarrier(components.size(), this::startTick);
     for (ClockedComponent component : components) {
-      Tick tick = new ParallelTick(_barrier);
+      Tick tick = new BarrierTick(_barrier);
       component.setTick(tick);
       createStartedDaemonThread(component.getName(), () -> executeComponent(component, tick));
     }
@@ -40,7 +40,7 @@ public final class ParallelBarrierClock extends AbstractSynchronizedClock {
   /**
    * Special tick, waiting for the barrier.
    */
-  private static final class ParallelTick implements Tick {
+  private static final class BarrierTick implements Tick {
     /**
      * Barrier for synchronizing all component threads.
      */
@@ -51,7 +51,7 @@ public final class ParallelBarrierClock extends AbstractSynchronizedClock {
      *
      * @param barrier Barrier for synchronizing all component threads.
      */
-    public ParallelTick(CyclicBarrier barrier) {
+    public BarrierTick(CyclicBarrier barrier) {
       this._barrier = barrier;
     }
 
