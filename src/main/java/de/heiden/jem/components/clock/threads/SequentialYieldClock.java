@@ -3,17 +3,11 @@ package de.heiden.jem.components.clock.threads;
 import de.heiden.jem.components.clock.Tick;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Clock implemented without synchronization sequentially executing component threads by using yield locks (busy wait).
  */
 public final class SequentialYieldClock extends AbstractSynchronizedClock {
-  /**
-   * Threads.
-   */
-  private List<Thread> threads = new ArrayList<>();
-
   /**
    * Ordinal of component thread to execute.
    * Package visible to avoid synthetic accessors.
@@ -29,7 +23,7 @@ public final class SequentialYieldClock extends AbstractSynchronizedClock {
       component.setTick(tick);
 
       // Start component.
-      threads.add(createStartedDaemonThread(component.getName(), () -> executeComponent(component, tick)));
+      createStartedDaemonThread(component.getName(), () -> executeComponent(component, tick));
       // Wait for component to reach first tick.
       while (_state != state + 1) {
         Thread.yield();
@@ -37,7 +31,7 @@ public final class SequentialYieldClock extends AbstractSynchronizedClock {
     }
 
     // Start tick manager.
-    threads.add(createStartedDaemonThread("Tick", () -> executeTicks(components.size())));
+    createStartedDaemonThread("Tick", () -> executeTicks(components.size()));
   }
 
   /**
@@ -54,12 +48,6 @@ public final class SequentialYieldClock extends AbstractSynchronizedClock {
         Thread.yield();
       } while (_state != finalState);
     }
-  }
-
-  @Override
-  protected void doClose() {
-    threads.forEach(Thread::interrupt);
-    super.doClose();
   }
 
   /**

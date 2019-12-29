@@ -12,11 +12,6 @@ import java.util.concurrent.locks.LockSupport;
  */
 public final class SequentialClock extends AbstractSynchronizedClock {
   /**
-   * Tick thread.
-   */
-  private Thread _tickThread;
-
-  /**
    * Ordinal of component thread to execute.
    * Package visible to avoid synthetic accessors.
    */
@@ -51,9 +46,9 @@ public final class SequentialClock extends AbstractSynchronizedClock {
 
     // Start tick manager.
     final Thread finalFirstThread = firstThread;
-    _tickThread = createDaemonThread("Tick", () -> executeTicks(components.size(), finalFirstThread));
-    previousTick._nextThread = _tickThread;
-    _tickThread.start();
+    Thread tickThread = createDaemonThread("Tick", () -> executeTicks(components.size(), finalFirstThread));
+    previousTick._nextThread = tickThread;
+    tickThread.start();
   }
 
   /**
@@ -83,12 +78,6 @@ public final class SequentialClock extends AbstractSynchronizedClock {
       // In this case this park will not block, see LockSupport.unpark() javadoc.
       LockSupport.park(this);
     } while (_state != state);
-  }
-
-  @Override
-  protected void doClose() {
-    _tickThread.interrupt();
-    super.doClose();
   }
 
   /**
