@@ -2,6 +2,7 @@ package de.heiden.jem.components.clock.loom;
 
 import de.heiden.jem.components.clock.AbstractSimpleClock;
 import de.heiden.jem.components.clock.ClockedComponent;
+import de.heiden.jem.components.clock.ManualAbort;
 
 import java.util.ArrayList;
 import java.util.concurrent.Executor;
@@ -82,9 +83,9 @@ public final class SequentialFiberYieldClock extends AbstractSimpleClock {
         this.state = nextState;
         do {
             Thread.yield();
-//            if (Thread.interrupted()) {
-//                throw new ManualAbort();
-//            }
+            if (Thread.interrupted()) {
+                throw new ManualAbort();
+            }
         } while (this.state != state);
     }
 }
