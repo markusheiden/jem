@@ -1,4 +1,4 @@
-package de.heiden.jem.components.clock.threads;
+package de.heiden.jem.components.clock;
 
 /**
  * Encapsulates {@link InterruptedException}.

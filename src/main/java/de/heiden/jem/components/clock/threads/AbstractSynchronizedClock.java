@@ -1,9 +1,6 @@
 package de.heiden.jem.components.clock.threads;
 
-import de.heiden.jem.components.clock.AbstractClock;
-import de.heiden.jem.components.clock.ClockEvent;
-import de.heiden.jem.components.clock.ClockedComponent;
-import de.heiden.jem.components.clock.Tick;
+import de.heiden.jem.components.clock.*;
 
 import java.util.concurrent.atomic.AtomicLong;
 

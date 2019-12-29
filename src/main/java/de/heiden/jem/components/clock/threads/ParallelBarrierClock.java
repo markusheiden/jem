@@ -1,6 +1,7 @@
 package de.heiden.jem.components.clock.threads;
 
 import de.heiden.jem.components.clock.ClockedComponent;
+import de.heiden.jem.components.clock.ManualAbort;
 import de.heiden.jem.components.clock.Tick;
 
 import java.util.concurrent.BrokenBarrierException;
