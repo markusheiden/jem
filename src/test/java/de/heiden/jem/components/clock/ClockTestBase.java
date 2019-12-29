@@ -27,6 +27,8 @@ public abstract class ClockTestBase {
       try (Clock clock = createClock()) {
         run(clock, cycles);
       }
+      System.out.println();
+      System.out.flush();
     }
   }
 

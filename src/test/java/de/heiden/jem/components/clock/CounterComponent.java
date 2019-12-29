@@ -30,8 +30,11 @@ public class CounterComponent implements ClockedComponent {
   @Interruptible
   public void run() {
     //noinspection InfiniteLoopStatement
-    while (true) {
+    while (!Thread.interrupted()) {
       count++;
+      if (count % 10 == 0) {
+        System.out.print(".");
+      }
       _tick.waitForTick();
     }
   }
