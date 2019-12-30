@@ -9,7 +9,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 /**
- * Clock using {@link Fiber}s from project loom.
+ * Clock using {@link Thread fibers} from project loom.
  */
 public final class SequentialFiberYieldClock extends AbstractSimpleClock {
     /**
@@ -24,45 +24,52 @@ public final class SequentialFiberYieldClock extends AbstractSimpleClock {
 
     @Override
     protected final void doRun() {
-        createFibers(-1).close();
+        createFibers(-1);
     }
 
     @Override
     protected final void doRun(int ticks) {
         assert ticks >= 0 : "Precondition: ticks >= 0";
 
-        createFibers(ticks).close();
+        createFibers(ticks);
     }
 
     /**
      * Create fibers.
      */
-    private FiberScope createFibers(final int ticks) {
+    private void createFibers(final int ticks) {
         ClockedComponent[] components = _componentMap.values().toArray(new ClockedComponent[0]);
         final int numComponents = components.length;
 
-        FiberScope scope = FiberScope.open();
-        var fibers = new ArrayList<Fiber<?>>(numComponents);
+        var fibers = new ArrayList<Thread>(numComponents);
 
         final int finalState = numComponents;
         if (ticks < 0) {
-            scope.schedule(executor, () -> {
-                //noinspection InfiniteLoopStatement
-                while (true) {
-                    startTick();
-                    // Execute first component and wait for last tick.
-                    executeNextComponent(0, finalState);
-                }
-            });
+            Thread.builder()
+                    .virtual(executor)
+                    .task(() -> {
+                        //noinspection InfiniteLoopStatement
+                        while (true) {
+                            startTick();
+                            // Execute first component and wait for last tick.
+                            executeNextComponent(0, finalState);
+                        }
+                    })
+                    .build()
+                    .start();
         } else {
-            scope.schedule(executor, () -> {
-                for (final long stop = getTick() + ticks; getTick() < stop;) {
-                    startTick();
-                    // Execute first component and wait for last tick.
-                    executeNextComponent(0, finalState);
-                }
-                fibers.forEach(Fiber::cancel);
-            });
+            Thread.builder()
+                    .virtual(executor)
+                    .task(() -> {
+                        for (final long stop = getTick() + ticks; getTick() < stop; ) {
+                            startTick();
+                            // Execute first component and wait for last tick.
+                            executeNextComponent(0, finalState);
+                        }
+                        fibers.forEach(Thread::interrupt);
+                    })
+                    .build()
+                    .start();
         }
 
         for (int i = 0; i < numComponents; i++) {
@@ -71,10 +78,13 @@ public final class SequentialFiberYieldClock extends AbstractSimpleClock {
             final int tickState = i;
             final int nextTickState = i + 1;
             component.setTick(() -> executeNextComponent(nextTickState, tickState));
-            fibers.add(scope.schedule(executor, component::run));
+            Thread fiber = Thread.builder()
+                    .virtual(executor)
+                    .task(component::run)
+                    .build();
+            fiber.start();
+            fibers.add(fiber);
         }
-
-        return scope;
     }
 
     /**
