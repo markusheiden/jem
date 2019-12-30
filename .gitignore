@@ -1,8 +1,5 @@
-target
 .idea
-*.iws
-*.iml
-*.ipr
+target
 .gradle
 build
 
