@@ -1,11 +1,11 @@
 package de.heiden.jem.components.clock;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Base implementation for all clocks.
@@ -201,12 +201,15 @@ public abstract class AbstractClock implements Clock {
 
     var previousEvent = oldEvent.previous;
     var nextEvent = oldEvent.next;
+
     if (oldEvent == _events) {
       _events = nextEvent;
-    } else {
+    } else if (previousEvent != null) {
       previousEvent.next = nextEvent;
     }
-    nextEvent.previous = previousEvent;
+    if (nextEvent != null) {
+      nextEvent.previous = previousEvent;
+    }
   }
 
   /**
