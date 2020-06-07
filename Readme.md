@@ -2,6 +2,12 @@
 
 C64 emulator implemented using serial threads.
 
+# Build
+
+````shell script
+./gradlew build
+````
+
 ## Vice emu testprogs
 
 Checkout svn://svn.code.sf.net/p/vice-emu/code/testprogs into src/test/vice-emu-testprogs to make integration test work.
