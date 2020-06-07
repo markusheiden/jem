@@ -43,9 +43,14 @@ dependencies {
 jar {
   manifest {
     attributes(
-      "Implementation-Title": 'JemC64',
-      "Implementation-Version": archiveVersion,
-      "Main-Class": 'de.heiden.jem.models.c64.C64Serial')
+      'Implementation-Title': 'JemC64',
+      'Implementation-Version': archiveVersion,
+      // 'Launcher-Agent-Class': 'org.serialthreads.agent.Agent',
+      'Main-Class': 'de.heiden.jem.models.c64.C64Serial'
+    )
+  }
+  from {
+    configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
   }
 }
 
