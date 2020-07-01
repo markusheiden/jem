@@ -28,6 +28,7 @@ dependencies {
 
   implementation "de.heiden.c64dt:assembler:${c64dtVersion}"
   implementation "de.heiden.c64dt:bytes:${c64dtVersion}"
+  implementation "de.heiden.c64dt:charset:${c64dtVersion}"
   implementation "de.heiden.c64dt:disk:${c64dtVersion}"
   implementation "de.heiden.c64dt:gui:${c64dtVersion}"
 
