@@ -2,6 +2,7 @@
 out
 .gradle
 build
+target
 
 src/test/resources/vice-emu-testprogs
 serialthreads.log
