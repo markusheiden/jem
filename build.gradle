@@ -14,11 +14,15 @@ group = 'de.heiden'
 archivesBaseName = 'jemc64'
 version = '1.0-SNAPSHOT'
 
-sourceCompatibility = JavaVersion.VERSION_15
-
 repositories {
   mavenLocal()
   mavenCentral()
+}
+
+java {
+  toolchain {
+    languageVersion.set(JavaLanguageVersion.of(15))
+  }
 }
 
 dependencies {
