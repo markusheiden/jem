@@ -1,11 +1,11 @@
 plugins {
-  id 'java-library'
-  id 'kotlin'
-  id 'com.github.ben-manes.versions'
+    id 'java-library'
+    id 'kotlin'
+    id 'com.github.ben-manes.versions'
 }
 
 wrapper {
-  gradleVersion = "${gradleVersion}"
+    gradleVersion = "${gradleVersion}"
 }
 
 apply from: 'gradle/javafx.gradle'
@@ -15,62 +15,62 @@ archivesBaseName = 'jemc64'
 version = '1.0-SNAPSHOT'
 
 repositories {
-  mavenLocal()
-  mavenCentral()
+    mavenLocal()
+    mavenCentral()
 }
 
 java {
-  toolchain {
-    languageVersion.set(JavaLanguageVersion.of(15))
-  }
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(15))
+    }
 }
 
 dependencies {
-  implementation "org.slf4j:slf4j-api:${slf4jVersion}"
-  runtimeOnly "org.apache.logging.log4j:log4j-slf4j-impl:${log4jVersion}"
-  runtimeOnly "org.apache.logging.log4j:log4j-core:${log4jVersion}"
+    implementation "org.slf4j:slf4j-api:${slf4jVersion}"
+    runtimeOnly "org.apache.logging.log4j:log4j-slf4j-impl:${log4jVersion}"
+    runtimeOnly "org.apache.logging.log4j:log4j-core:${log4jVersion}"
 
-  implementation "org.serialthreads:serialthreads:${serialthreadsVersion}"
-  testImplementation "org.serialthreads:serialthreads:${serialthreadsVersion}:tests"
+    implementation "org.serialthreads:serialthreads:${serialthreadsVersion}"
+    testImplementation "org.serialthreads:serialthreads:${serialthreadsVersion}:tests"
 
-  implementation "de.heiden.c64dt:assembler:${c64dtVersion}"
-  implementation "de.heiden.c64dt:bytes:${c64dtVersion}"
-  implementation "de.heiden.c64dt:charset:${c64dtVersion}"
-  implementation "de.heiden.c64dt:disk:${c64dtVersion}"
-  implementation "de.heiden.c64dt:gui:${c64dtVersion}"
+    implementation "de.heiden.c64dt:assembler:${c64dtVersion}"
+    implementation "de.heiden.c64dt:bytes:${c64dtVersion}"
+    implementation "de.heiden.c64dt:charset:${c64dtVersion}"
+    implementation "de.heiden.c64dt:disk:${c64dtVersion}"
+    implementation "de.heiden.c64dt:gui:${c64dtVersion}"
 
-  implementation "org.openjfx:javafx-base:${openjfxVersion}:${openjfxPlatform}"
-  implementation "org.openjfx:javafx-controls:${openjfxVersion}:${openjfxPlatform}"
-  implementation "org.openjfx:javafx-graphics:${openjfxVersion}:${openjfxPlatform}"
+    implementation "org.openjfx:javafx-base:${openjfxVersion}:${openjfxPlatform}"
+    implementation "org.openjfx:javafx-controls:${openjfxVersion}:${openjfxPlatform}"
+    implementation "org.openjfx:javafx-graphics:${openjfxVersion}:${openjfxPlatform}"
 
-  implementation "org.apache.commons:commons-lang3:${commonsLangVersion}"
+    implementation "org.apache.commons:commons-lang3:${commonsLangVersion}"
 
-  testImplementation "org.junit.jupiter:junit-jupiter-api:${junitVersion}"
-  testImplementation "org.junit.jupiter:junit-jupiter-params:${junitVersion}"
-  testImplementation "org.assertj:assertj-core:${assertjVersion}"
+    testImplementation "org.junit.jupiter:junit-jupiter-api:${junitVersion}"
+    testImplementation "org.junit.jupiter:junit-jupiter-params:${junitVersion}"
+    testImplementation "org.assertj:assertj-core:${assertjVersion}"
 }
 
 jar {
-  manifest {
-    attributes(
-      'Implementation-Title': 'JemC64',
-      'Implementation-Version': archiveVersion,
-      // 'Launcher-Agent-Class': 'org.serialthreads.agent.Agent',
-      'Main-Class': 'de.heiden.jem.models.c64.C64Serial'
-    )
-  }
-  from {
-    configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
-  }
+    manifest {
+        attributes(
+                'Implementation-Title': 'JemC64',
+                'Implementation-Version': archiveVersion,
+                // 'Launcher-Agent-Class': 'org.serialthreads.agent.Agent',
+                'Main-Class': 'de.heiden.jem.models.c64.C64Serial'
+        )
+    }
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
 }
 
 test {
-  // ignore failing tests
-  ignoreFailures = true
+    // ignore failing tests
+    ignoreFailures = true
 
-  // workaround for gradle (included asm) not supporting jdk8
-  scanForTestClasses = false
-  // probably have to tweak the include and exclude patterns, depending on the naming scheme you use
-  include '**/*Test.*'
-  exclude '**/*Abstract*.*'
+    // workaround for gradle (included asm) not supporting jdk8
+    scanForTestClasses = false
+    // probably have to tweak the include and exclude patterns, depending on the naming scheme you use
+    include '**/*Test.*'
+    exclude '**/*Abstract*.*'
 }
