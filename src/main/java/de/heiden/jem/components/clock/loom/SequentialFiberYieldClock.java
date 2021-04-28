@@ -1,12 +1,12 @@
 package de.heiden.jem.components.clock.loom;
 
-import de.heiden.jem.components.clock.AbstractSimpleClock;
-import de.heiden.jem.components.clock.ClockedComponent;
-import de.heiden.jem.components.clock.ManualAbort;
-
 import java.util.ArrayList;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+
+import de.heiden.jem.components.clock.AbstractSimpleClock;
+import de.heiden.jem.components.clock.ClockedComponent;
+import de.heiden.jem.components.clock.ManualAbort;
 
 /**
  * Clock using {@link Thread fibers} from project loom.
@@ -45,31 +45,27 @@ public final class SequentialFiberYieldClock extends AbstractSimpleClock {
 
         final int finalState = numComponents;
         if (ticks < 0) {
-            Thread.builder()
-                    .virtual(executor)
-                    .task(() -> {
+            Thread.ofVirtual()
+                    .scheduler(executor)
+                    .start(() -> {
                         //noinspection InfiniteLoopStatement
                         while (true) {
                             startTick();
                             // Execute first component and wait for last tick.
                             executeNextComponent(0, finalState);
                         }
-                    })
-                    .build()
-                    .start();
+                    });
         } else {
-            Thread.builder()
-                    .virtual(executor)
-                    .task(() -> {
+            Thread.ofVirtual()
+                    .scheduler(executor)
+                    .start(() -> {
                         for (final long stop = getTick() + ticks; getTick() < stop; ) {
                             startTick();
                             // Execute first component and wait for last tick.
                             executeNextComponent(0, finalState);
                         }
                         fibers.forEach(Thread::interrupt);
-                    })
-                    .build()
-                    .start();
+                    });
         }
 
         for (int i = 0; i < numComponents; i++) {
@@ -78,10 +74,9 @@ public final class SequentialFiberYieldClock extends AbstractSimpleClock {
             final int tickState = i;
             final int nextTickState = i + 1;
             component.setTick(() -> executeNextComponent(nextTickState, tickState));
-            Thread fiber = Thread.builder()
-                    .virtual(executor)
-                    .task(component::run)
-                    .build();
+            Thread fiber = Thread.ofVirtual()
+                    .scheduler(executor)
+                    .start(component::run);
             fiber.start();
             fibers.add(fiber);
         }
