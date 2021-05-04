@@ -1,8 +1,12 @@
 package de.heiden.jem.components.clock.threads;
 
-import de.heiden.jem.components.clock.*;
-
 import java.util.concurrent.atomic.AtomicLong;
+
+import de.heiden.jem.components.clock.AbstractClock;
+import de.heiden.jem.components.clock.ClockEvent;
+import de.heiden.jem.components.clock.ClockedComponent;
+import de.heiden.jem.components.clock.ManualAbort;
+import de.heiden.jem.components.clock.Tick;
 
 /**
  * Base implementation for all clocks using synchronization.
@@ -12,9 +16,6 @@ public abstract class AbstractSynchronizedClock extends AbstractClock {
    * Component threads.
    */
   private final ThreadGroup _componentThreads = new ThreadGroup(getClass().getSimpleName());
-  {
-    _componentThreads.setDaemon(false);
-  }
 
   /**
    * Monitor for synchronization.
