@@ -59,6 +59,9 @@ jar {
                 'Main-Class': 'de.heiden.jem.models.c64.C64Serial'
         )
     }
+
+    // TODO markus 2021-05-04: Deduplicate files.
+    duplicatesStrategy(DuplicatesStrategy.WARN)
     from {
         configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     }
