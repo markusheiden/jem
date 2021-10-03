@@ -9,6 +9,6 @@ import de.heiden.jem.components.clock.ClockTestBase;
 class SequentialContinuationClockTest extends ClockTestBase {
   @Override
   protected Clock createClock() {
-    return new SequentialContinuationClock();
+    return null; // new SequentialContinuationClock();
   }
 }
