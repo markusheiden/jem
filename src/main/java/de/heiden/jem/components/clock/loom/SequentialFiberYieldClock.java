@@ -67,9 +67,9 @@ public final class SequentialFiberYieldClock extends AbstractSimpleClock {
         for (int i = 0; i < numComponents; i++) {
             var component = components[i];
             // Execute next component thread and wait for next tick.
-            var tickState = i;
-            var nextTickState = i + 1;
-            component.setTick(() -> executeNextComponent(nextTickState, tickState));
+            var state = i;
+            var nextState = i + 1;
+            component.setTick(() -> executeNextComponent(nextState, state));
             var fiber = buildVirtualThread(component::run);
             fibers.add(fiber);
         }
