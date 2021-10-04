@@ -1,7 +1,5 @@
 package de.heiden.jem.components.clock.loom;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.locks.LockSupport;
@@ -42,60 +40,69 @@ public final class SequentialFiberParkClock extends AbstractSimpleClock {
         var components = _componentMap.values().toArray(new ClockedComponent[0]);
         var numComponents = components.length;
 
-        var fibers = new ArrayList<Thread>(numComponents + 1);
+        var fibers = new Thread[numComponents + 1];
         for (int i = 0; i < numComponents; i++) {
             var component = components[i];
-            // Execute next component thread and wait for next tick.
-            var tickState = i;
-            var nextTickState = i + 1;
-            component.setTick(() -> executeNextComponent(nextTickState, fibers, tickState));
             var fiber = Thread.ofVirtual()
                     .scheduler(executor)
                     .unstarted(component::run);
-            fibers.add(fiber);
+            fibers[i] = fiber;
         }
 
+        Thread starterFiber;
         if (ticks < 0) {
-            var fiber = Thread.ofVirtual()
+            starterFiber = Thread.ofVirtual()
                     .scheduler(executor)
                     .unstarted(() -> {
                         //noinspection InfiniteLoopStatement
                         while (true) {
                             startTick();
                             // Execute first component and wait for last tick.
-                            executeNextComponent(0, fibers, numComponents);
+                            executeNextComponent(0, fibers[0], numComponents);
                         }
                     });
-            fibers.add(fiber);
         } else {
-            var fiber = Thread.ofVirtual()
+            starterFiber = Thread.ofVirtual()
                     .scheduler(executor)
                     .unstarted(() -> {
                         for (final long stop = getTick() + ticks; getTick() < stop; ) {
                             startTick();
                             // Execute first component and wait for last tick.
-                            executeNextComponent(0, fibers, numComponents);
+                            executeNextComponent(0, fibers[0], numComponents);
                         }
-                        fibers.forEach(Thread::interrupt);
+                        for (var fiber : fibers) {
+                            fiber.interrupt();
+                        }
                     });
-            fibers.add(fiber);
+        }
+        fibers[numComponents] = starterFiber;
+
+        for (int i = 0; i < numComponents; i++) {
+            var component = components[i];
+            // Execute next component thread and wait for next tick.
+            var tickState = i;
+            var nextTickState = i + 1;
+            var nextFiber = fibers[nextTickState];
+            component.setTick(() -> executeNextComponent(nextTickState, nextFiber, tickState));
         }
 
-        fibers.forEach(Thread::start);
+        for (var fiber : fibers) {
+            fiber.start();
+        }
     }
 
     /**
      * Execute next component and wait for this component to execute.
      */
-    private void executeNextComponent(final int nextState, final List<Thread> fibers, final int state) {
+    private void executeNextComponent(final int nextState, final Thread nextFiber, final int state) {
         this.state = nextState;
-        LockSupport.unpark(fibers.get(nextState));
+        LockSupport.unpark(nextFiber);
         LockSupport.park();
 //        if (Thread.interrupted()) {
 //            throw new ManualAbort();
 //        }
         while (this.state != state) {
             Thread.yield();
-        } ;
+        }
     }
 }
