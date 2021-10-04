@@ -55,7 +55,6 @@ public final class SequentialFiberParkClock extends AbstractSimpleClock {
         if (ticks < 0) {
             starterFiber = buildVirtualThread(() -> {
                 //noinspection InfiniteLoopStatement
-                System.out.println("started");
                 while (true) {
                     startTick();
                     // Execute first component and wait for last tick.
