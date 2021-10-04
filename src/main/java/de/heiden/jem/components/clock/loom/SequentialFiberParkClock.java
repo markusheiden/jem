@@ -1,7 +1,8 @@
 package de.heiden.jem.components.clock.loom;
 
-import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.locks.LockSupport;
 
 import de.heiden.jem.components.clock.AbstractSimpleClock;
@@ -14,7 +15,7 @@ public final class SequentialFiberParkClock extends AbstractSimpleClock {
     /**
      * The one and only thread to execute the fibers.
      */
-    private final Executor executor = Executors.newSingleThreadExecutor();
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     /**
      * Currently executed component.
@@ -43,52 +44,50 @@ public final class SequentialFiberParkClock extends AbstractSimpleClock {
         var fibers = new Thread[numComponents + 1];
         for (int i = 0; i < numComponents; i++) {
             var component = components[i];
-            var fiber = Thread.ofVirtual()
-                    .scheduler(executor)
-                    .unstarted(component::run);
-            fibers[i] = fiber;
+            fibers[i] = buildVirtualThread(component::run);
         }
 
         Thread starterFiber;
         if (ticks < 0) {
-            starterFiber = Thread.ofVirtual()
-                    .scheduler(executor)
-                    .unstarted(() -> {
-                        //noinspection InfiniteLoopStatement
-                        while (true) {
-                            startTick();
-                            // Execute first component and wait for last tick.
-                            executeNextComponent(0, fibers[0], numComponents);
-                        }
-                    });
+            starterFiber = buildVirtualThread(() -> {
+                //noinspection InfiniteLoopStatement
+                while (true) {
+                    startTick();
+                    // Execute first component and wait for last tick.
+                    executeNextComponent(0, fibers[0], numComponents);
+                }
+            });
         } else {
-            starterFiber = Thread.ofVirtual()
-                    .scheduler(executor)
-                    .unstarted(() -> {
-                        for (final long stop = getTick() + ticks; getTick() < stop; ) {
-                            startTick();
-                            // Execute first component and wait for last tick.
-                            executeNextComponent(0, fibers[0], numComponents);
-                        }
-                        for (var fiber : fibers) {
-                            fiber.interrupt();
-                        }
-                    });
+            starterFiber = buildVirtualThread(() -> {
+                for (final long stop = getTick() + ticks; getTick() < stop; ) {
+                    startTick();
+                    // Execute first component and wait for last tick.
+                    executeNextComponent(0, fibers[0], numComponents);
+                }
+                executor.shutdownNow();
+            });
         }
         fibers[numComponents] = starterFiber;
 
         for (int i = 0; i < numComponents; i++) {
             var component = components[i];
             // Execute next component thread and wait for next tick.
-            var tickState = i;
-            var nextTickState = i + 1;
-            var nextFiber = fibers[nextTickState];
-            component.setTick(() -> executeNextComponent(nextTickState, nextFiber, tickState));
+            var state = i;
+            var nextState = i + 1;
+            var nextFiber = fibers[nextState];
+            component.setTick(() -> executeNextComponent(nextState, nextFiber, state));
         }
 
         for (var fiber : fibers) {
             fiber.start();
         }
+    }
+
+    private Thread buildVirtualThread(Runnable task) {
+        return Thread.ofVirtual()
+                .scheduler(executor)
+                .uncaughtExceptionHandler(this::uncaughtException)
+                .unstarted(task);
     }
 
     /**
@@ -98,11 +97,34 @@ public final class SequentialFiberParkClock extends AbstractSimpleClock {
         this.state = nextState;
         LockSupport.unpark(nextFiber);
         LockSupport.park();
-//        if (Thread.interrupted()) {
-//            throw new ManualAbort();
-//        }
         while (this.state != state) {
             Thread.yield();
         }
+    }
+
+    @Override
+    protected void doClose() {
+        executor.shutdown();
+    }
+
+    /**
+     * Ignore {@link RejectedExecutionException}s which are caused by the executor being shutdown.
+     * Rethrows all other exceptions.
+     */
+    private void uncaughtException(Thread t, Throwable e) {
+        if (e instanceof Error error) {
+            throw error;
+        }
+
+        if (e instanceof RejectedExecutionException) {
+            // Thread pool has been closed. Abort execution.
+            return;
+        }
+
+        if (e instanceof RuntimeException runtime) {
+            throw runtime;
+        }
+
+        throw new RuntimeException(e);
     }
 }

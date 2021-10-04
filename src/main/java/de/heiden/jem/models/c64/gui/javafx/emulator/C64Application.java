@@ -76,6 +76,7 @@ public class C64Application extends Application {
   @Override
   @SuppressWarnings("deprecation")
   public void stop() throws Exception {
+    c64.stop();
     thread.interrupt();
     thread.join(100);
     thread.stop();
