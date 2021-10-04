@@ -1,7 +1,7 @@
 package de.heiden.jem.components.clock.loom;
 
 import java.util.ArrayList;
-import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import de.heiden.jem.components.clock.AbstractSimpleClock;
@@ -15,7 +15,7 @@ public final class SequentialFiberYieldClock extends AbstractSimpleClock {
     /**
      * The one and only thread to execute the fibers.
      */
-    private final Executor executor = Executors.newSingleThreadExecutor();
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     /**
      * Currently execute component.
@@ -92,5 +92,10 @@ public final class SequentialFiberYieldClock extends AbstractSimpleClock {
                 throw new ManualAbort();
             }
         } while (this.state != state);
+    }
+
+    @Override
+    protected void doClose() {
+        executor.shutdown();
     }
 }
