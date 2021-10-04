@@ -46,22 +46,22 @@ public final class SequentialFiberYieldClock extends AbstractSimpleClock {
         var finalState = numComponents;
         if (ticks < 0) {
             buildVirtualThread(() -> {
-                        //noinspection InfiniteLoopStatement
-                        while (true) {
-                            startTick();
-                            // Execute first component and wait for last tick.
-                            executeNextComponent(0, finalState);
-                        }
-                    });
+                //noinspection InfiniteLoopStatement
+                while (true) {
+                    startTick();
+                    // Execute first component and wait for last tick.
+                    executeNextComponent(0, finalState);
+                }
+            });
         } else {
             buildVirtualThread(() -> {
-                        for (final long stop = getTick() + ticks; getTick() < stop; ) {
-                            startTick();
-                            // Execute first component and wait for last tick.
-                            executeNextComponent(0, finalState);
-                        }
-                        fibers.forEach(Thread::interrupt);
-                    });
+                for (final long stop = getTick() + ticks; getTick() < stop; ) {
+                    startTick();
+                    // Execute first component and wait for last tick.
+                    executeNextComponent(0, finalState);
+                }
+                fibers.forEach(Thread::interrupt);
+            });
         }
 
         for (int i = 0; i < numComponents; i++) {
