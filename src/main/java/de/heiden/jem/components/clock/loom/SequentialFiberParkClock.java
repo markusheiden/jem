@@ -55,7 +55,7 @@ public final class SequentialFiberParkClock extends AbstractSimpleClock {
                 while (true) {
                     startTick();
                     // Execute first component and wait for last tick.
-                    executeNextComponent(firstFiber, fibers[numComponents]);
+                    executeNextComponent(firstFiber);
                 }
             });
         } else {
@@ -63,7 +63,7 @@ public final class SequentialFiberParkClock extends AbstractSimpleClock {
                 for (final long stop = getTick() + ticks; getTick() < stop; ) {
                     startTick();
                     // Execute first component and wait for last tick.
-                    executeNextComponent(firstFiber, fibers[numComponents]);
+                    executeNextComponent(firstFiber);
                 }
                 executor.shutdownNow();
             });
@@ -73,9 +73,8 @@ public final class SequentialFiberParkClock extends AbstractSimpleClock {
         for (int i = 0; i < numComponents; i++) {
             var component = components[i];
             // Execute next component thread and wait for next tick.
-            var fiber = fibers[i];
             var nextFiber = fibers[i + 1];
-            component.setTick(() -> executeNextComponent(nextFiber, fiber));
+            component.setTick(() -> executeNextComponent(nextFiber));
         }
 
         starterFiber.start();
@@ -96,11 +95,11 @@ public final class SequentialFiberParkClock extends AbstractSimpleClock {
     /**
      * Execute next component and wait for this component to execute.
      */
-    private void executeNextComponent(final Thread nextFiber, final Thread fiber) {
+    private void executeNextComponent(final Thread nextFiber) {
         this.fiber = nextFiber;
         LockSupport.unpark(nextFiber);
         LockSupport.park();
-        while (this.fiber != fiber) {
+        while (this.fiber != Thread.currentThread()) {
             Thread.yield();
         }
     }
