@@ -8,6 +8,8 @@ import java.util.concurrent.locks.LockSupport;
 import de.heiden.jem.components.clock.AbstractSimpleClock;
 import de.heiden.jem.components.clock.ClockedComponent;
 
+import static java.util.Arrays.stream;
+
 /**
  * Clock using {@link Thread fibers} from project loom.
  */
@@ -20,7 +22,7 @@ public final class SequentialFiberParkClock extends AbstractSimpleClock {
     /**
      * Currently executed component.
      */
-    private int state = -1;
+    private Thread fiber = null;
 
     @Override
     protected void doRun() {
@@ -47,6 +49,7 @@ public final class SequentialFiberParkClock extends AbstractSimpleClock {
             fibers[i] = buildVirtualThread(component::run);
         }
 
+        var firstFiber = fibers[0];
         Thread starterFiber;
         if (ticks < 0) {
             starterFiber = buildVirtualThread(() -> {
@@ -54,7 +57,7 @@ public final class SequentialFiberParkClock extends AbstractSimpleClock {
                 while (true) {
                     startTick();
                     // Execute first component and wait for last tick.
-                    executeNextComponent(0, fibers[0], numComponents);
+                    executeNextComponent(firstFiber, fibers[numComponents]);
                 }
             });
         } else {
@@ -62,7 +65,7 @@ public final class SequentialFiberParkClock extends AbstractSimpleClock {
                 for (final long stop = getTick() + ticks; getTick() < stop; ) {
                     startTick();
                     // Execute first component and wait for last tick.
-                    executeNextComponent(0, fibers[0], numComponents);
+                    executeNextComponent(firstFiber, fibers[numComponents]);
                 }
                 executor.shutdownNow();
             });
@@ -72,15 +75,12 @@ public final class SequentialFiberParkClock extends AbstractSimpleClock {
         for (int i = 0; i < numComponents; i++) {
             var component = components[i];
             // Execute next component thread and wait for next tick.
-            var state = i;
-            var nextState = i + 1;
-            var nextFiber = fibers[nextState];
-            component.setTick(() -> executeNextComponent(nextState, nextFiber, state));
+            var fiber = fibers[i];
+            var nextFiber = fibers[i + 1];
+            component.setTick(() -> executeNextComponent(nextFiber, fiber));
         }
 
-        for (var fiber : fibers) {
-            fiber.start();
-        }
+        stream(fibers).forEach(Thread::start);
     }
 
     private Thread buildVirtualThread(Runnable task) {
@@ -93,11 +93,11 @@ public final class SequentialFiberParkClock extends AbstractSimpleClock {
     /**
      * Execute next component and wait for this component to execute.
      */
-    private void executeNextComponent(final int nextState, final Thread nextFiber, final int state) {
-        this.state = nextState;
+    private void executeNextComponent(final Thread nextFiber, final Thread fiber) {
+        this.fiber = nextFiber;
         LockSupport.unpark(nextFiber);
         LockSupport.park();
-        while (this.state != state) {
+        while (this.fiber != fiber) {
             Thread.yield();
         }
     }
