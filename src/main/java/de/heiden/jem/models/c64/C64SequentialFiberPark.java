@@ -1,13 +1,12 @@
 package de.heiden.jem.models.c64;
 
 import de.heiden.jem.components.clock.loom.SequentialFiberParkClock;
-import de.heiden.jem.components.clock.loom.SequentialFiberYieldClock;
 import de.heiden.jem.models.c64.gui.javafx.emulator.C64Application;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * C64 startup with {@link SequentialFiberYieldClock}.
+ * C64 startup with {@link SequentialFiberParkClock}.
  */
 public class C64SequentialFiberPark {
   /**
