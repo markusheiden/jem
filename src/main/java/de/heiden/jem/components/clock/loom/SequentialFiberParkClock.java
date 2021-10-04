@@ -44,7 +44,10 @@ public final class SequentialFiberParkClock extends AbstractSimpleClock {
         var fibers = new Thread[numComponents + 1];
         for (int i = 0; i < numComponents; i++) {
             var component = components[i];
-            fibers[i] = buildVirtualThread(component::run);
+            fibers[i] = buildVirtualThread(() -> {
+                LockSupport.park();
+                component.run();
+            });
         }
 
         var firstFiber = fibers[0];
@@ -52,6 +55,7 @@ public final class SequentialFiberParkClock extends AbstractSimpleClock {
         if (ticks < 0) {
             starterFiber = buildVirtualThread(() -> {
                 //noinspection InfiniteLoopStatement
+                System.out.println("started");
                 while (true) {
                     startTick();
                     // Execute first component and wait for last tick.
@@ -77,12 +81,16 @@ public final class SequentialFiberParkClock extends AbstractSimpleClock {
             component.setTick(() -> executeNextComponent(nextFiber));
         }
 
-        starterFiber.start();
-        Thread.yield();
         for (int i = 0; i < numComponents; i++) {
             fibers[i].start();
-            Thread.yield();
         }
+        try {
+            // Wait for component thread being parked.
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            // Ignore.
+        }
+        starterFiber.start();
     }
 
     private Thread buildVirtualThread(Runnable task) {
