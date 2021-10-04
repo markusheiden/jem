@@ -23,12 +23,12 @@ public final class SequentialFiberYieldClock extends AbstractSimpleClock {
     private int state = -1;
 
     @Override
-    protected final void doRun() {
+    protected void doRun() {
         createFibers(-1);
     }
 
     @Override
-    protected final void doRun(int ticks) {
+    protected void doRun(int ticks) {
         assert ticks >= 0 : "Precondition: ticks >= 0";
 
         createFibers(ticks);
@@ -38,12 +38,12 @@ public final class SequentialFiberYieldClock extends AbstractSimpleClock {
      * Create fibers.
      */
     private void createFibers(final int ticks) {
-        ClockedComponent[] components = _componentMap.values().toArray(new ClockedComponent[0]);
-        final int numComponents = components.length;
+        var components = _componentMap.values().toArray(new ClockedComponent[0]);
+        var numComponents = components.length;
 
         var fibers = new ArrayList<Thread>(numComponents);
 
-        final int finalState = numComponents;
+        var finalState = numComponents;
         if (ticks < 0) {
             Thread.ofVirtual()
                     .scheduler(executor)
@@ -69,15 +69,14 @@ public final class SequentialFiberYieldClock extends AbstractSimpleClock {
         }
 
         for (int i = 0; i < numComponents; i++) {
-            ClockedComponent component = components[i];
+            var component = components[i];
             // Execute next component thread and wait for next tick.
-            final int tickState = i;
-            final int nextTickState = i + 1;
+            var tickState = i;
+            var nextTickState = i + 1;
             component.setTick(() -> executeNextComponent(nextTickState, tickState));
-            Thread fiber = Thread.ofVirtual()
+            var fiber = Thread.ofVirtual()
                     .scheduler(executor)
                     .start(component::run);
-            fiber.start();
             fibers.add(fiber);
         }
     }
