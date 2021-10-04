@@ -8,8 +8,6 @@ import java.util.concurrent.locks.LockSupport;
 import de.heiden.jem.components.clock.AbstractSimpleClock;
 import de.heiden.jem.components.clock.ClockedComponent;
 
-import static java.util.Arrays.stream;
-
 /**
  * Clock using {@link Thread fibers} from project loom.
  */
@@ -80,7 +78,12 @@ public final class SequentialFiberParkClock extends AbstractSimpleClock {
             component.setTick(() -> executeNextComponent(nextFiber, fiber));
         }
 
-        stream(fibers).forEach(Thread::start);
+        starterFiber.start();
+        Thread.yield();
+        for (int i = 0; i < numComponents; i++) {
+            fibers[i].start();
+            Thread.yield();
+        }
     }
 
     private Thread buildVirtualThread(Runnable task) {
