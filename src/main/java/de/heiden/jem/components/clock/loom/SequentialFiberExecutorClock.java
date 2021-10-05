@@ -54,7 +54,16 @@ public final class SequentialFiberExecutorClock extends AbstractSimpleClock {
             fibers[i] = Thread.ofVirtual()
                     .scheduler(executor)
                     .uncaughtExceptionHandler(this::uncaughtException)
-                    .unstarted(component::run);
+                    .start(() -> {
+                        Thread.yield();
+                        component.run();
+                    });
+        }
+
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            // Ignore.
         }
 
         return fibers;
