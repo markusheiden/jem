@@ -50,7 +50,7 @@ public final class SequentialFiberExecutorClock extends AbstractSimpleClock {
             });
         }
 
-        // Let the thread run into the first yield().
+        // Let the threads run into the first yield().
         try {
             Thread.sleep(100);
         } catch (InterruptedException e) {
