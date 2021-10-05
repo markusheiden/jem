@@ -82,3 +82,6 @@ test {
     include '**/*Test.*'
     exclude '**/*Abstract*.*'
 }
+
+sourceSets.main.java.srcDirs += 'src/main/java-loom';
+sourceSets.test.java.srcDirs += 'src/test/java-loom';
