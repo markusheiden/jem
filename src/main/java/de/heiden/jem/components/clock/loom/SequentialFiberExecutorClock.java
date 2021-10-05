@@ -11,10 +11,11 @@ import de.heiden.jem.components.clock.ClockedComponent;
 public final class SequentialFiberExecutorClock extends AbstractSimpleClock {
     @Override
     protected void doRun() {
-        var fibers = createVirtualThreads();
+        var virtualThreads = createVirtualThreads();
+        //noinspection InfiniteLoopStatement
         while (true) {
             startTick();
-            for (var thread : fibers) {
+            for (var thread : virtualThreads) {
                 thread.run();
             }
         }
@@ -24,10 +25,10 @@ public final class SequentialFiberExecutorClock extends AbstractSimpleClock {
     protected void doRun(int ticks) {
         assert ticks >= 0 : "Precondition: ticks >= 0";
 
-        var fibers = createVirtualThreads();
+        var virtualThreads = createVirtualThreads();
         for (final long stop = getTick() + ticks; getTick() < stop; ) {
             startTick();
-            for (var thread : fibers) {
+            for (var thread : virtualThreads) {
                 thread.run();
             }
         }
