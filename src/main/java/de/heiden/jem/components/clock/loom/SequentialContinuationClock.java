@@ -10,7 +10,7 @@ import jdk.internal.vm.ContinuationScope;
  */
 public final class SequentialContinuationClock extends AbstractSimpleClock {
     @Override
-    protected final void doRun() {
+    protected void doRun() {
         var continuations = createContinuations();
         //noinspection InfiniteLoopStatement
         while (true) {
@@ -22,7 +22,7 @@ public final class SequentialContinuationClock extends AbstractSimpleClock {
     }
 
     @Override
-    protected final void doRun(int ticks) {
+    protected void doRun(int ticks) {
         assert ticks >= 0 : "Precondition: ticks >= 0";
 
         var continuations = createContinuations();
