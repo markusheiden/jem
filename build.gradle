@@ -21,13 +21,17 @@ repositories {
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(18))
+        languageVersion.set(JavaLanguageVersion.of(19))
     }
 }
 
 compileJava {
+    options.compilerArgs += ["--enable-preview"]
 //    options.compilerArgs += ["--add-exports=java.base/jdk.internal.vm=ALL-UNNAMED"]
 //    options.release.set(null)
+}
+compileTestJava {
+    options.compilerArgs += ["--enable-preview"]
 }
 
 dependencies {

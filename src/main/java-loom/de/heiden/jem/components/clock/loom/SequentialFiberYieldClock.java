@@ -77,7 +77,7 @@ public final class SequentialFiberYieldClock extends AbstractSimpleClock {
 
     private Thread buildVirtualThread(Runnable task) {
         return Thread.ofVirtual()
-                .scheduler(executor)
+//                .scheduler(executor)
                 .start(task);
     }
 
