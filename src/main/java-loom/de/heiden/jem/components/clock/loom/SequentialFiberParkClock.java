@@ -94,7 +94,7 @@ public final class SequentialFiberParkClock extends AbstractSimpleClock {
 
     private Thread buildVirtualThread(Runnable task) {
         return Thread.ofVirtual()
-                .scheduler(executor)
+//                .scheduler(executor)
                 .uncaughtExceptionHandler(this::uncaughtException)
                 .unstarted(task);
     }
