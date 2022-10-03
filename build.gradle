@@ -90,9 +90,6 @@ test {
     exclude '**/*Abstract*.*'
 }
 
-sourceSets.main.java.srcDirs += 'src/main/java-loom';
-sourceSets.test.java.srcDirs += 'src/test/java-loom';
-
 // Hack needed to avoid slf4j alpha version used by the requirements lib.
 configurations.all {
     resolutionStrategy.eachDependency { DependencyResolveDetails details ->
