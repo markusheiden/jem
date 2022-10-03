@@ -89,12 +89,3 @@ test {
     include '**/*Test.*'
     exclude '**/*Abstract*.*'
 }
-
-// Hack needed to avoid slf4j alpha version used by the requirements lib.
-configurations.all {
-    resolutionStrategy.eachDependency { DependencyResolveDetails details ->
-        if (details.requested.group == 'org.slf4j' && details.requested.name == 'slf4j-api') {
-            details.useVersion "${slf4jVersion}"
-        }
-    }
-}
