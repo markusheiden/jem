@@ -11,7 +11,7 @@ import java.util.ArrayList;
 public final class ParallelSpinClock extends AbstractSynchronizedClock {
   @Override
   protected void doSynchronizedInit() {
-    var components = new ArrayList<>(_componentMap.values()).toArray(ClockedComponent[]::new);
+    var components = _componentMap.values().toArray(ClockedComponent[]::new);
     var ticks = new ParallelSpinTick[components.length];
     for (int i = 0; i < components.length; i++) {
       var component = components[i];
@@ -38,11 +38,11 @@ public final class ParallelSpinClock extends AbstractSynchronizedClock {
       // Start new tick.
       startTick();
       // Execute all component threads.
-      for (ParallelSpinTick tick : ticks) {
+      for (var tick : ticks) {
         tick.startTick();
       }
       // Wait for all components threads to finish tick.
-      for (ParallelSpinTick tick : ticks) {
+      for (var tick : ticks) {
         tick.waitForTickEnd();
       }
     }

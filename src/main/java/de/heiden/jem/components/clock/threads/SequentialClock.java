@@ -1,5 +1,6 @@
 package de.heiden.jem.components.clock.threads;
 
+import de.heiden.jem.components.clock.Clock;
 import de.heiden.jem.components.clock.ClockedComponent;
 import de.heiden.jem.components.clock.Tick;
 
@@ -19,19 +20,19 @@ public final class SequentialClock extends AbstractSynchronizedClock {
 
   @Override
   protected void doSynchronizedInit() {
-    List<ClockedComponent> components = new ArrayList<>(_componentMap.values());
+    var components = new ArrayList<ClockedComponent>(_componentMap.values());
     Thread firstThread = null;
     SequentialTick previousTick = null;
     for (int i = 0; i < components.size(); i++) {
       final int state = i;
       final int nextState = i + 1;
 
-      ClockedComponent component = components.get(state);
-      SequentialTick tick = new SequentialTick(state);
+      var component = components.get(state);
+      var tick = new SequentialTick(state);
       component.setTick(tick);
 
       // Start component.
-      Thread thread = createStartedDaemonThread(component.getName(), () -> executeComponent(component, tick));
+      var thread = createStartedDaemonThread(component.getName(), () -> executeComponent(component, tick));
       if (firstThread == null) {
         firstThread = thread;
       }
@@ -45,8 +46,8 @@ public final class SequentialClock extends AbstractSynchronizedClock {
     }
 
     // Start tick manager.
-    final Thread finalFirstThread = firstThread;
-    Thread tickThread = createDaemonThread("Tick", () -> executeTicks(components.size(), finalFirstThread));
+    var finalFirstThread = firstThread;
+    var tickThread = createDaemonThread("Tick", () -> executeTicks(components.size(), finalFirstThread));
     previousTick._nextThread = tickThread;
     tickThread.start();
   }

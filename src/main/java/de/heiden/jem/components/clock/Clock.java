@@ -6,7 +6,7 @@ package de.heiden.jem.components.clock;
 public interface Clock extends AutoCloseable {
   /**
    * Position constants.
-   * <p/>
+   * <p>
    * TODO Should be in subclass...
    */
   int CPU = 1000;

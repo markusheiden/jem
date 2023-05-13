@@ -69,7 +69,7 @@ public abstract class AbstractClock implements Clock {
 
     logger.debug("add component {}", component.getName());
 
-    ClockedComponent removed = _componentMap.put(position, component);
+    var removed = _componentMap.put(position, component);
     assert removed == null : "Check: no duplicate positions";
 
     return component;
