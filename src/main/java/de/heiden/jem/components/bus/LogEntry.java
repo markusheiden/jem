@@ -57,10 +57,10 @@ public class LogEntry {
 
   @Override
   public boolean equals(Object o) {
-    return o instanceof LogEntry &&
-      _read == ((LogEntry) o)._read &&
-      _address == ((LogEntry) o)._address &&
-      _value == ((LogEntry) o)._value;
+    return o instanceof LogEntry e &&
+      _read == e._read &&
+      _address == e._address &&
+      _value == e._value;
   }
 
   @Override

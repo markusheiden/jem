@@ -339,11 +339,10 @@ public final class CPU6510State {
    * equals.
    */
   public boolean equals(Object o) {
-    if (!(o instanceof CPU6510State)) {
+    if (!(o instanceof CPU6510State state)) {
       return false;
     }
 
-    CPU6510State state = (CPU6510State) o;
     return PC == state.PC && S == state.S && getP() == state.getP() && A == state.A && X == state.X && Y == state.Y && IRQ == state.IRQ && NMI == state.NMI;
   }
 
