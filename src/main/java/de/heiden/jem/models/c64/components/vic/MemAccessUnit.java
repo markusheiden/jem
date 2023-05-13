@@ -6,7 +6,7 @@ import org.serialthreads.Interruptible;
 
 /**
  * Memory access unit of vic.
- * <p/>
+ * <p>
  * TODO refactor dependencies
  */
 class MemAccessUnit implements ClockedComponent {

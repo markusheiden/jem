@@ -10,7 +10,7 @@ import de.heiden.jem.components.ports.OutputPortImpl;
 
 /**
  * CIA 6526.
- * <p/>
+ * <p>
  * TODO PC handling for port a & b
  * TODO serial port handling!
  */

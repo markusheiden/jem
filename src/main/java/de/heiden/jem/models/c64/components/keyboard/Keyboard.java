@@ -10,7 +10,7 @@ import static de.heiden.jem.models.c64.components.keyboard.Key.RESTORE;
 
 /**
  * Keyboard.
- * <p/>
+ * <p>
  * TODO mapping of @, :, /, arrow up, ;, *, pound, commodore, run stop, arrow left
  * TODO C64 like mapping of -, +, home, shift lock, control?
  */
@@ -99,7 +99,7 @@ public class Keyboard implements IKeyboard {
 
   /**
    * Update ports from matrix.
-   * <p/>
+   * <p>
    * Assuming low is stronger than hi.
    * Assuming pull ups.
    */

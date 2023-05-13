@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * C64 bus.
- * <p/>
+ * <p>
  * TODO evaluate loram, hiram, charen, game, exrom
  * TODO SID, IO1, IO2
  */
