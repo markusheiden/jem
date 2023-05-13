@@ -14,7 +14,7 @@ public final class SerialClock extends AbstractSimpleClock {
   @Executor
   protected final void doRun() {
     final ClockedComponent[] components =
-            _componentMap.values().toArray(new ClockedComponent[0]);
+            _componentMap.values().toArray(ClockedComponent[]::new);
 
     try {
       //noinspection InfiniteLoopStatement
@@ -35,7 +35,7 @@ public final class SerialClock extends AbstractSimpleClock {
     assert ticks >= 0 : "Precondition: ticks >= 0";
 
     final ClockedComponent[] components =
-            _componentMap.values().toArray(new ClockedComponent[0]);
+            _componentMap.values().toArray(ClockedComponent[]::new);
 
     try {
       for (final long stop = getTick() + ticks; getTick() < stop;) {
