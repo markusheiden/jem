@@ -92,7 +92,7 @@ public abstract class AbstractSynchronizedClock extends AbstractClock {
    * Create started daemon thread.
    */
   protected Thread createStartedDaemonThread(String name, Runnable runnable) {
-    Thread thread = createDaemonThread(name, runnable);
+    var thread = createDaemonThread(name, runnable);
     thread.start();
     return thread;
   }
@@ -101,7 +101,7 @@ public abstract class AbstractSynchronizedClock extends AbstractClock {
    * Create daemon thread.
    */
   protected Thread createDaemonThread(String name, Runnable runnable) {
-    Thread thread = new Thread(_componentThreads, () -> {
+    var thread = new Thread(_componentThreads, () -> {
       try {
         runnable.run();
       } catch (ManualAbort e) {

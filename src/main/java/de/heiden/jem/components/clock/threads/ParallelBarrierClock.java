@@ -25,8 +25,8 @@ public final class ParallelBarrierClock extends AbstractSynchronizedClock {
     // Create threads.
     var components = _componentMap.values();
     _barrier = new CyclicBarrier(components.size(), this::startTick);
-    for (ClockedComponent component : components) {
-      Tick tick = new BarrierTick(_barrier);
+    for (var component : components) {
+      var tick = new BarrierTick(_barrier);
       component.setTick(tick);
       createStartedDaemonThread(component.getName(), () -> executeComponent(component, tick));
     }
