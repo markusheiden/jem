@@ -294,13 +294,11 @@ public abstract class AbstractTest {
   }
 
   @AfterEach
-  @SuppressWarnings("deprecation")
   public void tearDown() throws Exception {
     if (c64 != null) {
       c64.setSystemOut(null);
       thread.interrupt();
       thread.join(1000);
-      thread.stop();
     }
   }
 
