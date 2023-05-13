@@ -10,7 +10,7 @@ import java.util.List;
 public class LoggingBus extends BusDeviceAdapter {
   /**
    * Log entries.
-   * <p/>
+   * <p>
    * TODO 2010-10-12 mh: use array with cyclic pointer?
    */
   private final List<LogEntry> _log;

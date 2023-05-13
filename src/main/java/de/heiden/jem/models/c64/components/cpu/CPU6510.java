@@ -146,7 +146,7 @@ public class CPU6510 implements ClockedComponent {
 
   /**
    * Reset CPU.
-   * <p/>
+   * <p>
    * TODO should be protected?
    */
   @Interruptible
@@ -3160,7 +3160,7 @@ public class CPU6510 implements ClockedComponent {
   /**
    * *DCM (*DCP): Decrement and compare.
    * (?)
-   * <p/>
+   * <p>
    * TODO mh: add value as a parameter instead of reading it here?
    *
    * @param addr address
@@ -3178,7 +3178,7 @@ public class CPU6510 implements ClockedComponent {
   /**
    * *INS (*ISC): increment address, subtract value from A.
    * (?)
-   * <p/>
+   * <p>
    * TODO mh: add value as a parameter instead of reading it here?
    *
    * @param addr address
@@ -3228,7 +3228,7 @@ public class CPU6510 implements ClockedComponent {
   /**
    * *LSE: Logical shift right and eor.
    * (?)
-   * <p/>
+   * <p>
    * TODO mh: add value as a parameter instead of reading it here?
    *
    * @param addr address
@@ -3263,7 +3263,7 @@ public class CPU6510 implements ClockedComponent {
   /**
    * *RLA: Rotate left and and with A, store result.
    * (3)
-   * <p/>
+   * <p>
    * TODO mh: add value as a parameter instead of reading it here?
    *
    * @param addr address
@@ -3285,7 +3285,7 @@ public class CPU6510 implements ClockedComponent {
   /**
    * *RRA: ROR and ADC.
    * (?)
-   * <p/>
+   * <p>
    * TODO mh: add value as a parameter instead of reading it here?
    *
    * @param addr address
@@ -3303,7 +3303,7 @@ public class CPU6510 implements ClockedComponent {
   /**
    * *SLO: Shift left and or with A.
    * (3)
-   * <p/>
+   * <p>
    * TODO mh: add value as a parameter instead of reading it here?
    *
    * @param addr address

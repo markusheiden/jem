@@ -7,7 +7,7 @@ import java.util.Arrays;
 
 /**
  * Display unit of vic.
- * <p/>
+ * <p>
  * TODO refactor dependencies
  */
 public class DisplayUnitSimple extends AbstractDisplayUnit {

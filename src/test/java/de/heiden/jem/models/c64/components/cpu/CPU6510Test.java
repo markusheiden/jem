@@ -742,7 +742,7 @@ class CPU6510Test {
 
   /**
    * Setup.
-   * <p/>
+   * <p>
    * Creates CPU test environment with 0x1000 bytes of RAM starting ab 0x0000.
    * PC is set to 0x300.
    */

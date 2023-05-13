@@ -4,7 +4,7 @@ import org.serialthreads.Interruptible;
 
 /**
  * Display unit of vic.
- * <p/>
+ * <p>
  * TODO refactor dependencies
  */
 public class DisplayUnit extends AbstractDisplayUnit {
