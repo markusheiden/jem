@@ -11,7 +11,7 @@ import java.util.ArrayList;
 public final class ParallelYieldClock extends AbstractSynchronizedClock {
   @Override
   protected void doSynchronizedInit() {
-    var components = new ArrayList<>(_componentMap.values()).toArray(new ClockedComponent[0]);
+    var components = new ArrayList<>(_componentMap.values()).toArray(ClockedComponent[]::new);
     var ticks = new ParallelSpinTick[components.length];
     for (int i = 0; i < components.length; i++) {
       var component = components[i];

@@ -38,7 +38,7 @@ public final class SequentialFiberYieldClock extends AbstractSimpleClock {
      * Create fibers.
      */
     private void createFibers(final int ticks) {
-        var components = _componentMap.values().toArray(new ClockedComponent[0]);
+        var components = _componentMap.values().toArray(ClockedComponent[]::new);
         var numComponents = components.length;
 
         var fibers = new ArrayList<Thread>(numComponents);
