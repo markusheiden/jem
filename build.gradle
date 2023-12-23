@@ -29,12 +29,12 @@ java {
 }
 
 compileJava {
-    options.compilerArgs += ["--enable-preview"]
+//    options.compilerArgs += ["--enable-preview"]
 //    options.compilerArgs += ["--add-exports=java.base/jdk.internal.vm=ALL-UNNAMED"]
 //    options.release.set(null)
 }
 compileTestJava {
-    options.compilerArgs += ["--enable-preview"]
+//    options.compilerArgs += ["--enable-preview"]
 }
 
 dependencies {
