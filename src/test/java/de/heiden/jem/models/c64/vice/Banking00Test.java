@@ -1,20 +1,19 @@
 package de.heiden.jem.models.c64.vice;
 
-import de.heiden.jem.models.c64.AbstractTest;
-import de.heiden.jem.models.c64.Condition;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.serialthreads.agent.TransformingTestInstanceFactory;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.junit.jupiter.api.Assertions.*;
+import de.heiden.jem.models.c64.AbstractTest;
+import de.heiden.jem.models.c64.Condition;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * VICE test suite.
  */
-@ExtendWith(TransformingTestInstanceFactory.class)
 class Banking00Test extends AbstractTest {
   @Test
   void banking00() throws Exception {
