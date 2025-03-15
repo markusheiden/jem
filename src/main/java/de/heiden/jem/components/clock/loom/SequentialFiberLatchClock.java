@@ -12,30 +12,21 @@ import de.heiden.jem.components.clock.ClockedComponent;
 public final class SequentialFiberLatchClock extends AbstractSimpleClock {
     @Override
     protected void doRun() {
-        var semaphores = createVirtualThreads();
+        var semaphores = createVirtualThreads(true);
         var firstSemaphore = semaphores[0];
         var lastSemaphore = semaphores[1];
         //noinspection InfiniteLoopStatement
-        while (true) {
-            startTick();
-            try {
-                firstSemaphore.release();
-                lastSemaphore.acquire();
-            } catch (Exception e) {
-                throw new IllegalStateException("May not happen.", e);
-            }
-        }
+        firstSemaphore.release();
     }
 
     @Override
     protected void doRun(int ticks) {
         assert ticks >= 0 : "Precondition: ticks >= 0";
 
-        var semaphores = createVirtualThreads();
+        var semaphores = createVirtualThreads(false);
         var firstSemaphore = semaphores[0];
         var lastSemaphore = semaphores[1];
         for (final long stop = getTick() + ticks; getTick() < stop; ) {
-            startTick();
             try {
                 firstSemaphore.release();
                 lastSemaphore.acquire();
@@ -48,26 +39,41 @@ public final class SequentialFiberLatchClock extends AbstractSimpleClock {
     /**
      * Create a virtual thread for each component.
      */
-    private Semaphore[] createVirtualThreads() {
+    private Semaphore[] createVirtualThreads(boolean endless) {
         var components = _componentMap.values().toArray(ClockedComponent[]::new);
 
         var semaphores = new Semaphore[components.length + 1];
         for (int i = 0; i < semaphores.length; i++) {
             semaphores[i] = new Semaphore(0);
         }
+        if (endless) {
+            semaphores[semaphores.length - 1] = semaphores[0];
+        }
 
         for (int i = 0; i < components.length; i++) {
             var component = components[i];
             var semaphore = semaphores[i];
             var next = semaphores[i + 1];
-            component.setTick(() -> {
-                try {
-                    next.release();
-                    semaphore.acquire();
-                } catch (InterruptedException e) {
-                    throw new IllegalStateException("May not happen.", e);
-                }
-            });
+            if (i == 0) {
+                component.setTick(() -> {
+                    try {
+                        startTick();
+                        next.release();
+                        semaphore.acquire();
+                    } catch (InterruptedException e) {
+                        throw new IllegalStateException("May not happen.", e);
+                    }
+                });
+            } else {
+                component.setTick(() -> {
+                    try {
+                        next.release();
+                        semaphore.acquire();
+                    } catch (InterruptedException e) {
+                        throw new IllegalStateException("May not happen.", e);
+                    }
+                });
+            }
             Thread.ofVirtual().start(() -> {
                 try {
                     semaphore.acquire();
