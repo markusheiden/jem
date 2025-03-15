@@ -101,17 +101,15 @@ public abstract class AbstractSynchronizedClock extends AbstractClock {
    * Create daemon thread.
    */
   protected Thread createDaemonThread(String name, Runnable runnable) {
-    var thread = new Thread(_componentThreads, () -> {
+    return Thread.ofPlatform().group(_componentThreads).name(name).daemon().unstarted(() -> {
       try {
         runnable.run();
       } catch (ManualAbort e) {
-        // ignore
+        // Ignore.
       } catch (Exception e) {
         logger.error("Component failed.", e);
       }
-    }, name);
-    thread.setDaemon(true);
-    return thread;
+    });
   }
 
   protected final void executeComponent(ClockedComponent component, Tick tick) {
