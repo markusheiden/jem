@@ -3,8 +3,6 @@ package de.heiden.jem.components.clock.threads;
 import de.heiden.jem.components.clock.ClockedComponent;
 import de.heiden.jem.components.clock.Tick;
 
-import java.util.ArrayList;
-
 /**
  * Clock implemented without synchronization sequentially executing components by using spin locks (busy wait).
  */
@@ -41,7 +39,7 @@ public final class ParallelNotifyClock extends AbstractSynchronizedClock {
       for (var tick : ticks) {
         tick.startTick();
       }
-      // Wait for all components threads to finish tick.
+      // Wait for all component threads to finish tick.
       for (var tick : ticks) {
         tick.waitForTickEnd();
       }
@@ -60,7 +58,7 @@ public final class ParallelNotifyClock extends AbstractSynchronizedClock {
     private boolean _state = false;
 
     @Override
-    public synchronized final void waitForTick() {
+    public synchronized void waitForTick() {
       _state = true;
       notifyAll();
       try {
@@ -75,7 +73,7 @@ public final class ParallelNotifyClock extends AbstractSynchronizedClock {
     /**
      * Start next tick.
      */
-    synchronized final void startTick() {
+    synchronized void startTick() {
       _state = false;
       notifyAll();
     }
@@ -83,7 +81,7 @@ public final class ParallelNotifyClock extends AbstractSynchronizedClock {
     /**
      * Wait for tick to finish.
      */
-    synchronized final void waitForTickEnd() {
+    synchronized void waitForTickEnd() {
       try {
         while (!_state) {
           wait();
