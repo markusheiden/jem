@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Base implementation for all clocks.
+ * Base implementation for all clocks that do not need synchronization.
  */
 public abstract class AbstractSimpleClock extends AbstractClock {
   /**
