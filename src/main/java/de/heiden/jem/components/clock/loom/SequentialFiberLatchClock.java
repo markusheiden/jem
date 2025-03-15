@@ -13,10 +13,8 @@ public final class SequentialFiberLatchClock extends AbstractSimpleClock {
     @Override
     protected void doRun() {
         var semaphores = createVirtualThreads(true);
-        var firstSemaphore = semaphores[0];
-        var lastSemaphore = semaphores[1];
         //noinspection InfiniteLoopStatement
-        firstSemaphore.release();
+        semaphores.first.release();
     }
 
     @Override
@@ -24,8 +22,8 @@ public final class SequentialFiberLatchClock extends AbstractSimpleClock {
         assert ticks >= 0 : "Precondition: ticks >= 0";
 
         var semaphores = createVirtualThreads(false);
-        var firstSemaphore = semaphores[0];
-        var lastSemaphore = semaphores[1];
+        var firstSemaphore = semaphores.first;
+        var lastSemaphore = semaphores.last;
         for (final long stop = getTick() + ticks; getTick() < stop; ) {
             try {
                 firstSemaphore.release();
@@ -39,7 +37,7 @@ public final class SequentialFiberLatchClock extends AbstractSimpleClock {
     /**
      * Create a virtual thread for each component.
      */
-    private Semaphore[] createVirtualThreads(boolean endless) {
+    private Semaphores createVirtualThreads(boolean endless) {
         var components = _componentMap.values().toArray(ClockedComponent[]::new);
 
         var semaphores = new Semaphore[components.length + 1];
@@ -84,6 +82,8 @@ public final class SequentialFiberLatchClock extends AbstractSimpleClock {
             });
         }
 
-        return new Semaphore[] { semaphores[0], semaphores[semaphores.length - 1] };
+        return new Semaphores(semaphores[0], semaphores[semaphores.length - 1]);
     }
+
+    private record Semaphores(Semaphore first, Semaphore last) {}
 }
