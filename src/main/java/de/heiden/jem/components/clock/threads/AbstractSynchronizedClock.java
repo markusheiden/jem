@@ -29,7 +29,7 @@ public abstract class AbstractSynchronizedClock extends AbstractClock {
   /**
    * Event for suspending execution.
    */
-  protected final SuspendEvent _suspendEvent = new SuspendEvent(_monitor);
+  private final SuspendEvent _suspendEvent = new SuspendEvent(_monitor);
 
   /**
    * Current tick.
@@ -38,28 +38,28 @@ public abstract class AbstractSynchronizedClock extends AbstractClock {
   private final AtomicLong _tick = new AtomicLong(-1);
 
   @Override
-  public void addClockEvent(long tick, ClockEvent event) {
+  public final void addClockEvent(long tick, ClockEvent event) {
     synchronized (_monitor) {
       super.addClockEvent(tick, event);
     }
   }
 
   @Override
-  public void updateClockEvent(long tick, ClockEvent event) {
+  public final void updateClockEvent(long tick, ClockEvent event) {
     synchronized (_monitor) {
       super.updateClockEvent(tick, event);
     }
   }
 
   @Override
-  public void removeClockEvent(ClockEvent event) {
+  public final void removeClockEvent(ClockEvent event) {
     synchronized (_monitor) {
       super.removeClockEvent(event);
     }
   }
 
   @Override
-  protected void executeEvents(long tick) {
+  protected final void executeEvents(long tick) {
     synchronized (_monitor) {
       super.executeEvents(tick);
     }
@@ -95,7 +95,7 @@ public abstract class AbstractSynchronizedClock extends AbstractClock {
   /**
    * Create started daemon thread.
    */
-  protected Thread createStartedDaemonThread(String name, Runnable runnable) {
+  protected final Thread createStartedDaemonThread(String name, Runnable runnable) {
     var thread = createDaemonThread(name, runnable);
     thread.start();
     return thread;
@@ -104,7 +104,7 @@ public abstract class AbstractSynchronizedClock extends AbstractClock {
   /**
    * Create daemon thread.
    */
-  protected Thread createDaemonThread(String name, Runnable runnable) {
+  protected final Thread createDaemonThread(String name, Runnable runnable) {
     var thread = Thread.ofVirtual().name(name).unstarted(() -> {
       try {
         runnable.run();
@@ -128,7 +128,6 @@ public abstract class AbstractSynchronizedClock extends AbstractClock {
   @Override
   protected void doClose() {
     _componentThreads.forEach(Thread::interrupt);
-    Thread.yield();
   }
 
   /**
@@ -142,7 +141,7 @@ public abstract class AbstractSynchronizedClock extends AbstractClock {
   }
 
   @Override
-  public long getTick() {
+  public final long getTick() {
     return _tick.get();
   }
 }
