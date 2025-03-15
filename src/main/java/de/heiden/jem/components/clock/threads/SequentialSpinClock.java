@@ -4,6 +4,8 @@ import java.util.ArrayList;
 
 import de.heiden.jem.components.clock.Tick;
 
+import static java.lang.Thread.onSpinWait;
+
 /**
  * Clock implemented without synchronization sequentially executing component threads by using spin locks (busy wait).
  */
@@ -26,7 +28,7 @@ public final class SequentialSpinClock extends AbstractSynchronizedClock {
       createStartedDaemonThread(component.getName(), () -> executeComponent(component, tick));
       // Wait for component to reach first tick.
       while (_state != state + 1) {
-        Thread.onSpinWait();
+        onSpinWait();
       }
     }
 
@@ -38,14 +40,14 @@ public final class SequentialSpinClock extends AbstractSynchronizedClock {
    * Execution of ticks.
    */
   private void executeTicks(final int finalState) {
-    //noinspection InfiniteLoopStatement
-    while (true) {
+    var thread = Thread.currentThread();
+    while (!thread.isInterrupted()) {
       startTick();
       // Execute all component threads.
       _state = 0;
       // Wait for all component threads to finish tick.
       do {
-        Thread.onSpinWait();
+        onSpinWait();
       } while (_state != finalState);
     }
   }
@@ -75,7 +77,7 @@ public final class SequentialSpinClock extends AbstractSynchronizedClock {
       _state = tickState + 1;
       // Wait for the next tick.
       do {
-        Thread.onSpinWait();
+        onSpinWait();
       } while (_state != tickState);
     }
   }
