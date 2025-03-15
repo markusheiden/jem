@@ -1,6 +1,7 @@
 package de.heiden.jem.components.clock.threads;
 
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import de.heiden.jem.components.clock.Tick;
 
@@ -14,7 +15,7 @@ public final class SequentialSpinClock extends AbstractSynchronizedClock {
      * Ordinal of component thread to execute.
      * Package visible to avoid synthetic accessors.
      */
-    volatile int _state = 0;
+    final AtomicInteger _state = new AtomicInteger(0);
 
     /**
      * Needed to make all changes visible to all threads that use this clock.
@@ -33,7 +34,7 @@ public final class SequentialSpinClock extends AbstractSynchronizedClock {
             // Start component.
             createStartedDaemonThread(component.getName(), () -> executeComponent(component, tick));
             // Wait for component to reach first tick.
-            while (_state != state + 1) {
+            while (_state.get() != state + 1) {
                 onSpinWait();
             }
         }
@@ -50,11 +51,11 @@ public final class SequentialSpinClock extends AbstractSynchronizedClock {
         while (!thread.isInterrupted()) {
             startTick();
             // Execute all component threads.
-            _state = 0;
+            _state.set(0);
             // Wait for all component threads to finish tick.
             do {
                 onSpinWait();
-            } while (_state != finalState);
+            } while (_state.get() != finalState);
         }
     }
 
@@ -83,12 +84,12 @@ public final class SequentialSpinClock extends AbstractSynchronizedClock {
             // Make changes of this thread visible to all other threads.
             synchronized (_lock) {
                 // Trigger execution of the next component thread.
-                _state = tickState + 1;
+                _state.set(tickState + 1);
             }
             // Wait for the next tick.
             do {
                 onSpinWait();
-            } while (_state != tickState);
+            } while (_state.get() != tickState);
         }
     }
 }
