@@ -5,6 +5,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import de.heiden.jem.components.clock.Tick;
 
+import static java.lang.Thread.currentThread;
 import static java.lang.Thread.onSpinWait;
 
 /**
@@ -13,28 +14,21 @@ import static java.lang.Thread.onSpinWait;
 public final class SequentialSpinClock extends AbstractSynchronizedClock {
     /**
      * Ordinal of component thread to execute.
-     * Package visible to avoid synthetic accessors.
      */
-    final AtomicInteger _state = new AtomicInteger(0);
-
-    /**
-     * Needed to make all changes visible to all threads that use this clock.
-     * Package visible to avoid synthetic accessors.
-     */
-    final Object _lock = new Object();
+    private final AtomicInteger _state = new AtomicInteger(0);
 
     @Override
     protected void doSynchronizedInit() {
         var components = new ArrayList<>(_componentMap.values());
-        for (int state = 0; state < components.size(); state++) {
-            var component = components.get(state);
-            var tick = new SequentialSpinTick(state);
+        for (int tickState = 0; tickState < components.size(); tickState++) {
+            var component = components.get(tickState);
+            var tick = new SequentialSpinTick(tickState, _state);
             component.setTick(tick);
 
             // Start component.
             createStartedDaemonThread(component.getName(), () -> executeComponent(component, tick));
-            // Wait for component to reach first tick.
-            while (_state.get() != state + 1) {
+            // Wait for the component to reach the first tick.
+            while (_state.get() != tickState + 1) {
                 onSpinWait();
             }
         }
@@ -47,49 +41,39 @@ public final class SequentialSpinClock extends AbstractSynchronizedClock {
      * Execution of ticks.
      */
     private void executeTicks(final int finalState) {
-        var thread = Thread.currentThread();
+        final Thread thread = currentThread();
+        final AtomicInteger state = _state;
         while (!thread.isInterrupted()) {
             startTick();
             // Execute all component threads.
-            _state.set(0);
-            // Wait for all component threads to finish tick.
+            state.set(0);
+            // Wait for all component threads to finish the tick.
             do {
                 onSpinWait();
-            } while (_state.get() != finalState);
+            } while (state.get() != finalState);
         }
     }
 
     /**
      * Special tick, waiting for its state.
+     *
+     * @param _tickState
+     *         Ordinal of component thread.
+     * @param _state
+     *         Current state.
      */
-    private final class SequentialSpinTick implements Tick {
-        /**
-         * Ordinal of component thread.
-         */
-        private final int _tickState;
-
-        /**
-         * Constructor.
-         *
-         * @param state
-         *         Ordinal of component thread.
-         */
-        private SequentialSpinTick(int state) {
-            this._tickState = state;
-        }
-
+    private record SequentialSpinTick(int _tickState, AtomicInteger _state) implements Tick {
         @Override
         public void waitForTick() {
-            final int tickState = _tickState;
-            // Make changes of this thread visible to all other threads.
-            synchronized (_lock) {
-                // Trigger execution of the next component thread.
-                _state.set(tickState + 1);
+            synchronized (_state) {
+                // Make changes of this thread visible to all other threads.
             }
+            // Trigger execution of the next component thread.
+            _state.set(_tickState + 1);
             // Wait for the next tick.
             do {
                 onSpinWait();
-            } while (_state.get() != tickState);
+            } while (_state.get() != _tickState);
         }
     }
 }
