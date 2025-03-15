@@ -1,5 +1,7 @@
 package de.heiden.jem.components.clock.threads;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.concurrent.atomic.AtomicLong;
 
 import de.heiden.jem.components.clock.AbstractClock;
@@ -8,6 +10,8 @@ import de.heiden.jem.components.clock.ClockedComponent;
 import de.heiden.jem.components.clock.ManualAbort;
 import de.heiden.jem.components.clock.Tick;
 
+import static java.util.Collections.synchronizedCollection;
+
 /**
  * Base implementation for all clocks using synchronization.
  */
@@ -15,7 +19,7 @@ public abstract class AbstractSynchronizedClock extends AbstractClock {
   /**
    * Component threads.
    */
-  private final ThreadGroup _componentThreads = new ThreadGroup(getClass().getSimpleName());
+  private final Collection<Thread> _componentThreads = synchronizedCollection(new ArrayList<>());
 
   /**
    * Monitor for synchronization.
@@ -75,12 +79,12 @@ public abstract class AbstractSynchronizedClock extends AbstractClock {
 
   @Override
   protected final void doInit() {
-    // Suspend execution at start of first tick.
+    // Suspend execution at the start of the first tick.
     addClockEvent(0, _suspendEvent);
 
     doSynchronizedInit();
 
-    // Wait until all threads are at start of first click.
+    // Wait until all threads are at the start of the first click.
     _suspendEvent.waitForSuspend();
   }
 
@@ -101,7 +105,7 @@ public abstract class AbstractSynchronizedClock extends AbstractClock {
    * Create daemon thread.
    */
   protected Thread createDaemonThread(String name, Runnable runnable) {
-    return Thread.ofPlatform().group(_componentThreads).name(name).daemon().unstarted(() -> {
+    var thread = Thread.ofVirtual().name(name).unstarted(() -> {
       try {
         runnable.run();
       } catch (ManualAbort e) {
@@ -110,6 +114,8 @@ public abstract class AbstractSynchronizedClock extends AbstractClock {
         logger.error("Component failed.", e);
       }
     });
+    _componentThreads.add(thread);
+    return thread;
   }
 
   protected final void executeComponent(ClockedComponent component, Tick tick) {
@@ -121,7 +127,7 @@ public abstract class AbstractSynchronizedClock extends AbstractClock {
 
   @Override
   protected void doClose() {
-    _componentThreads.interrupt();
+    _componentThreads.forEach(Thread::interrupt);
     Thread.yield();
   }
 
