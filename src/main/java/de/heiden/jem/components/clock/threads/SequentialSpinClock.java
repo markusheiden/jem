@@ -82,7 +82,6 @@ public final class SequentialSpinClock extends AbstractSynchronizedClock {
     private record SequentialSpinTick(int _tickState, AtomicInteger _state) implements Tick {
         @Override
         public void waitForTick() {
-            var thread = currentThread();
             synchronized (_state) {
                 // Make changes of this thread visible to all other threads.
             }
