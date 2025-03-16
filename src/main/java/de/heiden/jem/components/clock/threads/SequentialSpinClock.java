@@ -1,6 +1,5 @@
 package de.heiden.jem.components.clock.threads;
 
-import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import de.heiden.jem.components.clock.Tick;
@@ -19,9 +18,9 @@ public final class SequentialSpinClock extends AbstractSynchronizedClock {
 
     @Override
     protected void doSynchronizedInit() {
-        var components = new ArrayList<>(_componentMap.values());
-        for (int tickState = 0; tickState < components.size(); tickState++) {
-            var component = components.get(tickState);
+        var components = clockedComponents();
+        for (int tickState = 0; tickState < components.length; tickState++) {
+            var component = components[tickState];
             var tick = new SequentialSpinTick(tickState, _state);
             component.setTick(tick);
 
@@ -34,7 +33,7 @@ public final class SequentialSpinClock extends AbstractSynchronizedClock {
         }
 
         // Start tick manager.
-        createStartedDaemonThread("Tick", () -> executeTicks(components.size()));
+        createStartedDaemonThread("Tick", () -> executeTicks(components.length));
     }
 
     /**

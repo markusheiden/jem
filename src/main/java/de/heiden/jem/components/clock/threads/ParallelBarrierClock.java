@@ -1,11 +1,10 @@
 package de.heiden.jem.components.clock.threads;
 
-import de.heiden.jem.components.clock.ClockedComponent;
-import de.heiden.jem.components.clock.ManualAbort;
-import de.heiden.jem.components.clock.Tick;
-
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
+
+import de.heiden.jem.components.clock.ManualAbort;
+import de.heiden.jem.components.clock.Tick;
 
 /**
  * Clock implemented with synchronization, executing component threads in parallel.
@@ -23,8 +22,8 @@ public final class ParallelBarrierClock extends AbstractSynchronizedClock {
     logger.debug("starting components");
 
     // Create threads.
-    var components = _componentMap.values();
-    _barrier = new CyclicBarrier(components.size(), this::startTick);
+    var components = clockedComponents();
+    _barrier = new CyclicBarrier(components.length, this::startTick);
     for (var component : components) {
       var tick = new BarrierTick(_barrier);
       component.setTick(tick);

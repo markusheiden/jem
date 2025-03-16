@@ -2,8 +2,6 @@ package de.heiden.jem.components.clock.threads;
 
 import de.heiden.jem.components.clock.Tick;
 
-import java.util.ArrayList;
-
 /**
  * Clock implemented without synchronization sequentially executing component threads by using yield locks (busy wait).
  */
@@ -16,9 +14,9 @@ public final class SequentialYieldClock extends AbstractSynchronizedClock {
 
   @Override
   protected void doSynchronizedInit() {
-    var components = new ArrayList<>(_componentMap.values());
-    for (int state = 0; state < components.size(); state++) {
-      var component = components.get(state);
+    var components = clockedComponents();
+    for (int state = 0; state < components.length; state++) {
+      var component = components[state];
       var tick = new SequentialSpinTick(state);
       component.setTick(tick);
 
@@ -31,7 +29,7 @@ public final class SequentialYieldClock extends AbstractSynchronizedClock {
     }
 
     // Start tick manager.
-    createStartedDaemonThread("Tick", () -> executeTicks(components.size()));
+    createStartedDaemonThread("Tick", () -> executeTicks(components.length));
   }
 
   /**

@@ -1,9 +1,7 @@
 package de.heiden.jem.components.clock.serialthreads;
 
 import de.heiden.jem.components.clock.AbstractSimpleClock;
-import de.heiden.jem.components.clock.ClockedComponent;
 import org.serialthreads.Executor;
-import org.serialthreads.context.IRunnable;
 import org.serialthreads.context.ThreadFinishedException;
 
 /**
@@ -13,7 +11,7 @@ public final class SerialClock extends AbstractSimpleClock {
   @Override
   @Executor
   protected void doRun() {
-    var components = _componentMap.values().toArray(ClockedComponent[]::new);
+    var components = clockedComponents();
     try {
       //noinspection InfiniteLoopStatement
       while (true) {
@@ -32,7 +30,7 @@ public final class SerialClock extends AbstractSimpleClock {
   protected void doRun(int ticks) {
     assert ticks >= 0 : "Precondition: ticks >= 0";
 
-    var components = _componentMap.values().toArray(ClockedComponent[]::new);
+    var components = clockedComponents();
     try {
       for (final long stop = getTick() + ticks; getTick() < stop;) {
         startTick();

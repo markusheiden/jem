@@ -5,7 +5,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import de.heiden.jem.components.clock.AbstractSimpleClock;
-import de.heiden.jem.components.clock.ClockedComponent;
 import de.heiden.jem.components.clock.ManualAbort;
 
 /**
@@ -38,7 +37,7 @@ public final class SequentialFiberYieldClock extends AbstractSimpleClock {
      * Create fibers.
      */
     private void createFibers(final int ticks) {
-        var components = _componentMap.values().toArray(ClockedComponent[]::new);
+        var components = clockedComponents();
         var numComponents = components.length;
 
         var fibers = new ArrayList<Thread>(numComponents);
