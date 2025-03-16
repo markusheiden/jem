@@ -118,21 +118,20 @@ public class Keyboard implements IKeyboard {
         int port1OutMask = 0x00;
         int port1OutData = 0xFF;
 
-        int bit = 0x01;
-        for (int i = 0; i < _matrix.length; i++, bit <<= 1) {
+        for (int i = 0, columnBit = 0x01; i < _matrix.length; i++, columnBit <<= 1) {
             final int matrix = _matrix[i];
             final int bitmask = port1InMask & matrix; // 1: driven bits
             if (bitmask != 0) {
-                port0OutMask |= bit; // bit is driven!
+                port0OutMask |= columnBit; // bit is driven!
                 if ((port1InDataInv & bitmask) != 0) {
-                    port0OutData &= 0xFF - bit; // save 0 bits. 0 is stronger than 1.
+                    port0OutData &= 0xFF - columnBit; // save 0 bits. 0 is stronger than 1.
                 }
             }
 
-            if ((port0InMask & bit) != 0) {
+            if ((port0InMask & columnBit) != 0) {
                 // line is driven
                 port1OutMask |= matrix;
-                if ((port0InData & bit) == 0) {
+                if ((port0InData & columnBit) == 0) {
                     // line is 0
                     port1OutData &= 0xFF - matrix;
                 }
@@ -166,21 +165,29 @@ public class Keyboard implements IKeyboard {
         var result = new StringBuilder(128);
         result.append("Keyboard:\n");
 
-        // Column header.
-        result.append(" ");
-        for (int i = 0; i < 8; i++) {
-            result.append(i);
+        // Column headers.
+        result.append("  ");
+        for (int j = 0; j < 8; j++) {
+            result.append(j);
+        }
+        result.append("\n");
+        // Column port bits.
+        result.append("  ");
+        var port1 = _matrixPort1.outputData();
+        for (int j = 0, columnBit = 0x01; j < 8; j++, columnBit <<= 1) {
+            result.append((port1 & columnBit) != 0 ? "H" : "L");
         }
         result.append("\n");
 
-        for (int i = 0; i < _matrix.length; i++) {
-            // Row header
-            result.append(i);
+        var port0 = _matrixPort0.outputData();
+        for (int i = 0, rowBit = 0x01; i < _matrix.length; i++, rowBit <<= 1) {
+            // Row header, row port bit
+            result.append(i).append((port0 & rowBit) != 0 ? "H" : "L");
 
-            // Values
+            // Values.
             var row = _matrix[i];
-            for (int j = 0; j < 8; j++) {
-                result.append((row & (1 << j)) != 0 ? "X" : "+");
+            for (int j = 0, columnBit = 0x01; j < 8; j++, columnBit <<= 1) {
+                result.append((row & columnBit) != 0 ? "X" : "+");
             }
             result.append("\n");
         }
