@@ -4,12 +4,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.atomic.AtomicLong;
 
+import de.heiden.jem.components.ManualAbortTick;
 import de.heiden.jem.components.clock.AbstractClock;
 import de.heiden.jem.components.clock.ClockEvent;
 import de.heiden.jem.components.clock.ClockedComponent;
 import de.heiden.jem.components.clock.ManualAbort;
 import de.heiden.jem.components.clock.Tick;
 
+import static java.util.Arrays.stream;
 import static java.util.Collections.synchronizedCollection;
 
 /**
@@ -128,6 +130,9 @@ public abstract class AbstractSynchronizedClock extends AbstractClock {
 
   @Override
   protected void doClose() {
+    // Ensure that threads don't run into the ticks again and block or spin wait etc.
+    stream(clockedComponents()).forEach(component ->
+            component.setTick(new ManualAbortTick()));
     _componentThreads.forEach(Thread::interrupt);
   }
 
