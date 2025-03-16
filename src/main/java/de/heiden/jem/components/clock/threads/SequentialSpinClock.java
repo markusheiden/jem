@@ -103,15 +103,15 @@ public final class SequentialSpinClock extends AbstractSynchronizedClock {
     private record SequentialSpinTick(int _tickState, AtomicInteger _state) implements Tick {
         @Override
         public void waitForTick() {
-            synchronized (_state) {
-                // Make changes of this thread visible to all other threads.
-            }
+            // Make all changes of this thread visible to all other threads because of release semantics.
             // Trigger execution of the next component thread.
-            _state.set(_tickState + 1);
+            _state.setRelease(_tickState + 1);
             // Wait for the next tick.
             do {
                 onSpinWait();
-            } while (_state.get() != _tickState);
+                // Make released changes of all other threads visible to this thread because of acquire semantics.
+                // Wait for this component's turn.
+            } while (_state.getAcquire() != _tickState);
         }
     }
 }
