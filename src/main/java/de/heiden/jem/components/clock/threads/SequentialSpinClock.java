@@ -2,6 +2,7 @@ package de.heiden.jem.components.clock.threads;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import de.heiden.jem.components.clock.ManualAbort;
 import de.heiden.jem.components.clock.Tick;
 
 import static java.lang.Thread.currentThread;
@@ -53,6 +54,23 @@ public final class SequentialSpinClock extends AbstractSynchronizedClock {
         }
     }
 
+    @Override
+    protected void doClose() {
+        var components = clockedComponents();
+        for (var component : components) {
+            component.setTick(() -> {throw new ManualAbort();});
+        }
+        super.doClose();
+        for (int i = 0; i < components.length; i++) {
+            _state.set(i);
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
     /**
      * Special tick, waiting for its state.
      *
@@ -64,6 +82,7 @@ public final class SequentialSpinClock extends AbstractSynchronizedClock {
     private record SequentialSpinTick(int _tickState, AtomicInteger _state) implements Tick {
         @Override
         public void waitForTick() {
+            var thread = currentThread();
             synchronized (_state) {
                 // Make changes of this thread visible to all other threads.
             }
