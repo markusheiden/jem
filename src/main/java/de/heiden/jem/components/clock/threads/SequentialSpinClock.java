@@ -2,7 +2,6 @@ package de.heiden.jem.components.clock.threads;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import de.heiden.jem.components.clock.ManualAbort;
 import de.heiden.jem.components.clock.Tick;
 
 import static java.lang.Thread.currentThread;
@@ -14,27 +13,40 @@ import static java.lang.Thread.onSpinWait;
 public final class SequentialSpinClock extends AbstractSynchronizedClock {
     /**
      * Ordinal of component thread to execute.
+     * Used as monitor for visibility guarantees too.
      */
     private final AtomicInteger _state = new AtomicInteger(0);
+
+    /**
+     * Tick manager thread.
+     */
+    private Thread _tickManagerThread;
+
+    /**
+     * {@link #clockedComponents()} threads.
+     */
+    private Thread[] _componentThreads;
 
     @Override
     protected void doSynchronizedInit() {
         var components = clockedComponents();
-        for (int tickState = 0; tickState < components.length; tickState++) {
-            var component = components[tickState];
-            var tick = new SequentialSpinTick(tickState, _state);
+        _componentThreads = new Thread[components.length];
+        for (int state = 0; state < components.length; state++) {
+            var component = components[state];
+            var tick = new SequentialSpinTick(state, _state);
             component.setTick(tick);
 
             // Start component.
-            createStartedDaemonThread(component.getName(), () -> executeComponent(component, tick));
+            _componentThreads[state] =
+                    createStartedDaemonThread(component.getName(), () -> executeComponent(component, tick));
             // Wait for the component to reach the first tick.
-            while (_state.get() != tickState + 1) {
+            while (_state.get() != state + 1) {
                 onSpinWait();
             }
         }
 
         // Start tick manager.
-        createStartedDaemonThread("Tick", () -> executeTicks(components.length));
+        _tickManagerThread = createStartedDaemonThread("Tick manager", () -> executeTicks(components.length));
     }
 
     /**
@@ -56,17 +68,26 @@ public final class SequentialSpinClock extends AbstractSynchronizedClock {
 
     @Override
     protected void doClose() {
-        var components = clockedComponents();
-        for (var component : components) {
-            component.setTick(() -> {throw new ManualAbort();});
-        }
         super.doClose();
-        for (int i = 0; i < components.length; i++) {
-            _state.set(i);
+        join(_tickManagerThread);
+        var components = clockedComponents();
+        for (int state = 0; state < components.length; state++) {
+            _state.set(state);
+            join(_componentThreads[state]);
+        }
+    }
+
+    /**
+     * Ensure that thread has been joined.
+     */
+    private void join(Thread thread) {
+        boolean failed = true;
+        while (failed) {
             try {
-                Thread.sleep(100);
+                thread.join();
+                failed = false;
             } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+                // Ignore to ensure that all threads terminate.
             }
         }
     }
