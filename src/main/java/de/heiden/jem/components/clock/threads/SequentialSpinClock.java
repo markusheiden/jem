@@ -15,7 +15,7 @@ public final class SequentialSpinClock extends AbstractSynchronizedClock {
      * Ordinal of component thread to execute.
      * Used as monitor for visibility guarantees too.
      */
-    private final AtomicInteger _state = new AtomicInteger(0);
+    private final AtomicInteger _currentState = new AtomicInteger(0);
 
     /**
      * Tick manager thread.
@@ -33,14 +33,14 @@ public final class SequentialSpinClock extends AbstractSynchronizedClock {
         _componentThreads = new Thread[components.length];
         for (int state = 0; state < components.length; state++) {
             var component = components[state];
-            var tick = new SequentialSpinTick(state, _state);
+            var tick = new SequentialSpinTick(state, _currentState);
             component.setTick(tick);
 
             // Start component.
             _componentThreads[state] =
                     createStartedDaemonThread(component.getName(), () -> executeComponent(component, tick));
             // Wait for the component to reach the first tick.
-            while (_state.get() != state + 1) {
+            while (_currentState.get() != state + 1) {
                 onSpinWait();
             }
         }
@@ -54,7 +54,7 @@ public final class SequentialSpinClock extends AbstractSynchronizedClock {
      */
     private void executeTicks(final int finalState) {
         final Thread thread = currentThread();
-        final AtomicInteger state = _state;
+        final AtomicInteger state = _currentState;
         while (!thread.isInterrupted()) {
             startTick();
             // Execute all component threads.
@@ -72,7 +72,7 @@ public final class SequentialSpinClock extends AbstractSynchronizedClock {
         join(_tickManagerThread);
         var components = clockedComponents();
         for (int state = 0; state < components.length; state++) {
-            _state.set(state);
+            _currentState.set(state);
             join(_componentThreads[state]);
         }
     }
@@ -95,23 +95,22 @@ public final class SequentialSpinClock extends AbstractSynchronizedClock {
     /**
      * Special tick, waiting for its state.
      *
-     * @param _tickState
+     * @param state
      *         Ordinal of component thread.
-     * @param _state
+     * @param _currentState
      *         Current state.
      */
-    private record SequentialSpinTick(int _tickState, AtomicInteger _state) implements Tick {
+    private record SequentialSpinTick(int state, AtomicInteger _currentState) implements Tick {
         @Override
         public void waitForTick() {
             // Make all changes of this thread visible to all other threads because of release semantics.
-            // Trigger execution of the next component thread.
-            _state.setRelease(_tickState + 1);
-            // Wait for the next tick.
+            // Trigger execution of the next component's thread.
+            _currentState.setRelease(state + 1);
             do {
                 onSpinWait();
                 // Make released changes of all other threads visible to this thread because of acquire semantics.
-                // Wait for this component's turn.
-            } while (_state.getAcquire() != _tickState);
+                // Wait for the next tick.
+            } while (_currentState.getAcquire() != state);
         }
     }
 }
