@@ -109,7 +109,8 @@ public abstract class AbstractSynchronizedClock extends AbstractClock {
       try {
         runnable.run();
       } catch (ManualAbort e) {
-        // Ignore.
+        // Ignore and let thread terminate.
+        logger.debug("Component {} terminated.", name);
       } catch (Exception e) {
         logger.error("Component failed.", e);
       }
