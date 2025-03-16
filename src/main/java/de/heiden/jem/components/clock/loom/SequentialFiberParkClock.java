@@ -6,7 +6,6 @@ import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.locks.LockSupport;
 
 import de.heiden.jem.components.clock.AbstractSimpleClock;
-import de.heiden.jem.components.clock.ClockedComponent;
 
 /**
  * Clock using {@link Thread fibers} from project loom.
@@ -38,7 +37,7 @@ public final class SequentialFiberParkClock extends AbstractSimpleClock {
      * Create fibers.
      */
     private void createFibers(final int ticks) {
-        var components = _componentMap.values().toArray(ClockedComponent[]::new);
+        var components = clockedComponents();
         var numComponents = components.length;
 
         var fibers = new Thread[numComponents + 1];

@@ -24,7 +24,7 @@ public abstract class AbstractClock implements Clock {
   /**
    * Clocked components.
    */
-  protected final SortedMap<Integer, ClockedComponent> _componentMap = new TreeMap<>();
+  private final SortedMap<Integer, ClockedComponent> _componentMap = new TreeMap<>();
 
   /**
    * Events.
@@ -73,6 +73,13 @@ public abstract class AbstractClock implements Clock {
     assert removed == null : "Check: no duplicate positions";
 
     return component;
+  }
+
+  /**
+   * All clocked components in order.
+   */
+  protected ClockedComponent[] clockedComponents() {
+    return _componentMap.values().toArray(ClockedComponent[]::new);
   }
 
   @Override

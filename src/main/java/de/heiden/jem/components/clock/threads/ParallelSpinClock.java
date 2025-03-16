@@ -1,9 +1,6 @@
 package de.heiden.jem.components.clock.threads;
 
-import de.heiden.jem.components.clock.ClockedComponent;
 import de.heiden.jem.components.clock.Tick;
-
-import java.util.ArrayList;
 
 /**
  * Clock implemented without synchronization sequentially executing components by using spin locks (busy wait).
@@ -11,7 +8,7 @@ import java.util.ArrayList;
 public final class ParallelSpinClock extends AbstractSynchronizedClock {
   @Override
   protected void doSynchronizedInit() {
-    var components = _componentMap.values().toArray(ClockedComponent[]::new);
+    var components = clockedComponents();
     var ticks = new ParallelSpinTick[components.length];
     for (int i = 0; i < components.length; i++) {
       var component = components[i];

@@ -4,7 +4,6 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Semaphore;
 
 import de.heiden.jem.components.clock.AbstractSimpleClock;
-import de.heiden.jem.components.clock.ClockedComponent;
 
 /**
  * Clock executing {@link Thread fibers} of project loom on an {@link Executor}.
@@ -38,7 +37,7 @@ public final class SequentialFiberLatchClock extends AbstractSimpleClock {
      * Create a virtual thread for each component.
      */
     private Semaphores createVirtualThreads(boolean endless) {
-        var components = _componentMap.values().toArray(ClockedComponent[]::new);
+        var components = clockedComponents();
 
         var semaphores = new Semaphore[components.length + 1];
         for (int i = 0; i < semaphores.length; i++) {
