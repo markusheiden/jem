@@ -1,22 +1,20 @@
 package de.heiden.jem.models.c64.components.cpu;
 
+import java.util.Random;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+
 import de.heiden.jem.components.bus.LogEntry;
 import de.heiden.jem.components.bus.LoggingBus;
 import de.heiden.jem.components.bus.WordBus;
 import de.heiden.jem.components.clock.Clock;
-import de.heiden.jem.components.clock.serialthreads.SerialClock;
+import de.heiden.jem.components.clock.threads.SequentialSpinClock;
 import de.heiden.jem.models.c64.components.memory.RAM;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.serialthreads.agent.Transform;
-import org.serialthreads.transformer.strategies.frequent3.FrequentInterruptsTransformer3;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Random;
-import java.util.function.BiFunction;
-import java.util.function.Function;
 
 import static de.heiden.c64dt.bytes.ByteUtil.hi;
 import static de.heiden.c64dt.bytes.ByteUtil.lo;
@@ -25,7 +23,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 /**
  * Test for {@link CPU6510}.
  */
-@Transform(transformer = FrequentInterruptsTransformer3.class, classPrefixes = "de.heiden.jem")
 class CPU6510Test {
   /**
    * Logger.
@@ -750,7 +747,7 @@ class CPU6510Test {
   void setUp() {
     logger.debug("set up");
 
-    _clock = new SerialClock();
+    _clock = new SequentialSpinClock();
     _ram = new RAM(0x10000);
     _loggingBus = new LoggingBus(_ram);
     _bus = new WordBus(_loggingBus);
