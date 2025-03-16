@@ -163,11 +163,24 @@ public class Keyboard implements IKeyboard {
      * Print key matrix.
      */
     protected String keyMatrixToString() {
-        StringBuilder result = new StringBuilder(128);
+        var result = new StringBuilder(128);
         result.append("Keyboard:\n");
-        for (int row : _matrix) {
-            for (int i = 7; i >= 0; i--) {
-                result.append((row & (1 << i)) != 0 ? "X" : "+");
+
+        // Column header.
+        result.append(" ");
+        for (int i = 0; i < 8; i++) {
+            result.append(i);
+        }
+        result.append("\n");
+
+        for (int i = 0; i < _matrix.length; i++) {
+            // Row header
+            result.append(i);
+
+            // Values
+            var row = _matrix[i];
+            for (int j = 0; j < 8; j++) {
+                result.append((row & (1 << j)) != 0 ? "X" : "+");
             }
             result.append("\n");
         }
