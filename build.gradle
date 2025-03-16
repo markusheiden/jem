@@ -60,6 +60,7 @@ dependencies {
     testImplementation "org.junit.jupiter:junit-jupiter-api:${junitVersion}"
     testImplementation "org.junit.jupiter:junit-jupiter-params:${junitVersion}"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${junitVersion}"
+    testRuntimeOnly "org.junit.platform:junit-platform-launcher:${junitPlatformVersion}"
     testImplementation "org.assertj:assertj-core:${assertjVersion}"
 }
 
@@ -74,7 +75,7 @@ jar {
     }
 
     // TODO markus 2021-05-04: Deduplicate files.
-    duplicatesStrategy(DuplicatesStrategy.WARN)
+    duplicatesStrategy = DuplicatesStrategy.WARN
     from {
         configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     }
