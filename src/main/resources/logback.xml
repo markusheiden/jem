@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+  <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %-36.36logger{1} - %msg%n</pattern>
+    </encoder>
+  </appender>
+  <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+    <file>serialthreads.log</file>
+    <append>true</append>
+    <encoder>
+      <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %-36.36logger{1} - %msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <logger name="org.serialthreads" level="DEBUG" additivity="false">
+    <appender-ref ref="File" />
+  </logger>
+
+  <logger name="de.heiden.jem.components.clock.RealTimeSlowDown" level="INFO" />
+  <logger name="org.serialthreads.transformer.strategies.frequent3.MethodTransformer" level="ERROR" />
+  <logger name="de.heiden.jem.models.c64.components.cpu.CPU6510Debugger" level="DEBUG" />
+  <logger name="org.bitbucket.cowwoc.requirements.internal.core.terminal.NativeTerminal" level="ERROR" />
+
+  <root level="WARN">
+    <appender-ref ref="CONSOLE" />
+  </root>
+</configuration>
