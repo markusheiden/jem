@@ -117,8 +117,8 @@ public class C64 {
     }
 
 //    _cpu.add(new LoadFile(new File("/Users/markus/projects/jem/src/test/resources/testsuite2.15")));
-//    FileUtil.read(new File("/Users/markus/projects/jem/xxx.prg"), _cpuBus);
-//    FileUtil.read(new File("/Users/markus/projects/jem/src/test/resources/testsuite2.15/loadth.prg"), _cpuBus);
+//    FileUtil.read(Path.of("/Users/markus/projects/jem/xxx.prg"), _cpuBus);
+//    FileUtil.read(Path.of("/Users/markus/projects/jem/src/test/resources/testsuite2.15/loadth.prg"), _cpuBus);
   }
 
   /**

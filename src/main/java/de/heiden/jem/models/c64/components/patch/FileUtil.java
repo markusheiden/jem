@@ -3,7 +3,13 @@ package de.heiden.jem.models.c64.components.patch;
 import de.heiden.c64dt.bytes.ByteUtil;
 import de.heiden.jem.components.bus.BusDevice;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 /**
  * Some utils to read C64 files.
@@ -17,10 +23,10 @@ public class FileUtil {
    * @param bus Bus with memory
    * @return End address
    */
-  public static int read(File file, BusDevice bus) throws IOException {
+  public static int read(Path file, BusDevice bus) throws IOException {
     assert file != null : "file != null";
 
-    return read(new FileInputStream(file), bus);
+    return read(Files.newInputStream(file), bus);
   }
 
   /**
