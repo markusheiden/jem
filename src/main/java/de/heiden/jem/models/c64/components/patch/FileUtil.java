@@ -16,8 +16,8 @@ import java.nio.file.Path;
  */
 public class FileUtil {
   /**
-   * Read file and write it to memory.
-   * The first word in the file is interpreted as start address.
+   * Read the file and write it to memory.
+   * The first word in the file is interpreted as the start address.
    *
    * @param file File
    * @param bus Bus with memory
@@ -30,8 +30,8 @@ public class FileUtil {
   }
 
   /**
-   * Read file and write it to memory.
-   * The first word in the file is interpreted as start address.
+   * Read the file and write it to memory.
+   * The first word in the file is interpreted as the start address.
    *
    * @param file File
    * @param bus Bus with memory
@@ -41,7 +41,7 @@ public class FileUtil {
     assert file != null : "file != null";
     assert bus != null : "bus != null";
 
-    try (InputStream is = new BufferedInputStream(file)) {
+    try (var is = new BufferedInputStream(file)) {
       int addr = ByteUtil.toWord(is.read(), is.read());
       for (int b; (b = is.read()) >= 0; addr++) {
         bus.write(b, addr);
@@ -52,7 +52,7 @@ public class FileUtil {
   }
 
   /**
-   * Read file and write it to memory.
+   * Read the file and write it to memory.
    * Ignores the first word.
    *
    * @param file File
@@ -65,7 +65,7 @@ public class FileUtil {
   }
 
   /**
-   * Read file and write it to memory.
+   * Read the file and write it to memory.
    * Ignores the first word.
    *
    * @param file File
@@ -77,7 +77,7 @@ public class FileUtil {
     assert file != null : "file != null";
     assert bus != null : "bus != null";
 
-    try (InputStream is = new BufferedInputStream(file)) {
+    try (var is = new BufferedInputStream(file)) {
       is.read();
       is.read();
       for (int b; (b = is.read()) >= 0; addr++) {
