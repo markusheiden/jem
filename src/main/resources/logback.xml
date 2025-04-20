@@ -22,7 +22,6 @@
   <logger name="de.heiden.jem.components.clock.RealTimeSlowDown" level="INFO" />
   <logger name="org.serialthreads.transformer.strategies.frequent3.MethodTransformer" level="ERROR" />
   <logger name="de.heiden.jem.models.c64.components.cpu.CPU6510Debugger" level="DEBUG" />
-  <logger name="org.bitbucket.cowwoc.requirements.internal.core.terminal.NativeTerminal" level="ERROR" />
 
   <root level="WARN">
     <appender-ref ref="CONSOLE" />
