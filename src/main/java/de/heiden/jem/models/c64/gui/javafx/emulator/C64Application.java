@@ -23,7 +23,7 @@ public class C64Application extends Application {
   private C64 c64;
 
   /**
-   * Thread mit emulated C64.
+   * Thread running the emulated C64.
    */
   private Thread thread;
 
@@ -75,8 +75,10 @@ public class C64Application extends Application {
 
   @Override
   public void stop() throws Exception {
+    logger.debug("Stopping...");
     c64.stop();
     thread.interrupt();
     thread.join(100);
+    logger.debug("Stopped.");
   }
 }
