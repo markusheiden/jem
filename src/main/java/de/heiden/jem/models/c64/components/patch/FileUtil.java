@@ -4,12 +4,11 @@ import de.heiden.c64dt.bytes.ByteUtil;
 import de.heiden.jem.components.bus.BusDevice;
 
 import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
 import java.nio.file.Path;
+
+import static java.nio.file.Files.newInputStream;
 
 /**
  * Some utils to read C64 files.
@@ -26,7 +25,7 @@ public class FileUtil {
   public static int read(Path file, BusDevice bus) throws IOException {
     assert file != null : "file != null";
 
-    return read(Files.newInputStream(file), bus);
+    return read(newInputStream(file), bus);
   }
 
   /**
@@ -60,8 +59,8 @@ public class FileUtil {
    * @param bus Bus with memory
    * @return End address
    */
-  public static int read(File file, int addr, BusDevice bus) throws IOException {
-    return read(new FileInputStream(file), addr, bus);
+  public static int read(Path file, int addr, BusDevice bus) throws IOException {
+    return read(newInputStream(file), addr, bus);
   }
 
   /**
