@@ -104,13 +104,13 @@ public class C64 {
    * Additional init for test purposes.
    */
   private void init() throws IOException {
-    // init RAM with 0x02 (crash) to easier detect wrong behaviour
+    // Init RAM with 0x02 (crash) to easier detect wrong behaviour.
     // TODO 2010-06-22 mh: realistic init?
     for (int addr = 0; addr < 0x10000; addr++) {
       _cpuBus.write(0x02, addr);
     }
 
-    // fill screen with complete character set
+    // Fill the screen with the complete character set.
     for (int i = 0; i < 0x400; i++) {
       _cpuBus.write(i & 0xFF, 0x400 + i);
       _cpuBus.write(i & 0x0F, 0xD800 + i);
