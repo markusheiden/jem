@@ -1,15 +1,15 @@
 package de.heiden.jem.components.clock.threads;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.concurrent.atomic.AtomicLong;
-
 import de.heiden.jem.components.ManualAbortTick;
 import de.heiden.jem.components.clock.AbstractClock;
 import de.heiden.jem.components.clock.ClockEvent;
 import de.heiden.jem.components.clock.ClockedComponent;
 import de.heiden.jem.components.clock.ManualAbort;
 import de.heiden.jem.components.clock.Tick;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.concurrent.atomic.AtomicLong;
 
 import static java.util.Arrays.stream;
 import static java.util.Collections.synchronizedCollection;
@@ -111,7 +111,7 @@ public abstract class AbstractSynchronizedClock extends AbstractClock {
       try {
         runnable.run();
       } catch (ManualAbort e) {
-        // Ignore and let thread terminate.
+        // Ignore and let the thread terminate.
         logger.debug("Component {} terminated.", name);
       } catch (Exception e) {
         logger.error("Component failed.", e);
