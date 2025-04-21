@@ -140,14 +140,14 @@ public abstract class AbstractSynchronizedClock extends AbstractClock {
    * Start a new tick.
    */
   protected final void startTick() {
-    // First increment tick.
-    // Second execute events.
+    // First: Increment tick.
+    // Second: Execute events.
     executeEvents(_tick.incrementAndGet());
-    // Third execute components.
+    // Third: Execute components: Done by the caller.
   }
 
   @Override
   public final long getTick() {
-    return _tick.get();
+    return _tick.getAcquire();
   }
 }
