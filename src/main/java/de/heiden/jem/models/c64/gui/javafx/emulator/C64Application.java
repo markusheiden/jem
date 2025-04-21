@@ -15,7 +15,7 @@ public class C64Application extends Application {
   /**
    * Logger.
    */
-  private final Logger logger = LoggerFactory.getLogger(getClass());
+  private static final Logger logger = LoggerFactory.getLogger(C64Application.class);
 
   /**
    * C64.
@@ -28,7 +28,7 @@ public class C64Application extends Application {
   private Thread thread;
 
   /**
-   * Start application.
+   * Start the application.
    */
   public static void start(String... args) {
     launch(args);
@@ -38,9 +38,9 @@ public class C64Application extends Application {
   public void start(Stage stage) throws Exception {
     c64 = new C64(createClock());
 
-    VICScreen screen = new VICScreen(c64.getVIC()._displayUnit);
+    var screen = new VICScreen(c64.getVIC()._displayUnit);
 
-    Scene scene = new Scene(screen, screen.getWidth(), screen.getHeight());
+    var scene = new Scene(screen, screen.getWidth(), screen.getHeight());
     KeyListener.attachTo(scene, c64.getKeyboard(), new PCMapping());
 
     stage.setScene(scene);
@@ -63,10 +63,10 @@ public class C64Application extends Application {
   }
 
   /**
-   * Create clock via reflection from command line parameter "clock".
+   * Create the clock via reflection from the command line parameter "clock".
    */
   private Clock createClock() throws Exception {
-    final String clockClass = getParameters().getNamed().get("clock");
+    var clockClass = getParameters().getNamed().get("clock");
     if (clockClass == null) {
       throw new IllegalArgumentException("Clock ");
     }
