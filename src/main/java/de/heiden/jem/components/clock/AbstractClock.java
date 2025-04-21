@@ -1,11 +1,11 @@
 package de.heiden.jem.components.clock;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicBoolean;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Base implementation for all clocks.
@@ -87,7 +87,11 @@ public abstract class AbstractClock implements Clock {
     logger.debug("run clock");
 
     init();
-    doRun();
+    try {
+      doRun();
+    } catch (ManualAbort a) {
+      // Do not throw if manually terminated.
+    }
   }
 
   @Override
@@ -95,7 +99,11 @@ public abstract class AbstractClock implements Clock {
     logger.debug("run clock for {} ticks", ticks);
 
     init();
-    doRun(ticks);
+    try {
+      doRun(ticks);
+    } catch (ManualAbort a) {
+      // Do not throw if manually terminated.
+    }
   }
 
   /**
