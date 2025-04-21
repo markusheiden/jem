@@ -58,7 +58,7 @@ public final class SequentialSpinClock extends AbstractSynchronizedClock {
         while (!thread.isInterrupted()) {
             startTick();
             // Execute all component threads.
-            state.set(0);
+            state.setRelease(0);
             // Wait for all component threads to finish the tick.
             do {
                 onSpinWait();
