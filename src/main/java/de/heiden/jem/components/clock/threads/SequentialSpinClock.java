@@ -1,8 +1,8 @@
 package de.heiden.jem.components.clock.threads;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 import de.heiden.jem.components.clock.Tick;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.lang.Thread.currentThread;
 import static java.lang.Thread.onSpinWait;
@@ -69,12 +69,14 @@ public final class SequentialSpinClock extends AbstractSynchronizedClock {
     @Override
     protected void doClose() {
         super.doClose();
-        join(_tickManagerThread);
         var components = clockedComponents();
-        for (int state = 0; state < components.length; state++) {
+        var finalState = components.length;
+        for (int state = 0; state < finalState; state++) {
             _currentState.set(state);
             join(_componentThreads[state]);
         }
+        _currentState.set(finalState);
+        join(_tickManagerThread);
     }
 
     /**
