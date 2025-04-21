@@ -13,7 +13,7 @@ import static java.lang.Thread.onSpinWait;
 public final class SequentialSpinClock extends AbstractSynchronizedClock {
     /**
      * Ordinal of component thread to execute.
-     * Used as monitor for visibility guarantees too.
+     * Used as a monitor for visibility guarantees too.
      */
     private final AtomicInteger _currentState = new AtomicInteger(0);
 
@@ -80,7 +80,7 @@ public final class SequentialSpinClock extends AbstractSynchronizedClock {
     }
 
     /**
-     * Ensure that thread has been joined.
+     * Ensure that the thread has been joined.
      */
     private void join(Thread thread) {
         boolean failed = true;
