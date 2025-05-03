@@ -21,73 +21,73 @@ public abstract class AbstractSynchronizedClock extends AbstractClock {
   /**
    * Component threads.
    */
-  private final Collection<Thread> _componentThreads = synchronizedCollection(new ArrayList<>());
+  private final Collection<Thread> componentThreads = synchronizedCollection(new ArrayList<>());
 
   /**
    * Monitor for synchronization.
    */
-  private final Object _monitor = new Object();
+  private final Object monitor = new Object();
 
   /**
    * Event for suspending execution.
    */
-  private final SuspendEvent _suspendEvent = new SuspendEvent(_monitor);
+  private final SuspendEvent suspendEvent = new SuspendEvent(monitor);
 
   /**
    * Current tick.
    * Start at tick -1, because the first action when running is to increment the tick.
    */
-  private final AtomicLong _tick = new AtomicLong(-1);
+  private final AtomicLong tick = new AtomicLong(-1);
 
   @Override
   public final void addClockEvent(long tick, ClockEvent event) {
-    synchronized (_monitor) {
+    synchronized (monitor) {
       super.addClockEvent(tick, event);
     }
   }
 
   @Override
   public final void updateClockEvent(long tick, ClockEvent event) {
-    synchronized (_monitor) {
+    synchronized (monitor) {
       super.updateClockEvent(tick, event);
     }
   }
 
   @Override
   public final void removeClockEvent(ClockEvent event) {
-    synchronized (_monitor) {
+    synchronized (monitor) {
       super.removeClockEvent(event);
     }
   }
 
   @Override
   protected final void executeEvents(long tick) {
-    synchronized (_monitor) {
+    synchronized (monitor) {
       super.executeEvents(tick);
     }
   }
 
   @Override
   protected final void doRun(int ticks) {
-    addClockEvent(getTick() + ticks, _suspendEvent);
+    addClockEvent(getTick() + ticks, suspendEvent);
     doRun();
   }
 
   @Override
   protected final void doRun() {
-    _suspendEvent.resume();
-    _suspendEvent.waitForSuspend();
+    suspendEvent.resume();
+    suspendEvent.waitForSuspend();
   }
 
   @Override
   protected final void doInit() {
     // Suspend execution at the start of the first tick.
-    addClockEvent(0, _suspendEvent);
+    addClockEvent(0, suspendEvent);
 
     doSynchronizedInit();
 
     // Wait until all threads are at the start of the first click.
-    _suspendEvent.waitForSuspend();
+    suspendEvent.waitForSuspend();
   }
 
   protected void doSynchronizedInit() {
@@ -104,7 +104,7 @@ public abstract class AbstractSynchronizedClock extends AbstractClock {
   }
 
   /**
-   * Create daemon thread.
+   * Create a daemon thread.
    */
   protected final Thread createDaemonThread(String name, Runnable runnable) {
     var thread = Thread.ofVirtual().name(name).unstarted(() -> {
@@ -117,7 +117,7 @@ public abstract class AbstractSynchronizedClock extends AbstractClock {
         logger.error("Component failed.", e);
       }
     });
-    _componentThreads.add(thread);
+    componentThreads.add(thread);
     return thread;
   }
 
@@ -133,7 +133,7 @@ public abstract class AbstractSynchronizedClock extends AbstractClock {
     // Ensure that threads don't run into the ticks again and block or spin wait etc.
     stream(clockedComponents()).forEach(component ->
             component.setTick(new ManualAbortTick()));
-    _componentThreads.forEach(Thread::interrupt);
+    componentThreads.forEach(Thread::interrupt);
   }
 
   /**
@@ -142,12 +142,12 @@ public abstract class AbstractSynchronizedClock extends AbstractClock {
   protected final void startTick() {
     // First: Increment tick.
     // Second: Execute events.
-    executeEvents(_tick.incrementAndGet());
+    executeEvents(tick.incrementAndGet());
     // Third: Execute components: Done by the caller.
   }
 
   @Override
   public final long getTick() {
-    return _tick.getAcquire();
+    return tick.getAcquire();
   }
 }

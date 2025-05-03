@@ -1,10 +1,10 @@
 package de.heiden.jem.components.clock.threads;
 
-import java.util.concurrent.BrokenBarrierException;
-import java.util.concurrent.CyclicBarrier;
-
 import de.heiden.jem.components.clock.ManualAbort;
 import de.heiden.jem.components.clock.Tick;
+
+import java.util.concurrent.BrokenBarrierException;
+import java.util.concurrent.CyclicBarrier;
 
 /**
  * Clock implemented with synchronization, executing component threads in parallel.
@@ -13,7 +13,7 @@ public final class ParallelBarrierClock extends AbstractSynchronizedClock {
   /**
    * Barrier for synchronizing all component threads.
    */
-  private CyclicBarrier _barrier;
+  private CyclicBarrier barrier;
 
   /**
    * Start threads of all components.
@@ -23,9 +23,9 @@ public final class ParallelBarrierClock extends AbstractSynchronizedClock {
 
     // Create threads.
     var components = clockedComponents();
-    _barrier = new CyclicBarrier(components.length, this::startTick);
+    barrier = new CyclicBarrier(components.length, this::startTick);
     for (var component : components) {
-      var tick = new BarrierTick(_barrier);
+      var tick = new BarrierTick(barrier);
       component.setTick(tick);
       createStartedDaemonThread(component.getName(), () -> executeComponent(component, tick));
     }
@@ -34,7 +34,7 @@ public final class ParallelBarrierClock extends AbstractSynchronizedClock {
   @Override
   protected void doClose() {
     super.doClose();
-    _barrier.reset();
+    barrier.reset();
   }
 
   /**
@@ -44,7 +44,7 @@ public final class ParallelBarrierClock extends AbstractSynchronizedClock {
     /**
      * Barrier for synchronizing all component threads.
      */
-    private final CyclicBarrier _barrier;
+    private final CyclicBarrier barrier;
 
     /**
      * Constructor.
@@ -52,13 +52,13 @@ public final class ParallelBarrierClock extends AbstractSynchronizedClock {
      * @param barrier Barrier for synchronizing all component threads.
      */
     public BarrierTick(CyclicBarrier barrier) {
-      this._barrier = barrier;
+      this.barrier = barrier;
     }
 
     @Override
-    public final void waitForTick() {
+    public void waitForTick() {
       try {
-        _barrier.await();
+        barrier.await();
       } catch (InterruptedException | BrokenBarrierException e) {
         throw new ManualAbort();
       }
