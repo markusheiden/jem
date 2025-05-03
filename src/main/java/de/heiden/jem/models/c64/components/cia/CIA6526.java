@@ -7,6 +7,7 @@ import de.heiden.jem.components.ports.InputOutputPort;
 import de.heiden.jem.components.ports.InputOutputPortImpl;
 import de.heiden.jem.components.ports.OutputPort;
 import de.heiden.jem.components.ports.OutputPortImpl;
+import jakarta.annotation.Nonnull;
 
 /**
  * CIA 6526.
@@ -49,65 +50,65 @@ public class CIA6526 implements BusDevice {
   public static final int CRB_SET_ALARM = 0x80;
 
   // system clock
-  private final Clock _clock;
-  private final ClockEvent _timerALoadEvent;
-  private final ClockEvent _timerAUnderflowEvent;
-  private final ClockEvent _timerBLoadEvent;
-  private final ClockEvent _timerBUnderflowEvent;
+  private final Clock clock;
+  private final ClockEvent timerALoadEvent;
+  private final ClockEvent timerAUnderflowEvent;
+  private final ClockEvent timerBLoadEvent;
+  private final ClockEvent timerBUnderflowEvent;
 
   // address mask
-  private final int _mask;
+  private final int mask;
 
   // Port A
-  private int _controlA; // 0x0E
-  private InputOutputPortImpl _portA;
+  private int controlA; // 0x0E
+  private InputOutputPortImpl portA;
 
   // Port B
-  private int _controlB; // 0x0F
-  private InputOutputPortImpl _portB;
+  private int controlB; // 0x0F
+  private InputOutputPortImpl portB;
 
   // serial shift reg
-  private int _sdr; // 0x0C
-  private InputOutputPortImpl _portSerial;
+  private int sdr; // 0x0C
+  private InputOutputPortImpl portSerial;
 
   // timer A
-  private int _timerA; // LO: 0x04, HI 0x05
-  private int _timerAInit; // LO: 0x04, HI 0x05
-  private boolean _timerACLK; // increment timer A with clock?
-  private long _timerABase; // base tick for count clocking
-  private boolean _timerACNT; // increment timer A when raising edge at CNT?
+  private int timerA; // LO: 0x04, HI 0x05
+  private int timerAInit; // LO: 0x04, HI 0x05
+  private boolean timerACLK; // increment timer A with clock?
+  private long timerABase; // base tick for count clocking
+  private boolean timerACNT; // increment timer A when raising edge at CNT?
 
   // timer B
-  private int _timerB; // LO: 0x06, HI 0x07
-  private int _timerBInit; // LO: 0x04, HI 0x05
-  private boolean _timerBCLK; // increment timer B with clock?
-  private long _timerBBase; // base tick for count clocking
-  private boolean _timerBCNT; // increment timer B when raising edge at CNT?
+  private int timerB; // LO: 0x06, HI 0x07
+  private int timerBInit; // LO: 0x04, HI 0x05
+  private boolean timerBCLK; // increment timer B with clock?
+  private long timerBBase; // base tick for count clocking
+  private boolean timerBCNT; // increment timer B when raising edge at CNT?
 
   // real time
-  private long _timeBase;
-  private int _timeTenth; // 0x08
-  private int _timeSec; // 0x09
-  private int _timeMin; // 0x0A
-  private int _timeHour; // 0x0B
-  private boolean _timeIsRunning;
+  private long timeBase;
+  private int timeTenth; // 0x08
+  private int timeSec; // 0x09
+  private int timeMin; // 0x0A
+  private int timeHour; // 0x0B
+  private boolean timeIsRunning;
 
-  private boolean _timeLock;
-  private int _timeTenthTemp; // 0x08
-  private int _timeSecTemp; // 0x09
-  private int _timeMinTemp; // 0x0A
-  private int _timeHourTemp; // 0x0B
+  private boolean timeLock;
+  private int timeTenthTemp; // 0x08
+  private int timeSecTemp; // 0x09
+  private int timeMinTemp; // 0x0A
+  private int timeHourTemp; // 0x0B
 
-  private int _alarmTenth; // 0x08
-  private int _alarmSec; // 0x09
-  private int _alarmMin; // 0x0A
-  private int _alarmHour; // 0x0B
+  private int alarmTenth; // 0x08
+  private int alarmSec; // 0x09
+  private int alarmMin; // 0x0A
+  private int alarmHour; // 0x0B
 
   // irq control
-  private int _irq; // 0x0D
-  private int _irqMask; // 0x0D
+  private int irq; // 0x0D
+  private int irqMask; // 0x0D
 
-  private final OutputPortImpl _irqPort;
+  private final OutputPortImpl irqPort;
 
   /**
    * Constructor.
@@ -115,81 +116,79 @@ public class CIA6526 implements BusDevice {
    * @param clock system clock
    * @require clock != null
    */
-  public CIA6526(Clock clock) {
-    assert clock != null : "clock != null";
+  public CIA6526(@Nonnull Clock clock) {
+    this.clock = clock;
 
-    _clock = clock;
-
-    _timerALoadEvent = new ClockEvent("Timer A load") {
+    timerALoadEvent = new ClockEvent("Timer A load") {
       @Override
       public void execute(long tick) {
-        _timerA = _timerAInit;
+        timerA = timerAInit;
         updateTimerAWrite();
       }
     };
 
     // event for timer a finished clock counting
-    _timerAUnderflowEvent = new ClockEvent("Timer A underflow") {
+    timerAUnderflowEvent = new ClockEvent("Timer A underflow") {
       @Override
       public void execute(long tick) {
         timerAUnderflow();
-        _timerABase = tick;
-        if ((_controlA & CR_ONE_SHOT) == 0 && _timerA > 0) {
+        timerABase = tick;
+        if ((controlA & CR_ONE_SHOT) == 0 && timerA > 0) {
           // continuous mode -> restart timer.
-          _clock.addClockEvent(_timerABase + _timerA, _timerAUnderflowEvent);
+          CIA6526.this.clock.addClockEvent(timerABase + timerA, timerAUnderflowEvent);
         } else {
           // one shot -> stop timer.
-          _timerACLK = false;
+          timerACLK = false;
         }
       }
     };
 
-    _timerBLoadEvent = new ClockEvent("Timer B load") {
+    timerBLoadEvent = new ClockEvent("Timer B load") {
       @Override
       public void execute(long tick) {
-        _timerB = _timerBInit;
+        timerB = timerBInit;
         updateTimerBWrite();
       }
     };
 
     // event for timer b finished clock counting
-    _timerBUnderflowEvent = new ClockEvent("Timer B underflow") {
+    timerBUnderflowEvent = new ClockEvent("Timer B underflow") {
       @Override
       public void execute(long tick) {
         timerBUnderflow();
-        _timerBBase = tick;
-        if ((_controlB & CR_ONE_SHOT) == 0 && _timerB > 0) {
+        timerBBase = tick;
+        if ((controlB & CR_ONE_SHOT) == 0 && timerB > 0) {
           // continuous mode -> restart timer.
-          _clock.addClockEvent(_timerBBase + _timerB, _timerBUnderflowEvent);
+          CIA6526.this.clock.addClockEvent(timerBBase + timerB, timerBUnderflowEvent);
         } else {
           // one shot -> stop timer.
-          _timerBCLK = false;
+          timerBCLK = false;
         }
       }
     };
 
     // address mask
-    _mask = 0x0F;
+    mask = 0x0F;
 
-    _portA = new InputOutputPortImpl();
+    portA = new InputOutputPortImpl();
     // TODO add listener for events
-    _portB = new InputOutputPortImpl();
+    portB = new InputOutputPortImpl();
     // TODO add listener for events
 
-    _portSerial = new InputOutputPortImpl();
-    _portSerial.addInputPortListener((value, mask) -> {
+    portSerial = new InputOutputPortImpl();
+    portSerial.addInputPortListener((value, mask) -> {
       // receiveSerial(value);
-      if (_timerACNT) { // TODO check for raising edge of cnt
+      if (timerACNT) { // TODO check for raising edge of cnt
         countTimerA();
       }
-      if (_timerBCNT) { // TODO check for raising edge of cnt
+      if (timerBCNT) { // TODO check for raising edge of cnt
         countTimerA();
       }
     });
 
-    _irqPort = new OutputPortImpl();
-    _irqPort.setOutputMask(0x01);
-    _irqPort.setOutputData(0x01);
+    irqPort = new OutputPortImpl();
+    irqPort.setOutputMask(0x01);
+    irqPort.setOutputData(0x01);
   }
 
   /**
@@ -197,8 +196,8 @@ public class CIA6526 implements BusDevice {
    */
   public void reset() {
     // TODO
-    _timeIsRunning = true;
-    _timeLock = false;
+    timeIsRunning = true;
+    timeLock = false;
   }
 
   public String getName() {
@@ -210,9 +209,8 @@ public class CIA6526 implements BusDevice {
    *
    * @ensure result != null
    */
-  public InputOutputPort portA() {
-    assert _portA != null : "result != null";
-    return _portA;
+  public @Nonnull InputOutputPort portA() {
+    return portA;
   }
 
   /**
@@ -220,9 +218,8 @@ public class CIA6526 implements BusDevice {
    *
    * @ensure result != null
    */
-  public InputOutputPort portB() {
-    assert _portB != null : "result != null";
-    return _portB;
+  public @Nonnull InputOutputPort portB() {
+    return portB;
   }
 
   /**
@@ -230,16 +227,15 @@ public class CIA6526 implements BusDevice {
    *
    * @ensure result != null
    */
-  public InputOutputPort portSerial() {
-    assert _portSerial != null : "result != null";
-    return _portSerial;
+  public @Nonnull InputOutputPort portSerial() {
+    return portSerial;
   }
 
   /**
    * IRQ output signal.
    */
   public OutputPort getIRQ() {
-    return _irqPort;
+    return irqPort;
   }
 
   /**
@@ -248,12 +244,12 @@ public class CIA6526 implements BusDevice {
    * @ensure result >= 0 && result < 0x10000
    */
   public int mask() {
-    assert _mask >= 0 && _mask < 0x10000 : "result >= 0 && result < 0x10000";
-    return _mask;
+    assert mask >= 0 && mask < 0x10000 : "result >= 0 && result < 0x10000";
+    return mask;
   }
 
   /**
-   * Write byte to bus device.
+   * Write the byte to the bus device.
    *
    * @param value byte to write
    * @param address address to write byte to
@@ -263,101 +259,101 @@ public class CIA6526 implements BusDevice {
   public void write(int value, int address) {
     assert value >= 0 && value < 0x100 : "value >= 0 && value < 0x100";
 
-    switch (address & _mask) {
+    switch (address & mask) {
       case 0x00: {
-        _portA.setOutputData(value);
+        portA.setOutputData(value);
         break;
       }
       case 0x01: {
-        _portB.setOutputData(value);
+        portB.setOutputData(value);
         break;
       }
       case 0x02: {
-        _portA.setOutputMask(value);
+        portA.setOutputMask(value);
         break;
       }
       case 0x03: {
-        _portB.setOutputMask(value);
+        portB.setOutputMask(value);
         break;
       }
       case 0x04: {
-        _timerAInit = _timerAInit & 0xFF00 | value;
+        timerAInit = timerAInit & 0xFF00 | value;
         updateTimerAWrite();
         break;
       }
       case 0x05: {
-        _timerAInit = _timerAInit & 0x00FF | (value << 8);
-        if ((_controlA & CR_START) == 0) {
-          _timerA = _timerAInit;
+        timerAInit = timerAInit & 0x00FF | (value << 8);
+        if ((controlA & CR_START) == 0) {
+          timerA = timerAInit;
         }
         updateTimerAWrite();
         break;
       }
       case 0x06: {
-        _timerBInit = _timerBInit & 0xFF00 | value;
+        timerBInit = timerBInit & 0xFF00 | value;
         updateTimerBWrite();
         break;
       }
       case 0x07: {
-        _timerBInit = _timerBInit & 0x00FF | (value << 8);
-        if ((_controlB & CR_START) == 0) {
-          _timerB = _timerBInit;
+        timerBInit = timerBInit & 0x00FF | (value << 8);
+        if ((controlB & CR_START) == 0) {
+          timerB = timerBInit;
         }
         updateTimerBWrite();
         break;
       }
       case 0x08: {
-        if ((_controlB & CRB_SET_ALARM) == 0) {
-          _timeTenth = value & 0x0F;
-          _timeIsRunning = true;
+        if ((controlB & CRB_SET_ALARM) == 0) {
+          timeTenth = value & 0x0F;
+          timeIsRunning = true;
         } else {
-          _alarmTenth = value & 0x0F;
+          alarmTenth = value & 0x0F;
         }
         break;
       }
       case 0x09: {
-        if ((_controlB & CRB_SET_ALARM) == 0) {
-          _timeSec = value & 0x7F;
+        if ((controlB & CRB_SET_ALARM) == 0) {
+          timeSec = value & 0x7F;
         } else {
-          _alarmSec = value & 0x7F;
+          alarmSec = value & 0x7F;
         }
         break;
       }
       case 0x0A: {
-        if ((_controlB & CRB_SET_ALARM) == 0) {
-          _timeMin = value & 0x7F;
+        if ((controlB & CRB_SET_ALARM) == 0) {
+          timeMin = value & 0x7F;
         } else {
-          _alarmMin = value & 0x7F;
+          alarmMin = value & 0x7F;
         }
         break;
       }
       case 0x0B: {
-        if ((_controlB & CRB_SET_ALARM) == 0) {
-          _timeHour = value & 0x9F;
-          _timeIsRunning = false;
+        if ((controlB & CRB_SET_ALARM) == 0) {
+          timeHour = value & 0x9F;
+          timeIsRunning = false;
         } else {
-          _alarmHour = value & 0x9F;
+          alarmHour = value & 0x9F;
         }
         break;
       }
       case 0x0C: {
-        _sdr = value;
+        sdr = value;
         break;
       }
       case 0x0D: {
         if ((value & 0x80) == 0) {
-          _irqMask = _irqMask & (0xFF - value);
+          irqMask = irqMask & (0xFF - value);
         } else {
-          _irqMask = _irqMask | (value & 0x7F);
+          irqMask = irqMask | (value & 0x7F);
         }
         break;
       }
       case 0x0E: {
         // load timer A
         if ((value & CR_LOAD) != 0) {
-          _clock.addClockEvent(_clock.getTick() + 2, _timerALoadEvent);
+          clock.addClockEvent(clock.getTick() + 2, timerALoadEvent);
         }
-        _controlA = value & CR_LOAD_MASK; // TODO correct?
+        controlA = value & CR_LOAD_MASK; // TODO correct?
         updateTimerAMode();
         updatePortSerial();
         break;
@@ -365,9 +361,9 @@ public class CIA6526 implements BusDevice {
       case 0x0F: {
         // load timer B
         if ((value & CR_LOAD) != 0) {
-          _clock.addClockEvent(_clock.getTick() + 2, _timerBLoadEvent);
+          clock.addClockEvent(clock.getTick() + 2, timerBLoadEvent);
         }
-        _controlB = value & CR_LOAD_MASK; // TODO correct?
+        controlB = value & CR_LOAD_MASK; // TODO correct?
         updateTimerBMode();
         break;
       }
@@ -379,7 +375,7 @@ public class CIA6526 implements BusDevice {
   }
 
   /**
-   * Read byte from bus device.
+   * Read a byte from the bus device.
    *
    * @param address address to read byte from
    * @ensure result >= 0 && result < 0x100
@@ -387,92 +383,92 @@ public class CIA6526 implements BusDevice {
   @Override
   public int read(int address) {
     int result;
-    switch (address & _mask) {
+    switch (address & mask) {
       case 0x00: {
-        result = _portA.outputData();
+        result = portA.outputData();
         break;
       }
       case 0x01: {
-        result = _portB.outputData();
+        result = portB.outputData();
         break;
       }
       case 0x02: {
-        result = _portA.outputMask();
+        result = portA.outputMask();
         break;
       }
       case 0x03: {
-        result = _portB.outputMask();
+        result = portB.outputMask();
         break;
       }
       case 0x04: {
         updateTimerARead();
-        result = _timerA & 0x00FF;
+        result = timerA & 0x00FF;
         break;
       }
       case 0x05: {
         updateTimerARead();
-        result = _timerA >> 8;
+        result = timerA >> 8;
         break;
       }
       case 0x06: {
         updateTimerBRead();
-        result = _timerB & 0x00FF;
+        result = timerB & 0x00FF;
         break;
       }
       case 0x07: {
         updateTimerBRead();
-        result = _timerB >> 8;
+        result = timerB >> 8;
         break;
       }
       case 0x08: {
         updateTime();
-        result = _timeLock ? _timeTenthTemp : _timeTenth;
+        result = timeLock ? timeTenthTemp : timeTenth;
 
         // unlock current time
-        _timeLock = false;
+        timeLock = false;
 
         break;
       }
       case 0x09: {
         updateTime();
-        result = _timeLock ? _timeSecTemp : _timeSec;
+        result = timeLock ? timeSecTemp : timeSec;
         break;
       }
       case 0x0A: {
         updateTime();
-        result = _timeLock ? _timeMinTemp : _timeMin;
+        result = timeLock ? timeMinTemp : timeMin;
         break;
       }
       case 0x0B: {
         updateTime();
-        result = _timeHour;
+        result = timeHour;
 
         // lock current time in temp registers
-        _timeTenthTemp = _timeTenth;
-        _timeSecTemp = _timeSec;
-        _timeMinTemp = _timeMin;
-        _timeHourTemp = _timeHour;
-        _timeLock = true;
+        timeTenthTemp = timeTenth;
+        timeSecTemp = timeSec;
+        timeMinTemp = timeMin;
+        timeHourTemp = timeHour;
+        timeLock = true;
 
         break;
       }
       case 0x0C: {
-        result = _sdr;
+        result = sdr;
         break;
       }
       case 0x0D: {
-        result = _irq;
-        _irq = 0;
-        _irqPort.setOutputData(0x1);
+        result = irq;
+        irq = 0;
+        irqPort.setOutputData(0x1);
         break;
       }
       case 0x0E: {
-        result = _controlA;
+        result = controlA;
         updateTimerAMode();
         break;
       }
       case 0x0F: {
-        result = _controlB;
+        result = controlB;
         updateTimerBMode();
         break;
       }
@@ -505,23 +501,23 @@ public class CIA6526 implements BusDevice {
    * Update timer A mode relevant settings.
    */
   protected void updateTimerAMode() {
-    if ((_controlA & CR_START) != 0) {
-      int mode = _controlA & CRA_MODE_MASK;
+    if ((controlA & CR_START) != 0) {
+      int mode = controlA & CRA_MODE_MASK;
       if (mode == CR_MODE_O2) {
         // timer A enabled
         // start clock counting, if not already counting
         startTimerACLK();
-        _timerACNT = false;
+        timerACNT = false;
       } else if (mode == CR_MODE_CNT) {
         // count CNT raising edges
         stopTimerACLK();
-        _timerACNT = true;
+        timerACNT = true;
       }
     } else {
       // timer A disabled
       // stop clock counting, if counting
       stopTimerACLK();
-      _timerACNT = false;
+      timerACNT = false;
     }
   }
 
@@ -529,11 +525,11 @@ public class CIA6526 implements BusDevice {
    * Start timer A CLK counting.
    */
   private void startTimerACLK() {
-    if (!_timerACLK && _timerA > 0) {
-      // count ticks, starting at next tick,
-      _timerABase = _clock.getTick() + 2;
-      _clock.addClockEvent(_timerABase + _timerA, _timerAUnderflowEvent);
-      _timerACLK = true;
+    if (!timerACLK && timerA > 0) {
+      // Count ticks, starting at the next tick.
+      timerABase = clock.getTick() + 2;
+      clock.addClockEvent(timerABase + timerA, timerAUnderflowEvent);
+      timerACLK = true;
     }
   }
 
@@ -541,9 +537,9 @@ public class CIA6526 implements BusDevice {
    * Stop timer A CLK counting.
    */
   private void stopTimerACLK() {
-    if (_timerACLK) {
-      _clock.removeClockEvent(_timerAUnderflowEvent);
-      _timerACLK = false;
+    if (timerACLK) {
+      clock.removeClockEvent(timerAUnderflowEvent);
+      timerACLK = false;
     }
   }
 
@@ -551,12 +547,12 @@ public class CIA6526 implements BusDevice {
    * Update timer A for read access.
    */
   public void updateTimerARead() {
-    if (_timerACLK) {
-      long tick = _clock.getTick();
-      int diff = (int) (tick - _timerABase);
+    if (timerACLK) {
+      long tick = clock.getTick();
+      int diff = (int) (tick - timerABase);
       if (diff > 0) {
-        _timerA -= diff;
-        _timerABase = tick;
+        timerA -= diff;
+        timerABase = tick;
       }
     }
   }
@@ -565,9 +561,9 @@ public class CIA6526 implements BusDevice {
    * Update timer A after write access.
    */
   public void updateTimerAWrite() {
-    if (_timerACLK) {
-      if (_timerA > 0) {
-        _clock.updateClockEvent(_clock.getTick() + _timerA, _timerAUnderflowEvent);
+    if (timerACLK) {
+      if (timerA > 0) {
+        clock.updateClockEvent(clock.getTick() + timerA, timerAUnderflowEvent);
       } else {
         stopTimerACLK();
       }
@@ -578,7 +574,7 @@ public class CIA6526 implements BusDevice {
    * Count timer A.
    */
   public void countTimerA() {
-    if (--_timerA == 0) {
+    if (--timerA == 0) {
       timerAUnderflow();
     }
   }
@@ -588,31 +584,31 @@ public class CIA6526 implements BusDevice {
    */
   protected void timerAUnderflow() {
     // automatic reload
-    _timerA = _timerAInit;
+    timerA = timerAInit;
 
     // irq
-    _irq |= ICR_UNDERFLOW_TIMER_A;
-    if ((_irqMask & ICR_UNDERFLOW_TIMER_A) != 0) {
-      _irq |= ICR_IRQ;
-      _irqPort.setOutputData(0x0);
+    irq |= ICR_UNDERFLOW_TIMER_A;
+    if ((irqMask & ICR_UNDERFLOW_TIMER_A) != 0) {
+      irq |= ICR_IRQ;
+      irqPort.setOutputData(0x0);
     }
 
     // PB6 signalling
-    if ((_controlA & CR_UNDERFLOW_PB) != 0) {
-      if ((_controlA & CR_UNDERFLOW_PB_TOGGLE) != 0) {
+    if ((controlA & CR_UNDERFLOW_PB) != 0) {
+      if ((controlA & CR_UNDERFLOW_PB_TOGGLE) != 0) {
         // toggle PB6
-        _portB.setOutputData(_portB.outputData() ^ PB6);
+        portB.setOutputData(portB.outputData() ^ PB6);
       } else {
         // hi strobe
-        _portB.setOutputData(_portB.outputData() | PB6);
+        portB.setOutputData(portB.outputData() | PB6);
         // TODO wait for 1 tick
-        _portB.setOutputData(_portB.outputData() & PB6_MASK);
+        portB.setOutputData(portB.outputData() & PB6_MASK);
       }
     }
     // trigger timer B
-    if ((_controlB & CRA_SP_OUTPUT) != 0) {
+    if ((controlB & CRA_SP_OUTPUT) != 0) {
       // count or count if CNT == 1
-      if ((_controlB & (1 << 5)) == 0 || (_portSerial.inputData() & PORTS_CNT) != 0) {
+      if ((controlB & (1 << 5)) == 0 || (portSerial.inputData() & PORTS_CNT) != 0) {
         countTimerB();
       }
     }
@@ -622,24 +618,24 @@ public class CIA6526 implements BusDevice {
    * Update timer B mode relevant settings.
    */
   public void updateTimerBMode() {
-    if ((_controlB & 0x41) == 0x01) // Bit 0 set, Bit 6 cleared
+    if ((controlB & 0x41) == 0x01) // Bit 0 set, Bit 6 cleared
     {
-      if ((_controlB & 0x20) == 0) // Bit 5 cleared
+      if ((controlB & 0x20) == 0) // Bit 5 cleared
       {
-        // timer B enabled and not counting timer A underflows
-        // count ticks, starting at next tick,
+        // timer B enabled and not counting timer A underflows.
+        // Count ticks, starting at the next tick.
         startTimerBCLK();
-        _timerBCNT = false;
+        timerBCNT = false;
       } else {
         // count CNT raising edges
         stopTimerBCLK();
-        _timerBCNT = true;
+        timerBCNT = true;
       }
     } else {
-      // timer B disabled or counting timer A underflows
-      // count CNT raising edges
+      // timer B disabled or counting timer A underflows.
+      // count CNT raising edges.
       stopTimerBCLK();
-      _timerBCNT = false;
+      timerBCNT = false;
     }
   }
 
@@ -647,11 +643,11 @@ public class CIA6526 implements BusDevice {
    * Start timer B CLK counting.
    */
   private void startTimerBCLK() {
-    if (!_timerBCLK && _timerB > 0) {
-      // count ticks, starting at next tick,
-      _timerBBase = _clock.getTick() + 2;
-      _clock.addClockEvent(_timerBBase + _timerB, _timerBUnderflowEvent);
-      _timerBCLK = true;
+    if (!timerBCLK && timerB > 0) {
+      // Count ticks starting at the next tick,
+      timerBBase = clock.getTick() + 2;
+      clock.addClockEvent(timerBBase + timerB, timerBUnderflowEvent);
+      timerBCLK = true;
     }
   }
 
@@ -659,9 +655,9 @@ public class CIA6526 implements BusDevice {
    * Stop timer B CLK counting.
    */
   private void stopTimerBCLK() {
-    if (_timerBCLK) {
-      _clock.removeClockEvent(_timerBUnderflowEvent);
-      _timerBCLK = false;
+    if (timerBCLK) {
+      clock.removeClockEvent(timerBUnderflowEvent);
+      timerBCLK = false;
     }
   }
 
@@ -669,12 +665,12 @@ public class CIA6526 implements BusDevice {
    * Update timer B for read access.
    */
   public void updateTimerBRead() {
-    if (_timerBCLK) {
-      long tick = _clock.getTick();
-      int diff = (int) (tick - _timerBBase);
+    if (timerBCLK) {
+      long tick = clock.getTick();
+      int diff = (int) (tick - timerBBase);
       if (diff > 0) {
-        _timerB -= diff;
-        _timerBBase = tick;
+        timerB -= diff;
+        timerBBase = tick;
       }
     }
   }
@@ -683,9 +679,9 @@ public class CIA6526 implements BusDevice {
    * Update timer B after write access.
    */
   public void updateTimerBWrite() {
-    if (_timerBCLK) {
-      if (_timerB > 0) {
-        _clock.updateClockEvent(_clock.getTick() + _timerB, _timerBUnderflowEvent);
+    if (timerBCLK) {
+      if (timerB > 0) {
+        clock.updateClockEvent(clock.getTick() + timerB, timerBUnderflowEvent);
       } else {
         stopTimerBCLK();
       }
@@ -696,32 +692,32 @@ public class CIA6526 implements BusDevice {
    * Count timer B.
    */
   protected void countTimerB() {
-    if (--_timerB == 0) {
+    if (--timerB == 0) {
       timerBUnderflow();
     }
   }
 
   protected void timerBUnderflow() {
     // automatic reload
-    _timerB = _timerBInit;
+    timerB = timerBInit;
 
     // irq
-    _irq |= ICR_UNDERFLOW_TIMER_B;
-    if ((_irqMask & ICR_UNDERFLOW_TIMER_B) != 0) {
-      _irq |= ICR_IRQ;
-      _irqPort.setOutputData(0x0);
+    irq |= ICR_UNDERFLOW_TIMER_B;
+    if ((irqMask & ICR_UNDERFLOW_TIMER_B) != 0) {
+      irq |= ICR_IRQ;
+      irqPort.setOutputData(0x0);
     }
 
-    if ((_controlB & CR_UNDERFLOW_PB) != 0) {
+    if ((controlB & CR_UNDERFLOW_PB) != 0) {
       // PB7 signalling
-      if ((_controlB & CR_UNDERFLOW_PB_TOGGLE) != 0) {
+      if ((controlB & CR_UNDERFLOW_PB_TOGGLE) != 0) {
         // toggle PB7
-        _portB.setOutputData(_portB.outputData() ^ PB7);
+        portB.setOutputData(portB.outputData() ^ PB7);
       } else {
         // hi strobe
-        _portB.setOutputData(_portB.outputData() | PB7);
+        portB.setOutputData(portB.outputData() | PB7);
         // TODO wait for 1 tick
-        _portB.setOutputData(_portB.outputData() & PB7_MASK);
+        portB.setOutputData(portB.outputData() & PB7_MASK);
       }
     }
   }
