@@ -1,5 +1,7 @@
 package de.heiden.jem.components.ports;
 
+import jakarta.annotation.Nonnull;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,90 +14,84 @@ public final class InputPortImpl implements InputPort {
   /**
    * Output ports and the listeners listening to them.
    */
-  private final Map<OutputPort, PortListener> _outputPortListeners = new HashMap<>();
+  private final Map<OutputPort, PortListener> outputPortListeners = new HashMap<>();
 
   /**
    * Output ports driving this port.
    */
-  private OutputPort[] _outputPorts = new OutputPort[0];
+  private OutputPort[] outputPorts = new OutputPort[0];
 
   /**
    * Input port listeners.
    */
-  private List<PortListener> _inputListenerLists = new ArrayList<>();
+  private List<PortListener> inputListenerLists = new ArrayList<>();
 
   /**
    * Input port listener array.
    */
-  private PortListener[] _inputListeners = new PortListener[0];
+  private PortListener[] inputListeners = new PortListener[0];
 
   /**
    * Port data.
    */
-  private int _inputData = 0xFF;
+  private int inputData = 0xFF;
 
   /**
    * Input mask: bit == 1 -> line is input.
    */
-  private int _inputMask = 0xFF;
+  private int inputMask = 0xFF;
 
   /**
-   * Connect output port to this input port.
+   * Connect the output port to this input port.
    *
    * @param port output port to connect to.
    * @require port != null
    */
   @Override
-  public void connect(OutputPort port) {
-    assert port != null : "port != null";
-
+  public void connect(@Nonnull OutputPort port) {
     PortListener listener = (value, mask) -> updateInputPort();
-    _outputPortListeners.put(port, listener);
-    _outputPorts = _outputPortListeners.keySet().toArray(OutputPort[]::new);
+    outputPortListeners.put(port, listener);
+    outputPorts = outputPortListeners.keySet().toArray(OutputPort[]::new);
     port.addOutputPortListener(listener);
     updateInputPort();
   }
 
   /**
-   * Disconnect output port from this input port.
+   * Disconnect the output port from this input port.
    *
    * @param port output port to disconnect.
    * @require port != null
    */
   @Override
-  public void disconnect(OutputPort port) {
-    PortListener listener = _outputPortListeners.remove(port);
-    _outputPorts = _outputPortListeners.keySet().toArray(OutputPort[]::new);
+  public void disconnect(@Nonnull OutputPort port) {
+    var listener = outputPortListeners.remove(port);
+    outputPorts = outputPortListeners.keySet().toArray(OutputPort[]::new);
     port.removeOutputPortListener(listener);
     updateInputPort();
   }
 
   /**
-   * Add input port listener.
+   * Add the input port listener.
    *
    * @param listener port listener.
    * @require listener != null
    */
   @Override
-  public void addInputPortListener(PortListener listener) {
-    assert listener != null : "listener != null";
-
-    _inputListenerLists.add(listener);
-    _inputListeners = _inputListenerLists.toArray(PortListener[]::new);
+  public void addInputPortListener(@Nonnull PortListener listener) {
+    inputListenerLists.add(listener);
+    inputListeners = inputListenerLists.toArray(PortListener[]::new);
   }
 
   /**
-   * Remove input port listener.
+   * Remove the input port listener.
    *
    * @param listener port listener.
    * @require listener != null
    */
   @Override
-  public void removeInputPortListener(PortListener listener) {
-    assert listener != null : "listener != null";
-
-    _inputListenerLists.remove(listener);
-    _inputListeners = _inputListenerLists.toArray(PortListener[]::new);
+  public void removeInputPortListener(@Nonnull PortListener listener) {
+    inputListenerLists.remove(listener);
+    inputListeners = inputListenerLists.toArray(PortListener[]::new);
   }
 
   /**
@@ -103,7 +99,7 @@ public final class InputPortImpl implements InputPort {
    */
   @Override
   public int inputData() {
-    return _inputData;
+    return inputData;
   }
 
   /**
@@ -112,7 +108,7 @@ public final class InputPortImpl implements InputPort {
    */
   @Override
   public int inputMask() {
-    return _inputMask;
+    return inputMask;
   }
 
   //
@@ -120,20 +116,20 @@ public final class InputPortImpl implements InputPort {
   //
 
   /**
-   * Update current value of input port.
+   * Update the current value of thee input port.
    */
-  protected final void updateInputPort() {
+  protected void updateInputPort() {
     int inputData = 0xFF;
     int inputMask = 0x00;
-    for (OutputPort port : _outputPorts) {
+    for (var port : outputPorts) {
       inputData &= port.outputData();
       inputMask |= port.outputMask();
     }
     inputData |= 0xFF - inputMask;
 
-    if (inputData != _inputData || inputMask != _inputMask) {
-      _inputData = inputData;
-      _inputMask = inputMask;
+    if (inputData != this.inputData || inputMask != this.inputMask) {
+      this.inputData = inputData;
+      this.inputMask = inputMask;
       notifyInputPortListeners();
     }
   }
@@ -141,10 +137,10 @@ public final class InputPortImpl implements InputPort {
   /**
    * Notify all listeners.
    */
-  protected final void notifyInputPortListeners() {
-    final int inputData = _inputData;
-    final int inputMask = _inputMask;
-    for (PortListener listener : _inputListeners) {
+  protected void notifyInputPortListeners() {
+    final int inputData = this.inputData;
+    final int inputMask = this.inputMask;
+    for (var listener : inputListeners) {
       listener.portChanged(inputData, inputMask);
     }
   }

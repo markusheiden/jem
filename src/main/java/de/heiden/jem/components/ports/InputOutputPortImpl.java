@@ -1,5 +1,7 @@
 package de.heiden.jem.components.ports;
 
+import jakarta.annotation.Nonnull;
+
 /**
  * Input / output port implementation.
  */
@@ -7,55 +9,55 @@ public final class InputOutputPortImpl implements InputOutputPort {
   /**
    * Input port.
    */
-  private final InputPortImpl _inputPort = new InputPortImpl();
+  private final InputPort inputPort = new InputPortImpl();
 
   /**
    * Output port.
    */
-  private final OutputPortImpl _outputPort = new OutputPortImpl();
+  private final OutputPort outputPort = new OutputPortImpl();
 
   /**
-   * Connect output port to this input port.
+   * Connect the output port to this input port.
    *
    * @param port output port to connect to.
    * @require port != null
    */
   @Override
-  public void connect(OutputPort port) {
-    _inputPort.connect(port);
+  public void connect(@Nonnull OutputPort port) {
+    inputPort.connect(port);
   }
 
   /**
-   * Disconnect output port from this input port.
+   * Disconnect the output port from this input port.
    *
    * @param port output port to disconnect.
    * @require port != null
    */
   @Override
-  public void disconnect(OutputPort port) {
-    _inputPort.disconnect(port);
+  public void disconnect(@Nonnull OutputPort port) {
+    inputPort.disconnect(port);
   }
 
   /**
-   * Add input port listener.
+   * Add the input port listener.
    *
    * @param listener port listener.
    * @require listener != null
    */
   @Override
-  public void addInputPortListener(PortListener listener) {
-    _inputPort.addInputPortListener(listener);
+  public void addInputPortListener(@Nonnull PortListener listener) {
+    inputPort.addInputPortListener(listener);
   }
 
   /**
-   * Remove input port listener.
+   * Remove the input port listener.
    *
    * @param listener port listener.
    * @require listener != null
    */
   @Override
-  public void removeInputPortListener(PortListener listener) {
-    _inputPort.removeInputPortListener(listener);
+  public void removeInputPortListener(@Nonnull PortListener listener) {
+    inputPort.removeInputPortListener(listener);
   }
 
   /**
@@ -63,7 +65,7 @@ public final class InputOutputPortImpl implements InputOutputPort {
    */
   @Override
   public int inputData() {
-    return _inputPort.inputData();
+    return inputPort.inputData();
   }
 
   /**
@@ -72,63 +74,63 @@ public final class InputOutputPortImpl implements InputOutputPort {
    */
   @Override
   public int inputMask() {
-    return _inputPort.inputMask();
+    return inputPort.inputMask();
   }
 
   /**
-   * Add output port listener.
+   * Add the output port listener.
    *
    * @param listener port listener.
    * @require listener != null
    */
   @Override
-  public void addOutputPortListener(PortListener listener) {
-    _outputPort.addOutputPortListener(listener);
+  public void addOutputPortListener(@Nonnull PortListener listener) {
+    outputPort.addOutputPortListener(listener);
   }
 
   /**
-   * Remove output port listener.
+   * Remove the output port listener.
    *
    * @param listener port listener.
    * @require listener != null
    */
   @Override
-  public void removeOutputPortListener(PortListener listener) {
-    _outputPort.removeOutputPortListener(listener);
+  public void removeOutputPortListener(@Nonnull PortListener listener) {
+    outputPort.removeOutputPortListener(listener);
   }
 
   /**
-   * Port output data.
+   * The port output data.
    */
   @Override
   public int outputData() {
-    int mask = _outputPort.outputMask();
-    return _outputPort.outputData() & mask | _inputPort.inputData() & ~mask;
+    int mask = outputPort.outputMask();
+    return outputPort.outputData() & mask | inputPort.inputData() & ~mask;
   }
 
   /**
-   * Port output mask.
+   * The port output mask.
    * Set bit means port bit is output. Cleared bit means port bit is not driven.
    */
   @Override
   public int outputMask() {
-    return _outputPort.outputMask();
+    return outputPort.outputMask();
   }
 
   /**
-   * Set port output data.
+   * Set the port output data.
    */
   @Override
   public void setOutputData(int data) {
-    _outputPort.setOutputData(data);
+    outputPort.setOutputData(data);
   }
 
   /**
-   * Set port output mask.
+   * Set the port output mask.
    * Set bit means port bit is output. Cleared bit means port bit is not driven.
    */
   @Override
   public void setOutputMask(int mask) {
-    _outputPort.setOutputMask(mask);
+    outputPort.setOutputMask(mask);
   }
 }
