@@ -9,7 +9,7 @@ import javafx.scene.Scene;
  */
 public class KeyListener {
   /**
-   * Attach key listeners to scene.
+   * Attach key listeners to the scene.
    *
    * @param scene Scene
    * @param keyboard Keyboard
