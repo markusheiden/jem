@@ -39,7 +39,7 @@ public class SystemOut extends Patch {
         stream.write(state.A);
       }
     } catch (IOException e) {
-      // ignore
+      // Ignore.
     }
 
     return replaced;

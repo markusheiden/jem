@@ -5,7 +5,7 @@ import de.heiden.jem.models.c64.components.cpu.CPU6510State;
 import de.heiden.jem.models.c64.components.cpu.Patch;
 
 /**
- * Patch which inserts a RTS to immediately return from a subroutine.
+ * Patch which inserts an RTS to immediately return from a subroutine.
  */
 public class Return extends Patch {
   /**
