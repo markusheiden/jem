@@ -1,5 +1,7 @@
 package de.heiden.jem.components.ports;
 
+import jakarta.annotation.Nonnull;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,49 +12,45 @@ public final class OutputPortImpl implements OutputPort {
   /**
    * Output port listeners.
    */
-  private final List<PortListener> _outputListenerList = new ArrayList<>();
+  private final List<PortListener> outputListenerList = new ArrayList<>();
 
   /**
    * Output port listener array.
    */
-  private PortListener[] _outputListeners = new PortListener[0];
+  private PortListener[] outputListeners = new PortListener[0];
 
   /**
    * Port data.
    */
-  private volatile int _outputData = 0xFF;
+  private volatile int outputData = 0xFF;
 
   /**
    * Output mask: bit == 1 -> line is output.
    */
-  private volatile int _outputMask = 0x00;
+  private volatile int outputMask = 0x00;
 
   /**
-   * Add port listener.
+   * Add the port listener.
    *
    * @param listener port listener.
    * @require listener != null
    */
   @Override
-  public void addOutputPortListener(PortListener listener) {
-    assert listener != null : "listener != null";
-
-    _outputListenerList.add(listener);
-    _outputListeners = _outputListenerList.toArray(PortListener[]::new);
+  public void addOutputPortListener(@Nonnull PortListener listener) {
+    outputListenerList.add(listener);
+    outputListeners = outputListenerList.toArray(PortListener[]::new);
   }
 
   /**
-   * Remove port listener.
+   * Remove the port listener.
    *
    * @param listener port listener.
    * @require listener != null
    */
   @Override
-  public void removeOutputPortListener(PortListener listener) {
-    assert listener != null : "listener != null";
-
-    _outputListenerList.remove(listener);
-    _outputListeners = _outputListenerList.toArray(PortListener[]::new);
+  public void removeOutputPortListener(@Nonnull PortListener listener) {
+    outputListenerList.remove(listener);
+    outputListeners = outputListenerList.toArray(PortListener[]::new);
   }
 
   /**
@@ -60,7 +58,7 @@ public final class OutputPortImpl implements OutputPort {
    */
   @Override
   public int outputData() {
-    return _outputData;
+    return outputData;
   }
 
   /**
@@ -69,29 +67,29 @@ public final class OutputPortImpl implements OutputPort {
    */
   @Override
   public int outputMask() {
-    return _outputMask;
+    return outputMask;
   }
 
   /**
-   * Set port output data.
+   * Set the port output data.
    *
    * @param data new output value.
    */
   @Override
   public void setOutputData(int data) {
-    _outputData = data;
+    outputData = data;
     notifyOutputPortListeners();
   }
 
   /**
-   * Set port output mask.
+   * Set the port output mask.
    * Set bit means port bit is output. Cleared bit means port bit is not driven.
    *
    * @param mask driven bits.
    */
   @Override
   public void setOutputMask(int mask) {
-    _outputMask = mask;
+    outputMask = mask;
     notifyOutputPortListeners();
   }
 
@@ -102,10 +100,10 @@ public final class OutputPortImpl implements OutputPort {
   /**
    * Notify all listeners.
    */
-  protected final void notifyOutputPortListeners() {
-    final int outputData = _outputData;
-    final int outputMask = _outputMask;
-    for (PortListener listener : _outputListeners) {
+  protected void notifyOutputPortListeners() {
+    final int outputData = this.outputData;
+    final int outputMask = this.outputMask;
+    for (PortListener listener : outputListeners) {
       listener.portChanged(outputData, outputMask);
     }
   }
