@@ -7,7 +7,6 @@ import de.heiden.jem.models.c64.components.cpu.Patch;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -36,14 +35,13 @@ public class LoadFromDirectory extends Patch {
   @Override
   protected int execute(CPU6510State state, BusDevice bus) {
     // Read filename from ($BB), length ($B7)
-    WordBus wordBus = new WordBus(bus);
-    String filename = StringUtil.read(bus, wordBus.readWord(0xBB), bus.read(0xB7));
+    var wordBus = new WordBus(bus);
+    var filename = StringUtil.read(bus, wordBus.readWord(0xBB), bus.read(0xB7));
     if (!filename.contains(".")) {
       filename = filename.toLowerCase() + ".prg";
     }
 
-    try {
-      InputStream file = Files.newInputStream(baseDir.resolve(filename));
+    try (var file = Files.newInputStream(baseDir.resolve(filename))) {
       int endAddress = bus.read(0xB9) == 0 ?
         FileUtil.read(file, wordBus.readWord(0xC3), bus) :
         FileUtil.read(file, bus);

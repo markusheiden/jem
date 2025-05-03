@@ -2,6 +2,7 @@ package de.heiden.jem.models.c64.components.patch;
 
 import de.heiden.c64dt.charset.PetSCIICharset;
 import de.heiden.jem.components.bus.BusDevice;
+import jakarta.annotation.Nonnull;
 
 /**
  * Util method for handling C64 strings.
@@ -20,10 +21,8 @@ public class StringUtil {
    * @param len Length of string.
    * @return String.
    */
-  public static String read(BusDevice bus, int addr, int len) {
-    assert bus != null : "bus != null";
-
-    StringBuilder result = new StringBuilder(len);
+  public static String read(@Nonnull BusDevice bus, int addr, int len) {
+    var result = new StringBuilder(len);
     for (int i = 0; i < len; i++) {
       result.append(charset.toChar((byte) bus.read(addr + i)));
     }
@@ -37,10 +36,10 @@ public class StringUtil {
    * @param bytes Byte representation.
    * @return String.
    */
-  public static String read(byte[] bytes) {
-    StringBuilder result = new StringBuilder(bytes.length);
-    for (int i = 0; i < bytes.length; i++) {
-      result.append(charset.toChar(bytes[i]));
+  public static String read(@Nonnull byte[] bytes) {
+    var result = new StringBuilder(bytes.length);
+    for (byte b : bytes) {
+      result.append(charset.toChar(b));
     }
 
     return result.toString();

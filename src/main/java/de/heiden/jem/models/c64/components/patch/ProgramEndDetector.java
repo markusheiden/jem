@@ -14,7 +14,7 @@ public class ProgramEndDetector extends Patch {
   private boolean end = false;
 
   /**
-   * Error code at program end.
+   * Error code at the program end.
    */
   private int error = 0;
 
@@ -35,7 +35,7 @@ public class ProgramEndDetector extends Patch {
   }
 
   /**
-   * Error code at program end.
+   * Error code at the program end.
    */
   public int getError() {
     return error;
