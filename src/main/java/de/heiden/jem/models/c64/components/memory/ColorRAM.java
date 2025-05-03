@@ -36,7 +36,7 @@ public class ColorRAM extends AbstractMemory {
     assert value >= 0 && value < 0x100 : "value >= 0 && value < 0x100";
 
     // high nibble is always 0
-    _memory[address & _mask] = value & 0x0F;
+    memory[address & mask] = value & 0x0F;
   }
 
   /**
@@ -47,7 +47,7 @@ public class ColorRAM extends AbstractMemory {
    */
   @Override
   public final int read(int address) {
-    int result = _memory[address & _mask];
+    int result = memory[address & mask];
     assert result >= 0 && result < 0x10 : "result >= 0 && result < 0x10";
     return result;
   }

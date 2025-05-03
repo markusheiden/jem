@@ -38,7 +38,7 @@ public final class ROM extends AbstractMemory implements Patchable {
     // 0x100 is used to escape emulation in the cpu
     assert value >= 0 && value < 0x100 : "value >= 0 && value < 0x100";
 
-    _memory[address & _mask] = value;
+    memory[address & mask] = value;
   }
 
   /**
@@ -49,7 +49,7 @@ public final class ROM extends AbstractMemory implements Patchable {
    */
   @Override
   public int read(int address) {
-    int result = _memory[address & _mask];
+    int result = memory[address & mask];
     // 0x100 is used to escape emulation in the cpu
     assert result >= 0x00 && result < 0x100 : "result >= 0x00 && result < 0x100";
     return result;
