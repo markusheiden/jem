@@ -13,66 +13,54 @@ public abstract class KeyMapping {
   /**
    * Mapping characters to C64 keys.
    */
-  private final Map<Character, Key[]> _chars;
+  private final Map<Character, Key[]> chars;
 
   /**
    * Mapping special keys to C64 keys.
    */
-  private final Map<Integer, Key[]> _keys;
+  private final Map<Integer, Key[]> keys;
 
   /**
    * Constructor.
    */
   public KeyMapping() {
-    _chars = new HashMap<>();
-    _keys = new HashMap<>();
+    chars = new HashMap<>();
+    keys = new HashMap<>();
 
     generateKeyMapping();
   }
 
   /**
-   * Get key for virtual key.
+   * Get the key for the virtual key.
    *
    * @param e Key(Event)
-   * @return Key or null if key is not mapped
+   * @return Key or null if the key is not mapped
    */
   public Key[] getKeys(KeyEvent e) {
-    Key[] result = _chars.get(e.getKeyChar());
+    var result = chars.get(e.getKeyChar());
     if (result == null) {
-      result = _keys.get(keyID(e.getKeyLocation(), e.getKeyCode()));
+      result = keys.get(keyID(e.getKeyLocation(), e.getKeyCode()));
     }
 
     return result;
   }
 
   /**
-   * Get string representation for virtual key.
+   * Get string representation for the virtual key.
    *
    * @param e Key(Event)
-   * @return description of virtual key
+   * @return description of the virtual key
    */
   public static String toString(KeyEvent e) {
-    String result = KeyEvent.getKeyText(e.getKeyCode());
-    switch (e.getKeyLocation()) {
-      case KeyEvent.KEY_LOCATION_STANDARD: {
-        return result + " (standard)";
-      }
-      case KeyEvent.KEY_LOCATION_LEFT: {
-        return result + " (left)";
-      }
-      case KeyEvent.KEY_LOCATION_RIGHT: {
-        return result + " (right)";
-      }
-      case KeyEvent.KEY_LOCATION_NUMPAD: {
-        return result + " (numpad)";
-      }
-      case KeyEvent.KEY_LOCATION_UNKNOWN: {
-        return result + " (unknown)";
-      }
-      default: {
-        return result + " (???)";
-      }
-    }
+    var result = KeyEvent.getKeyText(e.getKeyCode());
+    return switch (e.getKeyLocation()) {
+      case KeyEvent.KEY_LOCATION_STANDARD -> result + " (standard)";
+      case KeyEvent.KEY_LOCATION_LEFT -> result + " (left)";
+      case KeyEvent.KEY_LOCATION_RIGHT -> result + " (right)";
+      case KeyEvent.KEY_LOCATION_NUMPAD -> result + " (numpad)";
+      case KeyEvent.KEY_LOCATION_UNKNOWN -> result + " (unknown)";
+      default -> result + " (???)";
+    };
   }
 
   //
@@ -98,17 +86,17 @@ public abstract class KeyMapping {
    * @param keys C64 keys
    */
   protected final void addChar(char c, Key... keys) {
-    _chars.put(c, keys);
+    chars.put(c, keys);
   }
 
   /**
    * Map a special key to C64 keys.
    *
-   * @param location Location of special key
-   * @param key Key code of special key
+   * @param location Location of the special key
+   * @param key Key code of the special key
    * @param keys C64 keys
    */
   protected final void addCode(int location, int key, Key... keys) {
-    _keys.put(keyID(location, key), keys);
+    this.keys.put(keyID(location, key), keys);
   }
 }

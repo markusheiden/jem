@@ -22,7 +22,7 @@ public class C64Application {
   /**
    * Main frame.
    */
-  private JFrame _frame;
+  private JFrame frame;
 
   /**
    * Constructor.
@@ -34,34 +34,34 @@ public class C64Application {
   }
 
   /**
-   * Start application.
+   * Start the application.
    */
   public void start() throws Exception {
     c64 = new C64(clock);
 
-    _frame = new JFrame("C64");
-    _frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+    frame = new JFrame("C64");
+    frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
     VICScreen screen = new VICScreen(c64.getVIC()._displayUnit);
-    _frame.addKeyListener(new KeyListener(c64.getKeyboard(), new PCMapping()));
-    _frame.getContentPane().add(screen);
+    frame.addKeyListener(new KeyListener(c64.getKeyboard(), new PCMapping()));
+    frame.getContentPane().add(screen);
 
     // pack
-    _frame.pack();
+    frame.pack();
     // _frame.setResizable(false);
-    _frame.setVisible(true);
+    frame.setVisible(true);
 
     c64.start();
   }
 
   /**
-   * Stop application.
+   * Stop the application.
    */
   public void stop() {
     c64.stop();
 
-    _frame.setVisible(false);
-    _frame.dispose();
-    _frame = null;
+    frame.setVisible(false);
+    frame.dispose();
+    frame = null;
   }
 }
