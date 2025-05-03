@@ -3,7 +3,6 @@ package de.heiden.jem.models.c64.gui.swing.monitor;
 import de.heiden.c64dt.assembler.Disassembler;
 import de.heiden.c64dt.gui.swing.JC64TextArea;
 import de.heiden.jem.models.c64.components.cpu.CPU6510Debugger;
-import de.heiden.jem.models.c64.components.cpu.Trace;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,11 +13,11 @@ import java.io.StringWriter;
  * GUI for showing the trace of execution.
  */
 public class TraceGUI extends JPanel {
-  private final JC64TextArea _text;
+  private final JC64TextArea text;
 
-  private final Disassembler _disassembler;
+  private final Disassembler disassembler;
 
-  private CPU6510Debugger _cpu;
+  private CPU6510Debugger cpu;
 
   /**
    * Constructor.
@@ -26,15 +25,15 @@ public class TraceGUI extends JPanel {
   public TraceGUI() {
     setLayout(new BorderLayout());
 
-    _text = new JC64TextArea(26, 10, 2, false);
+    text = new JC64TextArea(26, 10, 2, false);
 
-    add(_text, BorderLayout.CENTER);
+    add(text, BorderLayout.CENTER);
 
-    _disassembler = new Disassembler();
+    disassembler = new Disassembler();
   }
 
   public final void setCpu(CPU6510Debugger cpu) {
-    _cpu = cpu;
+    this.cpu = cpu;
 
     stateChanged();
   }
@@ -48,22 +47,22 @@ public class TraceGUI extends JPanel {
    */
   public void stateChanged() {
     // update text
-    _text.clear();
-    if (_cpu != null) {
+    text.clear();
+    if (cpu != null) {
       try {
-        int currentTrace = _cpu.getCurrentTrace();
-        Trace[] traces = _cpu.getTraces();
+        var currentTrace = cpu.getCurrentTrace();
+        var traces = cpu.getTraces();
         for (int i = 9; i >= 0; i--) {
           currentTrace--;
           if (currentTrace < 0) {
             currentTrace = traces.length - 1;
           }
-          Trace trace = traces[currentTrace];
+          var trace = traces[currentTrace];
 
-          StringWriter output = new StringWriter(20);
-          _disassembler.disassemble(trace.toCodeBuffer(), output);
+          var output = new StringWriter(20);
+          disassembler.disassemble(trace.toCodeBuffer(), output);
 
-          _text.setText(0, i, output.toString());
+          text.setText(0, i, output.toString());
 
         }
       } catch (IOException e) {
