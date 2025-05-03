@@ -1,5 +1,7 @@
 package de.heiden.jem.components.clock;
 
+import jakarta.annotation.Nonnull;
+
 /**
  * Clock event.
  */
@@ -30,9 +32,7 @@ public abstract class ClockEvent {
   /**
    * Constructor.
    */
-  protected ClockEvent(String name) {
-    assert name != null : "name != null";
-
+  protected ClockEvent(@Nonnull String name) {
     this.name = name;
   }
 

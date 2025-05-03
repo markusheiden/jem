@@ -6,6 +6,7 @@ import de.heiden.jem.components.clock.ClockEvent;
 import de.heiden.jem.components.clock.ClockedComponent;
 import de.heiden.jem.components.clock.ManualAbort;
 import de.heiden.jem.components.clock.Tick;
+import jakarta.annotation.Nonnull;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -40,21 +41,21 @@ public abstract class AbstractSynchronizedClock extends AbstractClock {
   private final AtomicLong tick = new AtomicLong(-1);
 
   @Override
-  public final void addClockEvent(long tick, ClockEvent event) {
+  public final void addClockEvent(long tick, @Nonnull ClockEvent event) {
     synchronized (monitor) {
       super.addClockEvent(tick, event);
     }
   }
 
   @Override
-  public final void updateClockEvent(long tick, ClockEvent event) {
+  public final void updateClockEvent(long tick, @Nonnull ClockEvent event) {
     synchronized (monitor) {
       super.updateClockEvent(tick, event);
     }
   }
 
   @Override
-  public final void removeClockEvent(ClockEvent event) {
+  public final void removeClockEvent(@Nonnull ClockEvent event) {
     synchronized (monitor) {
       super.removeClockEvent(event);
     }

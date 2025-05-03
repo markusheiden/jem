@@ -1,5 +1,6 @@
 package de.heiden.jem.components.clock;
 
+import jakarta.annotation.Nonnull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,29 +20,29 @@ public abstract class AbstractClock implements Clock {
   /**
    * Has the clock been started?.
    */
-  private final AtomicBoolean _started = new AtomicBoolean(false);
+  private final AtomicBoolean started = new AtomicBoolean(false);
 
   /**
    * Clocked components.
    */
-  private final SortedMap<Integer, ClockedComponent> _componentMap = new TreeMap<>();
+  private final SortedMap<Integer, ClockedComponent> componentMap = new TreeMap<>();
 
   /**
    * Events.
    */
-  private ClockEvent _events;
+  private ClockEvent events;
 
   /**
    * Constructor.
    */
   protected AbstractClock() {
-    _events = new ClockEvent("End") {
+    events = new ClockEvent("End") {
       @Override
       public void execute(long tick) {
         throw new IllegalStateException("End marker event may never be executed.");
       }
     };
-    _events.tick = Long.MAX_VALUE;
+    events.tick = Long.MAX_VALUE;
   }
 
   /**
@@ -49,11 +50,11 @@ public abstract class AbstractClock implements Clock {
    */
   @Override
   public boolean isStarted() {
-    return _started.get();
+    return started.get();
   }
 
   /**
-   * Add clocked component.
+   * Add a clocked component.
    *
    * @param position position to insert component in execute queue
    * @param component clocked component to add
@@ -62,14 +63,13 @@ public abstract class AbstractClock implements Clock {
    * @ensure result != null
    */
   @Override
-  public synchronized <C extends ClockedComponent> C addClockedComponent(int position, C component) {
-    assert component != null : "Precondition: component != null";
+  public synchronized <C extends ClockedComponent> C addClockedComponent(int position, @Nonnull C component) {
     assert position >= 0 : "Precondition: position >= 0";
     assert !isStarted() : "Precondition: !isStarted()";
 
     logger.debug("add component {}", component.getName());
 
-    var removed = _componentMap.put(position, component);
+    var removed = componentMap.put(position, component);
     assert removed == null : "Check: no duplicate positions";
 
     return component;
@@ -79,7 +79,7 @@ public abstract class AbstractClock implements Clock {
    * All clocked components in order.
    */
   protected ClockedComponent[] clockedComponents() {
-    return _componentMap.values().toArray(ClockedComponent[]::new);
+    return componentMap.values().toArray(ClockedComponent[]::new);
   }
 
   @Override
@@ -110,7 +110,7 @@ public abstract class AbstractClock implements Clock {
    * Init clock.
    */
   private void init() {
-    if (!_started.getAndSet(true)) {
+    if (!started.getAndSet(true)) {
       doInit();
     }
   }
@@ -123,7 +123,7 @@ public abstract class AbstractClock implements Clock {
   }
 
   /**
-   * Run this clock for ever.
+   * Run this clock forever.
    */
   protected abstract void doRun();
 
@@ -135,7 +135,7 @@ public abstract class AbstractClock implements Clock {
   protected abstract void doRun(int ticks);
 
   /**
-   * Execute component thread.
+   * Execute the component thread.
    */
 /*
   @Interruptible
@@ -152,21 +152,20 @@ public abstract class AbstractClock implements Clock {
     try {
       doClose();
     } finally {
-      _started.set(false);
+      started.set(false);
     }
   }
 
   /**
-   * Dispose clock and all its clocked components.
+   * Dispose the clock and all its clocked components.
    */
   protected void doClose() {
     // overwrite, if needed
   }
 
   @Override
-  public void addClockEvent(final long tick, final ClockEvent newEvent) {
+  public void addClockEvent(final long tick, final @Nonnull ClockEvent newEvent) {
     assert tick > getTick() : "tick > getTick()";
-    assert newEvent != null : "newEvent != null";
 
 //    if (_logger.isDebugEnabled()) {
 //      _logger.debug("Add event {} at {}.", newEvent, tick);
@@ -174,14 +173,14 @@ public abstract class AbstractClock implements Clock {
 
     newEvent.tick = tick;
 
-    var nextEvent = _events;
+    var nextEvent = events;
     while (tick > nextEvent.tick) {
       nextEvent = nextEvent.next;
       // search further
     }
 
-    if (nextEvent == _events) {
-      _events = newEvent;
+    if (nextEvent == events) {
+      events = newEvent;
     } else {
       var previousEvent = nextEvent.previous;
       previousEvent.next = newEvent;
@@ -192,9 +191,8 @@ public abstract class AbstractClock implements Clock {
   }
 
   @Override
-  public void updateClockEvent(final long tick, final ClockEvent eventToUpdate) {
+  public void updateClockEvent(final long tick, final @Nonnull ClockEvent eventToUpdate) {
     assert tick > getTick() : "tick > getTick()";
-    assert eventToUpdate != null : "eventToUpdate != null";
 
     if (tick == eventToUpdate.tick) {
       // Nothing to do -> Return early.
@@ -207,9 +205,7 @@ public abstract class AbstractClock implements Clock {
   }
 
   @Override
-  public void removeClockEvent(final ClockEvent oldEvent) {
-    assert oldEvent != null : "oldEvent != null";
-
+  public void removeClockEvent(final @Nonnull ClockEvent oldEvent) {
 //    if (_logger.isDebugEnabled()) {
 //      _logger.debug("Remove event {}.", event);
 //    }
@@ -217,8 +213,8 @@ public abstract class AbstractClock implements Clock {
     var previousEvent = oldEvent.previous;
     var nextEvent = oldEvent.next;
 
-    if (oldEvent == _events) {
-      _events = nextEvent;
+    if (oldEvent == events) {
+      events = nextEvent;
     } else if (previousEvent != null) {
       previousEvent.next = nextEvent;
     }
@@ -231,7 +227,7 @@ public abstract class AbstractClock implements Clock {
    * Next event that gets executed.
    */
   final ClockEvent getNextEvent() {
-    return _events;
+    return events;
   }
 
   /**
@@ -240,9 +236,9 @@ public abstract class AbstractClock implements Clock {
    * @param tick current clock tick
    */
   protected void executeEvents(final long tick) {
-    for (var event = _events; event.tick == tick; event = _events) {
+    for (var event = events; event.tick == tick; event = events) {
       // Remove it.
-      _events = event.next;
+      events = event.next;
 
       // Execute it.
 //      if (_logger.isDebugEnabled()) {
