@@ -1,5 +1,6 @@
 package de.heiden.jem.components.clock;
 
+import jakarta.annotation.Nonnull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,10 +14,10 @@ public class StopWatch extends ClockEvent {
    */
   private final Logger logger = LoggerFactory.getLogger(getClass());
 
-  private final Clock _clock;
-  private final long _freq;
+  private final Clock clock;
+  private final long freq;
 
-  private long _last;
+  private long last;
 
   /**
    * Constructor.
@@ -24,26 +25,25 @@ public class StopWatch extends ClockEvent {
    * @param clock clock to slow down
    * @param freq frequency in Hz (clock ticks per second)
    */
-  public StopWatch(Clock clock, long freq) {
+  public StopWatch(@Nonnull Clock clock, long freq) {
     super("Stop watch");
 
-    assert clock != null : "Precondition: clock != null";
     assert freq > 0 : "Precondition: freq > 0";
 
-    _clock = clock;
-    _freq = freq;
-    _last = System.nanoTime();
+    this.clock = clock;
+    this.freq = freq;
+    last = System.nanoTime();
 
-    _clock.addClockEvent(_freq, this);
+    this.clock.addClockEvent(this.freq, this);
   }
 
   @Override
   public void execute(long tick) {
     long now = System.nanoTime();
-    long elapsed = (now - _last) / 1000000;
+    long elapsed = (now - last) / 1000000;
     logger.info("1 simulated second took {} ms", elapsed);
-    _last = now;
+    last = now;
 
-    _clock.addClockEvent(tick + _freq, this);
+    clock.addClockEvent(tick + freq, this);
   }
 }
