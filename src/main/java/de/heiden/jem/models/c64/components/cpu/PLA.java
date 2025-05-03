@@ -1,5 +1,7 @@
 package de.heiden.jem.models.c64.components.cpu;
 
+import jakarta.annotation.Nonnull;
+
 import static de.heiden.jem.models.c64.components.cpu.PLA.Input.AEC;
 import static de.heiden.jem.models.c64.components.cpu.PLA.Input.CAS;
 
@@ -45,20 +47,19 @@ public class PLA {
     ROMH // low active
   }
 
-  private final byte[] _content;
+  private final byte[] content;
 
   /**
    * Constructor.
    */
-  public PLA(byte[] content) {
-    assert content != null : "Precondition: content != null";
+  public PLA(@Nonnull byte[] content) {
     assert content.length == 0x10000 : "Precondition: content.length == 0x10000 ";
 
-    _content = content;
+    this.content = content;
   }
 
   /**
-   * Return component (output) which is visible to the cpu.
+   * Return the component (output) which is visible to the CPU.
    *
    * @param addr address
    */

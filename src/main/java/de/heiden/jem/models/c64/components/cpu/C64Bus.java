@@ -7,6 +7,7 @@ import de.heiden.jem.components.ports.InputPort;
 import de.heiden.jem.components.ports.InputPortImpl;
 import de.heiden.jem.components.ports.OutputPort;
 import de.heiden.jem.models.c64.components.memory.Patchable;
+import jakarta.annotation.Nonnull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,28 +23,28 @@ public class C64Bus implements BusDevice, Patchable {
    */
   private final Logger logger = LoggerFactory.getLogger(getClass());
 
-  private final InputPort _cpu = new InputPortImpl();
+  private final InputPort cpu = new InputPortImpl();
 
-  private final BusDevice _ram;
-  private final BusDevice _basic;
-  private final BusDevice _vic;
-  private final BusDevice _colorRam;
-  private final BusDevice _cia1;
-  private final BusDevice _cia2;
-  private final BusDevice _charset;
-  private final BusDevice _kernel;
+  private final BusDevice ram;
+  private final BusDevice basic;
+  private final BusDevice vic;
+  private final BusDevice colorRam;
+  private final BusDevice cia1;
+  private final BusDevice cia2;
+  private final BusDevice charset;
+  private final BusDevice kernel;
 
-  private BusDevice _cartridgeL;
-  private BusDevice _cartridgeH;
-  private BusDevice _cartridge;
+  private BusDevice cartridgeL;
+  private BusDevice cartridgeH;
+  private BusDevice cartridge;
 
-  private final BusDevice _noBusDevice;
+  private final BusDevice noBusDevice;
 
-  private BusDevice[] _ioModeRead;
-  private BusDevice[] _ioModeWrite;
+  private BusDevice[] ioModeRead;
+  private BusDevice[] ioModeWrite;
 
-  private final BusDevice[][] _ioModesRead;
-  private final BusDevice[][] _ioModesWrite;
+  private final BusDevice[][] ioModesRead;
+  private final BusDevice[][] ioModesWrite;
 
   /**
    * Constructor.
@@ -67,58 +68,49 @@ public class C64Bus implements BusDevice, Patchable {
    * @require kernel != null
    */
   public C64Bus(
-    BusDevice ram,
-    BusDevice basic,
-    BusDevice vic,
-    BusDevice colorRam,
-    BusDevice cia1,
-    BusDevice cia2,
-    BusDevice charset,
-    BusDevice kernel) {
-    assert ram != null : "ram != null";
-    assert basic != null : "basic != null";
-    assert vic != null : "vic != null";
-    assert colorRam != null : "colorRam != null";
-    assert cia1 != null : "cia1 != null";
-    assert cia2 != null : "cia2 != null";
-    assert charset != null : "charset != null";
-    assert kernel != null : "kernel != null";
+    @Nonnull BusDevice ram,
+    @Nonnull BusDevice basic,
+    @Nonnull BusDevice vic,
+    @Nonnull BusDevice colorRam,
+    @Nonnull BusDevice cia1,
+    @Nonnull BusDevice cia2,
+    @Nonnull BusDevice charset,
+    @Nonnull BusDevice kernel) {
+    this.ram = ram;
+    this.basic = basic;
+    this.vic = vic;
+    this.colorRam = colorRam;
+    this.cia1 = cia1;
+    this.cia2 = cia2;
+    this.charset = charset;
+    this.kernel = kernel;
+    noBusDevice = new NoBusDevice();
 
-    _ram = ram;
-    _basic = basic;
-    _vic = vic;
-    _colorRam = colorRam;
-    _cia1 = cia1;
-    _cia2 = cia2;
-    _charset = charset;
-    _kernel = kernel;
-    _noBusDevice = new NoBusDevice();
+    cartridge = new NoBusDevice(); // TODO
+    cartridgeL = new NoBusDevice(); // TODO
+    cartridgeH = new NoBusDevice(); // TODO
 
-    _cartridge = new NoBusDevice(); // TODO
-    _cartridgeL = new NoBusDevice(); // TODO
-    _cartridgeH = new NoBusDevice(); // TODO
+    var ioModeRead01 = computeIoModeRead(this.ram, this.ram, this.basic, null, this.kernel); // io
+    var ioModeRead02 = computeIoModeRead(this.ram, this.ram, this.basic, this.charset, this.kernel); // ram
+    var ioModeRead03 = computeIoModeRead(this.ram, this.ram, this.ram, null, this.ram); // io
+    var ioModeRead04 = computeIoModeRead(this.ram, this.ram, this.ram, this.charset, this.ram); // ram
+    var ioModeRead05 = computeIoModeRead(this.ram, this.ram, this.ram, this.ram, this.ram); // ram
+    var ioModeRead06 = computeIoModeRead(this.ram, this.ram, this.ram, null, this.kernel); // io
+    var ioModeRead07 = computeIoModeRead(this.ram, this.ram, this.basic, this.charset, this.kernel); // ram
+    var ioModeRead08 = computeIoModeRead(this.ram, cartridgeL, this.basic, null, this.kernel); // io
+    var ioModeRead09 = computeIoModeRead(this.ram, cartridgeL, this.basic, this.charset, this.kernel); // ram
+    var ioModeRead10 = computeIoModeRead(this.ram, this.ram, cartridgeH, null, this.kernel); // io
+    var ioModeRead11 = computeIoModeRead(this.ram, this.ram, cartridgeH, this.charset, this.kernel); // ram
+    var ioModeRead12 = computeIoModeRead(this.ram, cartridgeL, cartridgeH, null, this.kernel); // io
+    var ioModeRead13 = computeIoModeRead(this.ram, cartridgeL, cartridgeH, this.charset, this.kernel); // ram
+    var ioModeRead14 = computeIoModeRead(this.ram, cartridgeL, this.ram, null, cartridgeH); // cartridge / io
 
-    BusDevice[] ioModeRead01 = computeIoModeRead(_ram, _ram, _basic, null, _kernel); // io
-    BusDevice[] ioModeRead02 = computeIoModeRead(_ram, _ram, _basic, _charset, _kernel); // ram
-    BusDevice[] ioModeRead03 = computeIoModeRead(_ram, _ram, _ram, null, _ram); // io
-    BusDevice[] ioModeRead04 = computeIoModeRead(_ram, _ram, _ram, _charset, _ram); // ram
-    BusDevice[] ioModeRead05 = computeIoModeRead(_ram, _ram, _ram, _ram, _ram); // ram
-    BusDevice[] ioModeRead06 = computeIoModeRead(_ram, _ram, _ram, null, _kernel); // io
-    BusDevice[] ioModeRead07 = computeIoModeRead(_ram, _ram, _basic, _charset, _kernel); // ram
-    BusDevice[] ioModeRead08 = computeIoModeRead(_ram, _cartridgeL, _basic, null, _kernel); // io
-    BusDevice[] ioModeRead09 = computeIoModeRead(_ram, _cartridgeL, _basic, _charset, _kernel); // ram
-    BusDevice[] ioModeRead10 = computeIoModeRead(_ram, _ram, _cartridgeH, null, _kernel); // io
-    BusDevice[] ioModeRead11 = computeIoModeRead(_ram, _ram, _cartridgeH, _charset, _kernel); // ram
-    BusDevice[] ioModeRead12 = computeIoModeRead(_ram, _cartridgeL, _cartridgeH, null, _kernel); // io
-    BusDevice[] ioModeRead13 = computeIoModeRead(_ram, _cartridgeL, _cartridgeH, _charset, _kernel); // ram
-    BusDevice[] ioModeRead14 = computeIoModeRead(_ram, _cartridgeL, _ram, null, _cartridgeH); // cartridge / io
+    var ioModeWriteIo = computeIoModeWrite(this.ram, true);
+    var ioModeWriteRam = computeIoModeWrite(this.ram, false);
+    var ioModeWriteOpen = computeIoModeWrite(cartridge, true);
 
-    BusDevice[] ioModeWriteIo = computeIoModeWrite(_ram, true);
-    BusDevice[] ioModeWriteRam = computeIoModeWrite(_ram, false);
-    BusDevice[] ioModeWriteOpen = computeIoModeWrite(_cartridge, true);
-
-    _ioModeRead = ioModeRead01;
-    _ioModesRead = new BusDevice[][]
+    ioModeRead = ioModeRead01;
+    ioModesRead = new BusDevice[][]
       {
         ioModeRead07, // 00000 000x0
         ioModeRead14, // 00001 xxx01
@@ -157,8 +149,8 @@ public class C64Bus implements BusDevice, Patchable {
         ioModeRead01  // 11111 11111
       };
 
-    _ioModeWrite = ioModeWriteIo;
-    _ioModesWrite = new BusDevice[][]
+    ioModeWrite = ioModeWriteIo;
+    ioModesWrite = new BusDevice[][]
       {
         ioModeWriteRam,  // 07 00000 000x0
         ioModeWriteOpen, // 14 00001 xxx01
@@ -197,22 +189,21 @@ public class C64Bus implements BusDevice, Patchable {
         ioModeWriteIo,   // 01 11111 11111
       };
 
-    _cpu.addInputPortListener((value, mask) -> {
+    cpu.addInputPortListener((value, mask) -> {
       // TODO 2010-10-08 mh: consider signals from expansion port
       int mode = ((value << 2) | 0x03) & 0x1f;
 
-      BusDevice[] oldIoModeRead = _ioModeRead;
-      _ioModeRead = _ioModesRead[mode];
-      _ioModeWrite = _ioModesWrite[mode];
-      if (logger.isDebugEnabled() && oldIoModeRead != _ioModeRead) {
+      BusDevice[] oldIoModeRead = ioModeRead;
+      ioModeRead = ioModesRead[mode];
+      ioModeWrite = ioModesWrite[mode];
+      if (logger.isDebugEnabled() && oldIoModeRead != ioModeRead) {
         logger.debug("Changed bus mode to {}", HexUtil.hexBytePlain(mode));
       }
     });
   }
 
-  private BusDevice[] computeIoModeRead(BusDevice ram,
-                                        BusDevice x8000, BusDevice xA000, BusDevice xD000, BusDevice xE000) {
-    BusDevice[] result = new BusDevice[256];
+  private BusDevice[] computeIoModeRead(BusDevice ram, BusDevice x8000, BusDevice xA000, BusDevice xD000, BusDevice xE000) {
+    var result = new BusDevice[256];
     for (int i = 0x00; i <= 0x7F; i++) {
       result[i] = ram;
     }
@@ -240,7 +231,7 @@ public class C64Bus implements BusDevice, Patchable {
   }
 
   private BusDevice[] computeIoModeWrite(BusDevice ram, boolean io) {
-    BusDevice[] result = new BusDevice[256];
+    var result = new BusDevice[256];
     for (int i = 0x00; i <= 0xFF; i++) {
       result[i] = ram;
     }
@@ -252,19 +243,19 @@ public class C64Bus implements BusDevice, Patchable {
 
   private void setIo(BusDevice[] result) {
     for (int i = 0xD0; i <= 0xD3; i++) {
-      result[i] = _vic;
+      result[i] = vic;
     }
     // TODO markus 2016-08-16: Add SID...
     for (int i = 0xD4; i <= 0xD7; i++) {
-      result[i] = _ram;
+      result[i] = ram;
     }
     for (int i = 0xD8; i <= 0xDB; i++) {
-      result[i] = _colorRam;
+      result[i] = colorRam;
     }
-    result[0xDC] = _cia1;
-    result[0xDD] = _cia2;
-    result[0xDE] = _noBusDevice;
-    result[0xDF] = _noBusDevice;
+    result[0xDC] = cia1;
+    result[0xDD] = cia2;
+    result[0xDE] = noBusDevice;
+    result[0xDF] = noBusDevice;
   }
 
   //
@@ -274,12 +265,12 @@ public class C64Bus implements BusDevice, Patchable {
   /**
    * Connect to cpu port.
    */
-  public void connect(OutputPort cpu) {
-    _cpu.connect(cpu);
+  public void connect(@Nonnull OutputPort cpu) {
+    this.cpu.connect(cpu);
   }
 
   /**
-   * Read byte from bus device.
+   * Read a byte from the bus device.
    *
    * @param address address to read byte from
    * @require address >= 0x0000 && address < 0x10000
@@ -289,11 +280,11 @@ public class C64Bus implements BusDevice, Patchable {
   public final int read(int address) {
     assert address >= 0x0000 && address < 0x10000 : "address >= 0x0000 && address < 0x10000";
 
-    return _ioModeRead[address >> 8].read(address);
+    return ioModeRead[address >> 8].read(address);
   }
 
   /**
-   * Patch byte in ROM.
+   * Patch a byte in the ROM.
    *
    * @param value byte to write
    * @param address address to write byte to
@@ -304,11 +295,11 @@ public class C64Bus implements BusDevice, Patchable {
     // 0x100 is used to escape emulation in the cpu
     assert value >= 0 && value < 0x100 : "value >= 0 && value < 0x100";
 
-    ((Patchable) _ioModeRead[address >> 8]).patch(value, address);
+    ((Patchable) ioModeRead[address >> 8]).patch(value, address);
   }
 
   /**
-   * Write byte to bus device.
+   * Write the byte to the bus device.
    *
    * @param value byte to write
    * @param address address to write byte to
@@ -320,6 +311,6 @@ public class C64Bus implements BusDevice, Patchable {
     assert value >= 0x00 && value < 0x100 : "value >= 0x00 && value < 0x100";
     assert address >= 0x0000 && address < 0x10000 : "address >= 0x0000 && address < 0x10000";
 
-    _ioModeWrite[address >> 8].write(value, address);
+    ioModeWrite[address >> 8].write(value, address);
   }
 }

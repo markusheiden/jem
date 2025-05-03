@@ -113,7 +113,7 @@ public final class CPU6510State {
   /**
    * Reset interrupt request.
    */
-  public final void resetIRQ() {
+  public void resetIRQ() {
     IRQ = false;
     interrupt = false;
   }
@@ -121,7 +121,7 @@ public final class CPU6510State {
   /**
    * Get and increment PC.
    */
-  public final int incPC() {
+  public int incPC() {
     int pc = PC;
     PC = (pc + 1) & 0xFFFF;
     return pc;
@@ -130,7 +130,7 @@ public final class CPU6510State {
   /**
    * Stack pointer address.
    */
-  public final int getS() {
+  public int getS() {
     return STACK | S;
   }
 
@@ -139,7 +139,7 @@ public final class CPU6510State {
    *
    * @return Stack pointer address before decrement
    */
-  public final int decS() {
+  public int decS() {
     int s = S;
     S = ((s - 1) & 0xFF);
     return STACK | s;
@@ -150,7 +150,7 @@ public final class CPU6510State {
    *
    * @return Incremented stack pointer address
    */
-  public final int incS() {
+  public int incS() {
     int s = ((S + 1) & 0xFF);
     S = s;
     return STACK | s;
@@ -161,7 +161,7 @@ public final class CPU6510State {
    *
    * @param p new value for p
    */
-  public final void setP(int p) {
+  public void setP(int p) {
     assert p >= 0 && p < 0x100 : "Precondition: p >= 0 && p < 0x100";
 
     C = (p & C_BIT) != 0;
@@ -176,7 +176,7 @@ public final class CPU6510State {
   /**
    * Calculates status register P from flags.
    */
-  public final int getP() {
+  public int getP() {
     int p = U_BIT;
     if (C) {
       p |= C_BIT;
@@ -212,7 +212,7 @@ public final class CPU6510State {
    * Set N and Z of P for value.
    * Used for LDA etc.
    */
-  public final void setZeroNegativeP(int value) {
+  public void setZeroNegativeP(int value) {
     assert value >= 0 && value <= 0x100 : "Precondition: value >= 0 && value <= 0x100";
 
     Z = value == 0;
@@ -223,7 +223,7 @@ public final class CPU6510State {
    * Set Z, V and N of P for value.
    * Used for BIT.
    */
-  public final void setZeroOverflowNegativeP(int value, boolean z) {
+  public void setZeroOverflowNegativeP(int value, boolean z) {
     assert value >= 0 && value <= 0x100 : "Precondition: value >= 0 && value <= 0x100";
 
     Z = z;
@@ -235,7 +235,7 @@ public final class CPU6510State {
    * Set N, Z and C of P for value.
    * Used for ROL etc.
    */
-  public final void setCarryZeroNegativeP(int value, boolean c) {
+  public void setCarryZeroNegativeP(int value, boolean c) {
     C = c;
     Z = (value & 0xFF) == 0;
     N = (value & 0x80) != 0;
@@ -249,7 +249,7 @@ public final class CPU6510State {
    * @param s2 Summand 2
    * @param sum Sum
    */
-  public final void setCarryZeroOverflowNegativeP(int s1, int s2, int sum) {
+  public void setCarryZeroOverflowNegativeP(int s1, int s2, int sum) {
     C = (sum & 0x100) != 0;
     Z = (sum & 0xFF) == 0;
     V = ((s1 ^ sum) & (s2 ^ sum) & 0x80) != 0;
@@ -339,15 +339,14 @@ public final class CPU6510State {
    * equals.
    */
   public boolean equals(Object o) {
-    if (!(o instanceof CPU6510State state)) {
-      return false;
-    }
-
-    return PC == state.PC && S == state.S && getP() == state.getP() && A == state.A && X == state.X && Y == state.Y && IRQ == state.IRQ && NMI == state.NMI;
+    return o instanceof CPU6510State state &&
+           PC == state.PC && S == state.S && getP() == state.getP() &&
+           A == state.A && X == state.X && Y == state.Y &&
+           IRQ == state.IRQ && NMI == state.NMI;
   }
 
   /**
-   * hashCode
+   * hashCode.
    */
   public int hashCode() {
     return PC;

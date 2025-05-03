@@ -59,7 +59,7 @@ public abstract class Patch {
    *
    * @param state CPU state
    * @param bus C64 bus
-   * @return Opcode to execute after execution of patch or -1
+   * @return Opcode to execute after execution of the patch or {@code -1}.
    */
   protected abstract int execute(CPU6510State state, BusDevice bus);
 }
