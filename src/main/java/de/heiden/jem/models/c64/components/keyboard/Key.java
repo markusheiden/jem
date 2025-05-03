@@ -78,50 +78,50 @@ public enum Key {
   Q(7, 6),
   RUN_STOP(7, 7);
 
-  private final int _row;
+  private final int row;
 
-  private final int _column;
+  private final int column;
 
   /**
-   * Constructor for special key not mapped on the keyboard matrix.
+   * Constructor for special keys that are not mapped on the keyboard matrix.
    */
   Key() {
-    _row = -1;
-    _column = -1;
+    row = -1;
+    column = -1;
   }
 
   /**
    * Constructor.
    *
-   * @param row row of key in matrix
-   * @param column column of key in matrix
-   * @require row >= 0 && row < 8
-   * @require column >= 0 && column < 8
+   * @param row row of the key in matrix.
+   * @param column column of the key in matrix.
+   * @require row >= 0 && row < 8.
+   * @require column >= 0 && column < 8.
    */
   Key(int row, int column) {
     assert row >= 0 && row < 8 : "Precondition: row >= 0 && row < 8";
     assert column >= 0 && column < 8 : "Precondition: column >= 0 && column < 8";
 
-    _row = row;
-    _column = column;
+    this.row = row;
+    this.column = column;
   }
 
   /**
-   * Row of key in matrix.
+   * Row of the key in matrix.
    *
    * @ensure result >= 0 && result < 8
    */
   public int getRow() {
-    assert _row >= 0 && _row < 8 : "result >= 0 && result < 8";
-    return _row;
+    assert row >= 0 && row < 8 : "result >= 0 && result < 8";
+    return row;
   }
 
   /**
-   * Column of key in matrix.
+   * Column of the key in matrix.
    */
   public int getColumn() {
-    assert _column >= 0 && _column < 8 : "result >= 0 && result < 8";
-    return _column;
+    assert column >= 0 && column < 8 : "result >= 0 && result < 8";
+    return column;
   }
 }
 
