@@ -5,12 +5,12 @@ package de.heiden.jem.components.bus;
  */
 public final class NoBusDevice implements BusDevice {
   @Override
-  public final int read(int address) {
+  public int read(int address) {
     return 0xFF;
   }
 
   @Override
-  public final void write(int value, int address) {
+  public void write(int value, int address) {
     // ignored
   }
 }

@@ -2,6 +2,8 @@ package de.heiden.jem.components.bus;
 
 import de.heiden.c64dt.bytes.ByteUtil;
 
+import static de.heiden.c64dt.bytes.ByteUtil.toWord;
+
 /**
  * Wrapper to enable word access to bus.
  * Uses little endian.
@@ -23,7 +25,7 @@ public class WordBus extends BusDeviceAdapter {
    * @param addr Address to read from
    */
   public int readWord(int addr) {
-    return ByteUtil.toWord(read(addr), read(addr + 1));
+    return toWord(read(addr), read(addr + 1));
   }
 
   /**
