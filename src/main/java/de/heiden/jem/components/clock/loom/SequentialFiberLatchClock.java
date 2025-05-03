@@ -1,9 +1,9 @@
 package de.heiden.jem.components.clock.loom;
 
+import de.heiden.jem.components.clock.AbstractSimpleClock;
+
 import java.util.concurrent.Executor;
 import java.util.concurrent.Semaphore;
-
-import de.heiden.jem.components.clock.AbstractSimpleClock;
 
 /**
  * Clock executing {@link Thread fibers} of project loom on an {@link Executor}.
@@ -12,7 +12,6 @@ public final class SequentialFiberLatchClock extends AbstractSimpleClock {
     @Override
     protected void doRun() {
         var semaphores = createVirtualThreads(true);
-        //noinspection InfiniteLoopStatement
         semaphores.first.release();
     }
 
