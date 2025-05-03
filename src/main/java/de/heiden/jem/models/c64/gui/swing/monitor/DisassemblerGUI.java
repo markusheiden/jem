@@ -1,7 +1,6 @@
 package de.heiden.jem.models.c64.gui.swing.monitor;
 
 import de.heiden.c64dt.assembler.Disassembler;
-import de.heiden.c64dt.assembler.ICodeBuffer;
 import de.heiden.c64dt.gui.swing.JC64List;
 import de.heiden.jem.components.bus.BusDevice;
 
@@ -18,51 +17,51 @@ import java.io.StringWriter;
 public class DisassemblerGUI extends JPanel {
   private static final int BYTES_PER_LINE = 1;
 
-  private final JC64List _text;
-  private final JScrollBar _scrollBar;
+  private final JC64List text;
+  private final JScrollBar scrollBar;
 
-  private final Disassembler _disassembler;
+  private final Disassembler disassembler;
 
-  private BusDevice _bus;
+  private BusDevice bus;
 
   public DisassemblerGUI() {
     setLayout(new BorderLayout());
 
-    _text = new JC64List(26, 25, 2, true);
-    _text.setMinimumSize(new Dimension(_text.getWidth(), 0));
-    add(_text, BorderLayout.CENTER);
+    text = new JC64List(26, 25, 2, true);
+    text.setMinimumSize(new Dimension(text.getWidth(), 0));
+    add(text, BorderLayout.CENTER);
 
-    _scrollBar = new JScrollBar(JScrollBar.VERTICAL);
-    _scrollBar.setMinimum(0);
-    _scrollBar.setMaximum(0x10000 - BYTES_PER_LINE);
-    _scrollBar.setVisibleAmount(25);
-    _scrollBar.setBlockIncrement(25);
-    _scrollBar.setUnitIncrement(BYTES_PER_LINE);
-    _scrollBar.setValue(0);
-    add(_scrollBar, BorderLayout.EAST);
+    scrollBar = new JScrollBar(JScrollBar.VERTICAL);
+    scrollBar.setMinimum(0);
+    scrollBar.setMaximum(0x10000 - BYTES_PER_LINE);
+    scrollBar.setVisibleAmount(25);
+    scrollBar.setBlockIncrement(25);
+    scrollBar.setUnitIncrement(BYTES_PER_LINE);
+    scrollBar.setValue(0);
+    add(scrollBar, BorderLayout.EAST);
 
-    _disassembler = new Disassembler();
+    disassembler = new Disassembler();
 
-    _text.addListSelectionListener(e -> {
+    text.addListSelectionListener(e -> {
       if (e.getFirstIndex() == 0) {
       }
     });
 
-    // Update scroll bar on containing component change
-    _text.addComponentListener(new ComponentAdapter() {
+    // Update scroll bar on containing component change.
+    text.addComponentListener(new ComponentAdapter() {
       @Override
       public void componentResized(ComponentEvent e) {
-        _scrollBar.setVisibleAmount(25);
-        _scrollBar.setBlockIncrement(25);
+        scrollBar.setVisibleAmount(25);
+        scrollBar.setBlockIncrement(25);
         codeChanged();
       }
     });
 
-    // Update model on scroll bar change
-    _scrollBar.addAdjustmentListener(e -> setAddress(e.getValue()));
+    // Update model on scroll bar change.
+    scrollBar.addAdjustmentListener(e -> setAddress(e.getValue()));
 
-    // React on mouse wheel
-    addMouseWheelListener(e -> _scrollBar.setValue(_scrollBar.getValue() + e.getUnitsToScroll()));
+    // React on the mouse wheel.
+    addMouseWheelListener(e -> scrollBar.setValue(scrollBar.getValue() + e.getUnitsToScroll()));
   }
 
   //
@@ -70,10 +69,10 @@ public class DisassemblerGUI extends JPanel {
   //
 
   /**
-   * Set address to display.
+   * Set the address to display.
    */
   public void setAddress(int addr) {
-    _scrollBar.setValue(addr);
+    scrollBar.setValue(addr);
     codeChanged();
   }
 
@@ -83,7 +82,7 @@ public class DisassemblerGUI extends JPanel {
    * @param bus model
    */
   public void setBus(BusDevice bus) {
-    _bus = bus;
+    this.bus = bus;
     codeChanged();
   }
 
@@ -95,22 +94,22 @@ public class DisassemblerGUI extends JPanel {
    * The memory changed, so update image.
    */
   public void codeChanged() {
-    if (_bus == null) {
+    if (bus == null) {
       return;
     }
 
     // update text
     try {
-      DefaultListModel<String> model = new DefaultListModel<>();
-      ICodeBuffer code = new BusCodeBuffer(_scrollBar.getValue(), _bus);
+      var model = new DefaultListModel<String>();
+      var code = new BusCodeBuffer(scrollBar.getValue(), bus);
       model.addElement("TOP");
-      for (int i = 0; i < _text.getRows() && code.hasMore(); i++) {
-        StringWriter output = new StringWriter(64);
-        _disassembler.disassemble(code, output);
+      for (int i = 0; i < text.getRows() && code.hasMore(); i++) {
+        var output = new StringWriter(64);
+        disassembler.disassemble(code, output);
         model.addElement(output.toString());
       }
       model.addElement("BOTTOM");
-      _text.setModel(model);
+      text.setModel(model);
 
     } catch (IOException e) {
       // ignore
