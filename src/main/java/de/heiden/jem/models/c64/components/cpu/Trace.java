@@ -3,7 +3,6 @@ package de.heiden.jem.models.c64.components.cpu;
 import de.heiden.c64dt.assembler.CodeBuffer;
 import de.heiden.c64dt.assembler.Disassembler;
 import de.heiden.c64dt.assembler.ICodeBuffer;
-import de.heiden.c64dt.assembler.Opcode;
 import de.heiden.jem.components.bus.BusDevice;
 
 import java.io.IOException;
@@ -33,7 +32,7 @@ public final class Trace {
   public final byte[] bytes = new byte[3];
 
   /**
-   * Read trace data from bus.
+   * Read trace data from the bus.
    *
    * @param pc PC, address to read from.
    * @param bus Bus.
@@ -41,7 +40,7 @@ public final class Trace {
   public void read(int pc, BusDevice bus) {
     address = pc;
 
-    Opcode opcode = OPCODES[bus.read(pc)];
+    var opcode = OPCODES[bus.read(pc)];
     size = opcode.getSize();
     for (int i = 0; i < opcode.getSize(); i++) {
       bytes[i] = (byte) bus.read(pc);
@@ -53,7 +52,7 @@ public final class Trace {
    * Return opcode representation as CodeBuffer.
    */
   public ICodeBuffer toCodeBuffer() {
-    byte[] truncated = bytes;
+    var truncated = bytes;
     if (truncated.length > size) {
       truncated = new byte[size];
       arraycopy(bytes, 0, truncated, 0, size);
@@ -69,7 +68,7 @@ public final class Trace {
   @Override
   public String toString() {
     try {
-      StringWriter result = new StringWriter(40);
+      var result = new StringWriter(40);
       disassembler.disassemble(toCodeBuffer(), result);
       return result.toString();
     } catch (IOException e) {

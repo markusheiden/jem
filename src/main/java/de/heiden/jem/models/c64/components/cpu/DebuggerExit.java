@@ -1,7 +1,7 @@
 package de.heiden.jem.models.c64.components.cpu;
 
 /**
- * Easy exit of execution of C64 debug cpu.
+ * Easy exit of the execution of the C64 debug cpu.
  */
 public class DebuggerExit extends RuntimeException {
   /**
