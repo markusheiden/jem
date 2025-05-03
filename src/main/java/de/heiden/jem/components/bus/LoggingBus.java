@@ -1,5 +1,7 @@
 package de.heiden.jem.components.bus;
 
+import jakarta.annotation.Nonnull;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,7 +39,7 @@ public class LoggingBus extends BusDeviceAdapter {
   }
 
   /**
-   * Protocol all read accesses
+   * Protocol all read accesses.
    */
   @Override
   public synchronized final int read(int address) {
@@ -48,17 +50,16 @@ public class LoggingBus extends BusDeviceAdapter {
   }
 
   /**
-   * Get last log entry.
+   * Get the last log entry.
    *
    * @require getLog().length > 0
    * @ensure result != null
    */
-  public synchronized LogEntry getLastLogEntry() {
+  public synchronized @Nonnull LogEntry getLastLogEntry() {
     assert !getLog().isEmpty() : "Precondition: !getLog().isEmpty()";
 
     LogEntry result = log.get(log.size() - 1);
 
-    assert result != null : "Postcondition: result != null";
     return result;
   }
 
