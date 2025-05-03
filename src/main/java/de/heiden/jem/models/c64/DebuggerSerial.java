@@ -21,10 +21,10 @@ public class DebuggerSerial extends C64Serial {
   @Override
   public void start() {
     try {
-      Class<?> clazz = loadClass("de.heiden.jem.models.c64.gui.swing.monitor.DebuggerGUI");
-      Object debugger = clazz.getDeclaredConstructor().newInstance();
+      var clazz = loadClass("de.heiden.jem.models.c64.gui.swing.monitor.DebuggerGUI");
+      var debugger = clazz.getDeclaredConstructor().newInstance();
 
-      JFrame frame = new JFrame("C64 Debugger");
+      var frame = new JFrame("C64 Debugger");
       frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
       frame.setLayout(new BorderLayout());
 
