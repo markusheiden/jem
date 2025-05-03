@@ -10,7 +10,7 @@ public final class SequentialYieldClock extends AbstractSynchronizedClock {
    * Ordinal of component thread to execute.
    * Package visible to avoid synthetic accessors.
    */
-  volatile int _state = 0;
+  volatile int state = 0;
 
   @Override
   protected void doSynchronizedInit() {
@@ -23,7 +23,7 @@ public final class SequentialYieldClock extends AbstractSynchronizedClock {
       // Start component.
       createStartedDaemonThread(component.getName(), () -> executeComponent(component, tick));
       // Wait for component to reach first tick.
-      while (_state != state + 1) {
+      while (this.state != state + 1) {
         Thread.yield();
       }
     }
@@ -40,11 +40,11 @@ public final class SequentialYieldClock extends AbstractSynchronizedClock {
     while (true) {
       startTick();
       // Execute all component threads.
-      _state = 0;
+      state = 0;
       // Wait for all component threads to finish tick.
       do {
         Thread.yield();
-      } while (_state != finalState);
+      } while (state != finalState);
     }
   }
 
@@ -55,7 +55,7 @@ public final class SequentialYieldClock extends AbstractSynchronizedClock {
     /**
      * Ordinal of component thread.
      */
-    private final int _tickState;
+    private final int tickState;
 
     /**
      * Constructor.
@@ -63,18 +63,18 @@ public final class SequentialYieldClock extends AbstractSynchronizedClock {
      * @param state Ordinal of component thread.
      */
     private SequentialSpinTick(int state) {
-      this._tickState = state;
+      this.tickState = state;
     }
 
     @Override
     public void waitForTick() {
-      final int tickState = _tickState;
+      final int tickState = this.tickState;
       // Execute next component thread.
-      _state = tickState + 1;
-      // Wait for next tick.
+      state = tickState + 1;
+      // Wait for the next tick.
       do {
         Thread.yield();
-      } while (_state != tickState);
+      } while (state != tickState);
     }
   }
 }

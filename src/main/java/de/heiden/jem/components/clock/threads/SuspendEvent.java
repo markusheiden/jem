@@ -12,17 +12,17 @@ public final class SuspendEvent extends ClockEvent {
   /**
    * Logger.
    */
-  private final Logger logger = LoggerFactory.getLogger(getClass());
+  private static final Logger logger = LoggerFactory.getLogger(SuspendEvent.class);
 
   /**
    * Has the run been suspended?.
    */
-  private boolean _suspended = false;
+  private boolean suspended = false;
 
   /**
    * Monitor for synchronization.
    */
-  private final Object _monitor;
+  private final Object monitor;
 
   /**
    * Constructor.
@@ -32,18 +32,18 @@ public final class SuspendEvent extends ClockEvent {
   public SuspendEvent(Object monitor) {
     super("Suspend");
 
-    this._monitor = monitor;
+    this.monitor = monitor;
   }
 
   @Override
   public void execute(long tick) throws ManualAbort {
-    synchronized (_monitor) {
+    synchronized (monitor) {
       logger.info("Suspend at {}.", tick);
-      _suspended = true;
-      _monitor.notifyAll();
+      suspended = true;
+      monitor.notifyAll();
       try {
-        while (_suspended) {
-          _monitor.wait();
+        while (suspended) {
+          monitor.wait();
         }
       } catch (InterruptedException e) {
         throw new ManualAbort();
@@ -53,13 +53,13 @@ public final class SuspendEvent extends ClockEvent {
   }
 
   /**
-   * Resume execution, if suspended.
+   * Resume execution if suspended.
    */
   public void resume() {
-    synchronized (_monitor) {
-      if (_suspended) {
-        _suspended = false;
-        _monitor.notifyAll();
+    synchronized (monitor) {
+      if (suspended) {
+        suspended = false;
+        monitor.notifyAll();
       }
     }
   }
@@ -69,9 +69,9 @@ public final class SuspendEvent extends ClockEvent {
    */
   public void waitForSuspend() throws ManualAbort {
     try {
-      synchronized (_monitor) {
-        while (!_suspended) {
-          _monitor.wait();
+      synchronized (monitor) {
+        while (!suspended) {
+          monitor.wait();
         }
       }
     } catch (InterruptedException e) {

@@ -32,13 +32,13 @@ public final class ParallelSpinClock extends AbstractSynchronizedClock {
   private void executeTicks(final ParallelSpinTick[] ticks) {
     //noinspection InfiniteLoopStatement
     while (true) {
-      // Start new tick.
+      // Start a new tick.
       startTick();
       // Execute all component threads.
       for (var tick : ticks) {
         tick.startTick();
       }
-      // Wait for all components threads to finish tick.
+      // Wait for all component threads to finish the tick.
       for (var tick : ticks) {
         tick.waitForTickEnd();
       }
@@ -51,7 +51,7 @@ public final class ParallelSpinClock extends AbstractSynchronizedClock {
   private static final class ParallelSpinTick implements Tick {
     /**
      * State of tick.
-     * True: Current tick finished, waiting for next tick.
+     * True: Current tick finished, waiting for the next tick.
      * False: Start next tick.
      */
     private volatile boolean tickEnd = false;
@@ -65,7 +65,7 @@ public final class ParallelSpinClock extends AbstractSynchronizedClock {
     }
 
     /**
-     * Start next tick.
+     * Start the next tick.
      */
     void startTick() {
       tickEnd = false;

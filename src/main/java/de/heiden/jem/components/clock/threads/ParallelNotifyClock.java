@@ -32,7 +32,7 @@ public final class ParallelNotifyClock extends AbstractSynchronizedClock {
   private void executeTicks(final ParallelSpinTick[] ticks) {
     //noinspection InfiniteLoopStatement
     while (true) {
-      // Start new tick.
+      // Start a new tick.
       startTick();
       // Execute all component threads.
       for (var tick : ticks) {
@@ -54,16 +54,16 @@ public final class ParallelNotifyClock extends AbstractSynchronizedClock {
      * True: Current tick finished, waiting for next tick.
      * False: Start next tick.
      */
-    private boolean _state = false;
+    private boolean state = false;
 
     @Override
     public synchronized void waitForTick() {
-      _state = true;
+      state = true;
       notifyAll();
       try {
         do {
           wait();
-        } while (_state);
+        } while (state);
       } catch (InterruptedException e) {
         // Ignore.
       }
@@ -73,7 +73,7 @@ public final class ParallelNotifyClock extends AbstractSynchronizedClock {
      * Start next tick.
      */
     synchronized void startTick() {
-      _state = false;
+      state = false;
       notifyAll();
     }
 
@@ -82,7 +82,7 @@ public final class ParallelNotifyClock extends AbstractSynchronizedClock {
      */
     synchronized void waitForTickEnd() {
       try {
-        while (!_state) {
+        while (!state) {
           wait();
         }
       } catch (InterruptedException e) {
