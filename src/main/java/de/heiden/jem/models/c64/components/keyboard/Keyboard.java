@@ -3,6 +3,7 @@ package de.heiden.jem.models.c64.components.keyboard;
 import de.heiden.jem.components.ports.InputOutputPort;
 import de.heiden.jem.components.ports.OutputPort;
 import de.heiden.jem.components.ports.OutputPortImpl;
+import jakarta.annotation.Nonnull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,17 +22,17 @@ public class Keyboard implements IKeyboard {
     /**
      * Ports for key matrix.
      */
-    private final InputOutputPort _port0;
-    private final InputOutputPort _port1;
+    private final InputOutputPort port0;
+    private final InputOutputPort port1;
 
-    private final OutputPortImpl _matrixPort0;
-    private final OutputPortImpl _matrixPort1;
-    private final OutputPortImpl _nmi;
+    private final OutputPortImpl matrixPort0;
+    private final OutputPortImpl matrixPort1;
+    private final OutputPortImpl nmi;
 
     /**
      * C64 key matrix.
      */
-    private final int[] _matrix;
+    private final int[] matrix;
 
     /**
      * Constructor.
@@ -41,45 +42,42 @@ public class Keyboard implements IKeyboard {
      * @require port0 != null
      * @require port1 != null
      */
-    public Keyboard(InputOutputPort port0, InputOutputPort port1) {
-        assert port0 != null : "port0 != null";
-        assert port1 != null : "port1 != null";
+    public Keyboard(@Nonnull InputOutputPort port0, @Nonnull InputOutputPort port1) {
+        // Connect to input ports.
+        this.port0 = port0;
+        this.port0.addOutputPortListener((value, mask) -> updatePorts());
+        this.port1 = port1;
+        this.port1.addOutputPortListener((value, mask) -> updatePorts());
 
-        // connect to input ports
-        _port0 = port0;
-        _port0.addOutputPortListener((value, mask) -> updatePorts());
-        _port1 = port1;
-        _port1.addOutputPortListener((value, mask) -> updatePorts());
+        // Connect matrix ports to input ports.
+        matrixPort0 = new OutputPortImpl();
+        this.port0.connect(matrixPort0);
+        matrixPort1 = new OutputPortImpl();
+        this.port1.connect(matrixPort1);
+        nmi = new OutputPortImpl();
+        nmi.setOutputMask(0x1);
 
-        // connect matrix ports to input ports
-        _matrixPort0 = new OutputPortImpl();
-        _port0.connect(_matrixPort0);
-        _matrixPort1 = new OutputPortImpl();
-        _port1.connect(_matrixPort1);
-        _nmi = new OutputPortImpl();
-        _nmi.setOutputMask(0x1);
-
-        // init matrix
-        _matrix = new int[] { 0, 0, 0, 0, 0, 0, 0, 0 };
+        // Init matrix.
+        matrix = new int[] { 0, 0, 0, 0, 0, 0, 0, 0 };
     }
 
     /**
      * NMI output.
      */
     public OutputPort getNMI() {
-        assert _nmi != null : "Postcondition: result != null";
-        return _nmi;
+        assert nmi != null : "Postcondition: result != null";
+        return nmi;
     }
 
     @Override
     public void press(Key key) {
         switch (key) {
             case RESTORE -> {
-                // low active
-                _nmi.setOutputData(0x0);
+                // Low active.
+                nmi.setOutputData(0x0);
             }
             default -> {
-                _matrix[key.getRow()] |= 1 << key.getColumn();
+                matrix[key.getRow()] |= 1 << key.getColumn();
                 updatePorts();
                 logKeyMatrix();
             }
@@ -90,11 +88,11 @@ public class Keyboard implements IKeyboard {
     public void release(Key key) {
         switch (key) {
             case RESTORE -> {
-                // low active
-                _nmi.setOutputData(0x1);
+                // Low active.
+                nmi.setOutputData(0x1);
             }
             default -> {
-                _matrix[key.getRow()] &= 0xFF - (1 << key.getColumn());
+                matrix[key.getRow()] &= 0xFF - (1 << key.getColumn());
                 updatePorts();
                 logKeyMatrix();
             }
@@ -105,21 +103,21 @@ public class Keyboard implements IKeyboard {
      * Update ports from matrix.
      * <p>
      * Assuming low is stronger than hi.
-     * Assuming pull ups.
+     * Assuming pull-ups.
      */
     protected final void updatePorts() {
-        int port1InMask = _port1.outputMask();
-        int port1InDataInv = 0xFF - _port1.outputData();
+        int port1InMask = port1.outputMask();
+        int port1InDataInv = 0xFF - port1.outputData();
         int port0OutMask = 0x00;
         int port0OutData = 0xFF;
 
-        int port0InMask = _port0.outputMask();
-        int port0InData = _port0.outputData();
+        int port0InMask = port0.outputMask();
+        int port0InData = port0.outputData();
         int port1OutMask = 0x00;
         int port1OutData = 0xFF;
 
-        for (int i = 0, columnBit = 0x01; i < _matrix.length; i++, columnBit <<= 1) {
-            final int matrix = _matrix[i];
+        for (int i = 0, columnBit = 0x01; i < matrix.length; i++, columnBit <<= 1) {
+            final int matrix = this.matrix[i];
             final int bitmask = port1InMask & matrix; // 1: driven bits
             if (bitmask != 0) {
                 port0OutMask |= columnBit; // bit is driven!
@@ -138,10 +136,10 @@ public class Keyboard implements IKeyboard {
             }
         }
 
-        _matrixPort0.setOutputData(port0OutData);
-        _matrixPort0.setOutputMask(port0OutMask);
-        _matrixPort1.setOutputData(port1OutData);
-        _matrixPort1.setOutputMask(port1OutMask);
+        matrixPort0.setOutputData(port0OutData);
+        matrixPort0.setOutputMask(port0OutMask);
+        matrixPort1.setOutputData(port1OutData);
+        matrixPort1.setOutputMask(port1OutMask);
     }
 
     /**
@@ -173,19 +171,19 @@ public class Keyboard implements IKeyboard {
         result.append("\n");
         // Column port bits.
         result.append("  ");
-        var port1 = _matrixPort1.outputData();
+        var port1 = matrixPort1.outputData();
         for (int j = 0, columnBit = 0x01; j < 8; j++, columnBit <<= 1) {
             result.append((port1 & columnBit) != 0 ? "H" : "L");
         }
         result.append("\n");
 
-        var port0 = _matrixPort0.outputData();
-        for (int i = 0, rowBit = 0x01; i < _matrix.length; i++, rowBit <<= 1) {
+        var port0 = matrixPort0.outputData();
+        for (int i = 0, rowBit = 0x01; i < matrix.length; i++, rowBit <<= 1) {
             // Row header, row port bit
             result.append(i).append((port0 & rowBit) != 0 ? "H" : "L");
 
             // Values.
-            var row = _matrix[i];
+            var row = matrix[i];
             for (int j = 0, columnBit = 0x01; j < 8; j++, columnBit <<= 1) {
                 result.append((row & columnBit) != 0 ? "X" : "+");
             }
