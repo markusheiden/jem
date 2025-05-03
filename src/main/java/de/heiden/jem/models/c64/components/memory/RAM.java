@@ -35,7 +35,7 @@ public class RAM extends AbstractMemory {
   public final void write(int value, int address) {
     assert value >= 0 && value < 0x100 : "value >= 0 && value < 0x100";
 
-    _memory[address & _mask] = value;
+    memory[address & mask] = value;
   }
 
   /**
@@ -46,7 +46,7 @@ public class RAM extends AbstractMemory {
    */
   @Override
   public final int read(int address) {
-    int result = _memory[address & _mask];
+    int result = memory[address & mask];
     assert result >= 0 && result < 0x100 : "result >= 0 && result < 0x100";
     return result;
   }

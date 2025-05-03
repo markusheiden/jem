@@ -1,8 +1,9 @@
 package de.heiden.jem.models.c64.components.memory;
 
+import jakarta.annotation.Nonnull;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 
 /**
  * Loader for ROM contents.
@@ -14,12 +15,9 @@ public class ROMLoader {
    * @param filename filename of rom image.
    * @ensure result != null
    */
-  public static ROM basic(String filename) throws Exception {
-    byte[] content = load(0x2000, filename);
-    ROM result = new ROM(content);
-
-    assert result != null : "result != null";
-    return result;
+  public static @Nonnull ROM basic(String filename) throws Exception {
+    var content = load(0x2000, filename);
+    return new ROM(content);
   }
 
   /**
@@ -28,12 +26,9 @@ public class ROMLoader {
    * @param filename filename of rom image.
    * @ensure result != null
    */
-  public static ROM kernel(String filename) throws Exception {
-    byte[] content = load(0x2000, filename);
-    ROM result = new ROM(content);
-
-    assert result != null : "result != null";
-    return result;
+  public static @Nonnull ROM kernel(String filename) throws Exception {
+    var content = load(0x2000, filename);
+    return new ROM(content);
   }
 
   /**
@@ -42,12 +37,9 @@ public class ROMLoader {
    * @param filename filename of rom image.
    * @ensure result != null
    */
-  public static ROM character(String filename) throws Exception {
-    byte[] content = load(0x1000, filename);
-    ROM result = new ROM(content); // TODO correct?
-
-    assert result != null : "result != null";
-    return result;
+  public static @Nonnull ROM character(String filename) throws Exception {
+    var content = load(0x1000, filename);
+    return new ROM(content); // TODO correct?
   }
 
   /**
@@ -56,12 +48,9 @@ public class ROMLoader {
    * @param filename filename of rom image.
    * @ensure result != null
    */
-  public static ROM pla(String filename) throws Exception {
-    byte[] content = load(0x1000, filename);
-    ROM result = new ROM(content);
-
-    assert result != null : "result != null";
-    return result;
+  public static @Nonnull ROM pla(String filename) throws Exception {
+    var content = load(0x1000, filename);
+    return new ROM(content);
   }
 
   /**
@@ -71,23 +60,20 @@ public class ROMLoader {
    * @param filename filename of content
    * @throws Exception
    */
-  protected static byte[] load(int length, String filename) throws Exception {
-    try {
-      InputStream stream = ROMLoader.class.getResourceAsStream(filename);
-      byte[] result = new byte[length];
+  protected static @Nonnull byte[] load(int length, String filename) throws Exception {
+    try (var stream = ROMLoader.class.getResourceAsStream(filename)) {
+      var result = new byte[length];
       int size = stream.read(result);
-      stream.close();
 
       if (size != length) {
-        throw new Exception("ROM image '" + filename + "' is too short");
+        throw new Exception("ROM image '%s' is too short".formatted(filename));
       }
 
-      assert result != null : "result != null";
       return result;
     } catch (FileNotFoundException e) {
-      throw new Exception("ROM image '" + filename + "' not found", e);
+      throw new Exception("ROM image '%s' not found".formatted(filename), e);
     } catch (IOException e) {
-      throw new Exception("Unable to read ROM image '" + filename + "'", e);
+      throw new Exception("Unable to read ROM image %s'".formatted(filename), e);
     }
   }
 
