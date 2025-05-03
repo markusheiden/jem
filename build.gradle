@@ -40,6 +40,7 @@ compileTestJava {
 dependencies {
     implementation "org.slf4j:slf4j-api:${slf4jVersion}"
     runtimeOnly "ch.qos.logback:logback-classic:${logbackVersion}"
+    implementation "jakarta.annotation:jakarta.annotation-api:${annotationVersion}"
 
     implementation "org.serialthreads:serialthreads:${serialthreadsVersion}"
     testImplementation "org.serialthreads:serialthreads:${serialthreadsVersion}:tests"
