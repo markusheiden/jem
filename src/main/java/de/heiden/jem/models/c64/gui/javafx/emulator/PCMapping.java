@@ -2,10 +2,72 @@ package de.heiden.jem.models.c64.gui.javafx.emulator;
 
 import javafx.scene.input.KeyCode;
 
-import static de.heiden.jem.models.c64.components.keyboard.Key.*;
+import static de.heiden.jem.models.c64.components.keyboard.Key.A;
+import static de.heiden.jem.models.c64.components.keyboard.Key.ASTERISK;
+import static de.heiden.jem.models.c64.components.keyboard.Key.AT;
+import static de.heiden.jem.models.c64.components.keyboard.Key.B;
+import static de.heiden.jem.models.c64.components.keyboard.Key.C;
+import static de.heiden.jem.models.c64.components.keyboard.Key.COLON;
+import static de.heiden.jem.models.c64.components.keyboard.Key.COMMA;
+import static de.heiden.jem.models.c64.components.keyboard.Key.COMMODORE;
+import static de.heiden.jem.models.c64.components.keyboard.Key.CTRL;
+import static de.heiden.jem.models.c64.components.keyboard.Key.D;
+import static de.heiden.jem.models.c64.components.keyboard.Key.DEL;
+import static de.heiden.jem.models.c64.components.keyboard.Key.DOWN;
+import static de.heiden.jem.models.c64.components.keyboard.Key.E;
+import static de.heiden.jem.models.c64.components.keyboard.Key.ENTER;
+import static de.heiden.jem.models.c64.components.keyboard.Key.EQUALS;
+import static de.heiden.jem.models.c64.components.keyboard.Key.F;
+import static de.heiden.jem.models.c64.components.keyboard.Key.F1;
+import static de.heiden.jem.models.c64.components.keyboard.Key.F3;
+import static de.heiden.jem.models.c64.components.keyboard.Key.F5;
+import static de.heiden.jem.models.c64.components.keyboard.Key.F7;
+import static de.heiden.jem.models.c64.components.keyboard.Key.G;
+import static de.heiden.jem.models.c64.components.keyboard.Key.H;
+import static de.heiden.jem.models.c64.components.keyboard.Key.HOME;
+import static de.heiden.jem.models.c64.components.keyboard.Key.I;
+import static de.heiden.jem.models.c64.components.keyboard.Key.J;
+import static de.heiden.jem.models.c64.components.keyboard.Key.K;
+import static de.heiden.jem.models.c64.components.keyboard.Key.L;
+import static de.heiden.jem.models.c64.components.keyboard.Key.LEFT_SHIFT;
+import static de.heiden.jem.models.c64.components.keyboard.Key.M;
+import static de.heiden.jem.models.c64.components.keyboard.Key.MINUS;
+import static de.heiden.jem.models.c64.components.keyboard.Key.N;
+import static de.heiden.jem.models.c64.components.keyboard.Key.NUMBER_0;
+import static de.heiden.jem.models.c64.components.keyboard.Key.NUMBER_1;
+import static de.heiden.jem.models.c64.components.keyboard.Key.NUMBER_2;
+import static de.heiden.jem.models.c64.components.keyboard.Key.NUMBER_3;
+import static de.heiden.jem.models.c64.components.keyboard.Key.NUMBER_4;
+import static de.heiden.jem.models.c64.components.keyboard.Key.NUMBER_5;
+import static de.heiden.jem.models.c64.components.keyboard.Key.NUMBER_6;
+import static de.heiden.jem.models.c64.components.keyboard.Key.NUMBER_7;
+import static de.heiden.jem.models.c64.components.keyboard.Key.NUMBER_8;
+import static de.heiden.jem.models.c64.components.keyboard.Key.NUMBER_9;
+import static de.heiden.jem.models.c64.components.keyboard.Key.O;
+import static de.heiden.jem.models.c64.components.keyboard.Key.P;
+import static de.heiden.jem.models.c64.components.keyboard.Key.PERIOD;
+import static de.heiden.jem.models.c64.components.keyboard.Key.PLUS;
+import static de.heiden.jem.models.c64.components.keyboard.Key.Q;
+import static de.heiden.jem.models.c64.components.keyboard.Key.R;
+import static de.heiden.jem.models.c64.components.keyboard.Key.RESTORE;
+import static de.heiden.jem.models.c64.components.keyboard.Key.RIGHT;
+import static de.heiden.jem.models.c64.components.keyboard.Key.RIGHT_SHIFT;
+import static de.heiden.jem.models.c64.components.keyboard.Key.RUN_STOP;
+import static de.heiden.jem.models.c64.components.keyboard.Key.S;
+import static de.heiden.jem.models.c64.components.keyboard.Key.SEMICOLON;
+import static de.heiden.jem.models.c64.components.keyboard.Key.SLASH;
+import static de.heiden.jem.models.c64.components.keyboard.Key.SPACE;
+import static de.heiden.jem.models.c64.components.keyboard.Key.T;
+import static de.heiden.jem.models.c64.components.keyboard.Key.U;
+import static de.heiden.jem.models.c64.components.keyboard.Key.UP_ARROW;
+import static de.heiden.jem.models.c64.components.keyboard.Key.V;
+import static de.heiden.jem.models.c64.components.keyboard.Key.W;
+import static de.heiden.jem.models.c64.components.keyboard.Key.X;
+import static de.heiden.jem.models.c64.components.keyboard.Key.Y;
+import static de.heiden.jem.models.c64.components.keyboard.Key.Z;
 
 /**
- * Key mapping using the default pc keys.
+ * Key mapping using the default PC keys.
  */
 public class PCMapping extends KeyMapping {
   @Override
