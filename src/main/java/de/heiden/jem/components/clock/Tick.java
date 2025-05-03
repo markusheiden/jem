@@ -7,7 +7,7 @@ import org.serialthreads.Interrupt;
  */
 public interface Tick {
   /**
-   * Wait for next tick.
+   * Wait for the next tick.
    * Called by clocked components.
    */
   @Interrupt
