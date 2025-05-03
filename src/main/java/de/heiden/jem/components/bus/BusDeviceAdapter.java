@@ -8,7 +8,7 @@ public class BusDeviceAdapter implements BusDevice {
   /**
    * Bus to which will be delegated.
    */
-  protected final BusDevice _bus;
+  protected final BusDevice bus;
 
   /**
    * Constructor.
@@ -19,16 +19,16 @@ public class BusDeviceAdapter implements BusDevice {
   public BusDeviceAdapter(BusDevice bus) {
     assert bus != null : "bus != null";
 
-    _bus = bus;
+    this.bus = bus;
   }
 
   @Override
   public void write(int value, int address) {
-    _bus.write(value, address);
+    bus.write(value, address);
   }
 
   @Override
   public int read(int address) {
-    return _bus.read(address);
+    return bus.read(address);
   }
 }

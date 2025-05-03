@@ -13,7 +13,7 @@ public class LoggingBus extends BusDeviceAdapter {
    * <p>
    * TODO 2010-10-12 mh: use array with cyclic pointer?
    */
-  private final List<LogEntry> _log;
+  private final List<LogEntry> log;
 
   /**
    * Constructor.
@@ -24,7 +24,7 @@ public class LoggingBus extends BusDeviceAdapter {
   public LoggingBus(BusDevice bus) {
     super(bus);
 
-    _log = new ArrayList<>(1024);
+    log = new ArrayList<>(1024);
   }
 
   /**
@@ -32,7 +32,7 @@ public class LoggingBus extends BusDeviceAdapter {
    */
   @Override
   public synchronized final void write(int value, int address) {
-    _log.add(new LogEntry(false, address, value));
+    log.add(new LogEntry(false, address, value));
     super.write(value, address);
   }
 
@@ -42,7 +42,7 @@ public class LoggingBus extends BusDeviceAdapter {
   @Override
   public synchronized final int read(int address) {
     int value = super.read(address);
-    _log.add(new LogEntry(true, address, value));
+    log.add(new LogEntry(true, address, value));
 
     return value;
   }
@@ -56,7 +56,7 @@ public class LoggingBus extends BusDeviceAdapter {
   public synchronized LogEntry getLastLogEntry() {
     assert !getLog().isEmpty() : "Precondition: !getLog().isEmpty()";
 
-    LogEntry result = _log.get(_log.size() - 1);
+    LogEntry result = log.get(log.size() - 1);
 
     assert result != null : "Postcondition: result != null";
     return result;
@@ -66,7 +66,7 @@ public class LoggingBus extends BusDeviceAdapter {
    * Get log.
    */
   public synchronized List<LogEntry> getLog() {
-    return _log;
+    return log;
   }
 
   /**
@@ -75,7 +75,7 @@ public class LoggingBus extends BusDeviceAdapter {
    * @ensure getLog().length == 0
    */
   public synchronized void resetLog() {
-    _log.clear();
+    log.clear();
 
     assert getLog().isEmpty() : "Postcondition: getLog().isEmpty()";
   }

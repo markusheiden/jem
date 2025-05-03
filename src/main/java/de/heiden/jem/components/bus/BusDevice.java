@@ -5,7 +5,7 @@ package de.heiden.jem.components.bus;
  */
 public interface BusDevice {
   /**
-   * Write byte to bus device.
+   * Write byte to the bus device.
    *
    * @param value byte to write
    * @param address address to write byte to
@@ -15,7 +15,7 @@ public interface BusDevice {
   void write(int value, int address);
 
   /**
-   * Read byte from bus device.
+   * Read byte from the bus device.
    *
    * @param address address to read byte from
    * @require address >= 0 && address < size()

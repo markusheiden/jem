@@ -1,25 +1,26 @@
 package de.heiden.jem.components.bus;
 
-import de.heiden.c64dt.bytes.HexUtil;
+import static de.heiden.c64dt.bytes.HexUtil.hexByte;
+import static de.heiden.c64dt.bytes.HexUtil.hexWord;
 
 /**
- * LogEntry represents an single access to the bus.
+ * Represents a single access to the bus.
  */
 public class LogEntry {
   /**
    * Read (true) or write (false)?.
    */
-  private final boolean _read;
+  private final boolean read;
 
   /**
    * Accessed address.
    */
-  private final int _address;
+  private final int address;
 
   /**
    * Value read from or written to the accessed address.
    */
-  private final int _value;
+  private final int value;
 
   /**
    * Constructor.
@@ -29,48 +30,47 @@ public class LogEntry {
    * @param value value which has been written / read.
    */
   public LogEntry(boolean read, int address, int value) {
-    _read = read;
-    _address = address;
-    _value = value;
+    this.read = read;
+    this.address = address;
+    this.value = value;
   }
 
   /**
    * Is access a read access?.
    */
   public boolean isReadAccess() {
-    return _read;
+    return read;
   }
 
   /**
    * Get accessed address.
    */
   public int getAddress() {
-    return _address;
+    return address;
   }
 
   /**
    * Get value which has been written / read.
    */
   public int getValue() {
-    return _value;
+    return value;
   }
 
   @Override
   public boolean equals(Object o) {
     return o instanceof LogEntry e &&
-      _read == e._read &&
-      _address == e._address &&
-      _value == e._value;
+           read == e.read &&
+           address == e.address &&
+           value == e.value;
   }
 
   @Override
   public int hashCode() {
-    return _address;
+    return address;
   }
 
   @Override
   public String toString() {
-    return (_read ? "read from " : "write to ") + HexUtil.hexWord(_address) +
-      " value " + HexUtil.hexByte(_value);
+    return "%s %s value %s.".formatted(read ? "Read from " : "Write to ", hexWord(address), hexByte(value));
   }
 }
