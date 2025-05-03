@@ -1,5 +1,7 @@
 package de.heiden.jem.components.clock;
 
+import jakarta.annotation.Nonnull;
+
 /**
  * Clock.
  */
@@ -14,7 +16,7 @@ public interface Clock extends AutoCloseable {
   int VIC_DISPLAY = 2001;
 
   /**
-   * Dispose clock and all its clocked components.
+   * Dispose the clock and all its clocked components.
    */
   @Override
   void close();
@@ -25,7 +27,7 @@ public interface Clock extends AutoCloseable {
   boolean isStarted();
 
   /**
-   * Add clocked component.
+   * Add a clocked component.
    *
    * @param position position to insert component in execute queue
    * @param component clocked component to add
@@ -36,12 +38,12 @@ public interface Clock extends AutoCloseable {
   <C extends ClockedComponent> C addClockedComponent(int position, C component);
 
   /**
-   * Run this clock for ever as master clock.
+   * Run this clock forever as the master clock.
    */
   void run();
 
   /**
-   * Run this clock a given number of ticks as master clock.
+   * Run this clock a given number of ticks as the master clock.
    *
    * @param ticks number of ticks to run this clock for
    */
@@ -55,7 +57,7 @@ public interface Clock extends AutoCloseable {
    * @require tick > getTick()ate
    * @require event != null
    */
-  void addClockEvent(long tick, ClockEvent event);
+  void addClockEvent(long tick, @Nonnull ClockEvent event);
 
   /**
    * Set tick to execute an existing event at.
@@ -66,7 +68,7 @@ public interface Clock extends AutoCloseable {
    * @require tick > getTick()
    * @require event != null
    */
-  void updateClockEvent(long tick, ClockEvent event);
+  void updateClockEvent(long tick, @Nonnull ClockEvent event);
 
   /**
    * Remove event.
@@ -74,11 +76,11 @@ public interface Clock extends AutoCloseable {
    * @param event event to remove
    * @require event != null
    */
-  void removeClockEvent(ClockEvent event);
+  void removeClockEvent(@Nonnull ClockEvent event);
 
   /**
    * Get current tick.
-   * Avoid usage of this method for performance reasons, if current tick is available as parameter.
+   * Avoid usage of this method for performance reasons, if current tick is available as a parameter.
    *
    * @ensure result >= 0
    */

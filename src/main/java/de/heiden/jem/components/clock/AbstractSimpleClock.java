@@ -16,20 +16,20 @@ public abstract class AbstractSimpleClock extends AbstractClock {
    * Current tick.
    * Start at tick -1, because the first action when running is to increment the tick.
    */
-  private long _tick = -1;
+  private long tick = -1;
 
   /**
    * Start a new tick.
    */
   protected final void startTick() {
-    // First increment tick.
-    // Second execute events.
-    executeEvents(++_tick);
-    // Third execute components.
+    // First: Increment tick.
+    // Second: Execute events.
+    executeEvents(++tick);
+    // Third: Execute components: Done by the caller.
   }
 
   @Override
   public long getTick() {
-    return _tick;
+    return tick;
   }
 }
