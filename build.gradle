@@ -11,8 +11,10 @@ wrapper {
 apply from: 'gradle/javafx.gradle'
 
 group = 'de.heiden'
-archivesBaseName = 'jemc64'
 version = '1.0-SNAPSHOT'
+base {
+    archivesName = 'jemc64'
+}
 
 repositories {
     mavenLocal()
