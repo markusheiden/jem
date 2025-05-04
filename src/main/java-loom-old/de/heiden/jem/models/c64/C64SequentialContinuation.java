@@ -9,19 +9,19 @@ import org.slf4j.LoggerFactory;
  * C64 startup with {@link SequentialContinuationClock}.
  */
 public class C64SequentialContinuation {
-  /**
-   * Logger.
-   */
-  private static final Logger logger = LoggerFactory.getLogger(C64SequentialContinuation.class);
+    /**
+     * Logger.
+     */
+    private static final Logger logger = LoggerFactory.getLogger(C64SequentialContinuation.class);
 
-  /**
-   * Start application.
-   */
-  public static void main(String[] args) {
-    try {
-      C64Application.start("--clock=" + SequentialContinuationClock.class.getName());
-    } catch (Exception e) {
-      logger.error("Unable to startup", e);
+    /**
+     * Start application.
+     */
+    public static void main(String[] args) {
+        try {
+            C64Application.start("--clock=" + SequentialContinuationClock.class.getName());
+        } catch (Exception e) {
+            logger.error("Unable to startup", e);
+        }
     }
-  }
 }

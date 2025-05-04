@@ -5,8 +5,8 @@ package de.heiden.jem.models.c64;
  */
 @FunctionalInterface
 public interface Condition {
-  /**
-   * Is the condition met?.
-   */
-  boolean test() throws Exception;
+    /**
+     * Is the condition met?.
+     */
+    boolean test() throws Exception;
 }

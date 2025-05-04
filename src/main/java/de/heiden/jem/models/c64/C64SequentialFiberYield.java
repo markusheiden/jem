@@ -10,19 +10,19 @@ import static de.heiden.jem.models.c64.gui.javafx.emulator.C64Application.start;
  * C64 startup with {@link SequentialFiberYieldClock}.
  */
 public class C64SequentialFiberYield {
-  /**
-   * Logger.
-   */
-  private static final Logger logger = LoggerFactory.getLogger(C64SequentialFiberYield.class);
+    /**
+     * Logger.
+     */
+    private static final Logger logger = LoggerFactory.getLogger(C64SequentialFiberYield.class);
 
-  /**
-   * Start the application.
-   */
-  public static void main(String[] args) {
-    try {
-      start("--clock=" + SequentialFiberYieldClock.class.getName());
-    } catch (Exception e) {
-      logger.error("Unable to startup", e);
+    /**
+     * Start the application.
+     */
+    public static void main(String[] args) {
+        try {
+            start("--clock=" + SequentialFiberYieldClock.class.getName());
+        } catch (Exception e) {
+            logger.error("Unable to startup", e);
+        }
     }
-  }
 }

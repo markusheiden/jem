@@ -10,9 +10,9 @@ import java.nio.file.Path;
  * VICE test suite.
  */
 class KDormannTest extends AbstractTest {
-  @ParameterizedTest(name = "{1}")
-  @ProgramSuiteSource(resource = "/vice-emu-testprogs/CPU/kdormann/6502_functional_test.prg")
-  void test(Path program, String programName) throws Exception {
-    testBorderResult(program, 120, true);
-  }
+    @ParameterizedTest(name = "{1}")
+    @ProgramSuiteSource(resource = "/vice-emu-testprogs/CPU/kdormann/6502_functional_test.prg")
+    void test(Path program, String programName) throws Exception {
+        testBorderResult(program, 120, true);
+    }
 }

@@ -9,15 +9,15 @@ import de.heiden.jem.models.c64.components.cpu.Patch;
  * Stops emulation.
  */
 public class StopAtSystemIn extends Patch {
-  /**
-   * Constructor.
-   */
-  public StopAtSystemIn() {
-    super(0xFFE4);
-  }
+    /**
+     * Constructor.
+     */
+    public StopAtSystemIn() {
+        super(0xFFE4);
+    }
 
-  @Override
-  protected int execute(CPU6510State state, BusDevice bus) {
-    throw new IllegalArgumentException("Stop");
-  }
+    @Override
+    protected int execute(CPU6510State state, BusDevice bus) {
+        throw new IllegalArgumentException("Stop");
+    }
 }

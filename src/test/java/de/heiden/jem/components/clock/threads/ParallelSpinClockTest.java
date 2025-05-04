@@ -7,14 +7,14 @@ import de.heiden.jem.components.clock.ClockTestBase;
  * Test for {@link ParallelSpinClock}.
  */
 class ParallelSpinClockTest extends ClockTestBase {
-  @Override
-  protected int numCounters() {
-    // This clock does not perform well with less threads than components.
-    return Math.max(1, Runtime.getRuntime().availableProcessors() / 2);
-  }
+    @Override
+    protected int numCounters() {
+        // This clock does not perform well with less threads than components.
+        return Math.max(1, Runtime.getRuntime().availableProcessors() / 2);
+    }
 
-  @Override
-  protected Clock createClock() {
-    return new ParallelSpinClock();
-  }
+    @Override
+    protected Clock createClock() {
+        return new ParallelSpinClock();
+    }
 }

@@ -1,11 +1,11 @@
 package de.heiden.jem.components.clock.loom;
 
+import de.heiden.jem.components.clock.AbstractSimpleClock;
+
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.locks.LockSupport;
-
-import de.heiden.jem.components.clock.AbstractSimpleClock;
 
 /**
  * Clock using {@link Thread fibers} from project loom.

@@ -7,8 +7,8 @@ import de.heiden.jem.components.clock.ClockTestBase;
  * Test for {@link SequentialFiberYieldClock}.
  */
 class SequentialFiberYieldClockTest extends ClockTestBase {
-  @Override
-  protected Clock createClock() {
-    return new SequentialFiberYieldClock();
-  }
+    @Override
+    protected Clock createClock() {
+        return new SequentialFiberYieldClock();
+    }
 }

@@ -37,8 +37,10 @@ public class Keyboard implements IKeyboard {
     /**
      * Constructor.
      *
-     * @param port0 port for rows
-     * @param port1 port for columns
+     * @param port0
+     *         port for rows
+     * @param port1
+     *         port for columns
      * @require port0 != null
      * @require port1 != null
      */

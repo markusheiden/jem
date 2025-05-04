@@ -15,240 +15,240 @@ import java.awt.*;
  * Main Monitor frame.
  */
 public class DebuggerGUI extends JPanel {
-  /**
-   * Logger.
-   */
-  private final Logger logger = LoggerFactory.getLogger(getClass());
+    /**
+     * Logger.
+     */
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
-  private Thread thread;
-  private C64 c64;
-  private CPU6510Debugger cpu;
-  private BusDevice bus;
+    private Thread thread;
+    private C64 c64;
+    private CPU6510Debugger cpu;
+    private BusDevice bus;
 
-  private final JButton runButton;
-  private final JButton resumeButton;
-  private final JButton suspendButton;
-  private final JButton stopButton;
-  private final JButton refreshButton;
+    private final JButton runButton;
+    private final JButton resumeButton;
+    private final JButton suspendButton;
+    private final JButton stopButton;
+    private final JButton refreshButton;
 
-  private StateGUI state;
-  private TraceGUI trace;
-  private DisassemblerGUI disassembler;
-  private final MemDumpGUI memDump;
+    private StateGUI state;
+    private TraceGUI trace;
+    private DisassemblerGUI disassembler;
+    private final MemDumpGUI memDump;
 
-  /**
-   * Constructor.
-   */
-  public DebuggerGUI() {
-    setLayout(new BorderLayout());
+    /**
+     * Constructor.
+     */
+    public DebuggerGUI() {
+        setLayout(new BorderLayout());
 
-    runButton = new JButton(new ImageIcon(getClass().getResource("/icons/enabled/run_exc.gif"), "Run"));
-    resumeButton = new JButton(new ImageIcon(getClass().getResource("/icons/enabled/resume_co.gif"), "Resume"));
-    suspendButton = new JButton(new ImageIcon(getClass().getResource("/icons/enabled/suspend_co.gif"), "Suspend"));
-    stopButton = new JButton(new ImageIcon(getClass().getResource("/icons/enabled/progress_stop.gif"), "Stop"));
-    refreshButton = new JButton(new ImageIcon(getClass().getResource("/icons/enabled/refresh.gif"), "Refresh"));
+        runButton = new JButton(new ImageIcon(getClass().getResource("/icons/enabled/run_exc.gif"), "Run"));
+        resumeButton = new JButton(new ImageIcon(getClass().getResource("/icons/enabled/resume_co.gif"), "Resume"));
+        suspendButton = new JButton(new ImageIcon(getClass().getResource("/icons/enabled/suspend_co.gif"), "Suspend"));
+        stopButton = new JButton(new ImageIcon(getClass().getResource("/icons/enabled/progress_stop.gif"), "Stop"));
+        refreshButton = new JButton(new ImageIcon(getClass().getResource("/icons/enabled/refresh.gif"), "Refresh"));
 
-    var toolBar = new JToolBar();
-    toolBar.setFloatable(false);
-    add(toolBar, BorderLayout.NORTH);
-    toolBar.add(runButton);
-    toolBar.add(resumeButton);
-    toolBar.add(suspendButton);
-    toolBar.add(stopButton);
-    toolBar.add(new JLabel(" "));
-    toolBar.add(refreshButton);
+        var toolBar = new JToolBar();
+        toolBar.setFloatable(false);
+        add(toolBar, BorderLayout.NORTH);
+        toolBar.add(runButton);
+        toolBar.add(resumeButton);
+        toolBar.add(suspendButton);
+        toolBar.add(stopButton);
+        toolBar.add(new JLabel(" "));
+        toolBar.add(refreshButton);
 
-    var topBottom = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+        var topBottom = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 
-    var top = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-    topBottom.setTopComponent(top);
+        var top = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+        topBottom.setTopComponent(top);
 
-    trace = new TraceGUI();
-    top.setLeftComponent(trace);
+        trace = new TraceGUI();
+        top.setLeftComponent(trace);
 
-    state = new StateGUI();
-    top.setRightComponent(state);
+        state = new StateGUI();
+        top.setRightComponent(state);
 
-    var bottom = new JSplitPane();
-    topBottom.setBottomComponent(bottom);
+        var bottom = new JSplitPane();
+        topBottom.setBottomComponent(bottom);
 
-    disassembler = new DisassemblerGUI();
+        disassembler = new DisassemblerGUI();
 //    disassembler.setAddress(0xE000);
-    bottom.setLeftComponent(disassembler);
+        bottom.setLeftComponent(disassembler);
 
-    memDump = new MemDumpGUI();
+        memDump = new MemDumpGUI();
 //    memDump.setAddress(0xE000);
-    bottom.setRightComponent(memDump);
+        bottom.setRightComponent(memDump);
 
-    add(topBottom);
+        add(topBottom);
 
-    runButton.addActionListener(e -> {
-      if (thread == null) {
-        run();
-      }
-    });
+        runButton.addActionListener(e -> {
+            if (thread == null) {
+                run();
+            }
+        });
 
-    suspendButton.addActionListener(e -> {
-      if (thread != null) {
-        suspend();
-      }
-    });
-    resumeButton.addActionListener(e -> {
-      if (thread != null) {
-        resume();
-      }
-    });
+        suspendButton.addActionListener(e -> {
+            if (thread != null) {
+                suspend();
+            }
+        });
+        resumeButton.addActionListener(e -> {
+            if (thread != null) {
+                resume();
+            }
+        });
 
-    stopButton.addActionListener(e -> {
-      if (thread != null) {
-        stop();
-      }
-    });
+        stopButton.addActionListener(e -> {
+            if (thread != null) {
+                stop();
+            }
+        });
 
-    refreshButton.addActionListener(e -> {
-      if (thread != null) {
-        updateComponents();
-      }
-    });
+        refreshButton.addActionListener(e -> {
+            if (thread != null) {
+                updateComponents();
+            }
+        });
 
-    updateButtons();
-  }
-
-  //
-  // Toolbar actions
-  //
-
-  /**
-   * Run C64.
-   */
-  private void run() {
-    try {
-      c64 = new C64(new SerialClock(), true);
-      cpu = (CPU6510Debugger) c64.getCpu();
-      bus = c64.getCpuBus();
-
-      trace.setCpu(cpu);
-      state.setCpu(cpu);
-      disassembler.setBus(bus);
-      memDump.setBus(bus);
-
-      thread = new Thread(() -> {
-        try {
-          logger.info("C64 has been started");
-          c64.start();
-        } catch (DebuggerExit e) {
-          logger.info(e.getMessage());
-        } catch (Exception e) {
-          logger.error("C64 terminated abnormally", e);
-        } finally {
-          c64 = null;
-          cpu = null;
-          bus = null;
-        }
-      }, "C64 (debug)");
-      thread.start();
-
-      updateComponents();
-    } catch (Exception e) {
-      logger.error("Failed to start C64", e);
+        updateButtons();
     }
-  }
 
-  /**
-   * Suspend C64.
-   */
-  private void suspend() {
-    new SwingWorker<>() {
-      @Override
-      protected Object doInBackground() {
+    //
+    // Toolbar actions
+    //
+
+    /**
+     * Run C64.
+     */
+    private void run() {
         try {
-          cpu.suspendAndWait();
-        } catch (DebuggerExit e) {
-          thread.interrupt();
-          thread = null;
+            c64 = new C64(new SerialClock(), true);
+            cpu = (CPU6510Debugger) c64.getCpu();
+            bus = c64.getCpuBus();
+
+            trace.setCpu(cpu);
+            state.setCpu(cpu);
+            disassembler.setBus(bus);
+            memDump.setBus(bus);
+
+            thread = new Thread(() -> {
+                try {
+                    logger.info("C64 has been started");
+                    c64.start();
+                } catch (DebuggerExit e) {
+                    logger.info(e.getMessage());
+                } catch (Exception e) {
+                    logger.error("C64 terminated abnormally", e);
+                } finally {
+                    c64 = null;
+                    cpu = null;
+                    bus = null;
+                }
+            }, "C64 (debug)");
+            thread.start();
+
+            updateComponents();
+        } catch (Exception e) {
+            logger.error("Failed to start C64", e);
         }
+    }
 
-        return null;
-      }
+    /**
+     * Suspend C64.
+     */
+    private void suspend() {
+        new SwingWorker<>() {
+            @Override
+            protected Object doInBackground() {
+                try {
+                    cpu.suspendAndWait();
+                } catch (DebuggerExit e) {
+                    thread.interrupt();
+                    thread = null;
+                }
 
-      @Override
-      protected void done() {
-        updateComponents();
-      }
-    }.execute();
-  }
+                return null;
+            }
 
-  /**
-   * Resume C64.
-   */
-  private void resume() {
-    new SwingWorker<>() {
-      @Override
-      protected Object doInBackground() {
-        try {
-          cpu.resume();
-        } catch (DebuggerExit e) {
-          thread.interrupt();
-          thread = null;
-        }
+            @Override
+            protected void done() {
+                updateComponents();
+            }
+        }.execute();
+    }
 
-        return null;
-      }
+    /**
+     * Resume C64.
+     */
+    private void resume() {
+        new SwingWorker<>() {
+            @Override
+            protected Object doInBackground() {
+                try {
+                    cpu.resume();
+                } catch (DebuggerExit e) {
+                    thread.interrupt();
+                    thread = null;
+                }
 
-      @Override
-      protected void done() {
+                return null;
+            }
+
+            @Override
+            protected void done() {
+                updateButtons();
+            }
+        }.execute();
+    }
+
+    /**
+     * Stop C64.
+     */
+    private void stop() {
+        new SwingWorker<>() {
+            @Override
+            protected Object doInBackground() {
+                try {
+                    cpu.stop();
+                    thread.join();
+                } catch (InterruptedException e) {
+                    // ignore
+                } finally {
+                    thread = null;
+                }
+
+                return null;
+            }
+
+            @Override
+            protected void done() {
+                updateButtons();
+            }
+        }.execute();
+    }
+
+    /**
+     * Update the state of the buttons.
+     */
+    private void updateButtons() {
+        runButton.setEnabled(thread == null);
+        suspendButton.setEnabled(thread != null && !cpu.isSuspended());
+        resumeButton.setEnabled(thread != null && cpu.isSuspended());
+        stopButton.setEnabled(thread != null);
+    }
+
+
+    /**
+     * Notify gui to display current values.
+     */
+    private void updateComponents() {
         updateButtons();
-      }
-    }.execute();
-  }
 
-  /**
-   * Stop C64.
-   */
-  private void stop() {
-    new SwingWorker<>() {
-      @Override
-      protected Object doInBackground() {
-        try {
-          cpu.stop();
-          thread.join();
-        } catch (InterruptedException e) {
-          // ignore
-        } finally {
-          thread = null;
-        }
-
-        return null;
-      }
-
-      @Override
-      protected void done() {
-        updateButtons();
-      }
-    }.execute();
-  }
-
-  /**
-   * Update the state of the buttons.
-   */
-  private void updateButtons() {
-    runButton.setEnabled(thread == null);
-    suspendButton.setEnabled(thread != null && !cpu.isSuspended());
-    resumeButton.setEnabled(thread != null && cpu.isSuspended());
-    stopButton.setEnabled(thread != null);
-  }
-
-
-  /**
-   * Notify gui to display current values.
-   */
-  private void updateComponents() {
-    updateButtons();
-
-    trace.stateChanged();
-    state.stateChanged();
-    disassembler.setAddress(cpu.getState().PC);
-    disassembler.codeChanged();
-    memDump.memoryChanged();
-  }
+        trace.stateChanged();
+        state.stateChanged();
+        disassembler.setAddress(cpu.getState().PC);
+        disassembler.codeChanged();
+        memDump.memoryChanged();
+    }
 }

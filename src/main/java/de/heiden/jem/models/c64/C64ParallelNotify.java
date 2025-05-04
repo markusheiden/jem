@@ -10,19 +10,19 @@ import static de.heiden.jem.models.c64.gui.javafx.emulator.C64Application.start;
  * C64 startup with {@link ParallelNotifyClock}.
  */
 public class C64ParallelNotify {
-  /**
-   * Logger.
-   */
-  private static final Logger logger = LoggerFactory.getLogger(C64ParallelNotify.class);
+    /**
+     * Logger.
+     */
+    private static final Logger logger = LoggerFactory.getLogger(C64ParallelNotify.class);
 
-  /**
-   * Start the application.
-   */
-  public static void main(String[] args) {
-    try {
-      start("--clock=" + ParallelNotifyClock.class.getName());
-    } catch (Exception e) {
-      logger.error("Unable to startup", e);
+    /**
+     * Start the application.
+     */
+    public static void main(String[] args) {
+        try {
+            start("--clock=" + ParallelNotifyClock.class.getName());
+        } catch (Exception e) {
+            logger.error("Unable to startup", e);
+        }
     }
-  }
 }

@@ -23,64 +23,67 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  * Base class for test defined via a D64 suite.
  */
 public abstract class D64SuiteArgumentsProvider implements ArgumentsProvider, AnnotationConsumer<D64SuiteSource> {
-  /**
-   * Program file suffix.
-   */
-  private static final String PRG_SUFFIX = ".prg";
+    /**
+     * Program file suffix.
+     */
+    private static final String PRG_SUFFIX = ".prg";
 
-  /**
-   * Classpath to directory with test D64 image.
-   */
-  private String resource;
+    /**
+     * Classpath to directory with test D64 image.
+     */
+    private String resource;
 
-  /**
-   * Program names to ignore.
-   */
-  private Set<String> ignore;
+    /**
+     * Program names to ignore.
+     */
+    private Set<String> ignore;
 
-  /**
-   * Additional program name filter {@link Pattern regex} to use.
-   */
-  private Predicate<String> filter;
+    /**
+     * Additional program name filter {@link Pattern regex} to use.
+     */
+    private Predicate<String> filter;
 
-  @Override
-  public void accept(D64SuiteSource source) {
-    resource = source.resource();
-    if (resource == null) {
-      throw new NullPointerException("Resource has to be specified.");
+    @Override
+    public void accept(D64SuiteSource source) {
+        resource = source.resource();
+        if (resource == null) {
+            throw new NullPointerException("Resource has to be specified.");
+        }
+
+        ignore = new HashSet<>(asList(source.ignore()));
+        ignore.remove("NULL");
+        filter = !source.filter().equals("NULL") ?
+                Pattern.compile(source.filter()).asPredicate() : programName -> true;
     }
 
-    ignore = new HashSet<>(asList(source.ignore()));
-    ignore.remove("NULL");
-    filter = !source.filter().equals("NULL")?
-      Pattern.compile(source.filter()).asPredicate() : programName -> true;
-  }
+    @Override
+    public Stream<? extends Arguments> provideArguments(ExtensionContext context) throws Exception {
+        return createParametersFromD64(resource, (String filename) -> {
+            if (!filename.endsWith(PRG_SUFFIX)) {
+                return false;
+            }
+            var program = filename.substring(0, filename.length() - PRG_SUFFIX.length());
+            return !ignore.contains(program) && filter.test(program);
+        });
+    }
 
-  @Override
-  public Stream<? extends Arguments> provideArguments(ExtensionContext context) throws Exception {
-    return createParametersFromD64(resource, (String filename) -> {
-      if (!filename.endsWith(PRG_SUFFIX)) {
-        return false;
-      }
-      var program = filename.substring(0, filename.length() - PRG_SUFFIX.length());
-      return !ignore.contains(program) && filter.test(program);
-    });
-  }
-
-  /**
-   * Create parameters.
-   *
-   * @param resource Classpath to D64 image.
-   * @param filter Program name filter to use.
-   */
-  private static Stream<Arguments> createParametersFromD64(String resource, Predicate<String> filter) throws Exception {
-    var start = D64SuiteArgumentsProvider.class.getResource(resource);
-    assertNotNull(start, "Resource exists.");
-    var d64 = new D64(35, false);
-    d64.load(Files.newInputStream(Paths.get(start.toURI())));
-    return d64.getDirectory().getFiles().stream()
-      .filter(file -> file.getMode().getType() == PRG)
-      .filter(file -> filter.test(StringUtil.read(file.getName())))
-      .map(file -> Arguments.of(d64.read(file), StringUtil.read(file.getName())));
-  }
+    /**
+     * Create parameters.
+     *
+     * @param resource
+     *         Classpath to D64 image.
+     * @param filter
+     *         Program name filter to use.
+     */
+    private static Stream<Arguments> createParametersFromD64(String resource, Predicate<String> filter)
+            throws Exception {
+        var start = D64SuiteArgumentsProvider.class.getResource(resource);
+        assertNotNull(start, "Resource exists.");
+        var d64 = new D64(35, false);
+        d64.load(Files.newInputStream(Paths.get(start.toURI())));
+        return d64.getDirectory().getFiles().stream()
+                .filter(file -> file.getMode().getType() == PRG)
+                .filter(file -> filter.test(StringUtil.read(file.getName())))
+                .map(file -> Arguments.of(d64.read(file), StringUtil.read(file.getName())));
+    }
 }

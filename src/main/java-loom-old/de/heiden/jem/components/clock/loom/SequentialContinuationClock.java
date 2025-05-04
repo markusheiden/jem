@@ -26,7 +26,7 @@ public final class SequentialContinuationClock extends AbstractSimpleClock {
         assert ticks >= 0 : "Precondition: ticks >= 0";
 
         var continuations = createContinuations();
-        for (final long stop = getTick() + ticks; getTick() < stop;) {
+        for (final long stop = getTick() + ticks; getTick() < stop; ) {
             startTick();
             for (var continuation : continuations) {
                 continuation.run();

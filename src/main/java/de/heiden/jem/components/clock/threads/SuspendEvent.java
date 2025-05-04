@@ -9,73 +9,74 @@ import org.slf4j.LoggerFactory;
  * Event to suspend clock run.
  */
 public final class SuspendEvent extends ClockEvent {
-  /**
-   * Logger.
-   */
-  private static final Logger logger = LoggerFactory.getLogger(SuspendEvent.class);
+    /**
+     * Logger.
+     */
+    private static final Logger logger = LoggerFactory.getLogger(SuspendEvent.class);
 
-  /**
-   * Has the run been suspended?.
-   */
-  private boolean suspended = false;
+    /**
+     * Has the run been suspended?.
+     */
+    private boolean suspended = false;
 
-  /**
-   * Monitor for synchronization.
-   */
-  private final Object monitor;
+    /**
+     * Monitor for synchronization.
+     */
+    private final Object monitor;
 
-  /**
-   * Constructor.
-   *
-   * @param monitor Monitor for synchronization.
-   */
-  public SuspendEvent(Object monitor) {
-    super("Suspend");
+    /**
+     * Constructor.
+     *
+     * @param monitor
+     *         Monitor for synchronization.
+     */
+    public SuspendEvent(Object monitor) {
+        super("Suspend");
 
-    this.monitor = monitor;
-  }
+        this.monitor = monitor;
+    }
 
-  @Override
-  public void execute(long tick) throws ManualAbort {
-    synchronized (monitor) {
-      logger.info("Suspend at {}.", tick);
-      suspended = true;
-      monitor.notifyAll();
-      try {
-        while (suspended) {
-          monitor.wait();
+    @Override
+    public void execute(long tick) throws ManualAbort {
+        synchronized (monitor) {
+            logger.info("Suspend at {}.", tick);
+            suspended = true;
+            monitor.notifyAll();
+            try {
+                while (suspended) {
+                    monitor.wait();
+                }
+            } catch (InterruptedException e) {
+                throw new ManualAbort();
+            }
+            logger.info("Resume at {}.", tick);
         }
-      } catch (InterruptedException e) {
-        throw new ManualAbort();
-      }
-      logger.info("Resume at {}.", tick);
     }
-  }
 
-  /**
-   * Resume execution if suspended.
-   */
-  public void resume() {
-    synchronized (monitor) {
-      if (suspended) {
-        suspended = false;
-        monitor.notifyAll();
-      }
-    }
-  }
-
-  /**
-   * Wait for suspend.
-   */
-  public void waitForSuspend() throws ManualAbort {
-    try {
-      synchronized (monitor) {
-        while (!suspended) {
-          monitor.wait();
+    /**
+     * Resume execution if suspended.
+     */
+    public void resume() {
+        synchronized (monitor) {
+            if (suspended) {
+                suspended = false;
+                monitor.notifyAll();
+            }
         }
-      }
-    } catch (InterruptedException e) {
-      throw new ManualAbort();
     }
-  }
+
+    /**
+     * Wait for suspend.
+     */
+    public void waitForSuspend() throws ManualAbort {
+        try {
+            synchronized (monitor) {
+                while (!suspended) {
+                    monitor.wait();
+                }
+            }
+        } catch (InterruptedException e) {
+            throw new ManualAbort();
+        }
+    }
 }

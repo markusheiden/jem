@@ -1,8 +1,8 @@
 package de.heiden.jem.components.clock.loom;
 
-import java.util.concurrent.Executor;
-
 import de.heiden.jem.components.clock.AbstractSimpleClock;
+
+import java.util.concurrent.Executor;
 
 /**
  * Clock executing {@link Thread fibers} of project loom on an {@link Executor}.

@@ -8,30 +8,33 @@ import javafx.scene.Scene;
  * Key listener for C64 Keyboard.
  */
 public class KeyListener {
-  /**
-   * Attach key listeners to the scene.
-   *
-   * @param scene Scene
-   * @param keyboard Keyboard
-   * @param keyMapping Mapping from keys to C64 keys
-   */
-  public static void attachTo(Scene scene, IKeyboard keyboard, KeyMapping keyMapping) {
-    scene.setOnKeyPressed(e -> {
-      Key[] keys = keyMapping.getKeys(e);
-      if (keys != null) {
-        for (Key key : keys) {
-          keyboard.press(key);
-        }
-      }
-    });
+    /**
+     * Attach key listeners to the scene.
+     *
+     * @param scene
+     *         Scene
+     * @param keyboard
+     *         Keyboard
+     * @param keyMapping
+     *         Mapping from keys to C64 keys
+     */
+    public static void attachTo(Scene scene, IKeyboard keyboard, KeyMapping keyMapping) {
+        scene.setOnKeyPressed(e -> {
+            Key[] keys = keyMapping.getKeys(e);
+            if (keys != null) {
+                for (Key key : keys) {
+                    keyboard.press(key);
+                }
+            }
+        });
 
-    scene.setOnKeyReleased(e -> {
-      Key[] keys = keyMapping.getKeys(e);
-      if (keys != null) {
-        for (Key key : keys) {
-          keyboard.release(key);
-        }
-      }
-    });
-  }
+        scene.setOnKeyReleased(e -> {
+            Key[] keys = keyMapping.getKeys(e);
+            if (keys != null) {
+                for (Key key : keys) {
+                    keyboard.release(key);
+                }
+            }
+        });
+    }
 }

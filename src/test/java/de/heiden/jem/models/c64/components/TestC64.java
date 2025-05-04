@@ -30,163 +30,164 @@ import static java.lang.Thread.interrupted;
  * Modified C64 for better testability.
  */
 public class TestC64 {
-  /**
-   * Main clock.
-   */
-  private final Clock clock;
+    /**
+     * Main clock.
+     */
+    private final Clock clock;
 
-  /**
-   * CPU bus.
-   */
-  private C64Bus cpuBus;
+    /**
+     * CPU bus.
+     */
+    private C64Bus cpuBus;
 
-  /**
-   * CPU.
-   */
-  private final CPU6510Debugger cpu;
+    /**
+     * CPU.
+     */
+    private final CPU6510Debugger cpu;
 
-  /**
-   * Keyboard.
-   */
-  private Keyboard keyboard;
+    /**
+     * Keyboard.
+     */
+    private Keyboard keyboard;
 
-  /**
-   * VIC.
-   */
-  private final VIC6569PAL vic;
+    /**
+     * VIC.
+     */
+    private final VIC6569PAL vic;
 
-  /**
-   * Buffer for capturing console output.
-   */
-  private final SystemOut systemOut = new SystemOut();
+    /**
+     * Buffer for capturing console output.
+     */
+    private final SystemOut systemOut = new SystemOut();
 
-  /**
-   * Detects when a (basic) program ends.
-   */
-  private final ProgramEndDetector programEnd = new ProgramEndDetector();
+    /**
+     * Detects when a (basic) program ends.
+     */
+    private final ProgramEndDetector programEnd = new ProgramEndDetector();
 
-  /**
-   * Detects when a (basic) program ends.
-   */
-  private final BrkDetector brk = new BrkDetector();
+    /**
+     * Detects when a (basic) program ends.
+     */
+    private final BrkDetector brk = new BrkDetector();
 
-  /**
-   * Constructor.
-   */
-  public TestC64() throws Exception {
-    clock = new SerialClock();
+    /**
+     * Constructor.
+     */
+    public TestC64() throws Exception {
+        clock = new SerialClock();
 
-    var _ram = new RAM(0x10000);
-    var colorRam = new ColorRAM(0x400);
-    var basic = ROMLoader.basic(ROMLoader.DEFAULT_BASIC);
-    var kernel = ROMLoader.kernel(ROMLoader.DEFAULT_KERNEL);
-    var charset = ROMLoader.character(ROMLoader.DEFAULT_CHARACTER);
+        var _ram = new RAM(0x10000);
+        var colorRam = new ColorRAM(0x400);
+        var basic = ROMLoader.basic(ROMLoader.DEFAULT_BASIC);
+        var kernel = ROMLoader.kernel(ROMLoader.DEFAULT_KERNEL);
+        var charset = ROMLoader.character(ROMLoader.DEFAULT_CHARACTER);
 
-    var cia1 = new CIA6526(clock);
-    var cia2 = new CIA6526(clock);
+        var cia1 = new CIA6526(clock);
+        var cia2 = new CIA6526(clock);
 
-    var vicBus = new VICBus(cia2.portA(), _ram, charset);
-    vic = new VIC6569PAL(clock, vicBus, colorRam);
+        var vicBus = new VICBus(cia2.portA(), _ram, charset);
+        vic = new VIC6569PAL(clock, vicBus, colorRam);
 
-    keyboard = new Keyboard(cia1.portA(), cia1.portB());
+        keyboard = new Keyboard(cia1.portA(), cia1.portB());
 
-    cpu = clock.addClockedComponent(Clock.CPU, new CPU6510Debugger());
-    cpuBus = new C64Bus(_ram, basic, vic, colorRam, cia1, cia2, charset, kernel);
-    cpuBus.connect(cpu.getPort());
-    cpu.connect(cpuBus);
-    cpu.getIRQ().connect(cia1.getIRQ());
-    cpu.getIRQ().connect(vic.getIRQ());
-    cpu.getNMI().connect(cia2.getIRQ());
-    cpu.getNMI().connect(keyboard.getNMI());
+        cpu = clock.addClockedComponent(Clock.CPU, new CPU6510Debugger());
+        cpuBus = new C64Bus(_ram, basic, vic, colorRam, cia1, cia2, charset, kernel);
+        cpuBus.connect(cpu.getPort());
+        cpu.connect(cpuBus);
+        cpu.getIRQ().connect(cia1.getIRQ());
+        cpu.getIRQ().connect(vic.getIRQ());
+        cpu.getNMI().connect(cia2.getIRQ());
+        cpu.getNMI().connect(keyboard.getNMI());
 
-    // init RAM with 0x02 (crash) to easier detect wrong behaviour
-    for (int addr = 0; addr < 0x10000; addr++) {
-      cpuBus.write(0x02, addr);
-    }
-
-    //
-    // ROM patches
-    //
-
-    cpu.add(systemOut);
-    cpu.add(new StopAtSystemIn());
-    cpu.add(programEnd);
-
-    clock.addClockEvent(100000, new ClockEvent("Interrupt check") {
-      @Override
-      public void execute(long tick) {
-        if (interrupted()) {
-          throw new IllegalArgumentException("Thread has been interrupted");
+        // init RAM with 0x02 (crash) to easier detect wrong behaviour
+        for (int addr = 0; addr < 0x10000; addr++) {
+            cpuBus.write(0x02, addr);
         }
 
-        clock.addClockEvent(tick + 100000, this);
-      }
-    });
-  }
+        //
+        // ROM patches
+        //
 
-  /**
-   * Add patch.
-   */
-  public void add(Patch patch) {
-    cpu.add(patch);
-  }
+        cpu.add(systemOut);
+        cpu.add(new StopAtSystemIn());
+        cpu.add(programEnd);
 
-  /**
-   * Clock.
-   */
-  public Clock getClock() {
-    return clock;
-  }
+        clock.addClockEvent(100000, new ClockEvent("Interrupt check") {
+            @Override
+            public void execute(long tick) {
+                if (interrupted()) {
+                    throw new IllegalArgumentException("Thread has been interrupted");
+                }
 
-  /**
-   * Get bus.
-   */
-  public BusDevice getBus() {
-    return cpuBus;
-  }
+                clock.addClockEvent(tick + 100000, this);
+            }
+        });
+    }
 
-  /**
-   * Set stream for screen output.
-   */
-  public void setSystemOut(OutputStream systemOut) {
-    this.systemOut.setStream(systemOut);
-  }
+    /**
+     * Add patch.
+     */
+    public void add(Patch patch) {
+        cpu.add(patch);
+    }
 
-  /**
-   * Get stream for keyboard input.
-   */
-  public java.awt.event.KeyListener getSystemIn() {
-    return new KeyListener(keyboard, new PCMapping());
-  }
+    /**
+     * Clock.
+     */
+    public Clock getClock() {
+        return clock;
+    }
 
-  /**
-   * Add a patch to the cpu, to insert a RTS at the given address.
-   *
-   * @param addr Address to write RTS to
-   */
-  public void rts(int addr) {
-    cpu.add(new Return(addr));
-  }
+    /**
+     * Get bus.
+     */
+    public BusDevice getBus() {
+        return cpuBus;
+    }
 
-  /**
-   * Start emulation.
-   */
-  public void start() {
-    clock.run();
-    clock.close();
-  }
+    /**
+     * Set stream for screen output.
+     */
+    public void setSystemOut(OutputStream systemOut) {
+        this.systemOut.setStream(systemOut);
+    }
 
-  /**
-   * Has the program ended?.
-   */
-  public boolean hasEnded() {
-    return programEnd.hasEnded();
-  }
+    /**
+     * Get stream for keyboard input.
+     */
+    public java.awt.event.KeyListener getSystemIn() {
+        return new KeyListener(keyboard, new PCMapping());
+    }
 
-  /**
-   * Has the program run into a BRK?.
-   */
-  public boolean hasBrk() {
-    return brk.hasBrk();
-  }
+    /**
+     * Add a patch to the cpu, to insert a RTS at the given address.
+     *
+     * @param addr
+     *         Address to write RTS to
+     */
+    public void rts(int addr) {
+        cpu.add(new Return(addr));
+    }
+
+    /**
+     * Start emulation.
+     */
+    public void start() {
+        clock.run();
+        clock.close();
+    }
+
+    /**
+     * Has the program ended?.
+     */
+    public boolean hasEnded() {
+        return programEnd.hasEnded();
+    }
+
+    /**
+     * Has the program run into a BRK?.
+     */
+    public boolean hasBrk() {
+        return brk.hasBrk();
+    }
 }

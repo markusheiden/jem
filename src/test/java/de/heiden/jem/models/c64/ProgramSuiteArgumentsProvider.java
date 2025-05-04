@@ -21,66 +21,69 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  * Base class for test defined via a program suite.
  */
 public class ProgramSuiteArgumentsProvider implements ArgumentsProvider, AnnotationConsumer<ProgramSuiteSource> {
-  /**
-   * Program file suffix.
-   */
-  private static final String PRG_SUFFIX = ".prg";
+    /**
+     * Program file suffix.
+     */
+    private static final String PRG_SUFFIX = ".prg";
 
-  /**
-   * Classpath to directory with test programs.
-   */
-  private String resource;
+    /**
+     * Classpath to directory with test programs.
+     */
+    private String resource;
 
-  /**
-   * Program names to ignore.
-   */
-  private Set<String> ignore;
+    /**
+     * Program names to ignore.
+     */
+    private Set<String> ignore;
 
-  /**
-   * Additional program name filter {@link Pattern regex} to use.
-   */
-  private Predicate<String> filter;
+    /**
+     * Additional program name filter {@link Pattern regex} to use.
+     */
+    private Predicate<String> filter;
 
-  @Override
-  public void accept(ProgramSuiteSource source) {
-    resource = source.resource();
-    if (resource == null) {
-      throw new NullPointerException("Resource has to be specified.");
+    @Override
+    public void accept(ProgramSuiteSource source) {
+        resource = source.resource();
+        if (resource == null) {
+            throw new NullPointerException("Resource has to be specified.");
+        }
+
+        ignore = new HashSet<>(asList(source.ignore()));
+        ignore.remove("NULL");
+        filter = !source.filter().equals("NULL") ?
+                Pattern.compile(source.filter()).asPredicate() : programName -> true;
     }
 
-    ignore = new HashSet<>(asList(source.ignore()));
-    ignore.remove("NULL");
-    filter = !source.filter().equals("NULL")?
-      Pattern.compile(source.filter()).asPredicate() : programName -> true;
-  }
+    @Override
+    public Stream<? extends Arguments> provideArguments(ExtensionContext context) throws Exception {
+        return createParametersFromDirectory(resource, (Path path) -> {
+            var filename = path.getFileName().toString();
+            if (!filename.endsWith(PRG_SUFFIX)) {
+                return false;
+            }
+            var program = filename.substring(0, filename.length() - PRG_SUFFIX.length());
+            return !ignore.contains(program) && filter.test(program);
+        });
+    }
 
-  @Override
-  public Stream<? extends Arguments> provideArguments(ExtensionContext context) throws Exception {
-    return createParametersFromDirectory(resource, (Path path) -> {
-      var filename = path.getFileName().toString();
-      if (!filename.endsWith(PRG_SUFFIX)) {
-        return false;
-      }
-      var program = filename.substring(0, filename.length() - PRG_SUFFIX.length());
-      return !ignore.contains(program) && filter.test(program);
-    });
-  }
-
-  /**
-   * Create parameters.
-   *
-   * @param resource Classpath to directory with test programs.
-   * @param filter File name filter to use.
-   */
-  private static Stream<Arguments> createParametersFromDirectory(String resource, Predicate<Path> filter) throws Exception {
-    var start = ProgramSuiteArgumentsProvider.class.getResource(resource);
-    assertNotNull(start, "Resource exists.");
-    return Files.list(Paths.get(start.toURI()).getParent())
-      .filter(filter)
-      .map(program -> {
-        var programName = program.getFileName().toString();
-        programName = programName.substring(0, programName.length() - ".prg".length());
-        return Arguments.of(program, programName);
-      });
-  }
+    /**
+     * Create parameters.
+     *
+     * @param resource
+     *         Classpath to directory with test programs.
+     * @param filter
+     *         File name filter to use.
+     */
+    private static Stream<Arguments> createParametersFromDirectory(String resource, Predicate<Path> filter)
+            throws Exception {
+        var start = ProgramSuiteArgumentsProvider.class.getResource(resource);
+        assertNotNull(start, "Resource exists.");
+        return Files.list(Paths.get(start.toURI()).getParent())
+                .filter(filter)
+                .map(program -> {
+                    var programName = program.getFileName().toString();
+                    programName = programName.substring(0, programName.length() - ".prg".length());
+                    return Arguments.of(program, programName);
+                });
+    }
 }

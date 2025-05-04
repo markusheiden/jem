@@ -9,8 +9,8 @@ import org.serialthreads.transformer.strategies.frequent3.FrequentInterruptsTran
  */
 @Transform(transformer = FrequentInterruptsTransformer3.class, classPrefixes = "de.heiden.jem")
 class SerialClockTest extends ClockTestBase {
-  @Override
-  protected SerialClock createClock() {
-    return new SerialClock();
-  }
+    @Override
+    protected SerialClock createClock() {
+        return new SerialClock();
+    }
 }

@@ -16,51 +16,52 @@ import java.nio.file.Path;
  * Loads files from a given directory.
  */
 public class LoadFromDirectory extends Patch {
-  /**
-   * Base directory to load files from.
-   */
-  private final Path baseDir;
+    /**
+     * Base directory to load files from.
+     */
+    private final Path baseDir;
 
-  /**
-   * Constructor.
-   *
-   * @param baseDirectory Base directory to load files from
-   */
-  public LoadFromDirectory(Path baseDirectory) {
-    super(0xF4C4);
+    /**
+     * Constructor.
+     *
+     * @param baseDirectory
+     *         Base directory to load files from
+     */
+    public LoadFromDirectory(Path baseDirectory) {
+        super(0xF4C4);
 
-    this.baseDir = baseDirectory;
-  }
-
-  @Override
-  protected int execute(CPU6510State state, BusDevice bus) {
-    // Read filename from ($BB), length ($B7)
-    var wordBus = new WordBus(bus);
-    var filename = StringUtil.read(bus, wordBus.readWord(0xBB), bus.read(0xB7));
-    if (!filename.contains(".")) {
-      filename = filename.toLowerCase() + ".prg";
+        this.baseDir = baseDirectory;
     }
 
-    try (var file = Files.newInputStream(baseDir.resolve(filename))) {
-      int endAddress = bus.read(0xB9) == 0 ?
-        FileUtil.read(file, wordBus.readWord(0xC3), bus) :
-        FileUtil.read(file, bus);
+    @Override
+    protected int execute(CPU6510State state, BusDevice bus) {
+        // Read filename from ($BB), length ($B7)
+        var wordBus = new WordBus(bus);
+        var filename = StringUtil.read(bus, wordBus.readWord(0xBB), bus.read(0xB7));
+        if (!filename.contains(".")) {
+            filename = filename.toLowerCase() + ".prg";
+        }
 
-      wordBus.writeWord(0xAE, endAddress);
+        try (var file = Files.newInputStream(baseDir.resolve(filename))) {
+            int endAddress = bus.read(0xB9) == 0 ?
+                    FileUtil.read(file, wordBus.readWord(0xC3), bus) :
+                    FileUtil.read(file, bus);
 
-      // Continue at $F5A9: Successful load.
-      state.PC = 0xF5A9;
-      return DO_NOT_EXECUTE;
+            wordBus.writeWord(0xAE, endAddress);
 
-    } catch (FileNotFoundException e) {
-      logger.warn("File not found {}.", filename, e);
-      state.PC = 0xF704;
-      return DO_NOT_EXECUTE;
+            // Continue at $F5A9: Successful load.
+            state.PC = 0xF5A9;
+            return DO_NOT_EXECUTE;
 
-    } catch (IOException e) {
-      logger.error("Failed to load {}.", filename, e);
-      return RTS;
+        } catch (FileNotFoundException e) {
+            logger.warn("File not found {}.", filename, e);
+            state.PC = 0xF704;
+            return DO_NOT_EXECUTE;
+
+        } catch (IOException e) {
+            logger.error("Failed to load {}.", filename, e);
+            return RTS;
+        }
+
     }
-
-  }
 }
