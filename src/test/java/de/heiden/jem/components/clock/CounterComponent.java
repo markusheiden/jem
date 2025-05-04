@@ -2,14 +2,16 @@ package de.heiden.jem.components.clock;
 
 import org.serialthreads.Interruptible;
 
+import static java.lang.Thread.interrupted;
+
 /**
  * Counter for clock tests.
  */
-public class CounterComponent implements ClockedComponent {
+public final class CounterComponent implements ClockedComponent {
     /**
      * Tick.
      */
-    private Tick _tick;
+    private Tick tick;
 
     /**
      * Count.
@@ -23,18 +25,18 @@ public class CounterComponent implements ClockedComponent {
 
     @Override
     public void setTick(Tick tick) {
-        this._tick = tick;
+        this.tick = tick;
     }
 
     @Override
     @Interruptible
     public void run() {
-        while (!Thread.interrupted()) {
+        while (!interrupted()) {
             count++;
             if (count % 10 == 0) {
                 System.out.print(".");
             }
-            _tick.waitForTick();
+            tick.waitForTick();
         }
     }
 

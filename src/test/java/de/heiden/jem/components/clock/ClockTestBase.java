@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.fail;
  */
 public abstract class ClockTestBase {
     /**
-     * Create clock.
+     * Create the clock.
      */
     protected abstract Clock createClock() throws Exception;
 
