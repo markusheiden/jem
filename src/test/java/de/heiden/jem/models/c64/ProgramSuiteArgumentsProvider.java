@@ -5,7 +5,6 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.support.AnnotationConsumer;
 
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -58,11 +57,11 @@ public class ProgramSuiteArgumentsProvider implements ArgumentsProvider, Annotat
   @Override
   public Stream<? extends Arguments> provideArguments(ExtensionContext context) throws Exception {
     return createParametersFromDirectory(resource, (Path path) -> {
-      String filename = path.getFileName().toString();
+      var filename = path.getFileName().toString();
       if (!filename.endsWith(PRG_SUFFIX)) {
         return false;
       }
-      String program = filename.substring(0, filename.length() - PRG_SUFFIX.length());
+      var program = filename.substring(0, filename.length() - PRG_SUFFIX.length());
       return !ignore.contains(program) && filter.test(program);
     });
   }
@@ -74,12 +73,12 @@ public class ProgramSuiteArgumentsProvider implements ArgumentsProvider, Annotat
    * @param filter File name filter to use.
    */
   private static Stream<Arguments> createParametersFromDirectory(String resource, Predicate<Path> filter) throws Exception {
-    URL start = ProgramSuiteArgumentsProvider.class.getResource(resource);
+    var start = ProgramSuiteArgumentsProvider.class.getResource(resource);
     assertNotNull(start, "Resource exists.");
     return Files.list(Paths.get(start.toURI()).getParent())
       .filter(filter)
       .map(program -> {
-        String programName = program.getFileName().toString();
+        var programName = program.getFileName().toString();
         programName = programName.substring(0, programName.length() - ".prg".length());
         return Arguments.of(program, programName);
       });

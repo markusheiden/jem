@@ -29,7 +29,6 @@ public class CounterComponent implements ClockedComponent {
   @Override
   @Interruptible
   public void run() {
-    //noinspection InfiniteLoopStatement
     while (!Thread.interrupted()) {
       count++;
       if (count % 10 == 0) {

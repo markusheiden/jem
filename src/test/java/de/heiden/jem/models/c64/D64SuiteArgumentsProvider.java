@@ -1,6 +1,5 @@
 package de.heiden.jem.models.c64;
 
-import de.heiden.c64dt.disk.FileType;
 import de.heiden.c64dt.disk.d64.D64;
 import de.heiden.jem.models.c64.components.patch.StringUtil;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -8,7 +7,6 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.support.AnnotationConsumer;
 
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashSet;
@@ -17,6 +15,7 @@ import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
+import static de.heiden.c64dt.disk.FileType.PRG;
 import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -63,7 +62,7 @@ public abstract class D64SuiteArgumentsProvider implements ArgumentsProvider, An
       if (!filename.endsWith(PRG_SUFFIX)) {
         return false;
       }
-      String program = filename.substring(0, filename.length() - PRG_SUFFIX.length());
+      var program = filename.substring(0, filename.length() - PRG_SUFFIX.length());
       return !ignore.contains(program) && filter.test(program);
     });
   }
@@ -75,12 +74,12 @@ public abstract class D64SuiteArgumentsProvider implements ArgumentsProvider, An
    * @param filter Program name filter to use.
    */
   private static Stream<Arguments> createParametersFromD64(String resource, Predicate<String> filter) throws Exception {
-    URL start = D64SuiteArgumentsProvider.class.getResource(resource);
+    var start = D64SuiteArgumentsProvider.class.getResource(resource);
     assertNotNull(start, "Resource exists.");
-    D64 d64 = new D64(35, false);
+    var d64 = new D64(35, false);
     d64.load(Files.newInputStream(Paths.get(start.toURI())));
     return d64.getDirectory().getFiles().stream()
-      .filter(file -> file.getMode().getType().equals(FileType.PRG))
+      .filter(file -> file.getMode().getType() == PRG)
       .filter(file -> filter.test(StringUtil.read(file.getName())))
       .map(file -> Arguments.of(d64.read(file), StringUtil.read(file.getName())));
   }
