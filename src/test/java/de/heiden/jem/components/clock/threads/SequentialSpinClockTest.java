@@ -9,7 +9,7 @@ import de.heiden.jem.components.clock.ClockTestBase;
 class SequentialSpinClockTest extends ClockTestBase {
     @Override
     protected int numCounters() {
-        // This clock does not perform well with less threads than components.
+        // This clock does not perform well with fewer threads than components.
         return Math.max(1, Runtime.getRuntime().availableProcessors() / 2);
     }
 
