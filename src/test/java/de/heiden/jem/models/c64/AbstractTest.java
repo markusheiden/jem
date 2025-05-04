@@ -3,11 +3,9 @@ package de.heiden.jem.models.c64;
 import de.heiden.c64dt.assembler.CodeBuffer;
 import de.heiden.c64dt.assembler.Disassembler;
 import de.heiden.c64dt.assembler.Dumper;
-import de.heiden.c64dt.bytes.HexUtil;
 import de.heiden.jem.models.c64.components.TestC64;
 import de.heiden.jem.models.c64.components.patch.LoadFile;
 import de.heiden.jem.models.c64.components.patch.LoadFromDirectory;
-import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -22,12 +20,15 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 
+import static de.heiden.c64dt.bytes.HexUtil.hexByte;
+import static de.heiden.c64dt.bytes.HexUtil.hexWord;
+import static java.lang.Thread.sleep;
+import static java.util.Arrays.stream;
+import static org.apache.commons.lang3.StringUtils.join;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
@@ -111,13 +112,13 @@ public abstract class AbstractTest {
     }, threadName);
     thread.start();
 
-    // Reset program end flag.
+    // Reset the program end flag.
     c64.hasEnded();
 
-    // Wait for boot to finish.
+    // Wait for the boot to finish.
     assertSame(programEnd, waitSecondsFor(3, programEnd));
 
-    // Reset program end flag.
+    // Reset the program end flag.
     c64.hasEnded();
 
     console.clear();
@@ -127,7 +128,7 @@ public abstract class AbstractTest {
    * Convert classpath resource to {@link Path}.
    */
   protected Path path(String classpath) throws Exception {
-    URL url = getClass().getResource(classpath);
+    var url = getClass().getResource(classpath);
     assertNotNull(url, "Classpath resource " + classpath + " exists");
     return Paths.get(url.toURI());
   }
@@ -150,7 +151,7 @@ public abstract class AbstractTest {
    * @param secondary Secondary address.
    */
   protected void load(String programName, int device, int secondary) throws Exception {
-    // Reset program end flag.
+    // Reset the program end flag.
     c64.hasEnded();
 
     console.clear();
@@ -159,10 +160,10 @@ public abstract class AbstractTest {
   }
 
   /**
-   * Run program.
+   * Run the program.
    */
   protected void run() throws Exception {
-    // Reset program end flag.
+    // Reset the program end flag.
     c64.hasEnded();
 
     console.clear();
@@ -170,7 +171,7 @@ public abstract class AbstractTest {
   }
 
   /**
-   * Load and run program, evaluate border color to determine test result.
+   * Load and run the program, evaluate border color to determine the test result.
    *
    * @param program Path to program.
    * @param maxSeconds Max seconds to wait. Assumes 1 MHz clock.
@@ -182,7 +183,7 @@ public abstract class AbstractTest {
   }
 
   /**
-   * Load and run program, evaluate border color to determine test result.
+   * Load and run the program, evaluate border color to determine the test result.
    *
    * @param programName Name of program.
    * @param program Program.
@@ -195,7 +196,7 @@ public abstract class AbstractTest {
   }
 
   /**
-   * Load program from classpath and start it via "run".
+   * Load the program from the classpath and start it via "run".
    *
    * @param program Where to find program in classpath.
    */
@@ -206,11 +207,11 @@ public abstract class AbstractTest {
   /**
    * Load program from {@link Path} and start it via "run".
    *
-   * @param program Path to program file.
+   * @param program Path to the program file.
    */
   protected void loadAndRun(Path program) throws Exception {
     // Extract pure file name.
-    String programName = program.getFileName().toString();
+    var programName = program.getFileName().toString();
     programName = programName.substring(0, programName.indexOf(".prg"));
 
     createC64(programName);
@@ -231,7 +232,7 @@ public abstract class AbstractTest {
   }
 
   /**
-   * Load program and start it via "run".
+   * Load the program and start it via "run".
    *
    * @param programName Name of program.
    * @param bytes Program.
@@ -254,10 +255,10 @@ public abstract class AbstractTest {
    * @param screenCapture Capture screen and print it to {@link System#out}?.
    */
   protected final void doTestBorderResult(int maxSeconds, boolean screenCapture) throws Exception {
-    Condition passed = greenBorder;
-    Condition failed1 = lightRedBorder;
-    Condition failed2 = redBorder;
-    Condition result = waitSecondsFor(maxSeconds, passed, failed1, failed2);
+    var passed = greenBorder;
+    var failed1 = lightRedBorder;
+    var failed2 = redBorder;
+    var result = waitSecondsFor(maxSeconds, passed, failed1, failed2);
     if (screenCapture) {
       printScreen();
     }
@@ -269,7 +270,7 @@ public abstract class AbstractTest {
     @Override
     public void handleTestExecutionException(ExtensionContext context, Throwable throwable) throws Throwable {
       try {
-        AbstractTest test = (AbstractTest) context.getRequiredTestInstance();
+        var test = (AbstractTest) context.getRequiredTestInstance();
         test.dumpProgram();
       } catch (Exception io) {
         // ignore
@@ -280,7 +281,7 @@ public abstract class AbstractTest {
   }
 
   /**
-   * For debugging purposes disassemble test program.
+   * For debugging purposes, disassemble the test program.
    */
   public void dumpProgram() throws IOException {
     System.out.flush();
@@ -303,14 +304,14 @@ public abstract class AbstractTest {
   }
 
   /**
-   * Type string to keyboard.
+   * Type string to the keyboard.
    *
    * @param s String
    */
   protected void type(String s) throws Exception {
-    Button dummySource = new Button();
+    var dummySource = new Button();
     for (char c : s.toCharArray()) {
-      KeyEvent event = new KeyEvent(dummySource, 0, 0, 0, 0, c, 0);
+      var event = new KeyEvent(dummySource, 0, 0, 0, 0, c, 0);
       systemIn.keyPressed(event);
       waitCycles(21000); // wait at least one interrupt
       systemIn.keyReleased(event);
@@ -352,7 +353,7 @@ public abstract class AbstractTest {
    */
   protected Condition waitCyclesFor(long maxCycles, Condition... conditions) throws Exception {
     for (long start = getTick(), end = start + maxCycles;;) {
-      for (Condition condition : conditions) {
+      for (var condition : conditions) {
         if (condition.test()) {
           messageTimeSince(condition.toString(), start);
           return condition;
@@ -413,12 +414,12 @@ public abstract class AbstractTest {
         return;
       }
 
-      Thread.sleep(10);
+      sleep(10);
     }
   }
 
   /**
-   * Get current clock tick.
+   * Get the current clock tick.
    */
   private Long getTick() throws Exception {
     return c64.getClock().getTick();
@@ -433,7 +434,7 @@ public abstract class AbstractTest {
    */
   protected final Condition programEnd = new Condition() {
     @Override
-    public boolean test() throws Exception {
+    public boolean test() {
       return c64.hasEnded();
     }
 
@@ -448,7 +449,7 @@ public abstract class AbstractTest {
    */
   protected final Condition brk = new Condition() {
     @Override
-    public boolean test() throws Exception {
+    public boolean test() {
       return c64.hasBrk();
     }
 
@@ -459,7 +460,7 @@ public abstract class AbstractTest {
   };
 
   /**
-   * Wait for "READY." on console.
+   * Wait for "READY." on the console.
    */
   private final Condition ready = onConsole("ready.\n");
 
@@ -471,7 +472,7 @@ public abstract class AbstractTest {
   }
 
   /**
-   * Search for text in console.
+   * Search for text in the console.
    */
   private class OnConsole implements Condition {
     /**
@@ -490,12 +491,12 @@ public abstract class AbstractTest {
 
     @Override
     public boolean test() {
-      return Arrays.stream(texts).anyMatch(console::contains);
+      return stream(texts).anyMatch(console::contains);
     }
 
     @Override
     public String toString() {
-      return "Console contains " + StringUtils.join(texts, " or ");
+      return "Console contains " + join(texts, " or ");
     }
   }
 
@@ -507,9 +508,9 @@ public abstract class AbstractTest {
   }
 
   /**
-   * Search for texts in console.
+   * Search for texts in the console.
    */
-  private class OnScreen implements Condition {
+  private final class OnScreen implements Condition {
     /**
      * Text.
      */
@@ -526,13 +527,13 @@ public abstract class AbstractTest {
 
     @Override
     public boolean test() throws Exception {
-      String screen = captureScreen();
-      return Arrays.stream(texts).anyMatch(screen::contains);
+      var screen = captureScreen();
+      return stream(texts).anyMatch(screen::contains);
     }
 
     @Override
     public String toString() {
-      return "Screen contains " + StringUtils.join(texts, " or ");
+      return "Screen contains " + join(texts, " or ");
     }
   }
 
@@ -542,7 +543,7 @@ public abstract class AbstractTest {
   protected final Condition greenBorder = inMemory(BORDER, GREEN);
 
   /**
-   * Light red border. Usually "test failed".
+   * Light-red border. Usually "test failed".
    */
   protected final Condition lightRedBorder = inMemory(BORDER, LIGHT_RED);
 
@@ -561,7 +562,7 @@ public abstract class AbstractTest {
   /**
    * Wait for value in memory
    */
-  private class InMemory implements Condition {
+  private final class InMemory implements Condition {
     /**
      * Address to monitor.
      */
@@ -584,13 +585,13 @@ public abstract class AbstractTest {
     }
 
     @Override
-    public boolean test() throws Exception {
+    public boolean test() {
       return c64.getBus().read(addr) == value;
     }
 
     @Override
     public String toString() {
-      return "Memory " + HexUtil.hexWord(addr) + " == " + HexUtil.hexByte(value);
+      return "Memory " + hexWord(addr) + " == " + hexByte(value);
     }
   }
 }

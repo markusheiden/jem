@@ -45,9 +45,9 @@ public abstract class ClockTestBase {
    */
   private void run(Clock clock, int cycles) {
     int num = numCounters();
-    CounterComponent[] counters = new CounterComponent[num];
+    var counters = new CounterComponent[num];
     for (int i = 0; i < num; i++) {
-      CounterComponent counter = new CounterComponent();
+      var counter = new CounterComponent();
       clock.addClockedComponent(i, counter);
       counters[i] = counter;
     }
@@ -56,13 +56,13 @@ public abstract class ClockTestBase {
 
     // Check that all components are executed exactly the specified amount of cycles.
     boolean failure = false;
-    for (int i = 0; i < counters.length; i++) {
-      failure |= counters[i].getCount() != cycles;
-    }
+      for (var counter : counters) {
+          failure |= counter.getCount() != cycles;
+      }
 
     if (failure) {
       for (int i = 0; i < counters.length; i++) {
-        System.out.println(String.format("Counter %d: %d", i, counters[i].getCount()));
+        System.out.printf("Counter %d: %d%n", i, counters[i].getCount());
       }
       fail("Not all counters are at " + cycles);
     }

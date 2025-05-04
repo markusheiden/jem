@@ -15,7 +15,7 @@ class ShsTest extends AbstractTest {
   @ProgramSuiteSource(resource = "/vice-emu-testprogs/CPU/shs/shsabsy1.prg")
   @ParameterizedTest(name = "{1}")
   void test(Path program, String programName) throws Exception {
-    // These test seem to run endless, let them fail fast for now.
+    // These tests seem to run endlessly, let them fail fast for now.
     assertNotEquals("shsabsy3", programName, "Not correctly implemented yet");
 
     testBorderResult(program, 60, true);

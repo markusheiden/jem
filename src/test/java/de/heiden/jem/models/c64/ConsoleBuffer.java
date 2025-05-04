@@ -17,6 +17,7 @@ public class ConsoleBuffer extends OutputStream {
 
   /**
    * Buffer for screen output.
+   * Synchronized access.
    */
   private final StringBuilder screen = new StringBuilder(1024);
 

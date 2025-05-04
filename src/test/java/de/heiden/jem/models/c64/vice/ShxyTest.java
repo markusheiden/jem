@@ -15,7 +15,7 @@ class ShxyTest extends AbstractTest {
   @ParameterizedTest(name = "{1}")
   @ProgramSuiteSource(resource = "/vice-emu-testprogs/CPU/shxy/shx-t2.prg")
   void test(Path program, String programName) throws Exception {
-    // These test seem to run endless, let them fail fast for now.
+    // These tests seem to run endlessly, let them fail fast for now.
     assertNotEquals("shx-t2", programName, "Not correctly implemented yet");
     assertNotEquals("shxy3", programName, "Not correctly implemented yet");
     assertNotEquals("shxy4", programName, "Not correctly implemented yet");

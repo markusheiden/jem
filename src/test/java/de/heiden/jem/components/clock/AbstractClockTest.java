@@ -5,7 +5,11 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Test for {@link AbstractClock}
@@ -18,16 +22,16 @@ public class AbstractClockTest {
 
   @Test
   void constructor() {
-    TestClock clock = new TestClock();
+    var clock = new TestClock();
     assertEquals(Long.MAX_VALUE, clock.getNextEventTick());
   }
 
   @Test
   void addClockEvent() {
-    TestClock clock = new TestClock();
-    ClockEvent event1 = new TestClockEvent();
-    ClockEvent event2 = new TestClockEvent();
-    ClockEvent event3 = new TestClockEvent();
+    var clock = new TestClock();
+    var event1 = new TestClockEvent();
+    var event2 = new TestClockEvent();
+    var event3 = new TestClockEvent();
 
     // Add first event -> Next tick should be set to tick of this event.
     clock.addClockEvent(2, event2);
@@ -55,10 +59,10 @@ public class AbstractClockTest {
 
   @Test
   void updateClockEvent() {
-    TestClock clock = new TestClock();
-    ClockEvent event10 = new TestClockEvent();
-    ClockEvent event20 = new TestClockEvent();
-    ClockEvent event30 = new TestClockEvent();
+    var clock = new TestClock();
+    var event10 = new TestClockEvent();
+    var event20 = new TestClockEvent();
+    var event30 = new TestClockEvent();
 
     clock.addClockEvent(10, event10);
     clock.addClockEvent(20, event20);
@@ -89,9 +93,9 @@ public class AbstractClockTest {
 
   @Test
   void removeClockEvent_notAdded() {
-    TestClock clock = new TestClock();
-    ClockEvent event1 = new TestClockEvent();
-    ClockEvent event2 = new TestClockEvent();
+    var clock = new TestClock();
+    var event1 = new TestClockEvent();
+    var event2 = new TestClockEvent();
 
     clock.addClockEvent(2, event2);
 
@@ -105,8 +109,8 @@ public class AbstractClockTest {
 
   @Test
   void removeClockEvent_only() {
-    TestClock clock = new TestClock();
-    ClockEvent event1 = new TestClockEvent();
+    var clock = new TestClock();
+    var event1 = new TestClockEvent();
 
     clock.addClockEvent(1, event1);
 
@@ -118,14 +122,14 @@ public class AbstractClockTest {
 
   @Test
   void removeClockEvent_first() {
-    TestClock clock = new TestClock();
-    ClockEvent event1 = new TestClockEvent();
-    ClockEvent event2 = new TestClockEvent();
+    var clock = new TestClock();
+    var event1 = new TestClockEvent();
+    var event2 = new TestClockEvent();
 
     clock.addClockEvent(1, event1);
     clock.addClockEvent(2, event2);
 
-    // Remove first registered event -> Next tick should be reset.
+    // Remove the first registered event -> Next tick should be reset.
     clock.removeClockEvent(event1);
     assertNull(event1.previous);
     assertNull(event2.previous);
@@ -136,17 +140,17 @@ public class AbstractClockTest {
 
   @Test
   void removeClockEvent_many() {
-    TestClock clock = new TestClock();
-    ClockEvent event1 = new TestClockEvent();
-    ClockEvent event2 = new TestClockEvent();
-    ClockEvent event3 = new TestClockEvent();
+    var clock = new TestClock();
+    var event1 = new TestClockEvent();
+    var event2 = new TestClockEvent();
+    var event3 = new TestClockEvent();
 
     clock.addClockEvent(1, event1);
     clock.addClockEvent(2, event2);
     clock.addClockEvent(3, event3);
     assertEquals(1, clock.getNextEventTick());
 
-    // Remove second registered event -> next tick should still be the tick of the first event
+    // Remove the second registered event -> next tick should still be the tick of the first event
     clock.removeClockEvent(event2);
     assertSame(event3, event1.next);
     assertSame(event1, event3.previous);
@@ -156,12 +160,12 @@ public class AbstractClockTest {
 
   @Test
   void execute() {
-    TestClock clock = new TestClock();
-    ClockEvent event2a = new TestClockEvent();
+    var clock = new TestClock();
+    var event2a = new TestClockEvent();
     clock.addClockEvent(2, event2a);
-    ClockEvent event2b = new TestClockEvent();
+    var event2b = new TestClockEvent();
     clock.addClockEvent(2, event2b);
-    ClockEvent event3 = new TestClockEvent();
+    var event3 = new TestClockEvent();
     clock.addClockEvent(3, event3);
     assertEquals(0, executed.size());
 

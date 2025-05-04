@@ -11,15 +11,20 @@ import de.heiden.jem.models.c64.components.cpu.Patch;
 import de.heiden.jem.models.c64.components.keyboard.Keyboard;
 import de.heiden.jem.models.c64.components.memory.ColorRAM;
 import de.heiden.jem.models.c64.components.memory.RAM;
-import de.heiden.jem.models.c64.components.memory.ROM;
 import de.heiden.jem.models.c64.components.memory.ROMLoader;
-import de.heiden.jem.models.c64.components.patch.*;
+import de.heiden.jem.models.c64.components.patch.BrkDetector;
+import de.heiden.jem.models.c64.components.patch.ProgramEndDetector;
+import de.heiden.jem.models.c64.components.patch.Return;
+import de.heiden.jem.models.c64.components.patch.StopAtSystemIn;
+import de.heiden.jem.models.c64.components.patch.SystemOut;
 import de.heiden.jem.models.c64.components.vic.VIC6569PAL;
 import de.heiden.jem.models.c64.components.vic.VICBus;
 import de.heiden.jem.models.c64.gui.swing.emulator.KeyListener;
 import de.heiden.jem.models.c64.gui.swing.emulator.PCMapping;
 
 import java.io.OutputStream;
+
+import static java.lang.Thread.interrupted;
 
 /**
  * Modified C64 for better testability.
@@ -28,27 +33,27 @@ public class TestC64 {
   /**
    * Main clock.
    */
-  private final Clock _clock;
+  private final Clock clock;
 
   /**
    * CPU bus.
    */
-  private C64Bus _cpuBus;
+  private C64Bus cpuBus;
 
   /**
    * CPU.
    */
-  private final CPU6510Debugger _cpu;
+  private final CPU6510Debugger cpu;
 
   /**
    * Keyboard.
    */
-  private Keyboard _keyboard;
+  private Keyboard keyboard;
 
   /**
    * VIC.
    */
-  private final VIC6569PAL _vic;
+  private final VIC6569PAL vic;
 
   /**
    * Buffer for capturing console output.
@@ -69,52 +74,52 @@ public class TestC64 {
    * Constructor.
    */
   public TestC64() throws Exception {
-    _clock = new SerialClock();
+    clock = new SerialClock();
 
-    RAM _ram = new RAM(0x10000);
-    ColorRAM colorRam = new ColorRAM(0x400);
-    ROM basic = ROMLoader.basic(ROMLoader.DEFAULT_BASIC);
-    ROM kernel = ROMLoader.kernel(ROMLoader.DEFAULT_KERNEL);
-    ROM charset = ROMLoader.character(ROMLoader.DEFAULT_CHARACTER);
+    var _ram = new RAM(0x10000);
+    var colorRam = new ColorRAM(0x400);
+    var basic = ROMLoader.basic(ROMLoader.DEFAULT_BASIC);
+    var kernel = ROMLoader.kernel(ROMLoader.DEFAULT_KERNEL);
+    var charset = ROMLoader.character(ROMLoader.DEFAULT_CHARACTER);
 
-    CIA6526 cia1 = new CIA6526(_clock);
-    CIA6526 cia2 = new CIA6526(_clock);
+    var cia1 = new CIA6526(clock);
+    var cia2 = new CIA6526(clock);
 
-    VICBus vicBus = new VICBus(cia2.portA(), _ram, charset);
-    _vic = new VIC6569PAL(_clock, vicBus, colorRam);
+    var vicBus = new VICBus(cia2.portA(), _ram, charset);
+    vic = new VIC6569PAL(clock, vicBus, colorRam);
 
-    _keyboard = new Keyboard(cia1.portA(), cia1.portB());
+    keyboard = new Keyboard(cia1.portA(), cia1.portB());
 
-    _cpu = _clock.addClockedComponent(Clock.CPU, new CPU6510Debugger());
-    _cpuBus = new C64Bus(_ram, basic, _vic, colorRam, cia1, cia2, charset, kernel);
-    _cpuBus.connect(_cpu.getPort());
-    _cpu.connect(_cpuBus);
-    _cpu.getIRQ().connect(cia1.getIRQ());
-    _cpu.getIRQ().connect(_vic.getIRQ());
-    _cpu.getNMI().connect(cia2.getIRQ());
-    _cpu.getNMI().connect(_keyboard.getNMI());
+    cpu = clock.addClockedComponent(Clock.CPU, new CPU6510Debugger());
+    cpuBus = new C64Bus(_ram, basic, vic, colorRam, cia1, cia2, charset, kernel);
+    cpuBus.connect(cpu.getPort());
+    cpu.connect(cpuBus);
+    cpu.getIRQ().connect(cia1.getIRQ());
+    cpu.getIRQ().connect(vic.getIRQ());
+    cpu.getNMI().connect(cia2.getIRQ());
+    cpu.getNMI().connect(keyboard.getNMI());
 
     // init RAM with 0x02 (crash) to easier detect wrong behaviour
     for (int addr = 0; addr < 0x10000; addr++) {
-      _cpuBus.write(0x02, addr);
+      cpuBus.write(0x02, addr);
     }
 
     //
     // ROM patches
     //
 
-    _cpu.add(systemOut);
-    _cpu.add(new StopAtSystemIn());
-    _cpu.add(programEnd);
+    cpu.add(systemOut);
+    cpu.add(new StopAtSystemIn());
+    cpu.add(programEnd);
 
-    _clock.addClockEvent(100000, new ClockEvent("Interrupt check") {
+    clock.addClockEvent(100000, new ClockEvent("Interrupt check") {
       @Override
       public void execute(long tick) {
-        if (Thread.interrupted()) {
+        if (interrupted()) {
           throw new IllegalArgumentException("Thread has been interrupted");
         }
 
-        _clock.addClockEvent(tick + 100000, this);
+        clock.addClockEvent(tick + 100000, this);
       }
     });
   }
@@ -123,21 +128,21 @@ public class TestC64 {
    * Add patch.
    */
   public void add(Patch patch) {
-    _cpu.add(patch);
+    cpu.add(patch);
   }
 
   /**
    * Clock.
    */
   public Clock getClock() {
-    return _clock;
+    return clock;
   }
 
   /**
    * Get bus.
    */
   public BusDevice getBus() {
-    return _cpuBus;
+    return cpuBus;
   }
 
   /**
@@ -151,7 +156,7 @@ public class TestC64 {
    * Get stream for keyboard input.
    */
   public java.awt.event.KeyListener getSystemIn() {
-    return new KeyListener(_keyboard, new PCMapping());
+    return new KeyListener(keyboard, new PCMapping());
   }
 
   /**
@@ -160,15 +165,15 @@ public class TestC64 {
    * @param addr Address to write RTS to
    */
   public void rts(int addr) {
-    _cpu.add(new Return(addr));
+    cpu.add(new Return(addr));
   }
 
   /**
    * Start emulation.
    */
   public void start() {
-    _clock.run();
-    _clock.close();
+    clock.run();
+    clock.close();
   }
 
   /**

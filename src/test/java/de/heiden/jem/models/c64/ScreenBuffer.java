@@ -3,10 +3,11 @@ package de.heiden.jem.models.c64;
 import de.heiden.c64dt.charset.AbstractDecoder;
 import de.heiden.c64dt.charset.C64Charset;
 import de.heiden.jem.components.bus.BusDevice;
-import org.apache.commons.lang3.StringUtils;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.UnmappableCharacterException;
+
+import static org.apache.commons.lang3.StringUtils.stripEnd;
 
 /**
  * Screen capture.
@@ -46,10 +47,10 @@ public class ScreenBuffer {
    * Capture screen at $0400.
    */
   public String capture() throws Exception {
-    StringBuilder screen = new StringBuilder(41 * 25);
+    var screen = new StringBuilder(41 * 25);
 
     int addr = this.addr;
-    byte[] bytes = new byte[1];
+    var bytes = new byte[1];
     for (int r = 0; r < 25; r++) {
       for (int c = 0; c < 40; c++) {
         bytes[0] = (byte) bus.read(addr++);
@@ -62,6 +63,6 @@ public class ScreenBuffer {
       screen.append('\n');
     }
 
-    return StringUtils.stripEnd(screen.toString(), " \n");
+    return stripEnd(screen.toString(), " \n");
   }
 }
