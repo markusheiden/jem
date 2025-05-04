@@ -10,9 +10,9 @@ import java.nio.file.Path;
  * VICE test suite.
  */
 class Acid800Test extends AbstractTest {
-  @ParameterizedTest(name = "{1}")
-  @ProgramSuiteSource(resource = "/vice-emu-testprogs/CPU/Acid800/cpu_decimal.prg")
-  void test(Path program, String programName) throws Exception {
-    testBorderResult(program, 1, true);
-  }
+    @ParameterizedTest(name = "{1}")
+    @ProgramSuiteSource(resource = "/vice-emu-testprogs/CPU/Acid800/cpu_decimal.prg")
+    void test(Path program, String programName) throws Exception {
+        testBorderResult(program, 1, true);
+    }
 }

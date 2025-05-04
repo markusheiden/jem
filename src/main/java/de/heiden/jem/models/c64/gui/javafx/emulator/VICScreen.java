@@ -8,15 +8,16 @@ import jakarta.annotation.Nonnull;
  * VIC screen display component.
  */
 public class VICScreen extends C64ScreenComponent {
-  /**
-   * Constructor.
-   *
-   * @param displayUnit display unit to display
-   * @require displayUnit != null
-   */
-  public VICScreen(final @Nonnull AbstractDisplayUnit displayUnit) {
-    super(displayUnit.getOffset(), displayUnit.getWidth(), displayUnit.getLineLength(), displayUnit.getHeight(), 2);
+    /**
+     * Constructor.
+     *
+     * @param displayUnit
+     *         display unit to display
+     * @require displayUnit != null
+     */
+    public VICScreen(final @Nonnull AbstractDisplayUnit displayUnit) {
+        super(displayUnit.getOffset(), displayUnit.getWidth(), displayUnit.getLineLength(), displayUnit.getHeight(), 2);
 
-    displayUnit.setScreenListener(() -> updateImageData(displayUnit.display()));
-  }
+        displayUnit.setScreenListener(() -> updateImageData(displayUnit.display()));
+    }
 }

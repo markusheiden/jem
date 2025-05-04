@@ -7,8 +7,8 @@ import de.heiden.jem.components.clock.ClockTestBase;
  * Test for {@link SequentialContinuationClock}.
  */
 class SequentialContinuationClockTest extends ClockTestBase {
-  @Override
-  protected Clock createClock() {
-    return new SequentialContinuationClock();
-  }
+    @Override
+    protected Clock createClock() {
+        return new SequentialContinuationClock();
+    }
 }

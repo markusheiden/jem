@@ -1,11 +1,11 @@
 package de.heiden.jem.components.clock.loom;
 
+import de.heiden.jem.components.clock.AbstractSimpleClock;
+import de.heiden.jem.components.clock.ManualAbort;
+
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
-import de.heiden.jem.components.clock.AbstractSimpleClock;
-import de.heiden.jem.components.clock.ManualAbort;
 
 /**
  * Clock using {@link Thread fibers} from project loom.

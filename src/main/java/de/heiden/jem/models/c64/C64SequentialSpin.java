@@ -11,19 +11,19 @@ import static javafx.application.Application.launch;
  * C64 startup with {@link SequentialSpinClock}.
  */
 public class C64SequentialSpin {
-  /**
-   * Logger.
-   */
-  private static final Logger logger = LoggerFactory.getLogger(C64SequentialSpin.class);
+    /**
+     * Logger.
+     */
+    private static final Logger logger = LoggerFactory.getLogger(C64SequentialSpin.class);
 
-  /**
-   * Start the application.
-   */
-  public static void main(String[] args) {
-    try {
-      launch(C64Application.class, "--clock=" + SequentialSpinClock.class.getName());
-    } catch (Exception e) {
-      logger.error("Unable to startup", e);
+    /**
+     * Start the application.
+     */
+    public static void main(String[] args) {
+        try {
+            launch(C64Application.class, "--clock=" + SequentialSpinClock.class.getName());
+        } catch (Exception e) {
+            logger.error("Unable to startup", e);
+        }
     }
-  }
 }

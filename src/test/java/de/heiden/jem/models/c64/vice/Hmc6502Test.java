@@ -10,9 +10,9 @@ import java.nio.file.Path;
  * VICE test suite.
  */
 class Hmc6502Test extends AbstractTest {
-  @ProgramSuiteSource(resource = "/vice-emu-testprogs/CPU/hmc6502/AllSuiteA.prg")
-  @ParameterizedTest(name = "{1}")
-  void test(Path program, String programName) throws Exception {
-    testBorderResult(program, 1, true);
-  }
+    @ProgramSuiteSource(resource = "/vice-emu-testprogs/CPU/hmc6502/AllSuiteA.prg")
+    @ParameterizedTest(name = "{1}")
+    void test(Path program, String programName) throws Exception {
+        testBorderResult(program, 1, true);
+    }
 }
