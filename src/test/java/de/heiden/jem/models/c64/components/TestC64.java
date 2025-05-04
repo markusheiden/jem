@@ -76,7 +76,7 @@ public class TestC64 {
     public TestC64() throws Exception {
         clock = new SerialClock();
 
-        var _ram = new RAM(0x10000);
+        var ram = new RAM(0x10000);
         var colorRam = new ColorRAM(0x400);
         var basic = ROMLoader.basic(ROMLoader.DEFAULT_BASIC);
         var kernel = ROMLoader.kernel(ROMLoader.DEFAULT_KERNEL);
@@ -85,13 +85,13 @@ public class TestC64 {
         var cia1 = new CIA6526(clock);
         var cia2 = new CIA6526(clock);
 
-        var vicBus = new VICBus(cia2.portA(), _ram, charset);
+        var vicBus = new VICBus(cia2.portA(), ram, charset);
         vic = new VIC6569PAL(clock, vicBus, colorRam);
 
         keyboard = new Keyboard(cia1.portA(), cia1.portB());
 
         cpu = clock.addClockedComponent(Clock.CPU, new CPU6510Debugger());
-        cpuBus = new C64Bus(_ram, basic, vic, colorRam, cia1, cia2, charset, kernel);
+        cpuBus = new C64Bus(ram, basic, vic, colorRam, cia1, cia2, charset, kernel);
         cpuBus.connect(cpu.getPort());
         cpu.connect(cpuBus);
         cpu.getIRQ().connect(cia1.getIRQ());

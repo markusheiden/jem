@@ -11,13 +11,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class KeyboardTest {
     private final InputOutputPortImpl port0 = new InputOutputPortImpl();
     private final InputOutputPortImpl port1 = new InputOutputPortImpl();
-    private Keyboard keyboard = new Keyboard(port0, port1);
+    private final Keyboard keyboard = new Keyboard(port0, port1);
 
     /**
      * Test single key presses.
      */
     @Test
-    void testSingleKey() {
+    void singleKey() {
         keyboard.press(Key.A);
         port1.setOutputData(0x00); // port 1 is input
         port1.setOutputMask(0x00);
@@ -62,30 +62,30 @@ class KeyboardTest {
     }
 
     /**
-     * Test double key presses one on column or row.
+     * Test double key presses one on the column or row.
      */
     @Test
-    void testDoubleKey() {
+    void doubleKey() {
         // TODO not implemented yet...
 /*
-    _keyboard.pressed(KeyEvent.VK_2, KeyEvent.KEY_LOCATION_STANDARD);
-    _keyboard.pressed(KeyEvent.VK_0, KeyEvent.KEY_LOCATION_STANDARD);
-    _port0.setOutputData(0x00);
-    _port0.setOutputMask(0xEF);
-    _port1.setOutputData(0x00);
-    _port1.setOutputMask(0x00);
-    assertEquals(0xEF, _port0.inputData());
-    assertEquals(0x10, _port0.inputMask());
-    assertEquals(0xF7, _port1.inputData());
-    assertEquals(0x08, _port1.inputMask());
-    _port0.setOutputData(0x00);
-    _port0.setOutputMask(0x00);
-    _port1.setOutputData(0x00);
-    _port1.setOutputMask(0xFF);
-    assertEquals(0x6F, _port0.inputData());
-    assertEquals(0x90, _port0.inputMask());
-    _keyboard.released(KeyEvent.VK_0, KeyEvent.KEY_LOCATION_STANDARD);
-    _keyboard.released(KeyEvent.VK_2, KeyEvent.KEY_LOCATION_STANDARD);
+    keyboard.pressed(KeyEvent.VK_2, KeyEvent.KEY_LOCATION_STANDARD);
+    keyboard.pressed(KeyEvent.VK_0, KeyEvent.KEY_LOCATION_STANDARD);
+    port0.setOutputData(0x00);
+    port0.setOutputMask(0xEF);
+    port1.setOutputData(0x00);
+    port1.setOutputMask(0x00);
+    assertEquals(0xEF, port0.inputData());
+    assertEquals(0x10, port0.inputMask());
+    assertEquals(0xF7, port1.inputData());
+    assertEquals(0x08, port1.inputMask());
+    port0.setOutputData(0x00);
+    port0.setOutputMask(0x00);
+    port1.setOutputData(0x00);
+    port1.setOutputMask(0xFF);
+    assertEquals(0x6F, port0.inputData());
+    assertEquals(0x90, port0.inputMask());
+    keyboard.released(KeyEvent.VK_0, KeyEvent.KEY_LOCATION_STANDARD);
+    keyboard.released(KeyEvent.VK_2, KeyEvent.KEY_LOCATION_STANDARD);
 */
     }
 }
