@@ -46,7 +46,6 @@ dependencies {
     implementation(libs.jakarta.annotation.api)
 
     implementation(libs.serialthreads)
-    testImplementation("org.serialthreads:serialthreads:${libs.versions.serialthreads.get()}:tests")
 
     implementation(libs.bundles.c64dt)
 
@@ -55,6 +54,7 @@ dependencies {
     testRuntimeOnly(libs.junit.platform.launcher)
     testImplementation(libs.junit.jupiter)
     testImplementation(libs.assertj.core)
+    testImplementation(testFixtures(libs.serialthreads))
 }
 
 tasks.shadowJar {
