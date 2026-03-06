@@ -10,8 +10,6 @@ javafx {
     modules("javafx.base", "javafx.controls", "javafx.graphics")
 }
 
-group = "de.heiden"
-
 application {
     mainClass = "de.heiden.jem.models.c64.C64Serial"
 }
