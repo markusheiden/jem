@@ -60,11 +60,12 @@ tasks.jar {
     enabled = false
 }
 
-tasks.assemble {
+tasks.startScripts {
     dependsOn(tasks.shadowJar)
 }
 
 tasks.shadowJar {
+    archiveClassifier = ""
     manifest {
         attributes(
             "Implementation-Title" to "JemC64",
