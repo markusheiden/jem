@@ -1,8 +1,10 @@
 .idea
 out
+
 .gradle
 build
-target
+
+.claude
 
 src/test/resources/vice-emu-testprogs
 serialthreads.log
