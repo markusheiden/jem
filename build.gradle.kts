@@ -25,7 +25,7 @@ application {
 }
 
 repositories {
-    mavenLocal()
+    // mavenLocal()
     mavenCentral()
 }
 
@@ -43,7 +43,7 @@ dependencies {
 
     implementation(libs.slf4j.api)
     runtimeOnly(libs.logback.classic)
-    implementation(libs.jakarta.annotation.api)
+    compileOnly(libs.jakarta.annotation.api)
 
     implementation(libs.serialthreads)
 
