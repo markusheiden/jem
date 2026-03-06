@@ -5,10 +5,6 @@ plugins {
     alias(libs.plugins.versions)
 }
 
-tasks.wrapper {
-    gradleVersion = libs.versions.gradle.get()
-}
-
 javafx {
     version = libs.versions.openjfx.get()
     modules("javafx.base", "javafx.controls", "javafx.graphics")

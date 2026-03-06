@@ -1,5 +1,4 @@
 [versions]
-gradle = "9.4.0"
 javafxPlugin = "0.1.0"
 openjfx = "23.0.2"
 shadowPlugin = "9.3.0"
