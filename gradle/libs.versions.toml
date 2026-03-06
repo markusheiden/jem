@@ -4,6 +4,7 @@ gradle = "9.4.0"
 javafxPlugin = "0.1.0"
 openjfx = "23.0.2"
 serialthreads = "1.0-SNAPSHOT"
+shadowPlugin = "9.3.0"
 springBoot = "4.0.3"
 versionsPlugin = "0.52.0"
 
@@ -33,4 +34,5 @@ c64dt = ["c64dt-assembler", "c64dt-bytes", "c64dt-charset", "c64dt-disk", "c64dt
 
 [plugins]
 javafx = { id = "org.openjfx.javafxplugin", version.ref = "javafxPlugin" }
+shadow = { id = "com.gradleup.shadow", version.ref = "shadowPlugin" }
 versions = { id = "com.github.ben-manes.versions", version.ref = "versionsPlugin" }

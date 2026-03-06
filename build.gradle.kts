@@ -1,6 +1,7 @@
 plugins {
-    `java-library`
+    `application`
     alias(libs.plugins.javafx)
+    alias(libs.plugins.shadow)
     alias(libs.plugins.versions)
 }
 
@@ -19,6 +20,10 @@ base {
     archivesName = "jemc64"
 }
 
+application {
+    mainClass = "de.heiden.jem.models.c64.C64Serial"
+}
+
 repositories {
     mavenLocal()
     mavenCentral()
@@ -27,9 +32,9 @@ repositories {
 java {
     // https://docs.gradle.org/current/userguide/toolchains.html
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(25))
+        languageVersion = JavaLanguageVersion.of(25)
         // Use Eclipse Temurin (provided by Adoptium).
-        vendor.set(JvmVendorSpec.ADOPTIUM)
+        vendor = JvmVendorSpec.ADOPTIUM
     }
 }
 
@@ -52,19 +57,14 @@ dependencies {
     testImplementation(libs.assertj.core)
 }
 
-tasks.jar {
+tasks.shadowJar {
     manifest {
         attributes(
             "Implementation-Title" to "JemC64",
             "Implementation-Version" to archiveVersion,
             // "Launcher-Agent-Class" to "org.serialthreads.agent.Agent",
-            "Main-Class" to "de.heiden.jem.models.c64.C64Serial"
         )
     }
-
-    // TODO markus 2021-05-04: Deduplicate files.
-    duplicatesStrategy = DuplicatesStrategy.WARN
-    from(configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) })
 }
 
 tasks.test {
