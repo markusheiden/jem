@@ -56,6 +56,14 @@ tasks.withType<AbstractArchiveTask> {
     isPreserveFileTimestamps = false
 }
 
+tasks.jar {
+    enabled = false
+}
+
+tasks.assemble {
+    dependsOn(tasks.shadowJar)
+}
+
 tasks.shadowJar {
     manifest {
         attributes(
