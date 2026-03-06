@@ -5,7 +5,7 @@ plugins {
 }
 
 tasks.wrapper {
-    gradleVersion = providers.gradleProperty("gradleVersion").get()
+    gradleVersion = libs.versions.gradle.get()
 }
 
 apply(from = "gradle/javafx.gradle.kts")
