@@ -28,6 +28,10 @@ java {
     }
 }
 
+configurations.all {
+    resolutionStrategy.failOnDynamicVersions()
+}
+
 dependencies {
     implementation(platform(libs.spring.boot.bom))
 
@@ -45,6 +49,11 @@ dependencies {
     testImplementation(libs.junit.jupiter)
     testImplementation(libs.assertj.core)
     testImplementation(testFixtures(libs.serialthreads))
+}
+
+tasks.withType<AbstractArchiveTask> {
+    isReproducibleFileOrder = true
+    isPreserveFileTimestamps = false
 }
 
 tasks.shadowJar {
