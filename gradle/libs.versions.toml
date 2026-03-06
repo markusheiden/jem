@@ -5,6 +5,7 @@ versionsPlugin = "0.52.0"
 serialthreads = "1.0-SNAPSHOT"
 c64dt = "1.0-SNAPSHOT"
 openjfx = "23.0.2"
+javafxPlugin = "0.1.0"
 
 [libraries]
 # BOM — provides version management for common libraries
@@ -26,10 +27,10 @@ c64dt-bytes = { module = "de.heiden.c64dt:bytes", version.ref = "c64dt" }
 c64dt-charset = { module = "de.heiden.c64dt:charset", version.ref = "c64dt" }
 c64dt-disk = { module = "de.heiden.c64dt:disk", version.ref = "c64dt" }
 c64dt-gui = { module = "de.heiden.c64dt:gui", version.ref = "c64dt" }
-# openjfx requires a platform classifier — declared inline in build.gradle.kts
 
 [bundles]
 c64dt = ["c64dt-assembler", "c64dt-bytes", "c64dt-charset", "c64dt-disk", "c64dt-gui"]
 
 [plugins]
+javafx = { id = "org.openjfx.javafxplugin", version.ref = "javafxPlugin" }
 versions = { id = "com.github.ben-manes.versions", version.ref = "versionsPlugin" }

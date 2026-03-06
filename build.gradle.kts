@@ -1,6 +1,7 @@
 plugins {
     `java-library`
 //    kotlin("jvm")
+    alias(libs.plugins.javafx)
     alias(libs.plugins.versions)
 }
 
@@ -8,10 +9,10 @@ tasks.wrapper {
     gradleVersion = libs.versions.gradle.get()
 }
 
-apply(from = "gradle/javafx.gradle.kts")
-
-val openjfxPlatform: String by extra
-val openjfxVersion = libs.versions.openjfx.get()
+javafx {
+    version = libs.versions.openjfx.get()
+    modules("javafx.base", "javafx.controls", "javafx.graphics")
+}
 
 group = "de.heiden"
 version = "1.0-SNAPSHOT"
@@ -53,11 +54,6 @@ dependencies {
     testImplementation("org.serialthreads:serialthreads:${libs.versions.serialthreads.get()}:tests")
 
     implementation(libs.bundles.c64dt)
-
-    // openjfx requires a platform classifier, not expressible in the version catalog
-    implementation("org.openjfx:javafx-base:${openjfxVersion}:${openjfxPlatform}")
-    implementation("org.openjfx:javafx-controls:${openjfxVersion}:${openjfxPlatform}")
-    implementation("org.openjfx:javafx-graphics:${openjfxVersion}:${openjfxPlatform}")
 
     implementation(libs.commons.lang3)
 
