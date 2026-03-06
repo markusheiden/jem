@@ -1,6 +1,6 @@
 [versions]
 gradle = "9.4.0"
-springBoot = "3.4.0"
+springBoot = "4.0.3"
 versionsPlugin = "0.52.0"
 serialthreads = "1.0-SNAPSHOT"
 c64dt = "1.0-SNAPSHOT"
