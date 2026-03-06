@@ -1,0 +1,34 @@
+[versions]
+springBoot = "3.4.0"
+versionsPlugin = "0.52.0"
+serialthreads = "1.0-SNAPSHOT"
+c64dt = "1.0-SNAPSHOT"
+openjfx = "23.0.2"
+
+[libraries]
+# BOM — provides version management for common libraries
+spring-boot-bom = { module = "org.springframework.boot:spring-boot-dependencies", version.ref = "springBoot" }
+
+# Versions managed by Spring Boot BOM
+slf4j-api = { module = "org.slf4j:slf4j-api" }
+logback-classic = { module = "ch.qos.logback:logback-classic" }
+jakarta-annotation-api = { module = "jakarta.annotation:jakarta.annotation-api" }
+commons-lang3 = { module = "org.apache.commons:commons-lang3" }
+junit-jupiter = { module = "org.junit.jupiter:junit-jupiter" }
+junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
+assertj-core = { module = "org.assertj:assertj-core" }
+
+# Not managed by Spring Boot BOM
+serialthreads = { module = "org.serialthreads:serialthreads", version.ref = "serialthreads" }
+c64dt-assembler = { module = "de.heiden.c64dt:assembler", version.ref = "c64dt" }
+c64dt-bytes = { module = "de.heiden.c64dt:bytes", version.ref = "c64dt" }
+c64dt-charset = { module = "de.heiden.c64dt:charset", version.ref = "c64dt" }
+c64dt-disk = { module = "de.heiden.c64dt:disk", version.ref = "c64dt" }
+c64dt-gui = { module = "de.heiden.c64dt:gui", version.ref = "c64dt" }
+# openjfx requires a platform classifier — declared inline in build.gradle.kts
+
+[bundles]
+c64dt = ["c64dt-assembler", "c64dt-bytes", "c64dt-charset", "c64dt-disk", "c64dt-gui"]
+
+[plugins]
+versions = { id = "com.github.ben-manes.versions", version.ref = "versionsPlugin" }

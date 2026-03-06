@@ -1,16 +1,1 @@
-pluginManagement {
-    val versionsPluginVersion: String by settings
-    plugins {
-        id("com.github.ben-manes.versions") version versionsPluginVersion
-    }
-}
 
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-
-    dependencies {
-//        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${kotlinVersion}")
-    }
-}
