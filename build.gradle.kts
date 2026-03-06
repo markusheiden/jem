@@ -1,6 +1,5 @@
 plugins {
     `java-library`
-//    kotlin("jvm")
     alias(libs.plugins.javafx)
     alias(libs.plugins.versions)
 }
@@ -32,15 +31,6 @@ java {
         // Use Eclipse Temurin (provided by Adoptium).
         vendor.set(JvmVendorSpec.ADOPTIUM)
     }
-}
-
-tasks.compileJava {
-//    options.compilerArgs += listOf("--enable-preview")
-//    options.compilerArgs += listOf("--add-exports=java.base/jdk.internal.vm=ALL-UNNAMED")
-//    options.release = null
-}
-tasks.compileTestJava {
-//    options.compilerArgs += listOf("--enable-preview")
 }
 
 dependencies {
