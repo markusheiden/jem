@@ -1,5 +1,5 @@
 plugins {
-    `application`
+    application
     alias(libs.plugins.javafx)
     alias(libs.plugins.shadow)
     alias(libs.plugins.versions)
@@ -11,10 +11,6 @@ javafx {
 }
 
 group = "de.heiden"
-version = "1.0-SNAPSHOT"
-base {
-    archivesName = "jemc64"
-}
 
 application {
     mainClass = "de.heiden.jem.models.c64.C64Serial"
