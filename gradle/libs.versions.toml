@@ -1,9 +1,7 @@
 [versions]
-c64dt = "1.0-SNAPSHOT"
 gradle = "9.4.0"
 javafxPlugin = "0.1.0"
 openjfx = "23.0.2"
-serialthreads = "1.0-SNAPSHOT"
 shadowPlugin = "9.3.0"
 springBoot = "4.0.3"
 versionsPlugin = "0.52.0"
@@ -22,12 +20,12 @@ logback-classic = { module = "ch.qos.logback:logback-classic" }
 slf4j-api = { module = "org.slf4j:slf4j-api" }
 
 # Not managed by Spring Boot BOM
-c64dt-assembler = { module = "de.heiden.c64dt:assembler", version.ref = "c64dt" }
-c64dt-bytes = { module = "de.heiden.c64dt:bytes", version.ref = "c64dt" }
-c64dt-charset = { module = "de.heiden.c64dt:charset", version.ref = "c64dt" }
-c64dt-disk = { module = "de.heiden.c64dt:disk", version.ref = "c64dt" }
-c64dt-gui = { module = "de.heiden.c64dt:gui", version.ref = "c64dt" }
-serialthreads = { module = "org.serialthreads:serialthreads", version.ref = "serialthreads" }
+c64dt-assembler = { module = "de.heiden.c64dt:assembler" }
+c64dt-bytes = { module = "de.heiden.c64dt:bytes" }
+c64dt-charset = { module = "de.heiden.c64dt:charset" }
+c64dt-disk = { module = "de.heiden.c64dt:disk" }
+c64dt-gui = { module = "de.heiden.c64dt:gui" }
+serialthreads = { module = "org.serialthreads:serialthreads" }
 
 [bundles]
 c64dt = ["c64dt-assembler", "c64dt-bytes", "c64dt-charset", "c64dt-disk", "c64dt-gui"]
