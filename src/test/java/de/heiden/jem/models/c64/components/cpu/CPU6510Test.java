@@ -4,7 +4,7 @@ import de.heiden.jem.components.bus.LogEntry;
 import de.heiden.jem.components.bus.LoggingBus;
 import de.heiden.jem.components.bus.WordBus;
 import de.heiden.jem.components.clock.Clock;
-import de.heiden.jem.components.clock.threads.SequentialSpinClock;
+import de.heiden.jem.components.clock.threads.SequentialSpinTestClock;
 import de.heiden.jem.models.c64.components.memory.RAM;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -747,7 +747,7 @@ class CPU6510Test {
     void setUp() {
         logger.debug("set up");
 
-        clock = new SequentialSpinClock();
+        clock = new SequentialSpinTestClock();
         ram = new RAM(0x10000);
         loggingBus = new LoggingBus(ram);
         bus = new WordBus(loggingBus);
