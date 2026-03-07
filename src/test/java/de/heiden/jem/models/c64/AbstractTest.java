@@ -7,6 +7,7 @@ import de.heiden.jem.models.c64.components.TestC64;
 import de.heiden.jem.models.c64.components.patch.LoadFile;
 import de.heiden.jem.models.c64.components.patch.LoadFromDirectory;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.TestExecutionExceptionHandler;
@@ -35,13 +36,14 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 /**
  * Test support.
  */
+@Timeout(60)
 @ExtendWith(AbstractTest.TestWatcher.class)
 @Transform(transformer = FrequentInterruptsTransformer3.class, classPrefixes = "de.heiden.jem")
 public abstract class AbstractTest {
     /**
      * Logger.
      */
-    private final Logger log = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     /**
      * VIC border color.
@@ -417,7 +419,7 @@ public abstract class AbstractTest {
 
         // Log debug message.
         long ticks = getTick() - start;
-        log.debug("{} after ~ {} seconds ({} ticks)", message, ticks / 1000000, ticks);
+        logger.debug("{} after ~ {} seconds ({} ticks)", message, ticks / 1000000, ticks);
     }
 
     /**
