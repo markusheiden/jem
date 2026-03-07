@@ -25,7 +25,7 @@ public abstract class ClockTestBase {
         int cycles = 1000;
         for (int i = 0; i < runs; i++) {
             System.out.println("Run " + i);
-            try (Clock clock = createClock()) {
+            try (var clock = createClock()) {
                 run(clock, cycles);
             }
             System.out.println();
