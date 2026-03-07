@@ -3,7 +3,7 @@ package de.heiden.jem.models.c64.components;
 import de.heiden.jem.components.bus.BusDevice;
 import de.heiden.jem.components.clock.Clock;
 import de.heiden.jem.components.clock.ClockEvent;
-import de.heiden.jem.components.clock.serialthreads.SerialClock;
+import de.heiden.jem.components.clock.threads.SequentialSpinTestClock;
 import de.heiden.jem.models.c64.components.cia.CIA6526;
 import de.heiden.jem.models.c64.components.cpu.C64Bus;
 import de.heiden.jem.models.c64.components.cpu.CPU6510Debugger;
@@ -74,7 +74,8 @@ public class TestC64 {
      * Constructor.
      */
     public TestC64() throws Exception {
-        clock = new SerialClock();
+        // TODO markus 2026-03-07: Use SerialClock again?
+        clock = new SequentialSpinTestClock();
 
         var ram = new RAM(0x10000);
         var colorRam = new ColorRAM(0x400);
