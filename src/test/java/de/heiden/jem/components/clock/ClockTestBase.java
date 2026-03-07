@@ -1,9 +1,11 @@
 package de.heiden.jem.components.clock;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Timeout;
+
+import java.time.Duration;
 
 import static java.lang.Runtime.getRuntime;
+import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
 import static org.junit.jupiter.api.Assertions.fail;
 
 /**
@@ -18,11 +20,15 @@ public abstract class ClockTestBase {
     /**
      * Test for {@link Clock#run(int)}.
      */
-    @Timeout(10)
     @Test
-    void run() throws Exception {
+    void run() {
         int runs = 10;
         int cycles = 1000;
+        // @Timeout(10) does not work if synchronization ignores interrupts.
+        assertTimeoutPreemptively(Duration.ofSeconds(10), () -> run(runs, cycles));
+    }
+
+    private void run(int runs, int cycles) throws Exception {
         for (int i = 0; i < runs; i++) {
             System.out.println("Run " + i);
             try (var clock = createClock()) {
