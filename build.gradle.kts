@@ -6,6 +6,15 @@ plugins {
     alias(libs.plugins.versions)
 }
 
+tasks.wrapper {
+    gradleVersion = libs.versions.gradle.get()
+}
+
+repositories {
+    // mavenLocal()
+    mavenCentral()
+}
+
 javafx {
     version = libs.versions.openjfx.get()
     modules("javafx.base", "javafx.controls", "javafx.graphics")
@@ -13,11 +22,6 @@ javafx {
 
 application {
     mainClass = "de.heiden.jem.models.c64.C64Serial"
-}
-
-repositories {
-    // mavenLocal()
-    mavenCentral()
 }
 
 java {
