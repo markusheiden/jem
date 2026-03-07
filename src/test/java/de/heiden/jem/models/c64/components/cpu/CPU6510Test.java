@@ -749,6 +749,7 @@ class CPU6510Test {
     void setUp() {
         logger.debug("set up");
 
+        // TODO markus 2026-03-07: Use SerialClock again?
         clock = new SequentialSpinTestClock();
         ram = new RAM(0x10000);
         loggingBus = new LoggingBus(ram);
