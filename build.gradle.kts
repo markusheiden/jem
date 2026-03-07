@@ -15,11 +15,6 @@ repositories {
     mavenCentral()
 }
 
-javafx {
-    version = libs.versions.openjfx.get()
-    modules("javafx.base", "javafx.controls", "javafx.graphics")
-}
-
 application {
     mainClass = "de.heiden.jem.models.c64.C64Serial"
 }
@@ -31,6 +26,11 @@ java {
         // Use Eclipse Temurin (provided by Adoptium).
         vendor = JvmVendorSpec.ADOPTIUM
     }
+}
+
+javafx {
+    version = libs.versions.openjfx.get()
+    modules("javafx.base", "javafx.controls", "javafx.graphics")
 }
 
 configurations.all {
