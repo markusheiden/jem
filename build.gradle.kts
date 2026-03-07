@@ -1,5 +1,6 @@
 plugins {
     application
+    jacoco
     alias(libs.plugins.javafx)
     alias(libs.plugins.shadow)
     alias(libs.plugins.versions)
@@ -80,4 +81,14 @@ tasks.test {
 
     // ignore failing tests
     ignoreFailures = true
+
+    finalizedBy(tasks.jacocoTestReport)
+}
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test)
+    reports {
+        xml.required = true
+        html.required = true
+    }
 }
