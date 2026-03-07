@@ -3,6 +3,7 @@ package de.heiden.jem.components.clock;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
+import static java.lang.Runtime.getRuntime;
 import static org.junit.jupiter.api.Assertions.fail;
 
 /**
@@ -37,7 +38,7 @@ public abstract class ClockTestBase {
      * Per default three times the number of processors to test context switch performance.
      */
     protected int numCounters() {
-        return Runtime.getRuntime().availableProcessors() * 3;
+        return getRuntime().availableProcessors() * 3;
     }
 
     /**
