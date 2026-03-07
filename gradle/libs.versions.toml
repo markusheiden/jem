@@ -1,8 +1,11 @@
 [versions]
-javafxPlugin = "0.1.0"
+gradle = "9.4.0"
 openjfx = "25.0.2"
 shadowPlugin = "9.3.2"
 springBoot = "4.0.3"
+
+# Gradle plugins
+javafxPlugin = "0.1.0"
 versionsPlugin = "0.53.0"
 
 [libraries]
