@@ -4,7 +4,7 @@ import de.heiden.jem.components.bus.LogEntry;
 import de.heiden.jem.components.bus.LoggingBus;
 import de.heiden.jem.components.bus.WordBus;
 import de.heiden.jem.components.clock.Clock;
-import de.heiden.jem.components.clock.threads.SequentialSpinTestClock;
+import de.heiden.jem.components.clock.serialthreads.SerialClock;
 import de.heiden.jem.models.c64.components.memory.RAM;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -749,8 +749,7 @@ class CPU6510Test {
     void setUp() {
         logger.debug("set up");
 
-        // TODO markus 2026-03-07: Use SerialClock again?
-        clock = new SequentialSpinTestClock();
+        clock = new SerialClock();
         ram = new RAM(0x10000);
         loggingBus = new LoggingBus(ram);
         bus = new WordBus(loggingBus);
