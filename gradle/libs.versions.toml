@@ -12,15 +12,6 @@ versionsPlugin = "0.53.0"
 # BOM — provides version management for common libraries
 spring-boot-bom = { module = "org.springframework.boot:spring-boot-dependencies", version.ref = "springBoot" }
 
-# Versions managed by Spring Boot BOM
-assertj-core = { module = "org.assertj:assertj-core" }
-commons-lang3 = { module = "org.apache.commons:commons-lang3" }
-jakarta-annotation-api = { module = "jakarta.annotation:jakarta.annotation-api" }
-junit-jupiter = { module = "org.junit.jupiter:junit-jupiter" }
-junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
-logback-classic = { module = "ch.qos.logback:logback-classic" }
-slf4j-api = { module = "org.slf4j:slf4j-api" }
-
 # Not managed by Spring Boot BOM
 c64dt-assembler = { module = "de.heiden.c64dt:assembler" }
 c64dt-bytes = { module = "de.heiden.c64dt:bytes" }

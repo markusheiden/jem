@@ -40,19 +40,19 @@ configurations.all {
 dependencies {
     implementation(platform(libs.spring.boot.bom))
 
-    implementation(libs.slf4j.api)
-    runtimeOnly(libs.logback.classic)
-    compileOnly(libs.jakarta.annotation.api)
+    implementation("org.slf4j:slf4j-api")
+    runtimeOnly("ch.qos.logback:logback-classic")
+    compileOnly("jakarta.annotation:jakarta.annotation-api")
 
     implementation(libs.serialthreads)
 
     implementation(libs.bundles.c64dt)
 
-    implementation(libs.commons.lang3)
+    implementation("org.apache.commons:commons-lang3")
 
-    testRuntimeOnly(libs.junit.platform.launcher)
-    testImplementation(libs.junit.jupiter)
-    testImplementation(libs.assertj.core)
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    testImplementation("org.junit.jupiter:junit-jupiter")
+    testImplementation("org.assertj:assertj-core")
     testImplementation(testFixtures(libs.serialthreads))
 }
 
