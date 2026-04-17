@@ -10,6 +10,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.serialthreads.agent.Transform;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 /**
  * Test for {@link CPU6510}.
  */
+@Transform(classPrefixes = "de.heiden.jem")
 class CPU6510Test {
     /**
      * Logger.

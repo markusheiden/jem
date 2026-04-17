@@ -13,7 +13,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.TestExecutionExceptionHandler;
 import org.serialthreads.agent.Transform;
-import org.serialthreads.transformer.strategies.frequent3.FrequentInterruptsTransformer3;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +38,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
  */
 @Timeout(60)
 @ExtendWith(TestWatcher.class)
-@Transform(transformer = FrequentInterruptsTransformer3.class, classPrefixes = "de.heiden.jem")
+@Transform(classPrefixes = "de.heiden.jem")
 public abstract class AbstractTest {
     /**
      * Logger.
