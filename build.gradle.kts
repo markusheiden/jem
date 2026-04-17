@@ -70,9 +70,11 @@ tasks.withType<JavaCompile>().configureEach {
         "-parameters"
     ))
 
-    // Disable all checks, as we only want to use the NullAway checks of the errorprone plugin.
-    // This needs to be configured by the project currently though.
-    options.errorprone.disableAllChecks = true
+    options.errorprone {
+        disableAllChecks = true
+        option("NullAway:AnnotatedPackages", "de.heiden")
+        // error("NullAway")
+    }
 }
 
 tasks.withType<AbstractArchiveTask> {
@@ -103,7 +105,6 @@ tasks.test {
     useJUnitPlatform()
 
     ignoreFailures = true
-
 
     finalizedBy(tasks.jacocoTestReport)
 }
