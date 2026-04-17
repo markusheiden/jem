@@ -104,7 +104,7 @@ tasks.shadowJar {
 tasks.test {
     useJUnitPlatform()
 
-    ignoreFailures = true
+    ignoreFailures = false
 
     finalizedBy(tasks.jacocoTestReport)
 }
