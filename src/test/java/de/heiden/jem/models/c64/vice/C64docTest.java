@@ -2,6 +2,7 @@ package de.heiden.jem.models.c64.vice;
 
 import de.heiden.jem.models.c64.AbstractTest;
 import de.heiden.jem.models.c64.ProgramSuiteSource;
+import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.params.ParameterizedTest;
 
 import java.nio.file.Path;
@@ -10,10 +11,12 @@ import java.util.Set;
 
 import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
 
 /**
  * VICE test suite.
  */
+@Execution(CONCURRENT)
 class C64docTest extends AbstractTest {
     private static final Set<String> LONG_RUNNING = new HashSet<>(asList("sbx", "vsbx"));
 
