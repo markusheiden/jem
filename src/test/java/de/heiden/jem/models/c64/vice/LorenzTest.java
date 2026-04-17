@@ -5,8 +5,10 @@ import de.heiden.jem.models.c64.ProgramSuiteSource;
 import org.junit.jupiter.params.ParameterizedTest;
 
 import java.nio.file.Path;
+import java.time.Duration;
 
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
 
 /**
  * Testsuite 2.15.
@@ -66,11 +68,16 @@ class LorenzTest extends AbstractTest {
             // "trap11", "trap12", "trap13", "trap14", "trap15", "trap16", "trap17",
             // "tsxn", "txan", "txsn", "tyan"
     })
-    void test(Path program, String programName) throws Exception {
+    void test(Path program, String programName) {
+        assertTimeoutPreemptively(Duration.ofSeconds(10), () ->
+                testPreemptively(program, programName));
+    }
+
+    void testPreemptively(Path program, String programName) throws Exception {
         loadAndRun(program);
 
         var passed = onConsole("- ok");
-        var failed = onConsole("right", "error", " not ");
+        var failed = onConsole("failed test", "wrong", "is not", "does not", "error");
         var event = waitSecondsFor(999, passed, failed);
         waitCycles(1000);
 
