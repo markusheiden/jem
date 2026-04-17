@@ -1,11 +1,16 @@
 package de.heiden.jem.components.clock.serialthreads;
 
 import de.heiden.jem.components.clock.AbstractSimpleClock;
+import de.heiden.jem.components.clock.ClockedComponent;
+import de.heiden.jem.components.clock.Tick;
 import org.serialthreads.Executor;
+import org.serialthreads.Interrupt;
 import org.serialthreads.context.ThreadFinishedException;
 
 /**
  * Clock using serial threads.
+ * This clock does NOT {@link ClockedComponent#setTick(Tick) set a tick},
+ * because {@link Tick#waitForTick()} is never called because it is an {@link Interrupt} method.
  */
 public final class SerialClock extends AbstractSimpleClock {
     @Override
