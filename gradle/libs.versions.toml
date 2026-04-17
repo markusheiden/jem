@@ -1,16 +1,33 @@
 [versions]
+error-prone = "2.49.0"
 gradle = "9.4.1"
+nullaway = "0.13.3"
 openjfx = "26"
-shadowPlugin = "9.4.1"
 springBoot = "4.0.5"
 
 # Gradle plugins
-javafxPlugin = "0.1.0"
-versionsPlugin = "0.53.0"
+build-time-tracker-plugin = "5.0.2"
+error-prone-plugin = "5.1.0"
+javafx-plugin = "0.1.0"
+shadow-plugin = "9.4.1"
+test-logger-plugin = "4.0.0"
+versions-plugin = "0.53.0"
+
+[plugins]
+build-time-tracker = { id = "com.asarkar.gradle.build-time-tracker", version.ref = "build-time-tracker-plugin" }
+error-prone = { id = "net.ltgt.errorprone", version.ref = "error-prone-plugin" }
+javafx = { id = "org.openjfx.javafxplugin", version.ref = "javafx-plugin" }
+shadow = { id = "com.gradleup.shadow", version.ref = "shadow-plugin" }
+test-logger = { id = "com.adarshr.test-logger", version.ref = "test-logger-plugin" }
+versions = { id = "com.github.ben-manes.versions", version.ref = "versions-plugin" }
+
 
 [libraries]
 # BOM — provides version management for common libraries
 spring-boot-bom = { module = "org.springframework.boot:spring-boot-dependencies", version.ref = "springBoot" }
+
+error-prone = { module = "com.google.errorprone:error_prone_core", version.ref = "error-prone" }
+nullaway = { module = "com.uber.nullaway:nullaway", version.ref = "nullaway" }
 
 # Not managed by Spring Boot BOM
 c64dt-assembler = { module = "de.heiden.c64dt:assembler" }
@@ -22,8 +39,3 @@ serialthreads = { module = "org.serialthreads:serialthreads" }
 
 [bundles]
 c64dt = ["c64dt-assembler", "c64dt-bytes", "c64dt-charset", "c64dt-disk", "c64dt-gui"]
-
-[plugins]
-javafx = { id = "org.openjfx.javafxplugin", version.ref = "javafxPlugin" }
-shadow = { id = "com.gradleup.shadow", version.ref = "shadowPlugin" }
-versions = { id = "com.github.ben-manes.versions", version.ref = "versionsPlugin" }

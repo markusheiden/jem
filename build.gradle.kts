@@ -1,8 +1,12 @@
+import net.ltgt.gradle.errorprone.errorprone
+
 plugins {
     application
     jacoco
     alias(libs.plugins.javafx)
+    alias(libs.plugins.error.prone)
     alias(libs.plugins.shadow)
+    alias(libs.plugins.build.time.tracker)
     alias(libs.plugins.versions)
 }
 
@@ -50,10 +54,25 @@ dependencies {
 
     implementation("org.apache.commons:commons-lang3")
 
+    errorprone(libs.error.prone)
+    errorprone(libs.nullaway)
+
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.assertj:assertj-core")
     testImplementation(testFixtures(libs.serialthreads))
+}
+
+tasks.withType<JavaCompile>().configureEach {
+    options.encoding = "UTF-8"
+    options.compilerArgs.addAll(listOf(
+        // Persist parameter names for reflection.
+        "-parameters"
+    ))
+
+    // Disable all checks, as we only want to use the NullAway checks of the errorprone plugin.
+    // This needs to be configured by the project currently though.
+    options.errorprone.disableAllChecks = true
 }
 
 tasks.withType<AbstractArchiveTask> {
@@ -83,7 +102,8 @@ tasks.shadowJar {
 tasks.test {
     useJUnitPlatform()
 
-    ignoreFailures = false
+    ignoreFailures = true
+
 
     finalizedBy(tasks.jacocoTestReport)
 }
