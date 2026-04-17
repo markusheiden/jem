@@ -104,6 +104,16 @@ tasks.shadowJar {
 tasks.test {
     useJUnitPlatform()
 
+    jvmArgs(
+        "-Xmx4g",
+        // Configure locale etc. for reproducible tests.
+        "-Duser.language=en",
+        "-Duser.country=US",
+        "-Duser.timezone=UTC",
+        // Prevent warnings from test setups. Avoid conflicts with JaCoCo.
+        "-Xshare:off"
+    )
+
     ignoreFailures = false
 
     finalizedBy(tasks.jacocoTestReport)
