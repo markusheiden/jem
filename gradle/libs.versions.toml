@@ -21,7 +21,6 @@ shadow = { id = "com.gradleup.shadow", version.ref = "shadow-plugin" }
 test-logger = { id = "com.adarshr.test-logger", version.ref = "test-logger-plugin" }
 versions = { id = "com.github.ben-manes.versions", version.ref = "versions-plugin" }
 
-
 [libraries]
 # BOM — provides version management for common libraries
 spring-boot-bom = { module = "org.springframework.boot:spring-boot-dependencies", version.ref = "springBoot" }
