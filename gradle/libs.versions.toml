@@ -1,17 +1,17 @@
 [versions]
 error-prone = "2.50.0"
-gradle = "9.6.1"
-nullaway = "0.13.7"
+gradle = "9.7.1"
+nullaway = "0.14.0"
 openjfx = "26"
-springBoot = "4.1.0"
+springBoot = "4.1.1"
 
 # Gradle plugins
 build-time-tracker-plugin = "5.0.2"
 error-prone-plugin = "5.1.0"
 javafx-plugin = "0.1.0"
-shadow-plugin = "9.4.3"
+shadow-plugin = "9.6.1"
 test-logger-plugin = "4.0.0"
-versions-plugin = "0.54.0"
+versions-plugin = "0.61.0"
 
 [plugins]
 build-time-tracker = { id = "com.asarkar.gradle.build-time-tracker", version.ref = "build-time-tracker-plugin" }
