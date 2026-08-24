@@ -19,7 +19,7 @@ error-prone = { id = "net.ltgt.errorprone", version.ref = "error-prone-plugin" }
 javafx = { id = "org.openjfx.javafxplugin", version.ref = "javafx-plugin" }
 shadow = { id = "com.gradleup.shadow", version.ref = "shadow-plugin" }
 test-logger = { id = "com.adarshr.test-logger", version.ref = "test-logger-plugin" }
-versions = { id = "com.github.ben-manes.versions", version.ref = "versions-plugin" }
+versions = { id = "io.github.ben-manes.versions", version.ref = "versions-plugin" }
 
 [libraries]
 # BOM — provides version management for common libraries
