@@ -1,7 +1,6 @@
 package de.heiden.jem.models.c64;
 
 import de.heiden.jem.components.clock.serialthreads.SerialClock;
-import org.serialthreads.Interrupt;
 import org.serialthreads.Interruptible;
 import org.serialthreads.context.IRunnable;
 import org.serialthreads.context.ITransformedRunnable;
@@ -53,13 +52,6 @@ public class C64SerialAgent {
     private static final class TransformationCheck implements IRunnable {
         @Override
         @Interruptible
-        public void run() {
-            interrupt();
-        }
-
-        @Interrupt
-        void interrupt() {
-            // Method call will be redirected to interrupt code.
-        }
+        public void run() {}
     }
 }
