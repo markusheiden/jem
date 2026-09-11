@@ -90,6 +90,19 @@ tasks.startScripts {
     dependsOn(tasks.shadowJar)
 }
 
+// Run the emulator with byte code transformation via the serial threads agent instead of the transforming class loader.
+tasks.register<JavaExec>("runAgent") {
+    group = ApplicationPlugin.APPLICATION_GROUP
+    description = "Runs the C64 emulator with byte code transformation via the serial threads agent."
+    classpath = sourceSets.main.get().runtimeClasspath
+    mainClass = "de.heiden.jem.models.c64.C64SerialAgent"
+    doFirst {
+        // The serial threads jar declares the agent in its manifest (Premain-Class).
+        val agentJar = classpath.files.single { it.name.startsWith("serialthreads") && it.name.endsWith(".jar") }
+        jvmArgs("-javaagent:$agentJar")
+    }
+}
+
 tasks.shadowJar {
     archiveClassifier = ""
     manifest {
