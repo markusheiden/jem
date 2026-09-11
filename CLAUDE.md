@@ -14,8 +14,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 # Run a single test class
 ./gradlew test --tests "de.heiden.jem.models.c64.vice.LorenzTest"
 
-# Run the emulator
+# Run the emulator (byte code transformation via TransformingClassLoader)
 ./gradlew run
+
+# Run the emulator (byte code transformation via the serial threads agent)
+./gradlew runAgent
 
 # Coverage report (HTML + XML)
 ./gradlew jacocoTestReport
