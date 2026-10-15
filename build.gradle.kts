@@ -95,6 +95,8 @@ tasks.startScripts {
 tasks.named<JavaExec>("run") {
     // The JavaFX plugin puts JavaFX on the module path.
     jvmArgs("--enable-native-access=javafx.graphics")
+    // The JavaFX plugin accesses the task extensions at execution time.
+    notCompatibleWithConfigurationCache("JavaFX plugin is not compatible with the configuration cache")
 }
 
 // Run the emulator with byte code transformation via the serial threads agent instead of the transforming class loader.
