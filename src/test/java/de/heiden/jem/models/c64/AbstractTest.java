@@ -30,6 +30,7 @@ import static de.heiden.c64dt.bytes.HexUtil.hexWord;
 import static java.lang.Thread.sleep;
 import static java.util.Arrays.stream;
 import static org.apache.commons.lang3.StringUtils.join;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
@@ -113,6 +114,8 @@ public abstract class AbstractTest {
                 AbstractTest.this.throwable = t;
             }
         }, threadName);
+        // Never block JVM termination, if the emulation does not stop.
+        thread.setDaemon(true);
         thread.start();
 
         // Reset the program end flag.
@@ -322,8 +325,10 @@ public abstract class AbstractTest {
     public void tearDown() throws Exception {
         if (c64 != null) {
             c64.setSystemOut(null);
+            c64.stop();
             thread.interrupt();
             thread.join(1000);
+            assertFalse(thread.isAlive(), "C64 thread has been stopped");
         }
     }
 

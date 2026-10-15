@@ -33,7 +33,7 @@ public class TestC64 {
     /**
      * Main clock.
      */
-    private final Clock clock;
+    private final SerialClock clock;
 
     /**
      * CPU bus.
@@ -175,6 +175,14 @@ public class TestC64 {
     public void start() {
         clock.run();
         clock.close();
+    }
+
+    /**
+     * Request the emulation to stop.
+     * May be called from any thread.
+     */
+    public void stop() {
+        clock.stop();
     }
 
     /**
