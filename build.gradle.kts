@@ -21,6 +21,8 @@ repositories {
 
 application {
     mainClass = "de.heiden.jem.models.c64.C64Serial"
+    // JavaFX loads native libraries.
+    applicationDefaultJvmArgs = listOf("--enable-native-access=ALL-UNNAMED")
 }
 
 java {
@@ -90,12 +92,19 @@ tasks.startScripts {
     dependsOn(tasks.shadowJar)
 }
 
+tasks.named<JavaExec>("run") {
+    // The JavaFX plugin puts JavaFX on the module path.
+    jvmArgs("--enable-native-access=javafx.graphics")
+}
+
 // Run the emulator with byte code transformation via the serial threads agent instead of the transforming class loader.
 tasks.register<JavaExec>("runAgent") {
     group = ApplicationPlugin.APPLICATION_GROUP
     description = "Runs the C64 emulator with byte code transformation via the serial threads agent."
     classpath = sourceSets.main.get().runtimeClasspath
     mainClass = "de.heiden.jem.models.c64.C64SerialAgent"
+    // JavaFX is on the class path here.
+    jvmArgs(application.applicationDefaultJvmArgs)
     doFirst {
         // The serial threads jar declares the agent in its manifest (Premain-Class).
         val agentJar = classpath.files.single { it.name.startsWith("serialthreads") && it.name.endsWith(".jar") }
@@ -109,6 +118,8 @@ tasks.shadowJar {
         attributes(
             "Implementation-Title" to "JemC64",
             "Implementation-Version" to archiveVersion,
+            // JavaFX loads native libraries.
+            "Enable-Native-Access" to "ALL-UNNAMED",
             // "Launcher-Agent-Class" to "org.serialthreads.agent.Agent",
         )
     }
