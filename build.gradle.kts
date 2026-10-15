@@ -101,10 +101,19 @@ tasks.named<JavaExec>("run") {
 tasks.register<JavaExec>("runAgent") {
     group = ApplicationPlugin.APPLICATION_GROUP
     description = "Runs the C64 emulator with byte code transformation via the serial threads agent."
-    classpath = sourceSets.main.get().runtimeClasspath
     mainClass = "de.heiden.jem.models.c64.C64SerialAgent"
-    // JavaFX is on the class path here.
-    jvmArgs(application.applicationDefaultJvmArgs)
+    // Put JavaFX on the module path, like the JavaFX plugin does for the run task.
+    // For "run", this is done by the JavaFX plugin. For this task we need to reproduce this manually.
+    val runtimeClasspath = sourceSets.main.get().runtimeClasspath
+    val javafxModules = runtimeClasspath.filter { it.name.startsWith("javafx-") }
+    classpath = runtimeClasspath - javafxModules
+    jvmArgumentProviders.add(CommandLineArgumentProvider {
+        listOf(
+            "--module-path", javafxModules.asPath,
+            "--add-modules", javafx.modules.joinToString(","),
+            "--enable-native-access=javafx.graphics",
+        )
+    })
     doFirst {
         // The serial threads jar declares the agent in its manifest (Premain-Class).
         val agentJar = classpath.files.single { it.name.startsWith("serialthreads") && it.name.endsWith(".jar") }
