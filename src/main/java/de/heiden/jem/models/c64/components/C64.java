@@ -11,12 +11,14 @@ import de.heiden.jem.models.c64.components.memory.ColorRAM;
 import de.heiden.jem.models.c64.components.memory.RAM;
 import de.heiden.jem.models.c64.components.memory.ROM;
 import de.heiden.jem.models.c64.components.memory.ROMLoader;
+import de.heiden.jem.models.c64.components.patch.LoadFromDirectory;
 import de.heiden.jem.models.c64.components.vic.VIC6569PAL;
 import de.heiden.jem.models.c64.components.vic.VICBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.nio.file.Path;
 
 /**
  * C64.
@@ -118,6 +120,9 @@ public class C64 {
             _cpuBus.write(i & 0xFF, 0x400 + i);
             _cpuBus.write(i & 0x0F, 0xD800 + i);
         }
+
+        // Load files from the working directory, e.g. LOAD"GAME",8,1.
+        _cpu.add(new LoadFromDirectory(Path.of("").toAbsolutePath()));
 
 //    _cpu.add(new LoadFile(new File("/Users/markus/projects/jem/src/test/resources/testsuite2.15")));
 //    FileUtil.read(Path.of("/Users/markus/projects/jem/xxx.prg"), _cpuBus);
