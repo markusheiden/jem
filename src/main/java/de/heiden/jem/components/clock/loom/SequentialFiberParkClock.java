@@ -36,7 +36,7 @@ public final class SequentialFiberParkClock extends AbstractSimpleClock {
     /**
      * Create fibers.
      */
-    private void createFibers(final int ticks) {
+    private void createFibers(int ticks) {
         var components = clockedComponents();
         var numComponents = components.length;
 
@@ -62,7 +62,7 @@ public final class SequentialFiberParkClock extends AbstractSimpleClock {
             });
         } else {
             starterFiber = buildVirtualThread(() -> {
-                for (final long stop = getTick() + ticks; getTick() < stop; ) {
+                for (long stop = getTick() + ticks; getTick() < stop; ) {
                     startTick();
                     // Execute first component and wait for last tick.
                     executeNextComponent(firstFiber);
@@ -101,7 +101,7 @@ public final class SequentialFiberParkClock extends AbstractSimpleClock {
     /**
      * Execute next component and wait for this component to execute.
      */
-    private void executeNextComponent(final Thread nextFiber) {
+    private void executeNextComponent(Thread nextFiber) {
         this.fiber = nextFiber;
         LockSupport.unpark(nextFiber);
         LockSupport.park();

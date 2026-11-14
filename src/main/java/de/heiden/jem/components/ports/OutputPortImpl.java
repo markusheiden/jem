@@ -105,8 +105,8 @@ public final class OutputPortImpl implements OutputPort {
      * Notify all listeners.
      */
     protected void notifyOutputPortListeners() {
-        final var outputData = this.outputData;
-        final var outputMask = this.outputMask;
+        var outputData = this.outputData;
+        var outputMask = this.outputMask;
         for (var listener : outputListeners) {
             listener.portChanged(outputData, outputMask);
         }

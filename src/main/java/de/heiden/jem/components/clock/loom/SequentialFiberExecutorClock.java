@@ -25,7 +25,7 @@ public final class SequentialFiberExecutorClock extends AbstractSimpleClock {
         assert ticks >= 0 : "Precondition: ticks >= 0";
 
         var virtualThreads = createVirtualThreads();
-        for (final long stop = getTick() + ticks; getTick() < stop; ) {
+        for (long stop = getTick() + ticks; getTick() < stop; ) {
             startTick();
             for (var thread : virtualThreads) {
                 thread.run();

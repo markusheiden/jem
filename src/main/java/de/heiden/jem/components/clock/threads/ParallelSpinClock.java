@@ -29,7 +29,7 @@ public final class ParallelSpinClock extends AbstractSynchronizedClock {
     /**
      * Execution of ticks.
      */
-    private void executeTicks(final ParallelSpinTick[] ticks) {
+    private void executeTicks(ParallelSpinTick[] ticks) {
         //noinspection InfiniteLoopStatement
         while (true) {
             // Start a new tick.

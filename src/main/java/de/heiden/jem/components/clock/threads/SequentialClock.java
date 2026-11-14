@@ -22,8 +22,8 @@ public final class SequentialClock extends AbstractSynchronizedClock {
         Thread firstThread = null;
         SequentialTick previousTick = null;
         for (var i = 0; i < components.length; i++) {
-            final var state = i;
-            final var nextState = i + 1;
+            var state = i;
+            var nextState = i + 1;
 
             var component = components[state];
             var tick = new SequentialTick(state);
@@ -53,7 +53,7 @@ public final class SequentialClock extends AbstractSynchronizedClock {
     /**
      * Execution of ticks.
      */
-    private void executeTicks(final int state, final Thread nextThread) {
+    private void executeTicks(int state, Thread nextThread) {
         //noinspection InfiniteLoopStatement
         while (true) {
             startTick();
@@ -72,7 +72,7 @@ public final class SequentialClock extends AbstractSynchronizedClock {
      * @param state
      *         State to reach.
      */
-    void waitForState(final int state) {
+    void waitForState(int state) {
         do {
             // There is no problem, if this thread is not parked when the previous threads unparks it:
             // In this case this park will not block, see LockSupport.unpark() javadoc.
@@ -107,7 +107,7 @@ public final class SequentialClock extends AbstractSynchronizedClock {
 
         @Override
         public void waitForTick() {
-            final var tickState = this.tickState;
+            var tickState = this.tickState;
             // Execute next component thread.
             state = tickState + 1;
             unpark(nextThread);

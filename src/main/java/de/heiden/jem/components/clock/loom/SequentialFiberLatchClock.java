@@ -22,7 +22,7 @@ public final class SequentialFiberLatchClock extends AbstractSimpleClock {
         var semaphores = createVirtualThreads(false);
         var firstSemaphore = semaphores.first;
         var lastSemaphore = semaphores.last;
-        for (final long stop = getTick() + ticks; getTick() < stop; ) {
+        for (long stop = getTick() + ticks; getTick() < stop; ) {
             try {
                 firstSemaphore.release();
                 lastSemaphore.acquire();

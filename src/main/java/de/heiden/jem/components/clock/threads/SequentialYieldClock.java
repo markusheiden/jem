@@ -35,7 +35,7 @@ public final class SequentialYieldClock extends AbstractSynchronizedClock {
     /**
      * Execution of ticks.
      */
-    private void executeTicks(final int finalState) {
+    private void executeTicks(int finalState) {
         //noinspection InfiniteLoopStatement
         while (true) {
             startTick();
@@ -69,7 +69,7 @@ public final class SequentialYieldClock extends AbstractSynchronizedClock {
 
         @Override
         public void waitForTick() {
-            final var tickState = this.tickState;
+            var tickState = this.tickState;
             // Execute next component thread.
             state = tickState + 1;
             // Wait for the next tick.

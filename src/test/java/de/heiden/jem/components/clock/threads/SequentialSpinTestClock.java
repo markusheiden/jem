@@ -52,9 +52,9 @@ public final class SequentialSpinTestClock extends AbstractSynchronizedClock {
     /**
      * Execution of ticks.
      */
-    private void executeTicks(final int finalState) {
-        final var thread = currentThread();
-        final var state = currentState;
+    private void executeTicks(int finalState) {
+        var thread = currentThread();
+        var state = currentState;
         while (!thread.isInterrupted()) {
             startTick();
             // Execute all component threads.

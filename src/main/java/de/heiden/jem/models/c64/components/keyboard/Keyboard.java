@@ -119,8 +119,8 @@ public class Keyboard implements IKeyboard {
         var port1OutData = 0xFF;
 
         for (int i = 0, columnBit = 0x01; i < matrix.length; i++, columnBit <<= 1) {
-            final var matrix = this.matrix[i];
-            final var bitmask = port1InMask & matrix; // 1: driven bits
+            var matrix = this.matrix[i];
+            var bitmask = port1InMask & matrix; // 1: driven bits
             if (bitmask != 0) {
                 port0OutMask |= columnBit; // bit is driven!
                 if ((port1InDataInv & bitmask) != 0) {

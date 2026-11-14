@@ -36,7 +36,7 @@ public final class SequentialFiberYieldClock extends AbstractSimpleClock {
     /**
      * Create fibers.
      */
-    private void createFibers(final int ticks) {
+    private void createFibers(int ticks) {
         var components = clockedComponents();
         var numComponents = components.length;
 
@@ -54,7 +54,7 @@ public final class SequentialFiberYieldClock extends AbstractSimpleClock {
             });
         } else {
             buildVirtualThread(() -> {
-                for (final long stop = getTick() + ticks; getTick() < stop; ) {
+                for (long stop = getTick() + ticks; getTick() < stop; ) {
                     startTick();
                     // Execute first component and wait for last tick.
                     executeNextComponent(0, finalState);
@@ -83,7 +83,7 @@ public final class SequentialFiberYieldClock extends AbstractSimpleClock {
     /**
      * Execute next component and wait for this component to execute.
      */
-    private void executeNextComponent(final int nextState, final int state) {
+    private void executeNextComponent(int nextState, int state) {
         this.state = nextState;
         do {
             Thread.yield();

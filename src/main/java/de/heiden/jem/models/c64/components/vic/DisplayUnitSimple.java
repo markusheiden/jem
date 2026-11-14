@@ -78,7 +78,7 @@ public class DisplayUnitSimple extends AbstractDisplayUnit {
                     tick.waitForTick();
                 }
 
-                final var pixelPerLine = vic.lastX - vic.firstVisibleX + vic.lastVisibleX;
+                var pixelPerLine = vic.lastX - vic.firstVisibleX + vic.lastVisibleX;
                 Arrays.fill(screenRender, ptr, ptr += pixelPerLine, vic.regExteriorColor);
             }
 
@@ -93,11 +93,11 @@ public class DisplayUnitSimple extends AbstractDisplayUnit {
                     tick.waitForTick();
                 }
 
-                final var leftBorder = vic.lastX - vic.firstVisibleX + vic.firstX_25;
+                var leftBorder = vic.lastX - vic.firstVisibleX + vic.firstX_25;
                 Arrays.fill(screenRender, ptr, ptr += leftBorder, vic.regExteriorColor);
                 var newPtr = renderLine(screenRender, ptr, y, raster);
                 ptr = newPtr;
-                final var rightBorder = vic.lastVisibleX - vic.lastX_25;
+                var rightBorder = vic.lastVisibleX - vic.lastX_25;
                 Arrays.fill(screenRender, ptr, ptr += rightBorder, vic.regExteriorColor);
 
                 for (; cycle < vic.cyclesPerLine; cycle++) {
@@ -112,7 +112,7 @@ public class DisplayUnitSimple extends AbstractDisplayUnit {
                     tick.waitForTick();
                 }
 
-                final var pixelPerLine = vic.lastX - vic.firstVisibleX + vic.lastVisibleX;
+                var pixelPerLine = vic.lastX - vic.firstVisibleX + vic.lastVisibleX;
                 Arrays.fill(screenRender, ptr, ptr += pixelPerLine, vic.regExteriorColor);
             }
 

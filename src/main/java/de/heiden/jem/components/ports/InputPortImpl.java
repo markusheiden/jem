@@ -142,8 +142,8 @@ public final class InputPortImpl implements InputPort {
      * Notify all listeners.
      */
     protected void notifyInputPortListeners() {
-        final var inputData = this.inputData;
-        final var inputMask = this.inputMask;
+        var inputData = this.inputData;
+        var inputMask = this.inputMask;
         for (var listener : inputListeners) {
             listener.portChanged(inputData, inputMask);
         }

@@ -166,7 +166,7 @@ public abstract class AbstractClock implements Clock {
     }
 
     @Override
-    public void addClockEvent(final long tick, final @Nonnull ClockEvent newEvent) {
+    public void addClockEvent(long tick, @Nonnull ClockEvent newEvent) {
         assert tick > getTick() : "tick > getTick()";
 
 //    if (logger.isDebugEnabled()) {
@@ -193,7 +193,7 @@ public abstract class AbstractClock implements Clock {
     }
 
     @Override
-    public void updateClockEvent(final long tick, final @Nonnull ClockEvent eventToUpdate) {
+    public void updateClockEvent(long tick, @Nonnull ClockEvent eventToUpdate) {
         assert tick > getTick() : "tick > getTick()";
 
         if (tick == eventToUpdate.tick) {
@@ -207,7 +207,7 @@ public abstract class AbstractClock implements Clock {
     }
 
     @Override
-    public void removeClockEvent(final @Nonnull ClockEvent oldEvent) {
+    public void removeClockEvent(@Nonnull ClockEvent oldEvent) {
 //    if (logger.isDebugEnabled()) {
 //      logger.debug("Remove event {}.", event);
 //    }
@@ -238,7 +238,7 @@ public abstract class AbstractClock implements Clock {
      * @param tick
      *         current clock tick
      */
-    protected void executeEvents(final long tick) {
+    protected void executeEvents(long tick) {
         for (var event = events; event.tick == tick; event = events) {
             // Remove it.
             events = event.next;

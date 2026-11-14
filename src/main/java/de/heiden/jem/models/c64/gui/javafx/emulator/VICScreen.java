@@ -15,7 +15,7 @@ public class VICScreen extends C64ScreenComponent {
      *         display unit to display
      * @require displayUnit != null
      */
-    public VICScreen(final @Nonnull AbstractDisplayUnit displayUnit) {
+    public VICScreen(@Nonnull AbstractDisplayUnit displayUnit) {
         super(displayUnit.getOffset(), displayUnit.getWidth(), displayUnit.getLineLength(), displayUnit.getHeight(), 2);
 
         displayUnit.setScreenListener(() -> updateImageData(displayUnit.display()));

@@ -66,7 +66,7 @@ class MemAccessUnit implements ClockedComponent {
      */
     @Interruptible
     public final void loadScreen() {
-        final var linesPerScreen = vic.linesPerScreen;
+        var linesPerScreen = vic.linesPerScreen;
         for (var line = 0; line < linesPerScreen; line++) {
             var badline = false;
             var row = 0; // 0-7
