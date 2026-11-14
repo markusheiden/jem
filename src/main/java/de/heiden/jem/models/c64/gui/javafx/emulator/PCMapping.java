@@ -30,6 +30,7 @@ import static de.heiden.jem.models.c64.components.keyboard.Key.J;
 import static de.heiden.jem.models.c64.components.keyboard.Key.K;
 import static de.heiden.jem.models.c64.components.keyboard.Key.L;
 import static de.heiden.jem.models.c64.components.keyboard.Key.LEFT_SHIFT;
+import static de.heiden.jem.models.c64.components.keyboard.Key.LET_ARROW;
 import static de.heiden.jem.models.c64.components.keyboard.Key.M;
 import static de.heiden.jem.models.c64.components.keyboard.Key.MINUS;
 import static de.heiden.jem.models.c64.components.keyboard.Key.N;
@@ -200,6 +201,8 @@ public class PCMapping extends KeyMapping {
         // restore -> delete
         addCode(KeyCode.DELETE, RESTORE);
 
-        // TODO how to map LEFT_ARROW
+        // left arrow -> tab
+        // TODO markus 2026-11-14: Is there a better suitable key?
+        addCode(KeyCode.TAB, LET_ARROW);
     }
 }
