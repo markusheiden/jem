@@ -1,11 +1,10 @@
 package de.heiden.jem.models.c64.gui.javafx.emulator;
 
 import de.heiden.jem.models.c64.components.keyboard.IKeyboard;
-import de.heiden.jem.models.c64.components.keyboard.Key;
 import javafx.scene.Scene;
 
 /**
- * Key listener for C64 Keyboard.
+ * Key listener for C64 keyboard and joysticks.
  */
 public class KeyListener {
     /**
@@ -17,9 +16,15 @@ public class KeyListener {
      *         Keyboard
      * @param keyMapping
      *         Mapping from keys to C64 keys
+     * @param joystickKeys
+     *         Joystick emulation via keys, takes precedence over the keyboard
      */
-    public static void attachTo(Scene scene, IKeyboard keyboard, KeyMapping keyMapping) {
+    public static void attachTo(Scene scene, IKeyboard keyboard, KeyMapping keyMapping, JoystickKeys joystickKeys) {
         scene.setOnKeyPressed(e -> {
+            if (joystickKeys.pressed(e)) {
+                return;
+            }
+
             var keys = keyMapping.getKeys(e);
             if (keys != null) {
                 for (var key : keys) {
@@ -29,6 +34,10 @@ public class KeyListener {
         });
 
         scene.setOnKeyReleased(e -> {
+            if (joystickKeys.released(e)) {
+                return;
+            }
+
             var keys = keyMapping.getKeys(e);
             if (keys != null) {
                 for (var key : keys) {

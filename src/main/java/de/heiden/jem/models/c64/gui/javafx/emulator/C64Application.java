@@ -41,7 +41,9 @@ public class C64Application extends Application {
         var screen = new VICScreen(c64.getVIC().displayUnit);
 
         var scene = new Scene(screen, screen.getWidth(), screen.getHeight());
-        KeyListener.attachTo(scene, c64.getKeyboard(), new PCMapping());
+        var joystickKeys = new JoystickKeys(c64.getJoystick1(), c64.getJoystick2(), mode -> setTitle(stage, mode));
+        KeyListener.attachTo(scene, c64.getKeyboard(), new PCMapping(), joystickKeys);
+        setTitle(stage, joystickKeys.getMode());
 
         stage.setScene(scene);
         stage.show();
@@ -51,6 +53,17 @@ public class C64Application extends Application {
         // JavaFX thread keeps vm running.
         thread.setDaemon(true);
         thread.start();
+    }
+
+    /**
+     * Show the joystick keys mode in the window title.
+     */
+    private static void setTitle(Stage stage, JoystickMode mode) {
+        stage.setTitle("C64 - " + switch (mode) {
+            case OFF -> "no joystick";
+            case JOYSTICK_2 -> "joystick 2";
+            case JOYSTICK_1 -> "joystick 1";
+        });
     }
 
     private void runC64() {

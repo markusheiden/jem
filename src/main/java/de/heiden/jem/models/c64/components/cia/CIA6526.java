@@ -389,11 +389,11 @@ public class CIA6526 implements BusDevice {
         int result;
         switch (address & mask) {
             case 0x00: {
-                result = portA.outputData();
+                result = portA.pinData();
                 break;
             }
             case 0x01: {
-                result = portB.outputData();
+                result = portB.pinData();
                 break;
             }
             case 0x02: {

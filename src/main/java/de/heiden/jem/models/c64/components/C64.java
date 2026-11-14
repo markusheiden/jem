@@ -6,10 +6,10 @@ import de.heiden.jem.models.c64.components.cia.CIA6526;
 import de.heiden.jem.models.c64.components.cpu.C64Bus;
 import de.heiden.jem.models.c64.components.cpu.CPU6510;
 import de.heiden.jem.models.c64.components.cpu.CPU6510Debugger;
+import de.heiden.jem.models.c64.components.joystick.Joystick;
 import de.heiden.jem.models.c64.components.keyboard.Keyboard;
 import de.heiden.jem.models.c64.components.memory.ColorRAM;
 import de.heiden.jem.models.c64.components.memory.RAM;
-import de.heiden.jem.models.c64.components.memory.ROM;
 import de.heiden.jem.models.c64.components.memory.ROMLoader;
 import de.heiden.jem.models.c64.components.patch.LoadFromDirectory;
 import de.heiden.jem.models.c64.components.vic.VIC6569PAL;
@@ -50,6 +50,16 @@ public class C64 {
     private Keyboard keyboard;
 
     /**
+     * Joystick in port 1.
+     */
+    private final Joystick joystick1;
+
+    /**
+     * Joystick in port 2.
+     */
+    private final Joystick joystick2;
+
+    /**
      * VIC.
      */
     private final VIC6569PAL vic;
@@ -88,6 +98,9 @@ public class C64 {
         vic = new VIC6569PAL(clock, vicBus, colorRam);
 
         keyboard = new Keyboard(cia1.portA(), cia1.portB());
+        // Joystick port 1 is connected to CIA 1 port B, joystick port 2 to CIA 1 port A.
+        joystick1 = new Joystick(cia1.portB());
+        joystick2 = new Joystick(cia1.portA());
 
         cpu = clock.addClockedComponent(Clock.CPU, debug ? new CPU6510Debugger() : new CPU6510());
         cpuBus = new C64Bus(ram, basic, vic, colorRam, cia1, cia2, charset, kernel);
@@ -177,6 +190,20 @@ public class C64 {
      */
     public Keyboard getKeyboard() {
         return keyboard;
+    }
+
+    /**
+     * Joystick in port 1.
+     */
+    public Joystick getJoystick1() {
+        return joystick1;
+    }
+
+    /**
+     * Joystick in port 2.
+     */
+    public Joystick getJoystick2() {
+        return joystick2;
     }
 
     /**
