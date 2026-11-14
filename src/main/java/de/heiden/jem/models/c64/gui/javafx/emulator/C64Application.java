@@ -3,13 +3,7 @@ package de.heiden.jem.models.c64.gui.javafx.emulator;
 import de.heiden.jem.components.clock.Clock;
 import de.heiden.jem.models.c64.components.C64;
 import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.beans.binding.Bindings;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.layout.Background;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
@@ -49,18 +43,19 @@ public class C64Application extends Application {
 
         var screen = new VICScreen(c64.getVIC().displayUnit);
 
-        var statusBar = createStatusBar();
+        var statusBar = new StatusBar();
         c64.getRealTimeSlowDown().setListener(elapsedMs ->
-                runLater(() -> statusBar.setText(elapsedMs + " ms")));
+                runLater(() -> statusBar.setTime(elapsedMs)));
 
         var root = new BorderPane(screen);
         root.setBottom(statusBar);
 
         var scene = new Scene(root);
-        var joystickKeys = new JoystickKeys(c64.getJoystick1(), c64.getJoystick2(), mode -> setTitle(stage, mode));
+        var joystickKeys = new JoystickKeys(c64.getJoystick1(), c64.getJoystick2(), statusBar::setJoystickMode);
         KeyListener.attachTo(scene, c64.getKeyboard(), c64.getKeyboardBuffer(), new MacMapping(), joystickKeys);
-        setTitle(stage, joystickKeys.getMode());
+        statusBar.setJoystickMode(joystickKeys.getMode());
 
+        stage.setTitle("C64");
         stage.setScene(scene);
         stage.show();
 
@@ -69,36 +64,6 @@ public class C64Application extends Application {
         // JavaFX thread keeps vm running.
         thread.setDaemon(true);
         thread.start();
-    }
-
-    /**
-     * Status bar showing the time needed for 1 simulated second.
-     * Uses the window background color of the platform, which is the color of the title bar on macOS.
-     */
-    private static Label createStatusBar() {
-        var statusBar = new Label("- ms");
-        statusBar.setPadding(new Insets(2, 6, 2, 6));
-        statusBar.setMaxWidth(Double.MAX_VALUE);
-        statusBar.setAlignment(Pos.CENTER_RIGHT);
-
-        var preferences = Platform.getPreferences();
-        statusBar.backgroundProperty().bind(Bindings.createObjectBinding(
-                () -> Background.fill(preferences.getBackgroundColor()),
-                preferences.backgroundColorProperty()));
-        statusBar.textFillProperty().bind(preferences.foregroundColorProperty());
-
-        return statusBar;
-    }
-
-    /**
-     * Show the joystick keys mode in the window title.
-     */
-    private static void setTitle(Stage stage, JoystickMode mode) {
-        stage.setTitle("C64 - " + switch (mode) {
-            case OFF -> "no joystick";
-            case JOYSTICK_2 -> "joystick 2";
-            case JOYSTICK_1 -> "joystick 1";
-        });
     }
 
     private void runC64() {
