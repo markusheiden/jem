@@ -70,7 +70,7 @@ import static de.heiden.jem.models.c64.components.keyboard.Key.Z;
 /**
  * Key mapping using the default PC keys.
  */
-public class PCMapping extends KeyMapping {
+public class MacMapping extends KeyMapping {
     @Override
     protected final void generateKeyMapping() {
         addChar(' ', SPACE);
