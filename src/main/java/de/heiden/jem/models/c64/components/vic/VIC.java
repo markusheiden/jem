@@ -704,7 +704,7 @@ public abstract class VIC implements BusDevice {
      */
     protected void updateBaseAddresses() {
         _baseCharacterMode = (_regBase & 0xF0) << 6;
-        _baseBitmapMode = (_regBase & 0x04) << 10;
+        _baseBitmapMode = (_regBase & 0x08) << 10;
         _baseCharacterSet = (_regBase & 0x0E) << 10; // TODO what about bit 1?
     }
 }
