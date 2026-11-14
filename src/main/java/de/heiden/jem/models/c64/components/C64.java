@@ -134,8 +134,8 @@ public class C64 {
             cpuBus.write(i & 0x0F, 0xD800 + i);
         }
 
-        // Load files from the working directory, e.g. LOAD"GAME",8,1.
-        cpu.add(new LoadFromDirectory(Path.of("").toAbsolutePath()));
+        // Load files from the disk directory, e.g. LOAD"GAME",8,1.
+        cpu.add(new LoadFromDirectory(Path.of("disk").toAbsolutePath()));
 
 //    cpu.add(new LoadFile(new File("/Users/markus/projects/jem/src/test/resources/testsuite2.15")));
 //    FileUtil.read(Path.of("/Users/markus/projects/jem/xxx.prg"), cpuBus);

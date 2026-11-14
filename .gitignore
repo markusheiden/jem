@@ -9,4 +9,7 @@ build
 src/test/resources/vice-emu-testprogs
 serialthreads.log
 
-*.prg
+# Local "disk" for testing.
+disk
+# Local demos for testing.
+demos
