@@ -24,7 +24,7 @@ public abstract class VIC implements BusDevice {
     protected final int _firstLine_25 = 51;
     protected final int _firstLine_24 = 55;
     protected final int _lastLine_25 = 250 + 1;
-    protected final int _lasttLine_24 = 246 + 1;
+    protected final int _lastLine_24 = 246 + 1;
     protected final int _firstVBlank;
     protected final int _lastVBlank;
 
@@ -67,12 +67,14 @@ public abstract class VIC implements BusDevice {
 
     private int _regSpritesSpriteCollision; // 0x1E
     private int _regSpritesBackgroundCollision; // 0x1F
-    private int _regSpritesBackgroundPriority; // 0x1B
+    protected int _regSpritesBackgroundPriority; // 0x1B
 
     // control
     protected int _regControl1; // 0x11
     protected static final int CONTROL1_BITMAP = 1 << 5;
     protected static final int CONTROL1_EXT_COLOR = 1 << 6;
+    protected static final int CONTROL1_25_ROWS = 1 << 3;
+    protected static final int CONTROL1_SCROLL_Y = 0x07;
     protected int _regRaster; // read: 0x11 bit 7, 0x12
     protected int _regRasterIRQ; // write: 0x11 bit 7, 0x12
     protected int _regControl2; // 0x16
