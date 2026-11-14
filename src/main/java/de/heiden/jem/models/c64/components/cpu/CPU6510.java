@@ -320,7 +320,7 @@ public class CPU6510 implements ClockedComponent {
                         public void execute() // $06: ASL $XX (5) // zp
                         {
                             var addr = readAbsoluteZeropageAddressPC();
-                            write(shiftLeft(read(addr)), addr);
+                            write(shiftLeft(readForModify(addr)), addr);
                         }
                     },
 
@@ -357,6 +357,7 @@ public class CPU6510 implements ClockedComponent {
                         @Interruptible
                         public void execute() // $0A: ASL (2) // no
                         {
+                            idleRead(); // during operation
                             state.A = shiftLeft(state.A);
                         }
                     },
@@ -395,7 +396,7 @@ public class CPU6510 implements ClockedComponent {
                         public void execute() // $0E: ASL $XXXX (6)
                         {
                             var addr = readAbsoluteAddressPC();
-                            write(shiftLeft(read(addr)), addr);
+                            write(shiftLeft(readForModify(addr)), addr);
                         }
                     },
 
@@ -470,7 +471,7 @@ public class CPU6510 implements ClockedComponent {
                         public void execute() // $16: ASL $XX,X (6) // zpx
                         {
                             var addr = readAbsoluteZeropageAddressPC(state.X);
-                            write(shiftLeft(read(addr)), addr);
+                            write(shiftLeft(readForModify(addr)), addr);
                         }
                     },
 
@@ -548,7 +549,7 @@ public class CPU6510 implements ClockedComponent {
                         {
                             // TODO 1 tick
                             var addr = readAbsoluteAddressPC(state.X);
-                            write(shiftLeft(read(addr)), addr);
+                            write(shiftLeft(readForModify(addr)), addr);
                         }
                     },
 
@@ -626,7 +627,7 @@ public class CPU6510 implements ClockedComponent {
                         public void execute() // $26: ROL $XX (5) // zp
                         {
                             var addr = readAbsoluteZeropageAddressPC();
-                            write(rotateLeft(read(addr)), addr);
+                            write(rotateLeft(readForModify(addr)), addr);
                         }
                     },
 
@@ -662,6 +663,7 @@ public class CPU6510 implements ClockedComponent {
                         @Interruptible
                         public void execute() // $2A: ROL (2) // no
                         {
+                            idleRead(); // during operation
                             state.A = rotateLeft(state.A);
                         }
                     },
@@ -699,7 +701,7 @@ public class CPU6510 implements ClockedComponent {
                         public void execute() // $2E: ROL $XXXX (6)
                         {
                             var addr = readAbsoluteAddressPC();
-                            write(rotateLeft(read(addr)), addr);
+                            write(rotateLeft(readForModify(addr)), addr);
                         }
                     },
 
@@ -774,7 +776,7 @@ public class CPU6510 implements ClockedComponent {
                         public void execute() // $36: ROL $XX,X (6) // zpx
                         {
                             var addr = readAbsoluteZeropageAddressPC(state.X);
-                            write(rotateLeft(read(addr)), addr);
+                            write(rotateLeft(readForModify(addr)), addr);
                         }
                     },
 
@@ -852,7 +854,7 @@ public class CPU6510 implements ClockedComponent {
                         {
                             // TODO 1 tick
                             var addr = readAbsoluteAddressPC(state.X);
-                            write(rotateLeft(read(addr)), addr);
+                            write(rotateLeft(readForModify(addr)), addr);
                         }
                     },
 
@@ -929,7 +931,7 @@ public class CPU6510 implements ClockedComponent {
                         public void execute() // $46: LSR $XX (5) // zp
                         {
                             var addr = readAbsoluteZeropageAddressPC();
-                            write(shiftRight(read(addr)), addr);
+                            write(shiftRight(readForModify(addr)), addr);
                         }
                     },
 
@@ -966,6 +968,7 @@ public class CPU6510 implements ClockedComponent {
                         @Interruptible
                         public void execute() // $4A: LSR (2) // no
                         {
+                            idleRead(); // during operation
                             state.A = shiftRight(state.A);
                         }
                     },
@@ -1003,7 +1006,7 @@ public class CPU6510 implements ClockedComponent {
                         public void execute() // $4E: LSR $XXXX (6)
                         {
                             var addr = readAbsoluteAddressPC();
-                            write(shiftRight(read(addr)), addr);
+                            write(shiftRight(readForModify(addr)), addr);
                         }
                     },
 
@@ -1077,7 +1080,7 @@ public class CPU6510 implements ClockedComponent {
                         public void execute() // $56: LSR $XX,X (6) // zpx
                         {
                             var addr = readAbsoluteZeropageAddressPC(state.X);
-                            write(shiftRight(read(addr)), addr);
+                            write(shiftRight(readForModify(addr)), addr);
                         }
                     },
 
@@ -1154,7 +1157,7 @@ public class CPU6510 implements ClockedComponent {
                         {
                             // TODO 1 tick
                             var addr = readAbsoluteAddressPC(state.X);
-                            write(shiftRight(read(addr)), addr);
+                            write(shiftRight(readForModify(addr)), addr);
                         }
                     },
 
@@ -1228,7 +1231,7 @@ public class CPU6510 implements ClockedComponent {
                         public void execute() // $66: ROR $XX (5) // zp
                         {
                             var addr = readAbsoluteZeropageAddressPC();
-                            write(rotateRight(read(addr)), addr);
+                            write(rotateRight(readForModify(addr)), addr);
                         }
                     },
 
@@ -1266,6 +1269,7 @@ public class CPU6510 implements ClockedComponent {
                         @Interruptible
                         public void execute() // $6A: ROR (2) // no
                         {
+                            idleRead(); // during operation
                             state.A = rotateRight(state.A);
                         }
                     },
@@ -1303,7 +1307,7 @@ public class CPU6510 implements ClockedComponent {
                         public void execute() // $6E: ROR $XXXX (6)
                         {
                             var addr = readAbsoluteAddressPC();
-                            write(rotateRight(read(addr)), addr);
+                            write(rotateRight(readForModify(addr)), addr);
                         }
                     },
 
@@ -1377,7 +1381,7 @@ public class CPU6510 implements ClockedComponent {
                         public void execute() // $76: ROR $XX,X (6) // zpx
                         {
                             var addr = readAbsoluteZeropageAddressPC(state.X);
-                            write(rotateRight(read(addr)), addr);
+                            write(rotateRight(readForModify(addr)), addr);
                         }
                     },
 
@@ -1454,7 +1458,7 @@ public class CPU6510 implements ClockedComponent {
                         {
                             // TODO 1 ticks
                             var addr = readAbsoluteAddressPC(state.X);
-                            write(rotateRight(read(addr)), addr);
+                            write(rotateRight(readForModify(addr)), addr);
                         }
                     },
 
@@ -1546,6 +1550,7 @@ public class CPU6510 implements ClockedComponent {
                         @Interruptible
                         public void execute() // $88: DEY (2) // no
                         {
+                            idleRead(); // during operation
                             state.Y = decrement(state.Y);
                         }
                     },
@@ -2119,7 +2124,7 @@ public class CPU6510 implements ClockedComponent {
                         public void execute() // $C6: DEC $XX (5) // zp
                         {
                             var addr = readAbsoluteZeropageAddressPC();
-                            write(decrement(read(addr)), addr);
+                            write(decrement(readForModify(addr)), addr);
                         }
                     },
 
@@ -2137,6 +2142,7 @@ public class CPU6510 implements ClockedComponent {
                         @Interruptible
                         public void execute() // $C8: INY (2) // no
                         {
+                            idleRead(); // during operation
                             state.Y = increment(state.Y);
                         }
                     },
@@ -2155,6 +2161,7 @@ public class CPU6510 implements ClockedComponent {
                         @Interruptible
                         public void execute() // $CA: DEX (2) // no
                         {
+                            idleRead(); // during operation
                             state.X = decrement(state.X);
                         }
                     },
@@ -2192,7 +2199,7 @@ public class CPU6510 implements ClockedComponent {
                         public void execute() // $CE: DEC $XXXX (6)
                         {
                             var addr = readAbsoluteAddressPC();
-                            write(decrement(read(addr)), addr);
+                            write(decrement(readForModify(addr)), addr);
                         }
                     },
 
@@ -2266,7 +2273,7 @@ public class CPU6510 implements ClockedComponent {
                         public void execute() // $D6: DEC $XX,X (6) // zpx
                         {
                             var addr = readAbsoluteZeropageAddressPC(state.X);
-                            write(decrement(read(addr)), addr);
+                            write(decrement(readForModify(addr)), addr);
                         }
                     },
 
@@ -2343,7 +2350,7 @@ public class CPU6510 implements ClockedComponent {
                         {
                             // TODO 1 tick
                             var addr = readAbsoluteAddressPC(state.X);
-                            write(decrement(read(addr)), addr);
+                            write(decrement(readForModify(addr)), addr);
                         }
                     },
 
@@ -2417,7 +2424,7 @@ public class CPU6510 implements ClockedComponent {
                         public void execute() // $E6: INC $XX (5) // zp
                         {
                             var addr = readAbsoluteZeropageAddressPC();
-                            write(increment(read(addr)), addr);
+                            write(increment(readForModify(addr)), addr);
                         }
                     },
 
@@ -2435,6 +2442,7 @@ public class CPU6510 implements ClockedComponent {
                         @Interruptible
                         public void execute() // $E8: INX (2) // no
                         {
+                            idleRead(); // during operation
                             state.X = increment(state.X);
                         }
                     },
@@ -2490,7 +2498,7 @@ public class CPU6510 implements ClockedComponent {
                         public void execute() // $EE: INC $XXXX (6)
                         {
                             var addr = readAbsoluteAddressPC();
-                            write(increment(read(addr)), addr);
+                            write(increment(readForModify(addr)), addr);
                         }
                     },
 
@@ -2564,7 +2572,7 @@ public class CPU6510 implements ClockedComponent {
                         public void execute() // $F6: INC $XX,X (6) // zpx
                         {
                             var addr = readAbsoluteZeropageAddressPC(state.X);
-                            write(increment(read(addr)), addr);
+                            write(increment(readForModify(addr)), addr);
                         }
                     },
 
@@ -2641,7 +2649,7 @@ public class CPU6510 implements ClockedComponent {
                         {
                             // TODO 1 tick
                             var addr = readAbsoluteAddressPC(state.X);
-                            write(increment(read(addr)), addr);
+                            write(increment(readForModify(addr)), addr);
                         }
                     },
 
@@ -2692,10 +2700,7 @@ public class CPU6510 implements ClockedComponent {
      * @param value
      *         value
      */
-    @Interruptible
     protected final int shiftLeft(int value) {
-        idleRead(); // during operation
-
         var result = value << 1;
         state.setCarryZeroNegativeP(result, (result & 0x100) != 0);
         return result & 0xFF;
@@ -2708,10 +2713,7 @@ public class CPU6510 implements ClockedComponent {
      * @param value
      *         value
      */
-    @Interruptible
     protected final int shiftRight(int value) {
-        idleRead(); // during operation
-
         var result = value >> 1;
         state.setCarryZeroNegativeP(result, (value & 0x01) != 0);
         return result;
@@ -2723,10 +2725,7 @@ public class CPU6510 implements ClockedComponent {
      * @param value
      *         value
      */
-    @Interruptible
     protected final int rotateLeft(int value) {
-        idleRead(); // during operation
-
         var result = value << 1;
         if (state.C) {
             result |= 0x01;
@@ -2742,10 +2741,7 @@ public class CPU6510 implements ClockedComponent {
      * @param value
      *         value
      */
-    @Interruptible
     protected final int rotateRight(int value) {
-        idleRead(); // during operation
-
         var result = value >> 1;
         if (state.C) {
             result |= 0x80;
@@ -2930,10 +2926,7 @@ public class CPU6510 implements ClockedComponent {
      * @param value
      *         value
      */
-    @Interruptible
     protected final int decrement(int value) {
-        idleRead(); // during operation
-
         var result = (value - 1) & 0xFF;
         state.setZeroNegativeP(result);
         return result;
@@ -2946,10 +2939,7 @@ public class CPU6510 implements ClockedComponent {
      * @param value
      *         value
      */
-    @Interruptible
     protected final int increment(int value) {
-        idleRead(); // during operation
-
         var result = (value + 1) & 0xFF;
         state.setZeroNegativeP(result);
         return result;
@@ -3198,7 +3188,7 @@ public class CPU6510 implements ClockedComponent {
         if (DEBUG) {
             reportIllegalOpcode();
         }
-        var value = decrement(read(addr));
+        var value = decrement(readForModify(addr));
         write(value, addr);
         compare(state.A, value);
     }
@@ -3217,7 +3207,7 @@ public class CPU6510 implements ClockedComponent {
         if (DEBUG) {
             reportIllegalOpcode();
         }
-        var value = increment(read(addr));
+        var value = increment(readForModify(addr));
         write(value, addr);
         subtract(value);
     }
@@ -3269,7 +3259,7 @@ public class CPU6510 implements ClockedComponent {
         if (DEBUG) {
             reportIllegalOpcode();
         }
-        var value = shiftRight(read(addr));
+        var value = shiftRight(readForModify(addr));
         write(value, addr);
         xor(value);
     }
@@ -3306,8 +3296,7 @@ public class CPU6510 implements ClockedComponent {
         if (DEBUG) {
             reportIllegalOpcode();
         }
-        var value = (read(addr) << 1) | (state.C ? 1 : 0);
-        tick.waitForTick(); // << 1 needs 1 tick
+        var value = (readForModify(addr) << 1) | (state.C ? 1 : 0);
         state.setCarryZeroNegativeP(value, (value & 0x100) != 0);
         write(value & 0xFF, addr);
 
@@ -3329,7 +3318,7 @@ public class CPU6510 implements ClockedComponent {
         if (DEBUG) {
             reportIllegalOpcode();
         }
-        var value = rotateRight(read(addr));
+        var value = rotateRight(readForModify(addr));
         write(value, addr);
         add(value);
     }
@@ -3348,9 +3337,8 @@ public class CPU6510 implements ClockedComponent {
         if (DEBUG) {
             reportIllegalOpcode();
         }
-        var value = read(addr) << 1;
+        var value = readForModify(addr) << 1;
         state.setCarryZeroNegativeP(value, (value & 0x100) != 0);
-        tick.waitForTick(); // internal operation
         write(value & 0xFF, addr);
 
         state.A |= value & 0xFF;
@@ -3572,6 +3560,19 @@ public class CPU6510 implements ClockedComponent {
     //
     // read / write interface
     //
+
+    /**
+     * Read a value for a read-modify-write instruction.
+     * In the modify cycle the 6510 writes the unmodified value back, before it writes the result.
+     * Programs rely on this, e.g. to acknowledge VIC interrupts with DEC $D019.
+     * (2)
+     */
+    @Interruptible
+    protected final int readForModify(int addr) {
+        var value = read(addr);
+        write(value, addr);
+        return value;
+    }
 
     /**
      * Read a byte at PC. Does NOT Increment PC.
