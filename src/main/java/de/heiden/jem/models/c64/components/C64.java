@@ -110,8 +110,8 @@ public class C64 {
 
         keyboard = new Keyboard(cia1.portA(), cia1.portB());
         // Joystick port 1 is connected to CIA 1 port B, joystick port 2 to CIA 1 port A.
-        joystick1 = new Joystick(cia1.portB());
-        joystick2 = new Joystick(cia1.portA());
+        joystick1 = new Joystick(clock, cia1.portB());
+        joystick2 = new Joystick(clock, cia1.portA());
 
         cpu = clock.addClockedComponent(Clock.CPU, debug ? new CPU6510Debugger() : new CPU6510());
         cpuBus = new C64Bus(ram, basic, vic, colorRam, cia1, cia2, charset, kernel);
