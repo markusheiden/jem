@@ -76,6 +76,8 @@ public abstract class VIC implements BusDevice {
     protected int _regRaster; // read: 0x11 bit 7, 0x12
     protected int _regRasterIRQ; // write: 0x11 bit 7, 0x12
     protected int _regControl2; // 0x16
+    protected static final int CONTROL2_SCROLL_X = 0x07;
+    protected static final int CONTROL2_40_COLUMNS = 1 << 3;
     protected static final int CONTROL2_MULTI_COLOR = 1 << 4;
 
     // base addresses
