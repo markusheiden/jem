@@ -9,6 +9,7 @@ import de.heiden.jem.models.c64.components.cpu.C64Bus;
 import de.heiden.jem.models.c64.components.cpu.CPU6510Debugger;
 import de.heiden.jem.models.c64.components.cpu.Patch;
 import de.heiden.jem.models.c64.components.keyboard.Keyboard;
+import de.heiden.jem.models.c64.components.keyboard.KeyboardBuffer;
 import de.heiden.jem.models.c64.components.memory.ColorRAM;
 import de.heiden.jem.models.c64.components.memory.RAM;
 import de.heiden.jem.models.c64.components.memory.ROMLoader;
@@ -39,6 +40,11 @@ public class TestC64 {
      * CPU bus.
      */
     private C64Bus cpuBus;
+
+    /**
+     * Keyboard buffer of the KERNAL.
+     */
+    private final KeyboardBuffer keyboardBuffer;
 
     /**
      * CPU.
@@ -99,6 +105,8 @@ public class TestC64 {
         cpu.getNMI().connect(cia2.getIRQ());
         cpu.getNMI().connect(keyboard.getNMI());
 
+        keyboardBuffer = new KeyboardBuffer(clock, cpuBus);
+
         // init RAM with 0x02 (crash) to easier detect wrong behaviour
         for (var addr = 0; addr < 0x10000; addr++) {
             cpuBus.write(0x02, addr);
@@ -136,6 +144,13 @@ public class TestC64 {
      */
     public Clock getClock() {
         return clock;
+    }
+
+    /**
+     * Keyboard buffer of the KERNAL.
+     */
+    public KeyboardBuffer getKeyboardBuffer() {
+        return keyboardBuffer;
     }
 
     /**

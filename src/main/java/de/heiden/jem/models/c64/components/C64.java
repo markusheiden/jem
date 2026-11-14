@@ -8,6 +8,7 @@ import de.heiden.jem.models.c64.components.cpu.CPU6510;
 import de.heiden.jem.models.c64.components.cpu.CPU6510Debugger;
 import de.heiden.jem.models.c64.components.joystick.Joystick;
 import de.heiden.jem.models.c64.components.keyboard.Keyboard;
+import de.heiden.jem.models.c64.components.keyboard.KeyboardBuffer;
 import de.heiden.jem.models.c64.components.memory.ColorRAM;
 import de.heiden.jem.models.c64.components.memory.RAM;
 import de.heiden.jem.models.c64.components.memory.ROMLoader;
@@ -48,6 +49,11 @@ public class C64 {
      * Keyboard.
      */
     private Keyboard keyboard;
+
+    /**
+     * Keyboard buffer of the KERNAL, e.g. for pasting text.
+     */
+    private final KeyboardBuffer keyboardBuffer;
 
     /**
      * Joystick in port 1.
@@ -110,6 +116,8 @@ public class C64 {
         cpu.getIRQ().connect(vic.getIRQ());
         cpu.getNMI().connect(cia2.getIRQ());
         cpu.getNMI().connect(keyboard.getNMI());
+
+        keyboardBuffer = new KeyboardBuffer(clock, cpuBus);
 
         // real time measurement
         // TODO 2010-03-14 mh: NTSC: 1022700 Hz
@@ -190,6 +198,13 @@ public class C64 {
      */
     public Keyboard getKeyboard() {
         return keyboard;
+    }
+
+    /**
+     * Keyboard buffer of the KERNAL, e.g. for pasting text.
+     */
+    public KeyboardBuffer getKeyboardBuffer() {
+        return keyboardBuffer;
     }
 
     /**

@@ -42,7 +42,7 @@ public class C64Application extends Application {
 
         var scene = new Scene(screen, screen.getWidth(), screen.getHeight());
         var joystickKeys = new JoystickKeys(c64.getJoystick1(), c64.getJoystick2(), mode -> setTitle(stage, mode));
-        KeyListener.attachTo(scene, c64.getKeyboard(), new PCMapping(), joystickKeys);
+        KeyListener.attachTo(scene, c64.getKeyboard(), c64.getKeyboardBuffer(), new MacMapping(), joystickKeys);
         setTitle(stage, joystickKeys.getMode());
 
         stage.setScene(scene);
