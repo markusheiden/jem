@@ -437,9 +437,9 @@ public class CPU6510 implements ClockedComponent {
                     new Opcode() {
                         @Override
                         @Interruptible
-                        public void execute() // $11: ORA ($XX),Y (5) // izy
+                        public void execute() // $11: ORA ($XX),Y (5/6) // izy
                         {
-                            or(read(readZeropageIndirectYAddressPC()));
+                            or(read(readZeropageIndirectYAddressPCForRead()));
                         }
                     },
 
@@ -458,7 +458,7 @@ public class CPU6510 implements ClockedComponent {
                         public void execute() // $13: *SLO ($XX),Y (8) // izy
                         {
                             // TODO 1 tick
-                            slo(readZeropageIndirectYAddressPC());
+                            slo(readZeropageIndirectYAddressPCForWrite());
                         }
                     },
 
@@ -513,9 +513,9 @@ public class CPU6510 implements ClockedComponent {
                     new Opcode() {
                         @Override
                         @Interruptible
-                        public void execute() // $19: ORA $XXXX,Y (4)
+                        public void execute() // $19: ORA $XXXX,Y (4/5)
                         {
-                            or(read(readAbsoluteAddressPC(state.Y)));
+                            or(read(readAbsoluteAddressPCForRead(state.Y)));
                         }
                     },
 
@@ -535,16 +535,16 @@ public class CPU6510 implements ClockedComponent {
                         public void execute() // $1B: *SLO $XXXX,Y (7)
                         {
                             // TODO 1 tick
-                            slo(readAbsoluteAddressPC(state.Y));
+                            slo(readAbsoluteAddressPCForWrite(state.Y));
                         }
                     },
 
                     new Opcode() {
                         @Override
                         @Interruptible
-                        public void execute() // $1C: *NOP $XXXX,X (5) // abx
+                        public void execute() // $1C: *NOP $XXXX,X (4/5) // abx
                         {
-                            read(readAbsoluteAddressPC(state.X));
+                            read(readAbsoluteAddressPCForRead(state.X));
                             nop();
                         }
                     },
@@ -552,9 +552,9 @@ public class CPU6510 implements ClockedComponent {
                     new Opcode() {
                         @Override
                         @Interruptible
-                        public void execute() // $1D: ORA $XXXX,X (4)
+                        public void execute() // $1D: ORA $XXXX,X (4/5)
                         {
-                            or(read(readAbsoluteAddressPC(state.X)));
+                            or(read(readAbsoluteAddressPCForRead(state.X)));
                         }
                     },
 
@@ -564,7 +564,7 @@ public class CPU6510 implements ClockedComponent {
                         public void execute() // $1E: ASL $XXXX,X (7)
                         {
                             // TODO 1 tick
-                            var addr = readAbsoluteAddressPC(state.X);
+                            var addr = readAbsoluteAddressPCForWrite(state.X);
                             write(shiftLeft(readForModify(addr)), addr);
                         }
                     },
@@ -575,7 +575,7 @@ public class CPU6510 implements ClockedComponent {
                         public void execute() // $1F: *SLO $XXXX,X (7)
                         {
                             // TODO 1 tick
-                            slo(readAbsoluteAddressPC(state.X));
+                            slo(readAbsoluteAddressPCForWrite(state.X));
                         }
                     },
 
@@ -622,7 +622,7 @@ public class CPU6510 implements ClockedComponent {
                     new Opcode() {
                         @Override
                         @Interruptible
-                        public void execute() // $24: BIT $XX (4) // zp
+                        public void execute() // $24: BIT $XX (3) // zp
                         {
                             bit(read(readAbsoluteZeropageAddressPC()));
                         }
@@ -742,9 +742,9 @@ public class CPU6510 implements ClockedComponent {
                     new Opcode() {
                         @Override
                         @Interruptible
-                        public void execute() // $31: AND ($XX),Y (5) // izy
+                        public void execute() // $31: AND ($XX),Y (5/6) // izy
                         {
-                            and(read(readZeropageIndirectYAddressPC()));
+                            and(read(readZeropageIndirectYAddressPCForRead()));
                         }
                     },
 
@@ -763,7 +763,7 @@ public class CPU6510 implements ClockedComponent {
                         public void execute() // $33: *RLA ($XX),Y (8) // izy
                         {
                             // TODO 1 tick
-                            rla(readZeropageIndirectYAddressPC());
+                            rla(readZeropageIndirectYAddressPCForWrite());
                         }
                     },
 
@@ -818,9 +818,9 @@ public class CPU6510 implements ClockedComponent {
                     new Opcode() {
                         @Override
                         @Interruptible
-                        public void execute() // $39: AND $XXXX,Y (4)
+                        public void execute() // $39: AND $XXXX,Y (4/5)
                         {
-                            and(read(readAbsoluteAddressPC(state.Y)));
+                            and(read(readAbsoluteAddressPCForRead(state.Y)));
                         }
                     },
 
@@ -840,16 +840,16 @@ public class CPU6510 implements ClockedComponent {
                         public void execute() // $3B: *RLA $XXXX,Y (7)
                         {
                             // TODO 1 tick
-                            rla(readAbsoluteAddressPC(state.Y));
+                            rla(readAbsoluteAddressPCForWrite(state.Y));
                         }
                     },
 
                     new Opcode() {
                         @Override
                         @Interruptible
-                        public void execute() // $3C: *NOP $XXXX,X (5) // abx
+                        public void execute() // $3C: *NOP $XXXX,X (4/5) // abx
                         {
-                            read(readAbsoluteAddressPC(state.X));
+                            read(readAbsoluteAddressPCForRead(state.X));
                             nop();
                         }
                     },
@@ -857,9 +857,9 @@ public class CPU6510 implements ClockedComponent {
                     new Opcode() {
                         @Override
                         @Interruptible
-                        public void execute() // $3D: AND $XXXX,X (4) // abx
+                        public void execute() // $3D: AND $XXXX,X (4/5) // abx
                         {
-                            and(read(readAbsoluteAddressPC(state.X)));
+                            and(read(readAbsoluteAddressPCForRead(state.X)));
                         }
                     },
 
@@ -869,7 +869,7 @@ public class CPU6510 implements ClockedComponent {
                         public void execute() // $3E: ROL $XXXX,X (7)
                         {
                             // TODO 1 tick
-                            var addr = readAbsoluteAddressPC(state.X);
+                            var addr = readAbsoluteAddressPCForWrite(state.X);
                             write(rotateLeft(readForModify(addr)), addr);
                         }
                     },
@@ -880,7 +880,7 @@ public class CPU6510 implements ClockedComponent {
                         public void execute() // $3F: *RLA $XXXX,X (7)
                         {
                             // TODO 1 tick
-                            rla(readAbsoluteAddressPC(state.X));
+                            rla(readAbsoluteAddressPCForWrite(state.X));
                         }
                     },
 
@@ -1047,9 +1047,9 @@ public class CPU6510 implements ClockedComponent {
                     new Opcode() {
                         @Override
                         @Interruptible
-                        public void execute() // $51: EOR ($XX),Y (5) // izy
+                        public void execute() // $51: EOR ($XX),Y (5/6) // izy
                         {
-                            xor(read(readZeropageIndirectYAddressPC()));
+                            xor(read(readZeropageIndirectYAddressPCForRead()));
                         }
                     },
 
@@ -1067,7 +1067,7 @@ public class CPU6510 implements ClockedComponent {
                         @Interruptible
                         public void execute() // $53: *LSE ($XX),Y // izy
                         {
-                            lse(readZeropageIndirectYAddressPC());
+                            lse(readZeropageIndirectYAddressPCForWrite());
                         }
                     },
 
@@ -1122,9 +1122,9 @@ public class CPU6510 implements ClockedComponent {
                     new Opcode() {
                         @Override
                         @Interruptible
-                        public void execute() // $59: EOR $XXXX,Y (4)
+                        public void execute() // $59: EOR $XXXX,Y (4/5)
                         {
-                            xor(read(readAbsoluteAddressPC(state.Y)));
+                            xor(read(readAbsoluteAddressPCForRead(state.Y)));
                         }
                     },
 
@@ -1143,16 +1143,16 @@ public class CPU6510 implements ClockedComponent {
                         @Interruptible
                         public void execute() // $5B: *LSE $XXXX,Y
                         {
-                            lse(readAbsoluteAddressPC(state.Y));
+                            lse(readAbsoluteAddressPCForWrite(state.Y));
                         }
                     },
 
                     new Opcode() {
                         @Override
                         @Interruptible
-                        public void execute() // $5C: *NOP $XXXX,X (5) // abx
+                        public void execute() // $5C: *NOP $XXXX,X (4/5) // abx
                         {
-                            read(readAbsoluteAddressPC(state.X));
+                            read(readAbsoluteAddressPCForRead(state.X));
                             nop();
                         }
                     },
@@ -1160,9 +1160,9 @@ public class CPU6510 implements ClockedComponent {
                     new Opcode() {
                         @Override
                         @Interruptible
-                        public void execute() // $5D: EOR $XXXX,X (4)
+                        public void execute() // $5D: EOR $XXXX,X (4/5)
                         {
-                            xor(read(readAbsoluteAddressPC(state.X)));
+                            xor(read(readAbsoluteAddressPCForRead(state.X)));
                         }
                     },
 
@@ -1172,7 +1172,7 @@ public class CPU6510 implements ClockedComponent {
                         public void execute() // $5E: LSR $XXXX,X (7)
                         {
                             // TODO 1 tick
-                            var addr = readAbsoluteAddressPC(state.X);
+                            var addr = readAbsoluteAddressPCForWrite(state.X);
                             write(shiftRight(readForModify(addr)), addr);
                         }
                     },
@@ -1182,7 +1182,7 @@ public class CPU6510 implements ClockedComponent {
                         @Interruptible
                         public void execute() // $5F: *LSE $XXXX,X
                         {
-                            lse(readAbsoluteAddressPC(state.X));
+                            lse(readAbsoluteAddressPCForWrite(state.X));
                         }
                     },
 
@@ -1348,9 +1348,9 @@ public class CPU6510 implements ClockedComponent {
                     new Opcode() {
                         @Override
                         @Interruptible
-                        public void execute() // $71: ADC ($XX),Y (4) // izy
+                        public void execute() // $71: ADC ($XX),Y (5/6) // izy
                         {
-                            add(read(readZeropageIndirectYAddressPC()));
+                            add(read(readZeropageIndirectYAddressPCForRead()));
                         }
                     },
 
@@ -1368,7 +1368,7 @@ public class CPU6510 implements ClockedComponent {
                         @Interruptible
                         public void execute() // $73: *RRA ($XX),Y // izy
                         {
-                            rra(readZeropageIndirectYAddressPC());
+                            rra(readZeropageIndirectYAddressPCForWrite());
                         }
                     },
 
@@ -1423,9 +1423,9 @@ public class CPU6510 implements ClockedComponent {
                     new Opcode() {
                         @Override
                         @Interruptible
-                        public void execute() // $79: ADC $XXXX,Y (5)
+                        public void execute() // $79: ADC $XXXX,Y (4/5)
                         {
-                            add(read(readAbsoluteAddressPC(state.Y)));
+                            add(read(readAbsoluteAddressPCForRead(state.Y)));
                         }
                     },
 
@@ -1444,16 +1444,16 @@ public class CPU6510 implements ClockedComponent {
                         @Interruptible
                         public void execute() // $7B: *RRA $XXXX,Y
                         {
-                            rra(readAbsoluteAddressPC(state.Y));
+                            rra(readAbsoluteAddressPCForWrite(state.Y));
                         }
                     },
 
                     new Opcode() {
                         @Override
                         @Interruptible
-                        public void execute() // $7C: *NOP $XXXX,X (5) // abx
+                        public void execute() // $7C: *NOP $XXXX,X (4/5) // abx
                         {
-                            read(readAbsoluteAddressPC(state.X));
+                            read(readAbsoluteAddressPCForRead(state.X));
                             nop();
                         }
                     },
@@ -1461,9 +1461,9 @@ public class CPU6510 implements ClockedComponent {
                     new Opcode() {
                         @Override
                         @Interruptible
-                        public void execute() // $7D: ADC $XXXX,X (4)
+                        public void execute() // $7D: ADC $XXXX,X (4/5)
                         {
-                            add(read(readAbsoluteAddressPC(state.X)));
+                            add(read(readAbsoluteAddressPCForRead(state.X)));
                         }
                     },
 
@@ -1473,7 +1473,7 @@ public class CPU6510 implements ClockedComponent {
                         public void execute() // $7E: ROR $XXXX,X (7)
                         {
                             // TODO 1 ticks
-                            var addr = readAbsoluteAddressPC(state.X);
+                            var addr = readAbsoluteAddressPCForWrite(state.X);
                             write(rotateRight(readForModify(addr)), addr);
                         }
                     },
@@ -1483,7 +1483,7 @@ public class CPU6510 implements ClockedComponent {
                         @Interruptible
                         public void execute() // $7F: *RRA $XXXX,X
                         {
-                            rra(readAbsoluteAddressPC(state.X));
+                            rra(readAbsoluteAddressPCForWrite(state.X));
                         }
                     },
 
@@ -1650,7 +1650,7 @@ public class CPU6510 implements ClockedComponent {
                         @Interruptible
                         public void execute() // $91: STA ($XX),Y (6) // izy
                         {
-                            write(state.A, readZeropageIndirectYAddressPC());
+                            write(state.A, readZeropageIndirectYAddressPCForWrite());
                         }
                     },
 
@@ -1668,7 +1668,7 @@ public class CPU6510 implements ClockedComponent {
                         @Interruptible
                         public void execute() // $93: *AHX ($XX),Y
                         {
-                            var addr = readZeropageIndirectYAddressPC();
+                            var addr = readZeropageIndirectYAddressPCForWrite();
                             ahx(read(addr), addr);
                         }
                     },
@@ -1725,7 +1725,7 @@ public class CPU6510 implements ClockedComponent {
                         public void execute() // $99: STA $XXXX,Y (5)
                         {
                             // TODO 1 tick
-                            write(state.A, readAbsoluteAddressPC(state.Y));
+                            write(state.A, readAbsoluteAddressPCForWrite(state.Y));
                         }
                     },
 
@@ -1744,7 +1744,7 @@ public class CPU6510 implements ClockedComponent {
                         @Interruptible
                         public void execute() // $9B: *TAS $XXXX,Y
                         {
-                            tas(readAbsoluteAddressPC(state.Y));
+                            tas(readAbsoluteAddressPCForWrite(state.Y));
                         }
                     },
 
@@ -1753,7 +1753,7 @@ public class CPU6510 implements ClockedComponent {
                         @Interruptible
                         public void execute() // $9C: *SHY $XXXX,X
                         {
-                            var addr = readAbsoluteAddressPC(state.X);
+                            var addr = readAbsoluteAddressPCForWrite(state.X);
                             shy(read(addr), addr);
                         }
                     },
@@ -1763,7 +1763,7 @@ public class CPU6510 implements ClockedComponent {
                         @Interruptible
                         public void execute() // $9D: STA $XXXX,X (5)
                         {
-                            write(state.A, readAbsoluteAddressPC(state.X));
+                            write(state.A, readAbsoluteAddressPCForWrite(state.X));
                         }
                     },
 
@@ -1772,7 +1772,7 @@ public class CPU6510 implements ClockedComponent {
                         @Interruptible
                         public void execute() // $9E: *SHX $XXXX,Y
                         {
-                            var addr = readAbsoluteAddressPC(state.Y);
+                            var addr = readAbsoluteAddressPCForWrite(state.Y);
                             shx(read(addr), addr);
                         }
                     },
@@ -1782,7 +1782,7 @@ public class CPU6510 implements ClockedComponent {
                         @Interruptible
                         public void execute() // $9F: *AHX $XXXX,Y
                         {
-                            var addr = readAbsoluteAddressPC(state.Y);
+                            var addr = readAbsoluteAddressPCForWrite(state.Y);
                             ahx(read(addr), addr);
                         }
                     },
@@ -1945,9 +1945,9 @@ public class CPU6510 implements ClockedComponent {
                     new Opcode() {
                         @Override
                         @Interruptible
-                        public void execute() // $B1: LDA ($XX),Y (5) // izy
+                        public void execute() // $B1: LDA ($XX),Y (5/6) // izy
                         {
-                            state.A = load(read(readZeropageIndirectYAddressPC()));
+                            state.A = load(read(readZeropageIndirectYAddressPCForRead()));
                         }
                     },
 
@@ -1963,9 +1963,9 @@ public class CPU6510 implements ClockedComponent {
                     new Opcode() {
                         @Override
                         @Interruptible
-                        public void execute() // $B3: *LAX ($XX),Y // izy
+                        public void execute() // $B3: *LAX ($XX),Y (5/6) // izy
                         {
-                            lax(read(readZeropageIndirectYAddressPC()));
+                            lax(read(readZeropageIndirectYAddressPCForRead()));
                         }
                     },
 
@@ -2018,9 +2018,9 @@ public class CPU6510 implements ClockedComponent {
                     new Opcode() {
                         @Override
                         @Interruptible
-                        public void execute() // $B9: LDA $XXXX,Y (4)
+                        public void execute() // $B9: LDA $XXXX,Y (4/5)
                         {
-                            state.A = load(read(readAbsoluteAddressPC(state.Y)));
+                            state.A = load(read(readAbsoluteAddressPCForRead(state.Y)));
                         }
                     },
 
@@ -2037,45 +2037,45 @@ public class CPU6510 implements ClockedComponent {
                     new Opcode() {
                         @Override
                         @Interruptible
-                        public void execute() // $BB: *LAS $XXXX,Y (4?)
+                        public void execute() // $BB: *LAS $XXXX,Y (4/5)
                         {
-                            las(read(readAbsoluteAddressPC(state.Y)));
+                            las(read(readAbsoluteAddressPCForRead(state.Y)));
                         }
                     },
 
                     new Opcode() {
                         @Override
                         @Interruptible
-                        public void execute() // $BC: LDY $XXXX,X (4)
+                        public void execute() // $BC: LDY $XXXX,X (4/5)
                         {
-                            state.Y = load(read(readAbsoluteAddressPC(state.X)));
+                            state.Y = load(read(readAbsoluteAddressPCForRead(state.X)));
                         }
                     },
 
                     new Opcode() {
                         @Override
                         @Interruptible
-                        public void execute() // $BD: LDA $XXXX,X (4)
+                        public void execute() // $BD: LDA $XXXX,X (4/5)
                         {
-                            state.A = load(read(readAbsoluteAddressPC(state.X)));
+                            state.A = load(read(readAbsoluteAddressPCForRead(state.X)));
                         }
                     },
 
                     new Opcode() {
                         @Override
                         @Interruptible
-                        public void execute() // $BE: LDX $XXXX,Y (4)
+                        public void execute() // $BE: LDX $XXXX,Y (4/5)
                         {
-                            state.X = load(read(readAbsoluteAddressPC(state.Y)));
+                            state.X = load(read(readAbsoluteAddressPCForRead(state.Y)));
                         }
                     },
 
                     new Opcode() {
                         @Override
                         @Interruptible
-                        public void execute() // $BF: *LAX $XXXX,Y
+                        public void execute() // $BF: *LAX $XXXX,Y (4/5)
                         {
-                            lax(read(readAbsoluteAddressPC(state.Y)));
+                            lax(read(readAbsoluteAddressPCForRead(state.Y)));
                         }
                     },
 
@@ -2240,9 +2240,9 @@ public class CPU6510 implements ClockedComponent {
                     new Opcode() {
                         @Override
                         @Interruptible
-                        public void execute() // $D1: CMP ($XX),Y (5) // izy
+                        public void execute() // $D1: CMP ($XX),Y (5/6) // izy
                         {
-                            compare(state.A, read(readZeropageIndirectYAddressPC()));
+                            compare(state.A, read(readZeropageIndirectYAddressPCForRead()));
                         }
                     },
 
@@ -2260,7 +2260,7 @@ public class CPU6510 implements ClockedComponent {
                         @Interruptible
                         public void execute() // $D3: *DCM ($XX),Y // izy
                         {
-                            dcm(readZeropageIndirectYAddressPC());
+                            dcm(readZeropageIndirectYAddressPCForWrite());
                         }
                     },
 
@@ -2315,9 +2315,9 @@ public class CPU6510 implements ClockedComponent {
                     new Opcode() {
                         @Override
                         @Interruptible
-                        public void execute() // $D9: CMP $XXXX,Y (4)
+                        public void execute() // $D9: CMP $XXXX,Y (4/5)
                         {
-                            compare(state.A, read(readAbsoluteAddressPC(state.Y)));
+                            compare(state.A, read(readAbsoluteAddressPCForRead(state.Y)));
                         }
                     },
 
@@ -2336,16 +2336,16 @@ public class CPU6510 implements ClockedComponent {
                         @Interruptible
                         public void execute() // $DB: *DCM $XXXX,Y
                         {
-                            dcm(readAbsoluteAddressPC(state.Y));
+                            dcm(readAbsoluteAddressPCForWrite(state.Y));
                         }
                     },
 
                     new Opcode() {
                         @Override
                         @Interruptible
-                        public void execute() // $DC: *NOP $XXXX,X (5) // abx
+                        public void execute() // $DC: *NOP $XXXX,X (4/5) // abx
                         {
-                            read(readAbsoluteAddressPC(state.X));
+                            read(readAbsoluteAddressPCForRead(state.X));
                             nop();
                         }
                     },
@@ -2353,9 +2353,9 @@ public class CPU6510 implements ClockedComponent {
                     new Opcode() {
                         @Override
                         @Interruptible
-                        public void execute() // $DD: CMP $XXXX,X (4)
+                        public void execute() // $DD: CMP $XXXX,X (4/5)
                         {
-                            compare(state.A, read(readAbsoluteAddressPC(state.X)));
+                            compare(state.A, read(readAbsoluteAddressPCForRead(state.X)));
                         }
                     },
 
@@ -2365,7 +2365,7 @@ public class CPU6510 implements ClockedComponent {
                         public void execute() // $DE: DEC $XXXX,X (7)
                         {
                             // TODO 1 tick
-                            var addr = readAbsoluteAddressPC(state.X);
+                            var addr = readAbsoluteAddressPCForWrite(state.X);
                             write(decrement(readForModify(addr)), addr);
                         }
                     },
@@ -2375,7 +2375,7 @@ public class CPU6510 implements ClockedComponent {
                         @Interruptible
                         public void execute() // $DF: *DCM $XXXX,X
                         {
-                            dcm(readAbsoluteAddressPC(state.X));
+                            dcm(readAbsoluteAddressPCForWrite(state.X));
                         }
                     },
 
@@ -2539,9 +2539,9 @@ public class CPU6510 implements ClockedComponent {
                     new Opcode() {
                         @Override
                         @Interruptible
-                        public void execute() // $F1: SBC ($XX),Y (5) // izy
+                        public void execute() // $F1: SBC ($XX),Y (5/6) // izy
                         {
-                            subtract(read(readZeropageIndirectYAddressPC()));
+                            subtract(read(readZeropageIndirectYAddressPCForRead()));
                         }
                     },
 
@@ -2559,7 +2559,7 @@ public class CPU6510 implements ClockedComponent {
                         @Interruptible
                         public void execute() // $F3: *INS ($XX),Y // izy
                         {
-                            ins(readZeropageIndirectYAddressPC());
+                            ins(readZeropageIndirectYAddressPCForWrite());
                         }
                     },
 
@@ -2614,9 +2614,9 @@ public class CPU6510 implements ClockedComponent {
                     new Opcode() {
                         @Override
                         @Interruptible
-                        public void execute() // $F9: SBC $XXXX,Y (4)
+                        public void execute() // $F9: SBC $XXXX,Y (4/5)
                         {
-                            subtract(read(readAbsoluteAddressPC(state.Y)));
+                            subtract(read(readAbsoluteAddressPCForRead(state.Y)));
                         }
                     },
 
@@ -2635,16 +2635,16 @@ public class CPU6510 implements ClockedComponent {
                         @Interruptible
                         public void execute() // $FB: *INS $XXXX,Y
                         {
-                            ins(readAbsoluteAddressPC(state.Y));
+                            ins(readAbsoluteAddressPCForWrite(state.Y));
                         }
                     },
 
                     new Opcode() {
                         @Override
                         @Interruptible
-                        public void execute() // $FC: *NOP $XXXX,X (5) // abx
+                        public void execute() // $FC: *NOP $XXXX,X (4/5) // abx
                         {
-                            read(readAbsoluteAddressPC(state.X));
+                            read(readAbsoluteAddressPCForRead(state.X));
                             nop();
                         }
                     },
@@ -2652,9 +2652,9 @@ public class CPU6510 implements ClockedComponent {
                     new Opcode() {
                         @Override
                         @Interruptible
-                        public void execute() // $FD: SBC $XXXX,X (4)
+                        public void execute() // $FD: SBC $XXXX,X (4/5)
                         {
-                            subtract(read(readAbsoluteAddressPC(state.X)));
+                            subtract(read(readAbsoluteAddressPCForRead(state.X)));
                         }
                     },
 
@@ -2664,7 +2664,7 @@ public class CPU6510 implements ClockedComponent {
                         public void execute() // $FE: INC $XXXX,X (7)
                         {
                             // TODO 1 tick
-                            var addr = readAbsoluteAddressPC(state.X);
+                            var addr = readAbsoluteAddressPCForWrite(state.X);
                             write(increment(readForModify(addr)), addr);
                         }
                     },
@@ -2674,7 +2674,7 @@ public class CPU6510 implements ClockedComponent {
                         @Interruptible
                         public void execute() // $FF: *INS $XXXX,X
                         {
-                            ins(readAbsoluteAddressPC(state.X));
+                            ins(readAbsoluteAddressPCForWrite(state.X));
                         }
                     },
             };
@@ -3508,15 +3508,48 @@ public class CPU6510 implements ClockedComponent {
     }
 
     /**
-     * Read an absolute address at PC indexed by index.
+     * Read an absolute address at PC indexed by index, for writing or read-modify-write instructions.
+     * The dummy read is always executed.
      * (3)
      */
     @Interruptible
-    protected final int readAbsoluteAddressPC(int index) {
-        var addr = readWordPC();
+    protected final int readAbsoluteAddressPCForWrite(int index) {
+        return indexWithDummyRead(readWordPC(), index);
+    }
+
+    /**
+     * Read an absolute address at PC indexed by index, for reading instructions.
+     * The dummy read is executed only if the page is crossed.
+     * (2-3)
+     */
+    @Interruptible
+    protected final int readAbsoluteAddressPCForRead(int index) {
+        return indexWithDummyReadOnPageCrossing(readWordPC(), index);
+    }
+
+    /**
+     * Index an address.
+     * The dummy read with just the low byte indexed happens, while the high byte is being corrected.
+     * (1)
+     */
+    @Interruptible
+    private int indexWithDummyRead(int addr, int index) {
         var result = (addr + index) & 0xFFFF;
-        // dummy read with just the low byte indexed, while the high byte is being added
         read(addr & 0xFF00 | result & 0x00FF);
+        return result;
+    }
+
+    /**
+     * Index an address.
+     * Reading instructions skip the dummy read, if the page is not crossed.
+     * (0-1)
+     */
+    @Interruptible
+    private int indexWithDummyReadOnPageCrossing(int addr, int index) {
+        var result = (addr + index) & 0xFFFF;
+        if ((result & 0xFF00) != (addr & 0xFF00)) {
+            read(addr & 0xFF00 | result & 0x00FF);
+        }
         return result;
     }
 
@@ -3556,12 +3589,23 @@ public class CPU6510 implements ClockedComponent {
     }
 
     /**
-     * Read an address zero-page indirect indexed by Y.
-     * (3)
+     * Read an address zero-page indirect indexed by Y, for writing or read-modify-write instructions.
+     * The dummy read is always executed.
+     * (4)
      */
     @Interruptible
-    protected final int readZeropageIndirectYAddressPC() {
-        return (readAbsoluteAddressForIndirect(readAbsoluteZeropageAddressPC()) + state.Y) & 0xFFFF;
+    protected final int readZeropageIndirectYAddressPCForWrite() {
+        return indexWithDummyRead(readAbsoluteAddressForIndirect(readAbsoluteZeropageAddressPC()), state.Y);
+    }
+
+    /**
+     * Read an address zero-page indirect indexed by Y, for reading instructions.
+     * The dummy read is executed only if the page is crossed.
+     * (3-4)
+     */
+    @Interruptible
+    protected final int readZeropageIndirectYAddressPCForRead() {
+        return indexWithDummyReadOnPageCrossing(readAbsoluteAddressForIndirect(readAbsoluteZeropageAddressPC()), state.Y);
     }
 
     /**

@@ -593,10 +593,11 @@ class CPU6510Test {
                 ram.write(value, indexedAddress);
                 execute(opcode, lo(address), hi(address)); // LD? $xxxx,? JMP
 
-                // idle read
+                // idle read, only if crossing the page boundary
                 // TODO test idle read
-                // TODO test extra cycle, if crossing page boundary
-                clock.run(1);
+                if ((indexedAddress & 0xFF00) != (address & 0xFF00)) {
+                    clock.run(1);
+                }
                 // load byte from address
                 executeOneTick_read(expectedState, indexedAddress, value);
                 // register and flags change
