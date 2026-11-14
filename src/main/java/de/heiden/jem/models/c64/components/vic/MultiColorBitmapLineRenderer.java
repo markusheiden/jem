@@ -13,9 +13,9 @@ class MultiColorBitmapLineRenderer extends AbstractLineRenderer {
         int screenAddress = screenAddress(line);
         int bitmapAddress = bitmapAddress(line);
         for (int column = 0; column < COLUMNS; column++, screenAddress++, bitmapAddress += 8) {
-            int colors = vic._bus.read(screenAddress);
-            ptr = renderMultiColor(screen, foreground, ptr, vic._bus.read(bitmapAddress),
-                    vic._regBackgroundColor0, (byte) (colors >> 4), (byte) (colors & 0x0F), color(screenAddress));
+            int colors = vic.bus.read(screenAddress);
+            ptr = renderMultiColor(screen, foreground, ptr, vic.bus.read(bitmapAddress),
+                    vic.regBackgroundColor0, (byte) (colors >> 4), (byte) (colors & 0x0F), color(screenAddress));
         }
     }
 }

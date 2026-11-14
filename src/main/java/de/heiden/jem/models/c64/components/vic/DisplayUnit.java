@@ -16,50 +16,50 @@ public class DisplayUnit extends AbstractDisplayUnit {
      */
     DisplayUnit(VIC vic) {
         super(vic,
-                (vic._lastVBlank + 1) * vic._cyclesPerLine * 8,
-                vic._cyclesPerLine * 8, vic._linesPerScreen,
-                vic._lastX - vic._firstVisibleX + vic._lastVisibleX, vic._firstVBlank - (vic._lastVBlank + 1));
+                (vic.lastVBlank + 1) * vic.cyclesPerLine * 8,
+                vic.cyclesPerLine * 8, vic.linesPerScreen,
+                vic.lastX - vic.firstVisibleX + vic.lastVisibleX, vic.firstVBlank - (vic.lastVBlank + 1));
     }
 
     @Override
     @Interruptible
     public final void run() {
-        _vic.reset();
+        vic.reset();
 
         //noinspection InfiniteLoopStatement
         while (true) {
-            byte[] screen = _screenRender;
+            byte[] screen = screenRender;
 
-            int linesPerScreen = _vic._linesPerScreen;
-            int cyclesPerLine = _vic._cyclesPerLine;
+            int linesPerScreen = vic.linesPerScreen;
+            int cyclesPerLine = vic.cyclesPerLine;
 
             boolean borderY = true;
             boolean borderX = true;
 
             // first left part of first line is not available, because there is no previous line
-            int ptr = _vic._lastX - _vic._firstVisibleX;
+            int ptr = vic.lastX - vic.firstVisibleX;
             for (int line = 0; line < linesPerScreen; line++) {
                 // turn y border on / off
-                if (line == _vic._firstLine_25) {
+                if (line == vic.firstLine_25) {
                     borderY = false;
-                } else if (line == _vic._lastLine_25) {
+                } else if (line == vic.lastLine_25) {
                     borderY = true;
                 }
 
                 for (int column = 0; column < cyclesPerLine * 8; column++) {
-                    if (column == _vic._firstX_25) {
+                    if (column == vic.firstX_25) {
                         borderX = false;
-                    } else if (column == _vic._lastX_25) {
+                    } else if (column == vic.lastX_25) {
                         borderX = true;
                     }
 
                     if (borderY || borderX) {
-                        screen[ptr++] = _vic._regExteriorColor;
+                        screen[ptr++] = vic.regExteriorColor;
                     } else {
                         screen[ptr++] = 1;
                     }
 
-                    _tick.waitForTick();
+                    tick.waitForTick();
                 }
 
 /*
@@ -70,13 +70,13 @@ public class DisplayUnit extends AbstractDisplayUnit {
         readSprite(7);
         for (int refresh = 0; refresh < 5; refresh++)
         {
-          _tick.waitForTick();
+          tick.waitForTick();
         }
         readLine();
         // TODO 2010-03-15 mh: correct number of idle cycles for ntsc
         for (int idle = 0; idle < 2; idle++)
         {
-          _tick.waitForTick();
+          tick.waitForTick();
         }
         readSprite(0);
         readSprite(1);
@@ -96,8 +96,8 @@ public class DisplayUnit extends AbstractDisplayUnit {
     @Interruptible
     private void readSprite(int i) {
         // TODO 2010-03-15 mh: sprite pointer access
-        _tick.waitForTick();
+        tick.waitForTick();
         // TODO 2010-03-15 mh: 3 sprite data access / idle access
-        _tick.waitForTick();
+        tick.waitForTick();
     }
 }

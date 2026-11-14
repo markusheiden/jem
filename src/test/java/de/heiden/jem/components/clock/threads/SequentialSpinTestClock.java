@@ -100,20 +100,20 @@ public final class SequentialSpinTestClock extends AbstractSynchronizedClock {
      *
      * @param state
      *         Ordinal of component thread.
-     * @param _currentState
+     * @param currentState
      *         Current state.
      */
-    private record SequentialSpinTick(int state, AtomicInteger _currentState) implements Tick {
+    private record SequentialSpinTick(int state, AtomicInteger currentState) implements Tick {
         @Override
         public void waitForTick() {
             // Make all changes of this thread visible to all other threads because of release semantics.
             // Trigger execution of the next component's thread.
-            _currentState.setRelease(state + 1);
+            currentState.setRelease(state + 1);
             do {
                 onSpinWait();
                 // Make released changes of all other threads visible to this thread because of acquire semantics.
                 // Wait for the next tick.
-            } while (_currentState.getAcquire() != state);
+            } while (currentState.getAcquire() != state);
         }
     }
 }

@@ -13,8 +13,8 @@ class TextLineRenderer extends AbstractLineRenderer {
         int screenAddress = screenAddress(line);
         int charsetAddress = charsetAddress(line);
         for (int column = 0; column < COLUMNS; column++, screenAddress++) {
-            int bitmap = vic._bus.read(charsetAddress + (vic._bus.read(screenAddress) << 3));
-            ptr = renderHires(screen, foreground, ptr, bitmap, vic._regBackgroundColor0, color(screenAddress));
+            int bitmap = vic.bus.read(charsetAddress + (vic.bus.read(screenAddress) << 3));
+            ptr = renderHires(screen, foreground, ptr, bitmap, vic.regBackgroundColor0, color(screenAddress));
         }
     }
 }

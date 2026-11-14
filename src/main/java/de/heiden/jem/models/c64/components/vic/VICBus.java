@@ -10,17 +10,17 @@ public class VICBus implements BusDevice {
     /**
      * 64kB RAM.
      */
-    private final BusDevice _ram;
+    private final BusDevice ram;
 
     /**
      * Character ROM.
      */
-    private final BusDevice _character;
+    private final BusDevice character;
 
     /**
      * VIC base address in cpu address space.
      */
-    private int _vicBase;
+    private int vicBase;
 
     /**
      * Constructor.
@@ -40,10 +40,10 @@ public class VICBus implements BusDevice {
         assert ram != null : "ram != null";
         assert character != null : "character != null";
 
-        _ram = ram;
-        _character = character;
+        this.ram = ram;
+        this.character = character;
 
-        cia2PortA.addOutputPortListener((value, mask) -> _vicBase = ((value ^ 0xFF) & 0x03) << 14);
+        cia2PortA.addOutputPortListener((value, mask) -> vicBase = ((value ^ 0xFF) & 0x03) << 14);
     }
 
     /**
@@ -58,8 +58,8 @@ public class VICBus implements BusDevice {
     public final int read(int address) {
         assert address >= 0x0000 && address < 0x4000 : "address >= 0x0000 && address < 0x4000";
 
-        int cpuAddress = _vicBase + address;
-        return ((cpuAddress & 0x7000) == 0x1000 ? _character : _ram).read(cpuAddress);
+        int cpuAddress = vicBase + address;
+        return ((cpuAddress & 0x7000) == 0x1000 ? character : ram).read(cpuAddress);
     }
 
     /**

@@ -14,8 +14,8 @@ class ExtendedColorTextLineRenderer extends AbstractLineRenderer {
         int screenAddress = screenAddress(line);
         int charsetAddress = charsetAddress(line);
         for (int column = 0; column < COLUMNS; column++, screenAddress++) {
-            int character = vic._bus.read(screenAddress);
-            int bitmap = vic._bus.read(charsetAddress + ((character & 0x3F) << 3));
+            int character = vic.bus.read(screenAddress);
+            int bitmap = vic.bus.read(charsetAddress + ((character & 0x3F) << 3));
             ptr = renderHires(screen, foreground, ptr, bitmap, backgroundColor(character >> 6), color(screenAddress));
         }
     }
@@ -25,10 +25,10 @@ class ExtendedColorTextLineRenderer extends AbstractLineRenderer {
      */
     private byte backgroundColor(int index) {
         return switch (index) {
-            case 0 -> vic._regBackgroundColor0;
-            case 1 -> vic._regBackgroundColor1;
-            case 2 -> vic._regBackgroundColor2;
-            default -> vic._regBackgroundColor3;
+            case 0 -> vic.regBackgroundColor0;
+            case 1 -> vic.regBackgroundColor1;
+            case 2 -> vic.regBackgroundColor2;
+            default -> vic.regBackgroundColor3;
         };
     }
 }

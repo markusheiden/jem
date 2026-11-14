@@ -28,28 +28,28 @@ abstract class AbstractLineRenderer implements LineRenderer {
      * Address of the first column of the text row containing the line in video ram.
      */
     protected final int screenAddress(int line) {
-        return vic._baseCharacterMode + (line >> 3) * COLUMNS;
+        return vic.baseCharacterMode + (line >> 3) * COLUMNS;
     }
 
     /**
      * Address of the given line of the first character in the character set.
      */
     protected final int charsetAddress(int line) {
-        return vic._baseCharacterSet + (line & 0x07);
+        return vic.baseCharacterSet + (line & 0x07);
     }
 
     /**
      * Address of the given line of the first column in the bitmap.
      */
     protected final int bitmapAddress(int line) {
-        return vic._baseBitmapMode + (line >> 3) * COLUMNS * 8 + (line & 0x07);
+        return vic.baseBitmapMode + (line >> 3) * COLUMNS * 8 + (line & 0x07);
     }
 
     /**
      * Color of a column from color ram.
      */
     protected final byte color(int screenAddress) {
-        return (byte) (vic._colorRam.read(screenAddress) & 0x0F); // color ram masks address itself
+        return (byte) (vic.colorRam.read(screenAddress) & 0x0F); // color ram masks address itself
     }
 
     /**

@@ -38,7 +38,7 @@ public final class SequentialContinuationClock extends AbstractSimpleClock {
      * Create continuations.
      */
     private Continuation[] createContinuations() {
-        var components = _componentMap.values().toArray(ClockedComponent[]::new);
+        var components = componentMap.values().toArray(ClockedComponent[]::new);
 
         var scope = new ContinuationScope("Clock");
         var continuations = new Continuation[components.length];

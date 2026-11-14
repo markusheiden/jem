@@ -25,12 +25,12 @@ public class VIC6569PAL extends VIC {
                 63, 312, 300, 15, 480, 380, 504);
 
         // 6569
-        // _cyclesPerLine = 63;
-        // _linesPerScreen = 312;
-        // _firstVBlank = 300;
-        // _lastVBlank = 15;
-        // _firstVisibleX = (480 + 0x0007) & 0x01F8;
-        // _lastVisibleX = 380 & 0x01F8;
-        // _lastX = 504;
+        // cyclesPerLine = 63;
+        // linesPerScreen = 312;
+        // firstVBlank = 300;
+        // lastVBlank = 15;
+        // firstVisibleX = (480 + 0x0007) & 0x01F8;
+        // lastVisibleX = 380 & 0x01F8;
+        // lastX = 504;
     }
 }

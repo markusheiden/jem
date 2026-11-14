@@ -62,17 +62,17 @@ class SpriteRenderer {
         this.screen = screen;
         this.foreground = foreground;
         this.window = ptr;
-        int spritePointer = vic._baseCharacterMode + 0x03F8 + 7;
+        int spritePointer = vic.baseCharacterMode + 0x03F8 + 7;
         for (int i = 7; i >= 0; i--, spritePointer--) {
-            Sprite sprite = vic._sprites[i];
+            Sprite sprite = vic.sprites[i];
             int height = sprite.expandY ? 42 : 21;
             if (sprite.enabled && sprite.y <= raster && raster < sprite.y + height) {
                 int spriteRow = sprite.expandY ? (raster - sprite.y) >> 1 : raster - sprite.y;
-                int dataAddress = (vic._bus.read(spritePointer) << 6) + spriteRow * 3;
-                behind = (vic._regSpritesBackgroundPriority & sprite.bitmask) != 0;
-                int spritePtr = ptr - vic._firstX_25 + sprite.x;
+                int dataAddress = (vic.bus.read(spritePointer) << 6) + spriteRow * 3;
+                behind = (vic.regSpritesBackgroundPriority & sprite.bitmask) != 0;
+                int spritePtr = ptr - vic.firstX_25 + sprite.x;
                 for (int b = 0; b < 3; b++) {
-                    spritePtr = renderByte(spritePtr, vic._bus.read(dataAddress + b), sprite);
+                    spritePtr = renderByte(spritePtr, vic.bus.read(dataAddress + b), sprite);
                 }
             }
         }
@@ -122,9 +122,9 @@ class SpriteRenderer {
     private int multiColor(int colorIndex, byte color) {
         return switch (colorIndex) {
             case 0 -> -1;
-            case 1 -> vic._regSpritesMulticolor0;
+            case 1 -> vic.regSpritesMulticolor0;
             case 2 -> color;
-            default -> vic._regSpritesMulticolor1;
+            default -> vic.regSpritesMulticolor1;
         };
     }
 }

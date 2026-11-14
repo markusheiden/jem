@@ -43,13 +43,13 @@ public class C64Application {
         frame = new JFrame("C64");
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
-        VICScreen screen = new VICScreen(c64.getVIC()._displayUnit);
+        VICScreen screen = new VICScreen(c64.getVIC().displayUnit);
         frame.addKeyListener(new KeyListener(c64.getKeyboard(), new PCMapping()));
         frame.getContentPane().add(screen);
 
         // pack
         frame.pack();
-        // _frame.setResizable(false);
+        // frame.setResizable(false);
         frame.setVisible(true);
 
         c64.start();

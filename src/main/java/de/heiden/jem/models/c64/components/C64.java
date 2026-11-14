@@ -32,27 +32,27 @@ public class C64 {
     /**
      * Main clock.
      */
-    private final Clock _clock;
+    private final Clock clock;
 
     /**
      * CPU bus.
      */
-    private C64Bus _cpuBus;
+    private C64Bus cpuBus;
 
     /**
      * CPU.
      */
-    private final CPU6510 _cpu;
+    private final CPU6510 cpu;
 
     /**
      * Keyboard.
      */
-    private Keyboard _keyboard;
+    private Keyboard keyboard;
 
     /**
      * VIC.
      */
-    private final VIC6569PAL _vic;
+    private final VIC6569PAL vic;
 
     /**
      * Constructor.
@@ -73,30 +73,30 @@ public class C64 {
      *         use debugger cpu?
      */
     public C64(Clock clock, boolean debug) throws Exception {
-        _clock = clock;
+        this.clock = clock;
 
-        RAM _ram = new RAM(0x10000);
+        RAM ram = new RAM(0x10000);
         ColorRAM colorRam = new ColorRAM(0x400);
         ROM basic = ROMLoader.basic(ROMLoader.DEFAULT_BASIC);
         ROM kernel = ROMLoader.kernel(ROMLoader.DEFAULT_KERNEL);
         ROM charset = ROMLoader.character(ROMLoader.DEFAULT_CHARACTER);
 
-        CIA6526 cia1 = new CIA6526(_clock);
-        CIA6526 cia2 = new CIA6526(_clock);
+        CIA6526 cia1 = new CIA6526(clock);
+        CIA6526 cia2 = new CIA6526(clock);
 
-        VICBus vicBus = new VICBus(cia2.portA(), _ram, charset);
-        _vic = new VIC6569PAL(_clock, vicBus, colorRam);
+        VICBus vicBus = new VICBus(cia2.portA(), ram, charset);
+        vic = new VIC6569PAL(clock, vicBus, colorRam);
 
-        _keyboard = new Keyboard(cia1.portA(), cia1.portB());
+        keyboard = new Keyboard(cia1.portA(), cia1.portB());
 
-        _cpu = _clock.addClockedComponent(Clock.CPU, debug ? new CPU6510Debugger() : new CPU6510());
-        _cpuBus = new C64Bus(_ram, basic, _vic, colorRam, cia1, cia2, charset, kernel);
-        _cpuBus.connect(_cpu.getPort());
-        _cpu.connect(_cpuBus);
-        _cpu.getIRQ().connect(cia1.getIRQ());
-        _cpu.getIRQ().connect(_vic.getIRQ());
-        _cpu.getNMI().connect(cia2.getIRQ());
-        _cpu.getNMI().connect(_keyboard.getNMI());
+        cpu = clock.addClockedComponent(Clock.CPU, debug ? new CPU6510Debugger() : new CPU6510());
+        cpuBus = new C64Bus(ram, basic, vic, colorRam, cia1, cia2, charset, kernel);
+        cpuBus.connect(cpu.getPort());
+        cpu.connect(cpuBus);
+        cpu.getIRQ().connect(cia1.getIRQ());
+        cpu.getIRQ().connect(vic.getIRQ());
+        cpu.getNMI().connect(cia2.getIRQ());
+        cpu.getNMI().connect(keyboard.getNMI());
 
         // real time measurement
         // TODO 2010-03-14 mh: NTSC: 1022700 Hz
@@ -112,21 +112,21 @@ public class C64 {
         // Init RAM with 0x02 (crash) to easier detect wrong behaviour.
         // TODO 2010-06-22 mh: realistic init?
         for (int addr = 0; addr < 0x10000; addr++) {
-            _cpuBus.write(0x02, addr);
+            cpuBus.write(0x02, addr);
         }
 
         // Fill the screen with the complete character set.
         for (int i = 0; i < 0x400; i++) {
-            _cpuBus.write(i & 0xFF, 0x400 + i);
-            _cpuBus.write(i & 0x0F, 0xD800 + i);
+            cpuBus.write(i & 0xFF, 0x400 + i);
+            cpuBus.write(i & 0x0F, 0xD800 + i);
         }
 
         // Load files from the working directory, e.g. LOAD"GAME",8,1.
-        _cpu.add(new LoadFromDirectory(Path.of("").toAbsolutePath()));
+        cpu.add(new LoadFromDirectory(Path.of("").toAbsolutePath()));
 
-//    _cpu.add(new LoadFile(new File("/Users/markus/projects/jem/src/test/resources/testsuite2.15")));
-//    FileUtil.read(Path.of("/Users/markus/projects/jem/xxx.prg"), _cpuBus);
-//    FileUtil.read(Path.of("/Users/markus/projects/jem/src/test/resources/testsuite2.15/loadth.prg"), _cpuBus);
+//    cpu.add(new LoadFile(new File("/Users/markus/projects/jem/src/test/resources/testsuite2.15")));
+//    FileUtil.read(Path.of("/Users/markus/projects/jem/xxx.prg"), cpuBus);
+//    FileUtil.read(Path.of("/Users/markus/projects/jem/src/test/resources/testsuite2.15/loadth.prg"), cpuBus);
     }
 
     /**
@@ -134,16 +134,16 @@ public class C64 {
      */
     public void start() throws Exception {
         logger.debug("start");
-        _clock.run();
+        clock.run();
 
 //    final int ticks = 1000000;
 //    //noinspection InfiniteLoopStatement
 //    while (true)
 //    {
 //      long time = System.currentTimeMillis();
-//      _clock.run(ticks);
+//      clock.run(ticks);
 //      time = System.currentTimeMillis() - time;
-//      _logger.debug("executed {} in {} ms", ticks, time);
+//      logger.debug("executed {} in {} ms", ticks, time);
 //    }
     }
 
@@ -151,7 +151,7 @@ public class C64 {
      * Stop emulation.
      */
     public void stop() {
-        _clock.close();
+        clock.close();
     }
 
     //
@@ -162,27 +162,27 @@ public class C64 {
      * CPU bus.
      */
     public C64Bus getCpuBus() {
-        return _cpuBus;
+        return cpuBus;
     }
 
     /**
      * CPU.
      */
     public CPU6510 getCpu() {
-        return _cpu;
+        return cpu;
     }
 
     /**
      * Keyboard.
      */
     public Keyboard getKeyboard() {
-        return _keyboard;
+        return keyboard;
     }
 
     /**
      * VIC.
      */
     public VIC6569PAL getVIC() {
-        return _vic;
+        return vic;
     }
 }

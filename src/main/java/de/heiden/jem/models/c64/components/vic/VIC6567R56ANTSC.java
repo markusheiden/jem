@@ -25,12 +25,12 @@ public class VIC6567R56ANTSC extends VIC {
                 64, 262, 13, 40, 488, 388, 512);
 
         // 6569R56A
-        // _cyclesPerLine = 64;
-        // _linesPerScreen = 262;
-        // _firstVBlank = 13;
-        // _lastVBlank = 40;
-        // _firstVisibleX = (488 + 0x0007) & 0x01F8;
-        // _lastVisibleX = 388 & 0x01F8;
-        // _lastX = 512;
+        // cyclesPerLine = 64;
+        // linesPerScreen = 262;
+        // firstVBlank = 13;
+        // lastVBlank = 40;
+        // firstVisibleX = (488 + 0x0007) & 0x01F8;
+        // lastVisibleX = 388 & 0x01F8;
+        // lastX = 512;
     }
 }

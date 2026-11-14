@@ -24,12 +24,12 @@ public class VIC6567R8NTSC extends VIC {
         super(clock, bus, colorRam,
                 65, 263, 13, 40, 489, 396, 512);
 
-        // _cyclesPerLine = 65;
-        // _linesPerScreen = 263;
-        // _firstVBlank = 13;
-        // _lastVBlank = 40;
-        // _firstVisibleX = (489 + 0x0007) & 0x01F8;
-        // _lastVisibleX = 396 & 0x01F8;
-        // _lastX = 512;
+        // cyclesPerLine = 65;
+        // linesPerScreen = 263;
+        // firstVBlank = 13;
+        // lastVBlank = 40;
+        // firstVisibleX = (489 + 0x0007) & 0x01F8;
+        // lastVisibleX = 396 & 0x01F8;
+        // lastX = 512;
     }
 }

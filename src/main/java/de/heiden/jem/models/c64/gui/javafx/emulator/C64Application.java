@@ -38,7 +38,7 @@ public class C64Application extends Application {
     public void start(Stage stage) throws Exception {
         c64 = new C64(createClock());
 
-        var screen = new VICScreen(c64.getVIC()._displayUnit);
+        var screen = new VICScreen(c64.getVIC().displayUnit);
 
         var scene = new Scene(screen, screen.getWidth(), screen.getHeight());
         KeyListener.attachTo(scene, c64.getKeyboard(), new PCMapping());
