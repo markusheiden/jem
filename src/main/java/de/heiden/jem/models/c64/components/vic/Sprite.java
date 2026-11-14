@@ -21,6 +21,36 @@ public class Sprite {
     public byte multicolor2;
 
     /**
+     * Sprite sequencer: Is the sprite DMA on?
+     */
+    public boolean dma;
+
+    /**
+     * Sprite sequencer: Is the sprite displayed?
+     */
+    public boolean display;
+
+    /**
+     * Sprite sequencer: Data counter base, index of the first byte of the current sprite line.
+     */
+    public int mcBase;
+
+    /**
+     * Sprite sequencer: Data counter, index of the next byte to read.
+     */
+    public int mc;
+
+    /**
+     * Sprite sequencer: Expansion flip-flop. Cleared for every second line of y expanded sprites.
+     */
+    public boolean expansion;
+
+    /**
+     * Sprite sequencer: Data of the current sprite line, 24 bits.
+     */
+    public int data;
+
+    /**
      * Constructor.
      *
      * @param number
@@ -42,6 +72,13 @@ public class Sprite {
         color = 0;
         multicolor1 = 0;
         multicolor2 = 0;
+
+        dma = false;
+        display = false;
+        mcBase = 0;
+        mc = 0;
+        expansion = true;
+        data = 0;
     }
 
     /**
@@ -88,6 +125,10 @@ public class Sprite {
      */
     public void setExpandY(int bitmap) {
         expandY = (bitmap & bitmask) != 0;
+        // The expansion flip-flop is set as long as the sprite is not y expanded.
+        if (!expandY) {
+            expansion = true;
+        }
     }
 
     /**

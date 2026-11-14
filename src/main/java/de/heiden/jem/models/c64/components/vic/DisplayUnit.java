@@ -5,15 +5,36 @@ import org.serialthreads.Interruptible;
 import java.util.Arrays;
 
 /**
- * Display unit of vic.
+ * Display unit of the VIC: Cycle exact sequencer, which outputs 8 pixels per cycle.
  * <p>
- * TODO refactor dependencies
+ * Implements the counters VC, VCBASE, RC and VMLI, display and idle state, bad lines,
+ * the video matrix accesses (c-accesses) in cycles 15-54 of bad lines,
+ * the graphics accesses (g-accesses) in cycles 16-55 and the border flip-flops,
+ * as described in "The MOS 6567/6569 video controller (VIC-II) and its application in the Commodore 64" by Christian Bauer.
+ * <p>
+ * Simplifications: The graphics of a column are rendered with the registers of its g-access cycle.
+ * The sprites of a line are rendered in cycle 11 with the registers of that cycle.
  */
 public class DisplayUnit extends AbstractDisplayUnit {
     /**
-     * Cycle of a line in which the VIC starts to fetch the graphics of the display window.
+     * X coordinate of the first pixel of cycle 1 (PAL 6569).
      */
-    private static final int RENDER_CYCLE = 16;
+    private static final int FIRST_X = 0x194;
+
+    /**
+     * Cycle after the last sprite data access of a line, in which the sprites of the line are rendered.
+     */
+    private static final int SPRITE_RENDER_CYCLE = 11;
+
+    /**
+     * Number of X coordinates in a line buffer.
+     */
+    private static final int X_COORDINATES = 512;
+
+    /**
+     * Number of columns of the display window.
+     */
+    private static final int COLUMNS = 40;
 
     /**
      * Renderers for the graphics modes, indexed by the mode bits ECM, BMM, MCM.
@@ -26,9 +47,59 @@ public class DisplayUnit extends AbstractDisplayUnit {
     private final SpriteRenderer spriteRenderer;
 
     /**
-     * Foreground flags parallel to the screen data, for the priority of sprites.
+     * Graphics pixels of the current line, indexed by X coordinate.
      */
-    private final boolean[] foreground;
+    private final byte[] graphics = new byte[X_COORDINATES];
+
+    /**
+     * Foreground flags of the graphics pixels, for the priority of sprites.
+     */
+    private final boolean[] foreground = new boolean[X_COORDINATES];
+
+    /**
+     * Video matrix line: Characters read by the c-accesses of the last bad line.
+     */
+    private final int[] characters = new int[COLUMNS];
+
+    /**
+     * Video matrix line: Colors read by the c-accesses of the last bad line.
+     */
+    private final int[] colors = new int[COLUMNS];
+
+    /**
+     * Video counter.
+     */
+    private int vc = 0;
+
+    /**
+     * Video counter base.
+     */
+    private int vcBase = 0;
+
+    /**
+     * Row counter.
+     */
+    private int rc = 0;
+
+    /**
+     * Video matrix line index.
+     */
+    private int vmli = 0;
+
+    /**
+     * Display state (true) or idle state (false).
+     */
+    private boolean displayState = false;
+
+    /**
+     * Main border flip-flop.
+     */
+    private boolean mainBorder = true;
+
+    /**
+     * Vertical border flip-flop.
+     */
+    private boolean verticalBorder = true;
 
     /**
      * Hidden constructor.
@@ -48,8 +119,7 @@ public class DisplayUnit extends AbstractDisplayUnit {
                 new BitmapLineRenderer(vic), new MultiColorBitmapLineRenderer(vic),
                 new ExtendedColorTextLineRenderer(vic), invalidMode,
                 invalidMode, invalidMode};
-        spriteRenderer = new SpriteRenderer(vic);
-        foreground = new boolean[screenRender.length];
+        spriteRenderer = new SpriteRenderer(vic, X_COORDINATES);
     }
 
     @Override
@@ -59,67 +129,11 @@ public class DisplayUnit extends AbstractDisplayUnit {
 
         //noinspection InfiniteLoopStatement
         while (true) {
-            var ptr = 0;
-
-            var raster = 0;
-
-            // top vblank
-            for (; raster < vic.lastVBlank; raster++) {
+            for (var raster = 0; raster < vic.linesPerScreen; raster++) {
                 vic.setRasterLine(raster);
-                for (var cycle = 0; cycle < vic.cyclesPerLine; cycle++) {
-                    tick.waitForTick();
-                }
-            }
-
-            // top border
-            for (; raster < vic.firstLine_25; raster++) {
-                vic.setRasterLine(raster);
-                for (var cycle = 0; cycle < vic.cyclesPerLine; cycle++) {
-                    tick.waitForTick();
-                }
-
-                var pixelPerLine = vic.lastX - vic.firstVisibleX + vic.lastVisibleX;
-                Arrays.fill(screenRender, ptr, ptr += pixelPerLine, vic.regExteriorColor);
-            }
-
-            // visible area
-            for (var y = 0; raster < vic.lastLine_25; raster++, y++) {
-                vic.setRasterLine(raster);
-
-                // Render with the registers at the start of the display window,
-                // so changes later in the line, e.g. raster splits, take effect in the next line.
-                var cycle = 0;
-                for (; cycle < RENDER_CYCLE; cycle++) {
-                    tick.waitForTick();
-                }
-
-                var leftBorder = vic.lastX - vic.firstVisibleX + vic.firstX_25;
-                Arrays.fill(screenRender, ptr, ptr += leftBorder, vic.regExteriorColor);
-                var newPtr = renderLine(screenRender, ptr, y, raster);
-                ptr = newPtr;
-                var rightBorder = vic.lastVisibleX - vic.lastX_25;
-                Arrays.fill(screenRender, ptr, ptr += rightBorder, vic.regExteriorColor);
-
-                for (; cycle < vic.cyclesPerLine; cycle++) {
-                    tick.waitForTick();
-                }
-            }
-
-            // bottom border
-            for (; raster < vic.firstVBlank; raster++) {
-                vic.setRasterLine(raster);
-                for (var cycle = 0; cycle < vic.cyclesPerLine; cycle++) {
-                    tick.waitForTick();
-                }
-
-                var pixelPerLine = vic.lastX - vic.firstVisibleX + vic.lastVisibleX;
-                Arrays.fill(screenRender, ptr, ptr += pixelPerLine, vic.regExteriorColor);
-            }
-
-            // bottom vblank
-            for (; raster < vic.linesPerScreen; raster++) {
-                vic.setRasterLine(raster);
-                for (var cycle = 0; cycle < vic.cyclesPerLine; cycle++) {
+                startLine(raster);
+                for (var cycle = 1; cycle <= vic.cyclesPerLine; cycle++) {
+                    cycle(raster, cycle);
                     tick.waitForTick();
                 }
             }
@@ -129,53 +143,174 @@ public class DisplayUnit extends AbstractDisplayUnit {
     }
 
     /**
-     * Render one line of the display window: Graphics in the current mode, sprites and the borders of the 24 rows and 38 columns modes.
+     * Start of a raster line.
+     */
+    private void startLine(int raster) {
+        if (raster == 0) {
+            vcBase = 0;
+        }
+
+        // Pixels outside of the columns, e.g. visible with opened borders, show the background.
+        Arrays.fill(graphics, vic.regBackgroundColor0);
+        Arrays.fill(foreground, false);
+    }
+
+    /**
+     * Execute one cycle of a raster line.
      *
-     * @param screen
-     *         screen data
-     * @param ptr
-     *         index of the first pixel of the display window in screen data
-     * @param y
-     *         line in the display window
      * @param raster
      *         raster line
-     * @return next index in screen data
+     * @param cycle
+     *         cycle, starting with 1
      */
-    private int renderLine(byte[] screen, int ptr, int y, int raster) {
+    private void cycle(int raster, int cycle) {
+        vic.spriteCycle(raster, cycle);
+        vic.updateBA(cycle);
+        if (cycle == SPRITE_RENDER_CYCLE) {
+            spriteRenderer.render();
+        }
+        var badLine = vic.isBadLine();
+        if (badLine) {
+            displayState = true;
+        }
+
+        if (cycle == 14) {
+            vc = vcBase;
+            vmli = 0;
+            if (badLine) {
+                rc = 0;
+            }
+        }
+
+        if (badLine && cycle >= 15 && cycle <= 54) {
+            readVideoMatrix(cycle - 15);
+        }
+
+        if (cycle >= 16 && cycle <= 55) {
+            readGraphics(cycle - 16);
+        }
+
+        if (cycle == 58) {
+            if (rc == 7) {
+                vcBase = vc;
+                displayState = badLine;
+            }
+            if (displayState) {
+                rc = (rc + 1) & 0x07;
+            }
+        }
+
+        output(raster, cycle);
+
+        if (cycle == vic.cyclesPerLine) {
+            updateVerticalBorder(raster);
+        }
+    }
+
+    /**
+     * c-access: Read a character and its color of the video matrix.
+     *
+     * @param column
+     *         column
+     */
+    private void readVideoMatrix(int column) {
+        var address = (vcBase + column) & 0x03FF;
+        characters[column] = vic.bus.read(vic.baseCharacterMode + address);
+        colors[column] = vic.colorRam.read(address) & 0x0F;
+    }
+
+    /**
+     * g-access: Render the graphics of a column with the current registers.
+     * In idle state the column shows the background.
+     *
+     * @param column
+     *         column
+     */
+    private void readGraphics(int column) {
         var control1 = vic.regControl1;
         var control2 = vic.regControl2;
+        var x = vic.firstX_25 + (control2 & VIC.CONTROL2_SCROLL_X) + 8 * column;
 
-        // Vertical fine scrolling: The default scroll value 3 aligns the first text row with the top of the display window.
-        // Lines outside the 200 lines of graphics data show the background.
-        var line = y + 3 - (control1 & VIC.CONTROL1_SCROLL_Y);
-        if (line >= 0 && line < 200) {
+        if (column == 0) {
+            // Horizontal fine scrolling: The gap left of the first column shows the background.
+            Arrays.fill(graphics, vic.firstX_25, x, vic.regBackgroundColor0);
+            Arrays.fill(foreground, vic.firstX_25, x, false);
+        }
+
+        if (displayState) {
             var mode = (control1 & (VIC.CONTROL1_EXT_COLOR | VIC.CONTROL1_BITMAP)) >> 4 | (control2 & VIC.CONTROL2_MULTI_COLOR) >> 4;
-            lineRenderers[mode].render(screen, foreground, ptr, line);
+            lineRenderers[mode].render(graphics, foreground, x, vc, rc, characters[vmli], colors[vmli]);
+            vc = (vc + 1) & 0x03FF;
+            vmli++;
         } else {
-            Arrays.fill(screen, ptr, ptr + 320, vic.regBackgroundColor0);
-            Arrays.fill(foreground, ptr, ptr + 320, false);
+            Arrays.fill(graphics, x, x + 8, vic.regBackgroundColor0);
+            Arrays.fill(foreground, x, x + 8, false);
+        }
+    }
+
+    /**
+     * Output the 8 pixels of a cycle: Border, sprites or graphics.
+     */
+    private void output(int raster, int cycle) {
+        var row = raster - vic.lastVBlank;
+        var visible = row >= 0 && row < getLines();
+        var lineLength = getLineLength();
+        var lineStart = row * lineLength;
+
+        var x = (FIRST_X + (cycle - 1) * 8) % vic.lastX;
+        for (var i = 0; i < 8; i++) {
+            updateMainBorder(raster, x);
+            var index = (x - vic.firstVisibleX + vic.lastX) % vic.lastX;
+            if (visible && index < lineLength) {
+                screenRender[lineStart + index] = pixel(x);
+            }
+            if (++x == vic.lastX) {
+                x = 0;
+            }
+        }
+    }
+
+    /**
+     * Color of a pixel: Border, sprite or graphics.
+     */
+    private byte pixel(int x) {
+        if (mainBorder) {
+            return vic.regExteriorColor;
         }
 
-        // Horizontal fine scrolling: Shift the line to the right, fill the gap with the background.
-        var scrollX = control2 & VIC.CONTROL2_SCROLL_X;
-        if (scrollX != 0) {
-            System.arraycopy(screen, ptr, screen, ptr + scrollX, 320 - scrollX);
-            Arrays.fill(screen, ptr, ptr + scrollX, vic.regBackgroundColor0);
-            System.arraycopy(foreground, ptr, foreground, ptr + scrollX, 320 - scrollX);
-            Arrays.fill(foreground, ptr, ptr + scrollX, false);
+        var sprite = spriteRenderer.pixels[x];
+        if (sprite != SpriteRenderer.NONE && !(spriteRenderer.behind[x] && foreground[x])) {
+            return sprite;
         }
 
-        spriteRenderer.render(screen, foreground, ptr, raster);
+        return graphics[x];
+    }
 
-        // 24 rows mode: The border covers the top 4 and the bottom 4 lines.
-        // 38 columns mode: The border covers the leftmost 7 and the rightmost 9 pixels.
-        if ((control1 & VIC.CONTROL1_25_ROWS) == 0 && (raster < vic.firstLine_24 || raster >= vic.lastLine_24)) {
-            Arrays.fill(screen, ptr, ptr + 320, vic.regExteriorColor);
-        } else if ((control2 & VIC.CONTROL2_40_COLUMNS) == 0) {
-            Arrays.fill(screen, ptr, ptr + vic.firstX_24 - vic.firstX_25, vic.regExteriorColor);
-            Arrays.fill(screen, ptr + 320 - (vic.lastX_25 - vic.lastX_24), ptr + 320, vic.regExteriorColor);
+    /**
+     * Update the main border flip-flop at the left and right border of the display window.
+     */
+    private void updateMainBorder(int raster, int x) {
+        var columns40 = (vic.regControl2 & VIC.CONTROL2_40_COLUMNS) != 0;
+        if (x == (columns40 ? vic.lastX_25 : vic.lastX_24)) {
+            mainBorder = true;
+        } else if (x == (columns40 ? vic.firstX_25 : vic.firstX_24)) {
+            updateVerticalBorder(raster);
+            if (!verticalBorder) {
+                mainBorder = false;
+            }
         }
+    }
 
-        return ptr + 320;
+    /**
+     * Update the vertical border flip-flop at the top and bottom border of the display window.
+     */
+    private void updateVerticalBorder(int raster) {
+        var control1 = vic.regControl1;
+        var rows25 = (control1 & VIC.CONTROL1_25_ROWS) != 0;
+        if (raster == (rows25 ? vic.lastLine_25 : vic.lastLine_24)) {
+            verticalBorder = true;
+        } else if (raster == (rows25 ? vic.firstLine_25 : vic.firstLine_24) && (control1 & VIC.CONTROL1_DEN) != 0) {
+            verticalBorder = false;
+        }
     }
 }

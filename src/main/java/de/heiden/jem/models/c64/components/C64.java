@@ -71,6 +71,11 @@ public class C64 {
     private final VIC6569PAL vic;
 
     /**
+     * Slow down to real time, measures the time needed for each simulated second.
+     */
+    private final RealTimeSlowDown realTimeSlowDown;
+
+    /**
      * Constructor.
      *
      * @param clock
@@ -116,12 +121,13 @@ public class C64 {
         cpu.getIRQ().connect(vic.getIRQ());
         cpu.getNMI().connect(cia2.getIRQ());
         cpu.getNMI().connect(keyboard.getNMI());
+        cpu.getRDY().connect(vic.getBA());
 
         keyboardBuffer = new KeyboardBuffer(clock, cpuBus);
 
         // real time measurement
         // TODO 2010-03-14 mh: NTSC: 1022700 Hz
-        new RealTimeSlowDown(clock, 985248, 100);
+        realTimeSlowDown = new RealTimeSlowDown(clock, 985248, 100);
 
         init();
     }
@@ -226,5 +232,12 @@ public class C64 {
      */
     public VIC6569PAL getVIC() {
         return vic;
+    }
+
+    /**
+     * Slow down to real time, measures the time needed for each simulated second.
+     */
+    public RealTimeSlowDown getRealTimeSlowDown() {
+        return realTimeSlowDown;
     }
 }

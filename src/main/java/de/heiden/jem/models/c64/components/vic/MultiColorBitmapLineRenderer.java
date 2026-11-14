@@ -9,13 +9,8 @@ class MultiColorBitmapLineRenderer extends AbstractLineRenderer {
     }
 
     @Override
-    public void render(byte[] screen, boolean[] foreground, int ptr, int line) {
-        var screenAddress = screenAddress(line);
-        var bitmapAddress = bitmapAddress(line);
-        for (var column = 0; column < COLUMNS; column++, screenAddress++, bitmapAddress += 8) {
-            var colors = vic.bus.read(screenAddress);
-            ptr = renderMultiColor(screen, foreground, ptr, vic.bus.read(bitmapAddress),
-                    vic.regBackgroundColor0, (byte) (colors >> 4), (byte) (colors & 0x0F), color(screenAddress));
-        }
+    public void render(byte[] pixels, boolean[] foreground, int x, int vc, int rc, int character, int color) {
+        renderMultiColor(pixels, foreground, x, readBitmap(vc, rc),
+                vic.regBackgroundColor0, (byte) (character >> 4), (byte) (character & 0x0F), (byte) color);
     }
 }

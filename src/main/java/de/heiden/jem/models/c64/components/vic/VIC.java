@@ -38,9 +38,6 @@ public abstract class VIC implements BusDevice {
     protected final int lastX;
 
 
-    // mem access unit
-    private final MemAccessUnit memAccessUnit;
-
     // display unit
     public final AbstractDisplayUnit displayUnit;
 
@@ -53,6 +50,21 @@ public abstract class VIC implements BusDevice {
     public final ColorRAM colorRam;
 
     private final OutputPortImpl irqPort;
+
+    /**
+     * BA output, connected to RDY of the CPU. Low halts the CPU, e.g. on bad lines.
+     */
+    private final OutputPortImpl baPort;
+
+    /**
+     * Has the display been enabled in raster line $30? Precondition for bad lines.
+     */
+    private boolean denInLine30 = false;
+
+    /**
+     * Is the current raster line a bad line?
+     */
+    private boolean badLine = false;
 
     // sprite register
     protected Sprite[] sprites;
@@ -74,6 +86,7 @@ public abstract class VIC implements BusDevice {
     protected static final int CONTROL1_BITMAP = 1 << 5;
     protected static final int CONTROL1_EXT_COLOR = 1 << 6;
     protected static final int CONTROL1_25_ROWS = 1 << 3;
+    protected static final int CONTROL1_DEN = 1 << 4;
     protected static final int CONTROL1_SCROLL_Y = 0x07;
     protected int regRaster; // read: 0x11 bit 7, 0x12
     protected int regRasterIRQ; // write: 0x11 bit 7, 0x12
@@ -160,15 +173,16 @@ public abstract class VIC implements BusDevice {
             sprites[i] = new Sprite(i);
         }
 
-        logger.debug("start vic mem access unit");
-        memAccessUnit = clock.addClockedComponent(Clock.VIC_MEM, new MemAccessUnit(this));
-
         logger.debug("start vic display unit");
         displayUnit = clock.addClockedComponent(Clock.VIC_DISPLAY, new DisplayUnit(this));
 
         irqPort = new OutputPortImpl();
         irqPort.setOutputMask(0x01);
         irqPort.setOutputData(0x01);
+
+        baPort = new OutputPortImpl();
+        baPort.setOutputMask(0x01);
+        baPort.setOutputData(0x01);
     }
 
     /**
@@ -193,6 +207,173 @@ public abstract class VIC implements BusDevice {
      */
     public OutputPort getIRQ() {
         return irqPort;
+    }
+
+    /**
+     * BA output signal.
+     */
+    public OutputPort getBA() {
+        return baPort;
+    }
+
+    /**
+     * Is the current raster line a bad line?
+     */
+    public boolean isBadLine() {
+        return badLine;
+    }
+
+    /**
+     * Update the bad line condition and BA at the end of a cycle of the current raster line.
+     * A bad line is a raster line in $30-$F7 whose lower 3 bits match the vertical scroll,
+     * if the display has been enabled in raster line $30.
+     * BA is low on bad lines and for the sprite data accesses, see {@link #isBALow(int, int, boolean)}.
+     *
+     * @param cycle
+     *         number of the current cycle, starting with 1
+     */
+    protected final void updateBA(int cycle) {
+        var raster = regRaster;
+        if (raster == 0x30 && (regControl1 & CONTROL1_DEN) != 0) {
+            denInLine30 = true;
+        } else if (raster == 0) {
+            denInLine30 = false;
+        }
+        badLine = denInLine30 && raster >= 0x30 && raster <= 0xF7 && (raster & 0x07) == (regControl1 & CONTROL1_SCROLL_Y);
+
+        // BA is set for the next cycle, because the CPU executes before the VIC in each cycle.
+        var ba = cycle < cyclesPerLine ?
+                isBALow(raster, cycle + 1, badLine) :
+                isBALow((raster + 1) % linesPerScreen, 1, false);
+        var value = ba ? 0x00 : 0x01;
+        if (value != baPort.outputData()) {
+            baPort.setOutputData(value);
+        }
+    }
+
+    /**
+     * Is BA low in the given cycle?
+     * BA is low in cycles 12-54 of bad lines, because the VIC reads the video matrix,
+     * and from 3 cycles before up to the 2 cycles in which the VIC reads the data of a sprite with DMA on (PAL 6569):
+     * Sprites 0-2 in cycles 58-63, sprites 3-7 in cycles 1-10 of the next line.
+     *
+     * @param raster
+     *         raster line
+     * @param cycle
+     *         cycle, starting with 1
+     * @param badLine
+     *         is the raster line a bad line?
+     */
+    private boolean isBALow(int raster, int cycle, boolean badLine) {
+        if (badLine && cycle >= 12 && cycle <= 54) {
+            return true;
+        }
+
+        for (var i = 0; i < 8; i++) {
+            if (sprites[i].dma) {
+                var first = spriteAccessCycle(i);
+                if (cycle >= first - 3 && cycle <= first + 1) {
+                    return true;
+                }
+                // The 3 cycles before the first cycle may be at the end of the previous line.
+                if (cycle >= cyclesPerLine + first - 3) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * First of the 2 cycles in which the VIC reads the pointer and the data of a sprite (PAL 6569).
+     */
+    private static int spriteAccessCycle(int number) {
+        return number < 3 ? 58 + 2 * number : 1 + 2 * (number - 3);
+    }
+
+    /**
+     * Execute the sprite sequencer for a cycle of the current raster line, as described by Christian Bauer:
+     * DMA is turned on in cycles 55 and 56, if the Y coordinate matches the raster line.
+     * The data counters are loaded in cycle 58, the display is turned on in cycle 58, if the Y coordinate matches.
+     * In the 2 access cycles of a sprite with DMA on, the VIC reads the 3 bytes of its next line.
+     * In cycles 15 and 16, the data counter base advances, unless the expansion flip-flop doubles the line.
+     * DMA and display are turned off, when all 21 lines have been read.
+     *
+     * @param raster
+     *         raster line
+     * @param cycle
+     *         cycle, starting with 1
+     */
+    protected final void spriteCycle(int raster, int cycle) {
+        switch (cycle) {
+            case 15 -> {
+                for (var sprite : sprites) {
+                    if (sprite.expansion) {
+                        sprite.mcBase = (sprite.mcBase + 2) & 0x3F;
+                    }
+                }
+            }
+            case 16 -> {
+                for (var sprite : sprites) {
+                    if (sprite.expansion) {
+                        sprite.mcBase = (sprite.mcBase + 1) & 0x3F;
+                    }
+                    if (sprite.mcBase == 63) {
+                        sprite.dma = false;
+                        sprite.display = false;
+                    }
+                }
+            }
+            case 55 -> {
+                for (var sprite : sprites) {
+                    if (sprite.expandY) {
+                        sprite.expansion = !sprite.expansion;
+                    }
+                }
+                startSpriteDMA(raster);
+            }
+            case 56 -> startSpriteDMA(raster);
+            case 58 -> {
+                for (var sprite : sprites) {
+                    sprite.mc = sprite.mcBase;
+                    if (sprite.dma && sprite.y == (raster & 0xFF)) {
+                        sprite.display = true;
+                    }
+                }
+            }
+            default -> {
+                // nothing to do
+            }
+        }
+
+        // The data of a sprite is read in the second of its 2 access cycles.
+        for (var i = 0; i < 8; i++) {
+            var sprite = sprites[i];
+            if (sprite.dma && cycle == spriteAccessCycle(i) + 1) {
+                var address = bus.read(baseCharacterMode + 0x03F8 + i) << 6;
+                var data = 0;
+                for (var b = 0; b < 3; b++) {
+                    data = data << 8 | bus.read(address + sprite.mc);
+                    sprite.mc = (sprite.mc + 1) & 0x3F;
+                }
+                sprite.data = data;
+            }
+        }
+    }
+
+    /**
+     * Turn on the DMA of enabled sprites whose Y coordinate matches the raster line.
+     */
+    private void startSpriteDMA(int raster) {
+        for (var sprite : sprites) {
+            if (sprite.enabled && !sprite.dma && sprite.y == (raster & 0xFF)) {
+                sprite.dma = true;
+                sprite.mcBase = 0;
+                if (sprite.expandY) {
+                    sprite.expansion = false;
+                }
+            }
+        }
     }
 
     /**

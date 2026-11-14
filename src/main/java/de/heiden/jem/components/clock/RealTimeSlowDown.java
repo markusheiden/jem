@@ -4,6 +4,8 @@ import jakarta.annotation.Nonnull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.function.LongConsumer;
+
 /**
  * Slow down the clock to real time.
  */
@@ -60,6 +62,11 @@ public class RealTimeSlowDown extends ClockEvent {
     private int counter;
 
     /**
+     * Listener for the time (ms) needed to process 1 simulated second.
+     */
+    private LongConsumer listener = elapsedMs -> {};
+
+    /**
      * Constructor.
      *
      * @param clock
@@ -101,6 +108,14 @@ public class RealTimeSlowDown extends ClockEvent {
         });
     }
 
+    /**
+     * Set listener for the time (ms) needed to process 1 simulated second.
+     * The listener is called from the emulation thread.
+     */
+    public void setListener(@Nonnull LongConsumer listener) {
+        this.listener = listener;
+    }
+
     @Override
     public void execute(long tick) {
         // Save the current timestamp as the end of the last processing cycle
@@ -111,9 +126,9 @@ public class RealTimeSlowDown extends ClockEvent {
         var next = nextTimestamp;
         var nextTick = tick;
         if (counter == 0) {
-            if (logger.isInfoEnabled()) {
-                logger.info("1 simulated second took {} ms", elapsed / 1000000);
-            }
+            var elapsedMs = elapsed / 1000000;
+            logger.debug("1 simulated second took {} ms", elapsedMs);
+            listener.accept(elapsedMs);
             elapsed = 0;
 
             counter = div;

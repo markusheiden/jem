@@ -7,8 +7,8 @@ import java.util.Arrays;
  */
 class InvalidModeLineRenderer implements LineRenderer {
     @Override
-    public void render(byte[] screen, boolean[] foreground, int ptr, int line) {
-        Arrays.fill(screen, ptr, ptr + 320, (byte) 0x00);
-        Arrays.fill(foreground, ptr, ptr + 320, false);
+    public void render(byte[] pixels, boolean[] foreground, int x, int vc, int rc, int character, int color) {
+        Arrays.fill(pixels, x, x + 8, (byte) 0x00);
+        Arrays.fill(foreground, x, x + 8, false);
     }
 }

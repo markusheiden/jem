@@ -5,11 +5,6 @@ package de.heiden.jem.models.c64.components.vic;
  */
 abstract class AbstractLineRenderer implements LineRenderer {
     /**
-     * Columns per line.
-     */
-    protected static final int COLUMNS = 40;
-
-    /**
      * VIC.
      */
     protected final VIC vic;
@@ -25,53 +20,34 @@ abstract class AbstractLineRenderer implements LineRenderer {
     }
 
     /**
-     * Address of the first column of the text row containing the line in video ram.
+     * Read the given line of a character from the character set (g-access in text modes).
      */
-    protected final int screenAddress(int line) {
-        return vic.baseCharacterMode + (line >> 3) * COLUMNS;
+    protected final int readCharacter(int character, int rc) {
+        return vic.bus.read(vic.baseCharacterSet + (character << 3) + rc);
     }
 
     /**
-     * Address of the given line of the first character in the character set.
+     * Read the given line of a column from the bitmap (g-access in bitmap modes).
      */
-    protected final int charsetAddress(int line) {
-        return vic.baseCharacterSet + (line & 0x07);
-    }
-
-    /**
-     * Address of the given line of the first column in the bitmap.
-     */
-    protected final int bitmapAddress(int line) {
-        return vic.baseBitmapMode + (line >> 3) * COLUMNS * 8 + (line & 0x07);
-    }
-
-    /**
-     * Color of a column from color ram.
-     */
-    protected final byte color(int screenAddress) {
-        return (byte) (vic.colorRam.read(screenAddress) & 0x0F); // color ram masks address itself
+    protected final int readBitmap(int vc, int rc) {
+        return vic.bus.read(vic.baseBitmapMode + (vc << 3) + rc);
     }
 
     /**
      * Render 8 pixels with 1 bit per pixel. Set bits are foreground.
-     *
-     * @return next index in screen data
      */
-    protected static int renderHires(byte[] screen, boolean[] foreground, int ptr, int bitmap, byte color0, byte color1) {
-        for (var mask = 0x80; mask != 0; mask >>= 1, ptr++) {
+    protected static void renderHires(byte[] pixels, boolean[] foreground, int x, int bitmap, byte color0, byte color1) {
+        for (var mask = 0x80; mask != 0; mask >>= 1, x++) {
             var set = (bitmap & mask) != 0;
-            screen[ptr] = set ? color1 : color0;
-            foreground[ptr] = set;
+            pixels[x] = set ? color1 : color0;
+            foreground[x] = set;
         }
-        return ptr;
     }
 
     /**
      * Render 4 double width pixels with 2 bits per pixel. Bit pairs 10 and 11 are foreground.
-     *
-     * @return next index in screen data
      */
-    protected static int renderMultiColor(byte[] screen, boolean[] foreground, int ptr, int bitmap, byte color0, byte color1, byte color2, byte color3) {
+    protected static void renderMultiColor(byte[] pixels, boolean[] foreground, int x, int bitmap, byte color0, byte color1, byte color2, byte color3) {
         for (var shift = 6; shift >= 0; shift -= 2) {
             var index = (bitmap >> shift) & 0x03;
             var pixel = switch (index) {
@@ -81,11 +57,10 @@ abstract class AbstractLineRenderer implements LineRenderer {
                 default -> color3;
             };
             var isForeground = index >= 2;
-            screen[ptr] = pixel;
-            foreground[ptr++] = isForeground;
-            screen[ptr] = pixel;
-            foreground[ptr++] = isForeground;
+            pixels[x] = pixel;
+            foreground[x++] = isForeground;
+            pixels[x] = pixel;
+            foreground[x++] = isForeground;
         }
-        return ptr;
     }
 }

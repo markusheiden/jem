@@ -104,6 +104,7 @@ public class TestC64 {
         cpu.getIRQ().connect(vic.getIRQ());
         cpu.getNMI().connect(cia2.getIRQ());
         cpu.getNMI().connect(keyboard.getNMI());
+        cpu.getRDY().connect(vic.getBA());
 
         keyboardBuffer = new KeyboardBuffer(clock, cpuBus);
 

@@ -1,13 +1,16 @@
 package de.heiden.jem.models.c64.components.vic;
 
+import java.util.Arrays;
+
 /**
- * Renders the sprites of one line over the graphics.
+ * Renders the sprites of one line into a line buffer, indexed by X coordinate.
+ * The display unit combines it with the graphics and the border.
  */
 class SpriteRenderer {
     /**
-     * Width of the display window in pixels.
+     * No sprite pixel.
      */
-    private static final int WIDTH = 320;
+    static final byte NONE = -1;
 
     /**
      * VIC.
@@ -15,64 +18,43 @@ class SpriteRenderer {
     private final VIC vic;
 
     /**
-     * Screen data of the line being rendered.
+     * Sprite pixel colors of the line, indexed by X coordinate, {@link #NONE} for no sprite pixel.
      */
-    private byte[] screen;
+    final byte[] pixels;
 
     /**
-     * Foreground flags of the line being rendered.
+     * Is the sprite pixel behind the foreground graphics?
      */
-    private boolean[] foreground;
-
-    /**
-     * Index of the first pixel of the display window of the line being rendered.
-     */
-    private int window;
-
-    /**
-     * Is the sprite being rendered behind the foreground graphics?
-     */
-    private boolean behind;
+    final boolean[] behind;
 
     /**
      * Constructor.
      *
      * @param vic
      *         VIC
+     * @param width
+     *         number of X coordinates
      */
-    SpriteRenderer(VIC vic) {
+    SpriteRenderer(VIC vic, int width) {
         this.vic = vic;
+        this.pixels = new byte[width];
+        this.behind = new boolean[width];
     }
 
     /**
-     * Render sprites for the given line. Sprite 0 has the highest priority, so it is rendered last.
-     * Sprites are clipped to the display window, because the border covers them.
-     * Sprites with background priority are hidden behind foreground graphics.
-     *
-     * @param screen
-     *         screen data
-     * @param foreground
-     *         foreground flags parallel to screen data
-     * @param ptr
-     *         index of the first pixel of the display window in screen data
-     * @param raster
-     *         raster line
+     * Render the displayed sprites with the data the sprite sequencer read for the current line.
+     * Sprite 0 has the highest priority, so it is rendered last.
      */
-    void render(byte[] screen, boolean[] foreground, int ptr, int raster) {
-        this.screen = screen;
-        this.foreground = foreground;
-        this.window = ptr;
-        var spritePointer = vic.baseCharacterMode + 0x03F8 + 7;
-        for (var i = 7; i >= 0; i--, spritePointer--) {
+    void render() {
+        Arrays.fill(pixels, NONE);
+
+        for (var i = 7; i >= 0; i--) {
             var sprite = vic.sprites[i];
-            var height = sprite.expandY ? 42 : 21;
-            if (sprite.enabled && sprite.y <= raster && raster < sprite.y + height) {
-                var spriteRow = sprite.expandY ? (raster - sprite.y) >> 1 : raster - sprite.y;
-                var dataAddress = (vic.bus.read(spritePointer) << 6) + spriteRow * 3;
-                behind = (vic.regSpritesBackgroundPriority & sprite.bitmask) != 0;
-                var spritePtr = ptr - vic.firstX_25 + sprite.x;
-                for (var b = 0; b < 3; b++) {
-                    spritePtr = renderByte(spritePtr, vic.bus.read(dataAddress + b), sprite);
+            if (sprite.display) {
+                var isBehind = (vic.regSpritesBackgroundPriority & sprite.bitmask) != 0;
+                var x = sprite.x;
+                for (var shift = 16; shift >= 0; shift -= 8) {
+                    x = renderByte(x, (sprite.data >> shift) & 0xFF, sprite, isBehind);
                 }
             }
         }
@@ -81,47 +63,45 @@ class SpriteRenderer {
     /**
      * Render a single byte of sprite data.
      *
-     * @return next index in screen data
+     * @return X coordinate of the next pixel
      */
-    private int renderByte(int ptr, int bitmap, Sprite sprite) {
+    private int renderByte(int x, int bitmap, Sprite sprite, boolean isBehind) {
         var width = sprite.expandX ? 2 : 1;
         if (sprite.multicolor) {
             for (var shift = 6; shift >= 0; shift -= 2) {
-                ptr = renderPixel(ptr, 2 * width, multiColor((bitmap >> shift) & 0x03, sprite.color));
+                x = renderPixel(x, 2 * width, multiColor((bitmap >> shift) & 0x03, sprite.color), isBehind);
             }
         } else {
             for (var mask = 0x80; mask != 0; mask >>= 1) {
-                ptr = renderPixel(ptr, width, (bitmap & mask) == 0 ? -1 : sprite.color);
+                x = renderPixel(x, width, (bitmap & mask) == 0 ? NONE : sprite.color, isBehind);
             }
         }
-        return ptr;
+        return x;
     }
 
     /**
-     * Render one sprite pixel, clipped to the display window.
-     * Transparent pixels and pixels behind foreground graphics keep the graphics.
+     * Render one sprite pixel. Transparent pixels keep the pixels of sprites with lower priority.
      *
      * @param color
-     *         color or -1 for transparent
-     * @return next index in screen data
+     *         color or {@link #NONE} for transparent
+     * @return X coordinate of the next pixel
      */
-    private int renderPixel(int ptr, int width, int color) {
-        if (color >= 0) {
-            for (int i = Math.max(ptr, window), to = Math.min(ptr + width, window + WIDTH); i < to; i++) {
-                if (!(behind && foreground[i])) {
-                    screen[i] = (byte) color;
-                }
+    private int renderPixel(int x, int width, int color, boolean isBehind) {
+        if (color != NONE) {
+            for (int i = x, to = Math.min(x + width, pixels.length); i < to; i++) {
+                pixels[i] = (byte) color;
+                behind[i] = isBehind;
             }
         }
-        return ptr + width;
+        return x + width;
     }
 
     /**
-     * Color of a multi color sprite pixel or -1 for transparent.
+     * Color of a multi color sprite pixel or {@link #NONE} for transparent.
      */
     private int multiColor(int colorIndex, byte color) {
         return switch (colorIndex) {
-            case 0 -> -1;
+            case 0 -> NONE;
             case 1 -> vic.regSpritesMulticolor0;
             case 2 -> color;
             default -> vic.regSpritesMulticolor1;

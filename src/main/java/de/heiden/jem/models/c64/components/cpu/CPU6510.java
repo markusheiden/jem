@@ -70,6 +70,12 @@ public class CPU6510 implements ClockedComponent {
     private boolean nmiState = false;
 
     /**
+     * Port for ready, e.g. connected to BA of the VIC. Low halts the CPU at its next read cycle.
+     */
+    private final InputPort rdy;
+    private boolean ready = true;
+
+    /**
      * Address -> Patch.
      */
     private final Map<Integer, Patch> patches = new HashMap<>();
@@ -114,6 +120,9 @@ public class CPU6510 implements ClockedComponent {
             }
             nmiState = nmi;
         });
+
+        rdy = new InputPortImpl();
+        rdy.addInputPortListener((value, mask) -> ready = (value & 0x01) != 0);
 
         logger.debug("start cpu");
     }
@@ -189,6 +198,13 @@ public class CPU6510 implements ClockedComponent {
      */
     public InputPort getNMI() {
         return nmi;
+    }
+
+    /**
+     * RDY input signal.
+     */
+    public InputPort getRDY() {
+        return rdy;
     }
 
     @Override
@@ -3658,6 +3674,11 @@ public class CPU6510 implements ClockedComponent {
      */
     @Interruptible
     protected final int read(int addr) {
+        // The CPU halts at read cycles while not ready. Write cycles are not affected.
+        while (!ready) {
+            tick.waitForTick();
+        }
+
         // Always read from bus!
         var result = bus.read(addr);
         if (addr <= 1) {
