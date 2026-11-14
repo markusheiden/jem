@@ -55,7 +55,7 @@ public class Sprite {
      * Set LSB of x.
      */
     public void setXLSB(int x) {
-        this.x = x;
+        this.x = this.x & 0x100 | x & 0xFF;
     }
 
     /**
