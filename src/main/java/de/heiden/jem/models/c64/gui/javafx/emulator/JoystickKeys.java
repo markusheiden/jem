@@ -14,7 +14,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 /**
- * Joystick emulation via keys: Cursor keys for the directions, command for fire.
+ * Joystick emulation via keys: Cursor keys for the directions, shift for fire.
  * F12 switches between off, joystick 2 and joystick 1.
  */
 public class JoystickKeys {
@@ -33,7 +33,7 @@ public class JoystickKeys {
             KeyCode.DOWN, Direction.DOWN,
             KeyCode.LEFT, Direction.LEFT,
             KeyCode.RIGHT, Direction.RIGHT,
-            KeyCode.COMMAND, Direction.FIRE));
+            KeyCode.SHIFT, Direction.FIRE));
 
     /**
      * Joystick in port 1.
@@ -130,12 +130,19 @@ public class JoystickKeys {
     }
 
     /**
-     * Switch to the next mode: Off -> joystick 2 -> joystick 1 -> off.
+     * Release all joystick keys, e.g. when the window lost the focus and thus won't receive their releases.
      */
-    private void switchMode() {
+    public void releaseAll() {
         joystick1.releaseAll();
         joystick2.releaseAll();
         pressed.clear();
+    }
+
+    /**
+     * Switch to the next mode: Off -> joystick 2 -> joystick 1 -> off.
+     */
+    private void switchMode() {
+        releaseAll();
 
         mode = JoystickMode.values()[(mode.ordinal() + 1) % JoystickMode.values().length];
         logger.info("Joystick keys: {}", mode);
