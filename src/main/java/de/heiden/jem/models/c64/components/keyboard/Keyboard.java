@@ -1,5 +1,7 @@
 package de.heiden.jem.models.c64.components.keyboard;
 
+import de.heiden.jem.components.clock.Clock;
+import de.heiden.jem.components.clock.ClockEvent;
 import de.heiden.jem.components.ports.InputOutputPort;
 import de.heiden.jem.components.ports.OutputPort;
 import de.heiden.jem.components.ports.OutputPortImpl;
@@ -10,14 +12,27 @@ import org.slf4j.LoggerFactory;
 /**
  * Keyboard.
  * <p>
+ * Keys are pressed by the GUI thread, but the ports are driven by the C64 thread only,
+ * because the ports are not thread safe.
+ * <p>
  * TODO mapping of @, :, /, arrow up, ;, *, pound, commodore, run stop, arrow left
  * TODO C64 like mapping of -, +, home, shift lock, control?
  */
-public class Keyboard implements IKeyboard {
+public class Keyboard extends ClockEvent implements IKeyboard {
     /**
      * Logger.
      */
     private final Logger logger = LoggerFactory.getLogger(getClass());
+
+    /**
+     * Ticks between port updates: One PAL raster line.
+     */
+    private static final int INTERVAL = 63;
+
+    /**
+     * Clock.
+     */
+    private final Clock clock;
 
     /**
      * Ports for key matrix.
@@ -30,13 +45,37 @@ public class Keyboard implements IKeyboard {
     private final OutputPortImpl nmi;
 
     /**
-     * C64 key matrix.
+     * C64 key matrix, as currently driven to the ports.
      */
     private final int[] matrix;
 
     /**
+     * Pressed keys: Row i in bits 8*i to 8*i+7.
+     * Written by the GUI thread, read by the C64 thread.
+     */
+    private volatile long pressed = 0;
+
+    /**
+     * Pressed keys, as currently driven to the ports.
+     */
+    private long driven = 0;
+
+    /**
+     * Is restore pressed?
+     * Written by the GUI thread, read by the C64 thread.
+     */
+    private volatile boolean restore = false;
+
+    /**
+     * Is restore pressed, as currently driven to the NMI output?
+     */
+    private boolean restoreDriven = false;
+
+    /**
      * Constructor.
      *
+     * @param clock
+     *         clock
      * @param port0
      *         port for rows
      * @param port1
@@ -44,7 +83,11 @@ public class Keyboard implements IKeyboard {
      * @require port0 != null
      * @require port1 != null
      */
-    public Keyboard(@Nonnull InputOutputPort port0, @Nonnull InputOutputPort port1) {
+    public Keyboard(@Nonnull Clock clock, @Nonnull InputOutputPort port0, @Nonnull InputOutputPort port1) {
+        super("Keyboard");
+
+        this.clock = clock;
+
         // Connect to input ports.
         this.port0 = port0;
         this.port0.addOutputPortListener((value, mask) -> updatePorts());
@@ -61,6 +104,8 @@ public class Keyboard implements IKeyboard {
 
         // Init matrix.
         matrix = new int[] { 0, 0, 0, 0, 0, 0, 0, 0 };
+
+        clock.addClockEvent(INTERVAL, this);
     }
 
     /**
@@ -74,30 +119,51 @@ public class Keyboard implements IKeyboard {
     @Override
     public void press(Key key) {
         switch (key) {
-            case RESTORE -> {
-                // Low active.
-                nmi.setOutputData(0x0);
-            }
-            default -> {
-                matrix[key.getRow()] |= 1 << key.getColumn();
-                updatePorts();
-                logKeyMatrix();
-            }
+            case RESTORE -> restore = true;
+            default -> pressed |= bit(key);
         }
     }
 
     @Override
     public void release(Key key) {
         switch (key) {
-            case RESTORE -> {
-                // Low active.
-                nmi.setOutputData(0x1);
+            case RESTORE -> restore = false;
+            default -> pressed &= ~bit(key);
+        }
+    }
+
+    /**
+     * Bit of the key in {@link #pressed}.
+     */
+    private static long bit(Key key) {
+        return 1L << (key.getRow() * 8 + key.getColumn());
+    }
+
+    @Override
+    public void execute(long tick) {
+        updateKeys();
+        clock.addClockEvent(tick + INTERVAL, this);
+    }
+
+    /**
+     * Drive the pressed keys to the ports and restore to the NMI output.
+     */
+    void updateKeys() {
+        var restore = this.restore;
+        if (restore != restoreDriven) {
+            restoreDriven = restore;
+            // Low active.
+            nmi.setOutputData(restore ? 0x0 : 0x1);
+        }
+
+        var pressed = this.pressed;
+        if (pressed != driven) {
+            driven = pressed;
+            for (var i = 0; i < matrix.length; i++) {
+                matrix[i] = (int) (pressed >>> (i * 8)) & 0xFF;
             }
-            default -> {
-                matrix[key.getRow()] &= 0xFF - (1 << key.getColumn());
-                updatePorts();
-                logKeyMatrix();
-            }
+            updatePorts();
+            logKeyMatrix();
         }
     }
 

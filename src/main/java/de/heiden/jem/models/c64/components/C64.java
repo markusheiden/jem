@@ -108,7 +108,7 @@ public class C64 {
         var vicBus = new VICBus(cia2.portA(), ram, charset);
         vic = new VIC6569PAL(clock, vicBus, colorRam);
 
-        keyboard = new Keyboard(cia1.portA(), cia1.portB());
+        keyboard = new Keyboard(clock, cia1.portA(), cia1.portB());
         // Joystick port 1 is connected to CIA 1 port B, joystick port 2 to CIA 1 port A.
         joystick1 = new Joystick(clock, cia1.portB());
         joystick2 = new Joystick(clock, cia1.portA());

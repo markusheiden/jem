@@ -94,7 +94,7 @@ public class TestC64 {
         var vicBus = new VICBus(cia2.portA(), ram, charset);
         vic = new VIC6569PAL(clock, vicBus, colorRam);
 
-        keyboard = new Keyboard(cia1.portA(), cia1.portB());
+        keyboard = new Keyboard(clock, cia1.portA(), cia1.portB());
 
         cpu = clock.addClockedComponent(Clock.CPU, new CPU6510Debugger());
         cpuBus = new C64Bus(ram, basic, vic, colorRam, cia1, cia2, charset, kernel);

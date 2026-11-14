@@ -1,5 +1,6 @@
 package de.heiden.jem.models.c64.components.keyboard;
 
+import de.heiden.jem.components.clock.serialthreads.SerialClock;
 import de.heiden.jem.components.ports.InputOutputPortImpl;
 import org.junit.jupiter.api.Test;
 
@@ -11,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class KeyboardTest {
     private final InputOutputPortImpl port0 = new InputOutputPortImpl();
     private final InputOutputPortImpl port1 = new InputOutputPortImpl();
-    private final Keyboard keyboard = new Keyboard(port0, port1);
+    private final Keyboard keyboard = new Keyboard(new SerialClock(), port0, port1);
 
     /**
      * Test single key presses.
@@ -19,6 +20,7 @@ class KeyboardTest {
     @Test
     void singleKey() {
         keyboard.press(Key.A);
+        keyboard.updateKeys();
         port1.setOutputData(0x00); // port 1 is input
         port1.setOutputMask(0x00);
         port0.setOutputData(0x00); // port 0 drives all bits 0
@@ -40,6 +42,7 @@ class KeyboardTest {
         keyboard.release(Key.A);
 
         keyboard.press(Key.B);
+        keyboard.updateKeys();
         port1.setOutputData(0x00);
         port1.setOutputMask(0x00);
         port0.setOutputData(0x00);
@@ -59,6 +62,42 @@ class KeyboardTest {
         assertEquals(0xFF, port0.inputData());
         assertEquals(0x08, port0.inputMask());
         keyboard.release(Key.B);
+    }
+
+    /**
+     * Keys are not visible before the C64 thread updates the ports.
+     */
+    @Test
+    void deferred() {
+        port1.setOutputData(0x00); // port 1 is input
+        port1.setOutputMask(0x00);
+        port0.setOutputData(0x00); // port 0 drives all bits 0
+        port0.setOutputMask(0xFF);
+
+        keyboard.press(Key.A);
+        assertEquals(0xFF, port1.inputData());
+        keyboard.updateKeys();
+        assertEquals(0xFB, port1.inputData()); // row 2 is driven to 0
+
+        keyboard.release(Key.A);
+        assertEquals(0xFB, port1.inputData());
+        keyboard.updateKeys();
+        assertEquals(0xFF, port1.inputData());
+    }
+
+    /**
+     * Restore is not visible before the C64 thread updates the NMI output.
+     */
+    @Test
+    void restore() {
+        assertEquals(0x1, keyboard.getNMI().outputData() & 0x1);
+        keyboard.press(Key.RESTORE);
+        assertEquals(0x1, keyboard.getNMI().outputData() & 0x1);
+        keyboard.updateKeys();
+        assertEquals(0x0, keyboard.getNMI().outputData() & 0x1);
+        keyboard.release(Key.RESTORE);
+        keyboard.updateKeys();
+        assertEquals(0x1, keyboard.getNMI().outputData() & 0x1);
     }
 
     /**
