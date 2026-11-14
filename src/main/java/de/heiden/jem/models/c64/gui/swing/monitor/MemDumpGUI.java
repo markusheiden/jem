@@ -85,8 +85,8 @@ public class MemDumpGUI extends JPanel {
         // update text
         text.clear();
         if (bus != null) {
-            int addr = scrollBar.getValue();
-            for (int i = 0; i < text.getRows(); i++, addr += 8) {
+            var addr = scrollBar.getValue();
+            for (var i = 0; i < text.getRows(); i++, addr += 8) {
                 dumpLine(addr, i);
             }
         }

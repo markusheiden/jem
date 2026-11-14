@@ -58,7 +58,7 @@ public class VICBus implements BusDevice {
     public final int read(int address) {
         assert address >= 0x0000 && address < 0x4000 : "address >= 0x0000 && address < 0x4000";
 
-        int cpuAddress = vicBase + address;
+        var cpuAddress = vicBase + address;
         return ((cpuAddress & 0x7000) == 0x1000 ? character : ram).read(cpuAddress);
     }
 

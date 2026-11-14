@@ -100,7 +100,7 @@ public class TestC64 {
         cpu.getNMI().connect(keyboard.getNMI());
 
         // init RAM with 0x02 (crash) to easier detect wrong behaviour
-        for (int addr = 0; addr < 0x10000; addr++) {
+        for (var addr = 0; addr < 0x10000; addr++) {
             cpuBus.write(0x02, addr);
         }
 

@@ -65,9 +65,9 @@ public class PLA {
      *         address
      */
     public Output cpu(boolean rw, int addr, boolean loram, boolean hiram, boolean charen, boolean exrom, boolean game) {
-        int a = addr >> 12;
+        var a = addr >> 12;
 
-        int plaAddress =
+        var plaAddress =
                 1 << CAS.ordinal() +
                      1 << AEC.ordinal();
 

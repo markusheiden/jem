@@ -122,7 +122,7 @@ public final class CPU6510State {
      * Get and increment PC.
      */
     public int incPC() {
-        int pc = PC;
+        var pc = PC;
         PC = (pc + 1) & 0xFFFF;
         return pc;
     }
@@ -140,7 +140,7 @@ public final class CPU6510State {
      * @return Stack pointer address before decrement
      */
     public int decS() {
-        int s = S;
+        var s = S;
         S = ((s - 1) & 0xFF);
         return STACK | s;
     }
@@ -151,7 +151,7 @@ public final class CPU6510State {
      * @return Incremented stack pointer address
      */
     public int incS() {
-        int s = ((S + 1) & 0xFF);
+        var s = ((S + 1) & 0xFF);
         S = s;
         return STACK | s;
     }
@@ -178,7 +178,7 @@ public final class CPU6510State {
      * Calculates status register P from flags.
      */
     public int getP() {
-        int p = U_BIT;
+        var p = U_BIT;
         if (C) {
             p |= C_BIT;
         }

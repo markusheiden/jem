@@ -10,7 +10,7 @@ public final class ParallelNotifyClock extends AbstractSynchronizedClock {
     protected void doSynchronizedInit() {
         var components = clockedComponents();
         var ticks = new ParallelSpinTick[components.length];
-        for (int i = 0; i < components.length; i++) {
+        for (var i = 0; i < components.length; i++) {
             var component = components[i];
             var tick = new ParallelSpinTick();
             component.setTick(tick);

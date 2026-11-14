@@ -11,11 +11,11 @@ class ExtendedColorTextLineRenderer extends AbstractLineRenderer {
 
     @Override
     public void render(byte[] screen, boolean[] foreground, int ptr, int line) {
-        int screenAddress = screenAddress(line);
-        int charsetAddress = charsetAddress(line);
-        for (int column = 0; column < COLUMNS; column++, screenAddress++) {
-            int character = vic.bus.read(screenAddress);
-            int bitmap = vic.bus.read(charsetAddress + ((character & 0x3F) << 3));
+        var screenAddress = screenAddress(line);
+        var charsetAddress = charsetAddress(line);
+        for (var column = 0; column < COLUMNS; column++, screenAddress++) {
+            var character = vic.bus.read(screenAddress);
+            var bitmap = vic.bus.read(charsetAddress + ((character & 0x3F) << 3));
             ptr = renderHires(screen, foreground, ptr, bitmap, backgroundColor(character >> 6), color(screenAddress));
         }
     }

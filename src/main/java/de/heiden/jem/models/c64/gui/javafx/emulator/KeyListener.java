@@ -20,18 +20,18 @@ public class KeyListener {
      */
     public static void attachTo(Scene scene, IKeyboard keyboard, KeyMapping keyMapping) {
         scene.setOnKeyPressed(e -> {
-            Key[] keys = keyMapping.getKeys(e);
+            var keys = keyMapping.getKeys(e);
             if (keys != null) {
-                for (Key key : keys) {
+                for (var key : keys) {
                     keyboard.press(key);
                 }
             }
         });
 
         scene.setOnKeyReleased(e -> {
-            Key[] keys = keyMapping.getKeys(e);
+            var keys = keyMapping.getKeys(e);
             if (keys != null) {
-                for (Key key : keys) {
+                for (var key : keys) {
                     keyboard.release(key);
                 }
             }

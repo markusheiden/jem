@@ -15,7 +15,7 @@ public final class SequentialYieldClock extends AbstractSynchronizedClock {
     @Override
     protected void doSynchronizedInit() {
         var components = clockedComponents();
-        for (int state = 0; state < components.length; state++) {
+        for (var state = 0; state < components.length; state++) {
             var component = components[state];
             var tick = new SequentialSpinTick(state);
             component.setTick(tick);
@@ -69,7 +69,7 @@ public final class SequentialYieldClock extends AbstractSynchronizedClock {
 
         @Override
         public void waitForTick() {
-            final int tickState = this.tickState;
+            final var tickState = this.tickState;
             // Execute next component thread.
             state = tickState + 1;
             // Wait for the next tick.

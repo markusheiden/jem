@@ -62,16 +62,16 @@ class SpriteRenderer {
         this.screen = screen;
         this.foreground = foreground;
         this.window = ptr;
-        int spritePointer = vic.baseCharacterMode + 0x03F8 + 7;
-        for (int i = 7; i >= 0; i--, spritePointer--) {
-            Sprite sprite = vic.sprites[i];
-            int height = sprite.expandY ? 42 : 21;
+        var spritePointer = vic.baseCharacterMode + 0x03F8 + 7;
+        for (var i = 7; i >= 0; i--, spritePointer--) {
+            var sprite = vic.sprites[i];
+            var height = sprite.expandY ? 42 : 21;
             if (sprite.enabled && sprite.y <= raster && raster < sprite.y + height) {
-                int spriteRow = sprite.expandY ? (raster - sprite.y) >> 1 : raster - sprite.y;
-                int dataAddress = (vic.bus.read(spritePointer) << 6) + spriteRow * 3;
+                var spriteRow = sprite.expandY ? (raster - sprite.y) >> 1 : raster - sprite.y;
+                var dataAddress = (vic.bus.read(spritePointer) << 6) + spriteRow * 3;
                 behind = (vic.regSpritesBackgroundPriority & sprite.bitmask) != 0;
-                int spritePtr = ptr - vic.firstX_25 + sprite.x;
-                for (int b = 0; b < 3; b++) {
+                var spritePtr = ptr - vic.firstX_25 + sprite.x;
+                for (var b = 0; b < 3; b++) {
                     spritePtr = renderByte(spritePtr, vic.bus.read(dataAddress + b), sprite);
                 }
             }
@@ -84,13 +84,13 @@ class SpriteRenderer {
      * @return next index in screen data
      */
     private int renderByte(int ptr, int bitmap, Sprite sprite) {
-        int width = sprite.expandX ? 2 : 1;
+        var width = sprite.expandX ? 2 : 1;
         if (sprite.multicolor) {
-            for (int shift = 6; shift >= 0; shift -= 2) {
+            for (var shift = 6; shift >= 0; shift -= 2) {
                 ptr = renderPixel(ptr, 2 * width, multiColor((bitmap >> shift) & 0x03, sprite.color));
             }
         } else {
-            for (int mask = 0x80; mask != 0; mask >>= 1) {
+            for (var mask = 0x80; mask != 0; mask >>= 1) {
                 ptr = renderPixel(ptr, width, (bitmap & mask) == 0 ? -1 : sprite.color);
             }
         }

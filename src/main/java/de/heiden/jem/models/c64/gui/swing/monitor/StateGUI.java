@@ -51,7 +51,7 @@ public class StateGUI extends JPanel {
             text.setText(0, 3, "X =" + HexUtil.hexByte(state.X));
             text.setText(0, 4, "Y =" + HexUtil.hexByte(state.Y));
             text.setText(0, 5, "P =");
-            int c = 3;
+            var c = 3;
             text.setText(c++, 5, state.N ? "N" : "n");
             text.setText(c++, 5, state.V ? "V" : "v");
             text.setText(c++, 5, "1");

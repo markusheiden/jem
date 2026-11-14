@@ -42,7 +42,7 @@ public final class SequentialContinuationClock extends AbstractSimpleClock {
 
         var scope = new ContinuationScope("Clock");
         var continuations = new Continuation[components.length];
-        for (int i = 0; i < components.length; i++) {
+        for (var i = 0; i < components.length; i++) {
             var component = components[i];
             component.setTick(() -> Continuation.yield(scope));
             continuations[i] = new Continuation(scope, component::run);

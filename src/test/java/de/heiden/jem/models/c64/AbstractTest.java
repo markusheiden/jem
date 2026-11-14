@@ -340,7 +340,7 @@ public abstract class AbstractTest {
      */
     protected void type(String s) throws Exception {
         var dummySource = new Button();
-        for (char c : s.toCharArray()) {
+        for (var c : s.toCharArray()) {
             var event = new KeyEvent(dummySource, 0, 0, 0, 0, c, 0);
             systemIn.keyPressed(event);
             waitCycles(21000); // wait at least one interrupt
@@ -423,7 +423,7 @@ public abstract class AbstractTest {
         System.out.flush();
 
         // Log debug message.
-        long ticks = getTick() - start;
+        var ticks = getTick() - start;
         log.debug("{} after ~ {} seconds ({} ticks)", message, ticks / 1000000, ticks);
     }
 
@@ -444,7 +444,7 @@ public abstract class AbstractTest {
      *         Cycles
      */
     protected void waitCycles(long cycles) throws Exception {
-        for (long end = getTick() + cycles; getTick() < end; ) {
+        for (var end = getTick() + cycles; getTick() < end; ) {
             if (throwable != null) {
                 // Early exit on exceptions, because the emulation has been halted
                 return;

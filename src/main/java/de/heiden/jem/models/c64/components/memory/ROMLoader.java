@@ -69,7 +69,7 @@ public class ROMLoader {
     protected static @Nonnull byte[] load(int length, String filename) throws Exception {
         try (var stream = ROMLoader.class.getResourceAsStream(filename)) {
             var result = new byte[length];
-            int size = stream.read(result);
+            var size = stream.read(result);
 
             if (size != length) {
                 throw new Exception("ROM image '%s' is too short".formatted(filename));

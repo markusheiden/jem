@@ -89,7 +89,7 @@ public class RealTimeSlowDown extends ClockEvent {
         this.clock.addClockEvent(0, new ClockEvent("Init real time slow down") {
             @Override
             public void execute(long tick) {
-                long now = System.nanoTime();
+                var now = System.nanoTime();
                 elapsed = 0;
 
                 counter = RealTimeSlowDown.this.div;
@@ -104,12 +104,12 @@ public class RealTimeSlowDown extends ClockEvent {
     @Override
     public void execute(long tick) {
         // Save the current timestamp as the end of the last processing cycle
-        long now = System.nanoTime();
+        var now = System.nanoTime();
         // Compute the duration of the last processing cycle and add it to the duration of processing 1 second
         elapsed += now - lastTimestamp;
 
-        long next = nextTimestamp;
-        long nextTick = tick;
+        var next = nextTimestamp;
+        var nextTick = tick;
         if (counter == 0) {
             if (logger.isInfoEnabled()) {
                 logger.info("1 simulated second took {} ms", elapsed / 1000000);

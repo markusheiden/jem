@@ -10,10 +10,10 @@ class BitmapLineRenderer extends AbstractLineRenderer {
 
     @Override
     public void render(byte[] screen, boolean[] foreground, int ptr, int line) {
-        int screenAddress = screenAddress(line);
-        int bitmapAddress = bitmapAddress(line);
-        for (int column = 0; column < COLUMNS; column++, screenAddress++, bitmapAddress += 8) {
-            int colors = vic.bus.read(screenAddress);
+        var screenAddress = screenAddress(line);
+        var bitmapAddress = bitmapAddress(line);
+        for (var column = 0; column < COLUMNS; column++, screenAddress++, bitmapAddress += 8) {
+            var colors = vic.bus.read(screenAddress);
             ptr = renderHires(screen, foreground, ptr, vic.bus.read(bitmapAddress), (byte) (colors & 0x0F), (byte) (colors >> 4));
         }
     }

@@ -39,7 +39,7 @@ public class LoadFile extends Patch {
 
         try {
             var file = new ByteArrayInputStream(content);
-            int endAddress = bus.read(0xB9) == 0 ?
+            var endAddress = bus.read(0xB9) == 0 ?
                     read(file, wordBus.readWord(0xC3), bus) :
                     read(file, bus);
 

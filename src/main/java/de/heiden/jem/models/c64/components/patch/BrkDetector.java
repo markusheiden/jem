@@ -24,7 +24,7 @@ public class BrkDetector extends Patch {
      * Has the program run into a BRK? Resets the BRK flag.
      */
     public boolean hasBrk() {
-        boolean result = brk;
+        var result = brk;
         brk = false;
         return result;
     }

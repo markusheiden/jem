@@ -110,7 +110,7 @@ public final class InputOutputPortImpl implements InputOutputPort {
      */
     @Override
     public int outputData() {
-        int mask = outputPort.outputMask();
+        var mask = outputPort.outputMask();
         return outputPort.outputData() & mask | inputPort.inputData() & ~mask;
     }
 

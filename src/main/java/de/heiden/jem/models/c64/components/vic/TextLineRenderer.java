@@ -10,10 +10,10 @@ class TextLineRenderer extends AbstractLineRenderer {
 
     @Override
     public void render(byte[] screen, boolean[] foreground, int ptr, int line) {
-        int screenAddress = screenAddress(line);
-        int charsetAddress = charsetAddress(line);
-        for (int column = 0; column < COLUMNS; column++, screenAddress++) {
-            int bitmap = vic.bus.read(charsetAddress + (vic.bus.read(screenAddress) << 3));
+        var screenAddress = screenAddress(line);
+        var charsetAddress = charsetAddress(line);
+        for (var column = 0; column < COLUMNS; column++, screenAddress++) {
+            var bitmap = vic.bus.read(charsetAddress + (vic.bus.read(screenAddress) << 3));
             ptr = renderHires(screen, foreground, ptr, bitmap, vic.regBackgroundColor0, color(screenAddress));
         }
     }

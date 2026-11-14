@@ -37,10 +37,10 @@ public class LoadFromD64 extends Patch {
     protected int execute(CPU6510State state, BusDevice bus) {
         // Read filename from ($BB), length ($B7)
         var wordBus = new WordBus(bus);
-        int addr = wordBus.readWord(0xBB);
-        int len = bus.read(0xB7);
+        var addr = wordBus.readWord(0xBB);
+        var len = bus.read(0xB7);
         var name = new byte[len];
-        for (int i = 0; i < name.length; i++) {
+        for (var i = 0; i < name.length; i++) {
             name[i] = (byte) bus.read(addr++);
         }
 
@@ -57,7 +57,7 @@ public class LoadFromD64 extends Patch {
         var content = d64.read(file.get());
 
         try {
-            int endAddress = bus.read(0xB9) == 0 ?
+            var endAddress = bus.read(0xB9) == 0 ?
                     FileUtil.read(new ByteArrayInputStream(content), wordBus.readWord(0xC3), bus) :
                     FileUtil.read(new ByteArrayInputStream(content), bus);
 

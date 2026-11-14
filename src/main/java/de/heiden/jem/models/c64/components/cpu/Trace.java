@@ -44,7 +44,7 @@ public final class Trace {
 
         var opcode = OPCODES[bus.read(pc)];
         size = opcode.getSize();
-        for (int i = 0; i < opcode.getSize(); i++) {
+        for (var i = 0; i < opcode.getSize(); i++) {
             bytes[i] = (byte) bus.read(pc);
             pc = (pc + 1) & 0xFFFF;
         }

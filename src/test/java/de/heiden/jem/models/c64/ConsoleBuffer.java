@@ -32,7 +32,7 @@ public class ConsoleBuffer extends OutputStream {
 
     @Override
     public synchronized void write(int b) throws IOException {
-        char c = charset.toChar((byte) b);
+        var c = charset.toChar((byte) b);
         if (c > 0) {
             writeChar(c);
         }

@@ -28,17 +28,17 @@ public class DisplayUnit extends AbstractDisplayUnit {
 
         //noinspection InfiniteLoopStatement
         while (true) {
-            byte[] screen = screenRender;
+            var screen = screenRender;
 
-            int linesPerScreen = vic.linesPerScreen;
-            int cyclesPerLine = vic.cyclesPerLine;
+            var linesPerScreen = vic.linesPerScreen;
+            var cyclesPerLine = vic.cyclesPerLine;
 
-            boolean borderY = true;
-            boolean borderX = true;
+            var borderY = true;
+            var borderX = true;
 
             // first left part of first line is not available, because there is no previous line
-            int ptr = vic.lastX - vic.firstVisibleX;
-            for (int line = 0; line < linesPerScreen; line++) {
+            var ptr = vic.lastX - vic.firstVisibleX;
+            for (var line = 0; line < linesPerScreen; line++) {
                 // turn y border on / off
                 if (line == vic.firstLine_25) {
                     borderY = false;
@@ -46,7 +46,7 @@ public class DisplayUnit extends AbstractDisplayUnit {
                     borderY = true;
                 }
 
-                for (int column = 0; column < cyclesPerLine * 8; column++) {
+                for (var column = 0; column < cyclesPerLine * 8; column++) {
                     if (column == vic.firstX_25) {
                         borderX = false;
                     } else if (column == vic.lastX_25) {
@@ -68,13 +68,13 @@ public class DisplayUnit extends AbstractDisplayUnit {
         readSprite(5);
         readSprite(6);
         readSprite(7);
-        for (int refresh = 0; refresh < 5; refresh++)
+        for (var refresh = 0; refresh < 5; refresh++)
         {
           tick.waitForTick();
         }
         readLine();
         // TODO 2010-03-15 mh: correct number of idle cycles for ntsc
-        for (int idle = 0; idle < 2; idle++)
+        for (var idle = 0; idle < 2; idle++)
         {
           tick.waitForTick();
         }

@@ -41,7 +41,7 @@ public final class SequentialFiberParkClock extends AbstractSimpleClock {
         var numComponents = components.length;
 
         var fibers = new Thread[numComponents + 1];
-        for (int i = 0; i < numComponents; i++) {
+        for (var i = 0; i < numComponents; i++) {
             var component = components[i];
             fibers[i] = buildVirtualThread(() -> {
                 LockSupport.park();
@@ -72,14 +72,14 @@ public final class SequentialFiberParkClock extends AbstractSimpleClock {
         }
         fibers[numComponents] = starterFiber;
 
-        for (int i = 0; i < numComponents; i++) {
+        for (var i = 0; i < numComponents; i++) {
             var component = components[i];
             // Execute next component thread and wait for next tick.
             var nextFiber = fibers[i + 1];
             component.setTick(() -> executeNextComponent(nextFiber));
         }
 
-        for (int i = 0; i < numComponents; i++) {
+        for (var i = 0; i < numComponents; i++) {
             fibers[i].start();
         }
         try {

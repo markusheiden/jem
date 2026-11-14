@@ -430,8 +430,8 @@ class CPU6510Test {
      * Test of ??A #$xx.
      */
     private void test_xxA_IMM(int opcode, BiFunction<Integer, Integer, Integer> operator) {
-        for (int a = 0x00; a <= 0xFF; a = inc(a)) {
-            for (int value = 0x00; value <= 0xFF; value = inc(value)) {
+        for (var a = 0x00; a <= 0xFF; a = inc(a)) {
+            for (var value = 0x00; value <= 0xFF; value = inc(value)) {
                 resetState(value);
                 state.A = a;
                 captureExpectedState();
@@ -452,8 +452,8 @@ class CPU6510Test {
      * Test of ??A $xx.
      */
     private void test_xxA_ZP(int opcode, BiFunction<Integer, Integer, Integer> operator) {
-        for (int a = 0x00; a <= 0xFF; a = inc(a)) {
-            for (int value = 0x00; value <= 0xFF; value = inc(value)) {
+        for (var a = 0x00; a <= 0xFF; a = inc(a)) {
+            for (var value = 0x00; value <= 0xFF; value = inc(value)) {
                 resetState(value);
                 state.A = a;
                 captureExpectedState();
@@ -477,8 +477,8 @@ class CPU6510Test {
      * Test of ??A $xxxx.
      */
     private void test_xxA_ABS(int opcode, BiFunction<Integer, Integer, Integer> operator) {
-        for (int a = 0x00; a <= 0xFF; a = inc(a)) {
-            for (int value = 0x00; value <= 0xFF; value = inc(value)) {
+        for (var a = 0x00; a <= 0xFF; a = inc(a)) {
+            for (var value = 0x00; value <= 0xFF; value = inc(value)) {
                 resetState(value);
                 state.A = a;
                 captureExpectedState();
@@ -502,7 +502,7 @@ class CPU6510Test {
      * Test of IN?/DE?.
      */
     private void test_increment(int opcode, SetRegister destination, int increment) {
-        for (int value = 0x00; value <= 0xFF; value = inc(value)) {
+        for (var value = 0x00; value <= 0xFF; value = inc(value)) {
             resetState(value);
             destination.set(state, value);
             captureExpectedState();
@@ -510,7 +510,7 @@ class CPU6510Test {
             execute(opcode); // IN?/DE?, JMP
 
             // register and flags change
-            int result = (value + increment) & 0xFF;
+            var result = (value + increment) & 0xFF;
             destination.set(expectedState, result);
             expectedZN(result);
             // Check the state and jump back.
@@ -522,7 +522,7 @@ class CPU6510Test {
      * Test of LD? #$xx.
      */
     private void test_LDx_IMM(int opcode, SetRegister destination) {
-        for (int value = 0x00; value <= 0xFF; value = inc(value)) {
+        for (var value = 0x00; value <= 0xFF; value = inc(value)) {
             resetState(value);
             captureExpectedState();
 
@@ -540,7 +540,7 @@ class CPU6510Test {
      * Test of LD? $xx.
      */
     private void test_LDx_ZP(int opcode, SetRegister destination) {
-        for (int value = 0x00; value <= 0xFF; value = inc(value)) {
+        for (var value = 0x00; value <= 0xFF; value = inc(value)) {
             resetState(value);
             captureExpectedState();
 
@@ -561,7 +561,7 @@ class CPU6510Test {
      * Test of LD? $xxxx.
      */
     private void test_LDx_ABS(int opcode, SetRegister destination) {
-        for (int value = 0x00; value <= 0xFF; value = inc(value)) {
+        for (var value = 0x00; value <= 0xFF; value = inc(value)) {
             resetState(value);
             captureExpectedState();
 
@@ -582,14 +582,14 @@ class CPU6510Test {
      * Test of LD? $xxxx,X.
      */
     private void test_LDx_ABx(int opcode, SetRegister destination, SetRegister index) {
-        for (int i = 0x00; i <= 0xFF; i = inc(i)) {
-            for (int value = 0x00; value <= 0xFF; value = inc(value)) {
+        for (var i = 0x00; i <= 0xFF; i = inc(i)) {
+            for (var value = 0x00; value <= 0xFF; value = inc(value)) {
                 resetState(value);
                 index.set(state, i);
                 captureExpectedState();
 
-                int address = 0x1080;
-                int indexedAddress = address + i;
+                var address = 0x1080;
+                var indexedAddress = address + i;
                 ram.write(value, indexedAddress);
                 execute(opcode, lo(address), hi(address)); // LD? $xxxx,? JMP
 
@@ -613,7 +613,7 @@ class CPU6510Test {
      */
     private void test_PHx(int opcode, SetRegister source, Function<Integer, Integer> modifier) {
         // 256 values -> stack overflow will be tested too
-        for (int value = 0x00; value <= 0xFF; value = inc(value)) {
+        for (var value = 0x00; value <= 0xFF; value = inc(value)) {
             resetState(value);
             source.set(state, value);
             captureExpectedState();
@@ -632,7 +632,7 @@ class CPU6510Test {
      * Test of ST? $xx.
      */
     private void test_STx_ZP(int opcode, SetRegister source) {
-        for (int value = 0x00; value <= 0xFF; value = inc(value)) {
+        for (var value = 0x00; value <= 0xFF; value = inc(value)) {
             resetState(value);
             source.set(state, value);
             captureExpectedState();
@@ -650,7 +650,7 @@ class CPU6510Test {
      * Test of ST? $xxxx.
      */
     private void test_STx_ABS(int opcode, SetRegister source) {
-        for (int value = 0x00; value <= 0xFF; value = inc(value)) {
+        for (var value = 0x00; value <= 0xFF; value = inc(value)) {
             resetState(value);
             source.set(state, value);
             captureExpectedState();
@@ -668,7 +668,7 @@ class CPU6510Test {
      * Test of T??.
      */
     private void test_Txx(int opcode, SetRegister source, SetRegister destination, boolean updateP) {
-        for (int value = 0x00; value <= 0xFF; value = inc(value)) {
+        for (var value = 0x00; value <= 0xFF; value = inc(value)) {
             resetState(value);
             source.set(state, value);
             captureExpectedState();
@@ -721,7 +721,7 @@ class CPU6510Test {
 
         @Test
         public void test() {
-            for (int value = 0x00; value <= 0xFF; value = inc(value)) {
+            for (var value = 0x00; value <= 0xFF; value = inc(value)) {
                 resetState(value);
                 before(value);
                 captureExpectedState();
@@ -828,11 +828,11 @@ class CPU6510Test {
      * Execute reading of opcode and its argument.
      */
     void execute(int opcode, int... arguments) {
-        int address = 0x0300;
+        var address = 0x0300;
         expectedState.PC = address;
 
         ram.write(opcode, address++);
-        for (int argument : arguments) {
+        for (var argument : arguments) {
             ram.write(argument, address++);
         }
         ram.write(0x4C, address++);
@@ -846,7 +846,7 @@ class CPU6510Test {
             // No arguments -> Idle read instead of argument read.
             executeOneTick_idleRead(expectedState);
         } else {
-            for (int argument : arguments) {
+            for (var argument : arguments) {
                 executeOneTick_readPC(expectedState, argument);
             }
         }
@@ -930,7 +930,7 @@ class CPU6510Test {
      */
     private void executeOneTick_pop(CPU6510State expectedState, int value) {
         expectedState.S = (expectedState.S + 1) & 0xFF;
-        LogEntry log = new LogEntry(true, 0x0100 + expectedState.S, value);
+        var log = new LogEntry(true, 0x0100 + expectedState.S, value);
         executeOneTick(expectedState, log);
     }
 
@@ -943,7 +943,7 @@ class CPU6510Test {
      *         value which has been written.
      */
     private void executeOneTick_push(CPU6510State expectedState, int value) {
-        LogEntry log = new LogEntry(false, 0x0100 + expectedState.S, value);
+        var log = new LogEntry(false, 0x0100 + expectedState.S, value);
         expectedState.S = (expectedState.S - 1) & 0xFF;
         executeOneTick(expectedState, log);
     }

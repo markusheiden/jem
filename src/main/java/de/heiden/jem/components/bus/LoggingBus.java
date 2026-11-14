@@ -44,7 +44,7 @@ public class LoggingBus extends BusDeviceAdapter {
      */
     @Override
     public synchronized final int read(int address) {
-        int value = super.read(address);
+        var value = super.read(address);
         log.add(new LogEntry(true, address, value));
 
         return value;
@@ -59,7 +59,7 @@ public class LoggingBus extends BusDeviceAdapter {
     public synchronized @Nonnull LogEntry getLastLogEntry() {
         assert !getLog().isEmpty() : "Precondition: !getLog().isEmpty()";
 
-        LogEntry result = log.get(log.size() - 1);
+        var result = log.get(log.size() - 1);
 
         return result;
     }

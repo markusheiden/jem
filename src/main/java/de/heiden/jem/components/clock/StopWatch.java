@@ -41,8 +41,8 @@ public class StopWatch extends ClockEvent {
 
     @Override
     public void execute(long tick) {
-        long now = System.nanoTime();
-        long elapsed = (now - last) / 1000000;
+        var now = System.nanoTime();
+        var elapsed = (now - last) / 1000000;
         logger.info("1 simulated second took {} ms", elapsed);
         last = now;
 

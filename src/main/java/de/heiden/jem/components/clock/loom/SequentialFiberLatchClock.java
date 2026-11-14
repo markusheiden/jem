@@ -39,14 +39,14 @@ public final class SequentialFiberLatchClock extends AbstractSimpleClock {
         var components = clockedComponents();
 
         var semaphores = new Semaphore[components.length + 1];
-        for (int i = 0; i < semaphores.length; i++) {
+        for (var i = 0; i < semaphores.length; i++) {
             semaphores[i] = new Semaphore(0);
         }
         if (endless) {
             semaphores[semaphores.length - 1] = semaphores[0];
         }
 
-        for (int i = 0; i < components.length; i++) {
+        for (var i = 0; i < components.length; i++) {
             var component = components[i];
             var semaphore = semaphores[i];
             var next = semaphores[i + 1];

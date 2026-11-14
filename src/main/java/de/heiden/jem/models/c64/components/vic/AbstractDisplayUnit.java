@@ -50,7 +50,7 @@ public abstract class AbstractDisplayUnit implements ClockedComponent {
         this.width = width;
         this.height = height;
 
-        int size = offset + lineLength * lines;
+        var size = offset + lineLength * lines;
 
         screenRender = new byte[size];
         screenSpare = new byte[size];

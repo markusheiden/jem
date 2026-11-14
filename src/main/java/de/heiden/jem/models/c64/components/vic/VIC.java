@@ -156,7 +156,7 @@ public abstract class VIC implements BusDevice {
 
         // prepare sprites
         sprites = new Sprite[8];
-        for (int i = 0; i < sprites.length; i++) {
+        for (var i = 0; i < sprites.length; i++) {
             sprites[i] = new Sprite(i);
         }
 
@@ -275,7 +275,7 @@ public abstract class VIC implements BusDevice {
             }
             case 0x10: {
                 regSpritesMSBX = value;
-                for (Sprite sprite : sprites) {
+                for (var sprite : sprites) {
                     sprite.setXMSB(value);
                 }
                 break;
@@ -286,9 +286,9 @@ public abstract class VIC implements BusDevice {
                 regRasterIRQ = regRasterIRQ & 0xFF | (value & 0x80) << 1;
 
                 if (logger.isDebugEnabled()) {
-                    boolean bitmapMode = (regControl1 & VIC.CONTROL1_BITMAP) != 0;
-                    boolean extColorMode = (regControl1 & VIC.CONTROL1_EXT_COLOR) != 0;
-                    boolean multiColorMode = (regControl2 & VIC.CONTROL2_MULTI_COLOR) != 0;
+                    var bitmapMode = (regControl1 & VIC.CONTROL1_BITMAP) != 0;
+                    var extColorMode = (regControl1 & VIC.CONTROL1_EXT_COLOR) != 0;
+                    var multiColorMode = (regControl2 & VIC.CONTROL2_MULTI_COLOR) != 0;
                     logger.debug("bitmap: {}, extended color: {}, multi color: {}", bitmapMode, extColorMode, multiColorMode);
                 }
 
@@ -308,7 +308,7 @@ public abstract class VIC implements BusDevice {
             }
             case 0x15: {
                 regSpritesEnable = value;
-                for (Sprite sprite : sprites) {
+                for (var sprite : sprites) {
                     sprite.enable(value);
                 }
                 break;
@@ -317,9 +317,9 @@ public abstract class VIC implements BusDevice {
                 regControl2 = value;
 
                 if (logger.isDebugEnabled()) {
-                    boolean bitmapMode = (regControl1 & VIC.CONTROL1_BITMAP) != 0;
-                    boolean extColorMode = (regControl1 & VIC.CONTROL1_EXT_COLOR) != 0;
-                    boolean multiColorMode = (regControl2 & VIC.CONTROL2_MULTI_COLOR) != 0;
+                    var bitmapMode = (regControl1 & VIC.CONTROL1_BITMAP) != 0;
+                    var extColorMode = (regControl1 & VIC.CONTROL1_EXT_COLOR) != 0;
+                    var multiColorMode = (regControl2 & VIC.CONTROL2_MULTI_COLOR) != 0;
                     logger.debug("bitmap: {}, extended color: {}, multi color: {}", bitmapMode, extColorMode, multiColorMode);
                 }
 
@@ -327,7 +327,7 @@ public abstract class VIC implements BusDevice {
             }
             case 0x17: {
                 regSpritesExpandX = value;
-                for (Sprite sprite : sprites) {
+                for (var sprite : sprites) {
                     sprite.setExpandX(value);
                 }
                 break;
@@ -360,14 +360,14 @@ public abstract class VIC implements BusDevice {
             }
             case 0x1C: {
                 regSpritesMulticolorMode = value;
-                for (Sprite sprite : sprites) {
+                for (var sprite : sprites) {
                     sprite.setMulticolor(value);
                 }
                 break;
             }
             case 0x1D: {
                 regSpritesExpandY = value;
-                for (Sprite sprite : sprites) {
+                for (var sprite : sprites) {
                     sprite.setExpandY(value);
                 }
                 break;
@@ -401,17 +401,17 @@ public abstract class VIC implements BusDevice {
                 break;
             }
             case 0x25: {
-                byte color = (byte) (value & 0x0F);
+                var color = (byte) (value & 0x0F);
                 regSpritesMulticolor0 = color;
-                for (Sprite sprite : sprites) {
+                for (var sprite : sprites) {
                     sprite.multicolor1 = color;
                 }
                 break;
             }
             case 0x26: {
-                byte color = (byte) (value & 0x0F);
+                var color = (byte) (value & 0x0F);
                 regSpritesMulticolor1 = color;
-                for (Sprite sprite : sprites) {
+                for (var sprite : sprites) {
                     sprite.multicolor2 = color;
                 }
                 break;

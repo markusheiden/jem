@@ -30,7 +30,7 @@ class Banking00Test extends AbstractTest {
         assertTrue(passed.find() && ram.find() && io.find(), "Result page is visible.");
         assertEquals("ram -> io error counter is 0.", "00000000", ram.group(1));
         assertEquals("io -> ram error counter is 0.", "00000000", io.group(1));
-        int passes = Integer.parseInt(passed.group(1), 16);
+        var passes = Integer.parseInt(passed.group(1), 16);
         assertTrue(passes > 1, "Check that more than one pass has been executed, but just executed " + passes + " passes.");
     }
 }

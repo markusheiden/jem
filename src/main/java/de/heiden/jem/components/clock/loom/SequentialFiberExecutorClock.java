@@ -40,7 +40,7 @@ public final class SequentialFiberExecutorClock extends AbstractSimpleClock {
         var components = clockedComponents();
 
         var virtualThreads = new Thread[components.length];
-        for (int i = 0; i < components.length; i++) {
+        for (var i = 0; i < components.length; i++) {
             var component = components[i];
             component.setTick(Thread::yield);
             virtualThreads[i] = Thread.ofVirtual().start(() -> {

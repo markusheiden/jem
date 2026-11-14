@@ -52,7 +52,7 @@ public class ColorRAM extends AbstractMemory {
      */
     @Override
     public final int read(int address) {
-        int result = memory[address & mask];
+        var result = memory[address & mask];
         assert result >= 0 && result < 0x10 : "result >= 0 && result < 0x10";
         return result;
     }

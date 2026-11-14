@@ -59,14 +59,14 @@ public class DisplayUnitSimple extends AbstractDisplayUnit {
 
         //noinspection InfiniteLoopStatement
         while (true) {
-            int ptr = 0;
+            var ptr = 0;
 
-            int raster = 0;
+            var raster = 0;
 
             // top vblank
             for (; raster < vic.lastVBlank; raster++) {
                 vic.setRasterLine(raster);
-                for (int cycle = 0; cycle < vic.cyclesPerLine; cycle++) {
+                for (var cycle = 0; cycle < vic.cyclesPerLine; cycle++) {
                     tick.waitForTick();
                 }
             }
@@ -74,30 +74,30 @@ public class DisplayUnitSimple extends AbstractDisplayUnit {
             // top border
             for (; raster < vic.firstLine_25; raster++) {
                 vic.setRasterLine(raster);
-                for (int cycle = 0; cycle < vic.cyclesPerLine; cycle++) {
+                for (var cycle = 0; cycle < vic.cyclesPerLine; cycle++) {
                     tick.waitForTick();
                 }
 
-                final int pixelPerLine = vic.lastX - vic.firstVisibleX + vic.lastVisibleX;
+                final var pixelPerLine = vic.lastX - vic.firstVisibleX + vic.lastVisibleX;
                 Arrays.fill(screenRender, ptr, ptr += pixelPerLine, vic.regExteriorColor);
             }
 
             // visible area
-            for (int y = 0; raster < vic.lastLine_25; raster++, y++) {
+            for (var y = 0; raster < vic.lastLine_25; raster++, y++) {
                 vic.setRasterLine(raster);
 
                 // Render with the registers at the start of the display window,
                 // so changes later in the line, e.g. raster splits, take effect in the next line.
-                int cycle = 0;
+                var cycle = 0;
                 for (; cycle < RENDER_CYCLE; cycle++) {
                     tick.waitForTick();
                 }
 
-                final int leftBorder = vic.lastX - vic.firstVisibleX + vic.firstX_25;
+                final var leftBorder = vic.lastX - vic.firstVisibleX + vic.firstX_25;
                 Arrays.fill(screenRender, ptr, ptr += leftBorder, vic.regExteriorColor);
-                int newPtr = renderLine(screenRender, ptr, y, raster);
+                var newPtr = renderLine(screenRender, ptr, y, raster);
                 ptr = newPtr;
-                final int rightBorder = vic.lastVisibleX - vic.lastX_25;
+                final var rightBorder = vic.lastVisibleX - vic.lastX_25;
                 Arrays.fill(screenRender, ptr, ptr += rightBorder, vic.regExteriorColor);
 
                 for (; cycle < vic.cyclesPerLine; cycle++) {
@@ -108,18 +108,18 @@ public class DisplayUnitSimple extends AbstractDisplayUnit {
             // bottom border
             for (; raster < vic.firstVBlank; raster++) {
                 vic.setRasterLine(raster);
-                for (int cycle = 0; cycle < vic.cyclesPerLine; cycle++) {
+                for (var cycle = 0; cycle < vic.cyclesPerLine; cycle++) {
                     tick.waitForTick();
                 }
 
-                final int pixelPerLine = vic.lastX - vic.firstVisibleX + vic.lastVisibleX;
+                final var pixelPerLine = vic.lastX - vic.firstVisibleX + vic.lastVisibleX;
                 Arrays.fill(screenRender, ptr, ptr += pixelPerLine, vic.regExteriorColor);
             }
 
             // bottom vblank
             for (; raster < vic.linesPerScreen; raster++) {
                 vic.setRasterLine(raster);
-                for (int cycle = 0; cycle < vic.cyclesPerLine; cycle++) {
+                for (var cycle = 0; cycle < vic.cyclesPerLine; cycle++) {
                     tick.waitForTick();
                 }
             }
@@ -142,14 +142,14 @@ public class DisplayUnitSimple extends AbstractDisplayUnit {
      * @return next index in screen data
      */
     private int renderLine(byte[] screen, int ptr, int y, int raster) {
-        int control1 = vic.regControl1;
-        int control2 = vic.regControl2;
+        var control1 = vic.regControl1;
+        var control2 = vic.regControl2;
 
         // Vertical fine scrolling: The default scroll value 3 aligns the first text row with the top of the display window.
         // Lines outside the 200 lines of graphics data show the background.
-        int line = y + 3 - (control1 & VIC.CONTROL1_SCROLL_Y);
+        var line = y + 3 - (control1 & VIC.CONTROL1_SCROLL_Y);
         if (line >= 0 && line < 200) {
-            int mode = (control1 & (VIC.CONTROL1_EXT_COLOR | VIC.CONTROL1_BITMAP)) >> 4 | (control2 & VIC.CONTROL2_MULTI_COLOR) >> 4;
+            var mode = (control1 & (VIC.CONTROL1_EXT_COLOR | VIC.CONTROL1_BITMAP)) >> 4 | (control2 & VIC.CONTROL2_MULTI_COLOR) >> 4;
             lineRenderers[mode].render(screen, foreground, ptr, line);
         } else {
             Arrays.fill(screen, ptr, ptr + 320, vic.regBackgroundColor0);
@@ -157,7 +157,7 @@ public class DisplayUnitSimple extends AbstractDisplayUnit {
         }
 
         // Horizontal fine scrolling: Shift the line to the right, fill the gap with the background.
-        int scrollX = control2 & VIC.CONTROL2_SCROLL_X;
+        var scrollX = control2 & VIC.CONTROL2_SCROLL_X;
         if (scrollX != 0) {
             System.arraycopy(screen, ptr, screen, ptr + scrollX, 320 - scrollX);
             Arrays.fill(screen, ptr, ptr + scrollX, vic.regBackgroundColor0);

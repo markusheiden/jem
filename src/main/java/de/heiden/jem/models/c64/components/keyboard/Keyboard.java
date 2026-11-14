@@ -108,19 +108,19 @@ public class Keyboard implements IKeyboard {
      * Assuming pull-ups.
      */
     protected final void updatePorts() {
-        int port1InMask = port1.outputMask();
-        int port1InDataInv = 0xFF - port1.outputData();
-        int port0OutMask = 0x00;
-        int port0OutData = 0xFF;
+        var port1InMask = port1.outputMask();
+        var port1InDataInv = 0xFF - port1.outputData();
+        var port0OutMask = 0x00;
+        var port0OutData = 0xFF;
 
-        int port0InMask = port0.outputMask();
-        int port0InData = port0.outputData();
-        int port1OutMask = 0x00;
-        int port1OutData = 0xFF;
+        var port0InMask = port0.outputMask();
+        var port0InData = port0.outputData();
+        var port1OutMask = 0x00;
+        var port1OutData = 0xFF;
 
         for (int i = 0, columnBit = 0x01; i < matrix.length; i++, columnBit <<= 1) {
-            final int matrix = this.matrix[i];
-            final int bitmask = port1InMask & matrix; // 1: driven bits
+            final var matrix = this.matrix[i];
+            final var bitmask = port1InMask & matrix; // 1: driven bits
             if (bitmask != 0) {
                 port0OutMask |= columnBit; // bit is driven!
                 if ((port1InDataInv & bitmask) != 0) {
@@ -167,7 +167,7 @@ public class Keyboard implements IKeyboard {
 
         // Column headers.
         result.append("  ");
-        for (int j = 0; j < 8; j++) {
+        for (var j = 0; j < 8; j++) {
             result.append(j);
         }
         result.append("\n");

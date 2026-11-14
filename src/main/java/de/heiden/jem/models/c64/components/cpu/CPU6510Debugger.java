@@ -51,7 +51,7 @@ public class CPU6510Debugger extends CPU6510 {
 
         currentTrace = 0;
         traces = new Trace[1000000];
-        for (int i = 0; i < traces.length; i++) {
+        for (var i = 0; i < traces.length; i++) {
             traces[i] = new Trace();
         }
 
@@ -97,7 +97,7 @@ public class CPU6510Debugger extends CPU6510 {
         // Automatic tracing of the last executed opcodes
         //
 
-        Trace trace = traces[currentTrace++];
+        var trace = traces[currentTrace++];
         if (currentTrace >= traces.length) {
             currentTrace = 0;
         }
@@ -206,11 +206,11 @@ public class CPU6510Debugger extends CPU6510 {
 
     @Override
     public String toString() {
-        StringBuilder result = new StringBuilder();
+        var result = new StringBuilder();
         result.append(getClass().getSimpleName());
         result.append(":\n");
-        for (int i = 20; i > 0; i--) {
-            int t = currentTrace - i;
+        for (var i = 20; i > 0; i--) {
+            var t = currentTrace - i;
             if (t < 0) {
                 t += traces.length;
             }

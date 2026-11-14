@@ -63,7 +63,7 @@ public final class SequentialFiberYieldClock extends AbstractSimpleClock {
             });
         }
 
-        for (int i = 0; i < numComponents; i++) {
+        for (var i = 0; i < numComponents; i++) {
             var component = components[i];
             // Execute next component thread and wait for next tick.
             var state = i;

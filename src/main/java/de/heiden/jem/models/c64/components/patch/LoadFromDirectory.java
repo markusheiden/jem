@@ -43,7 +43,7 @@ public class LoadFromDirectory extends Patch {
         }
 
         try (var file = Files.newInputStream(baseDir.resolve(filename))) {
-            int endAddress = bus.read(0xB9) == 0 ?
+            var endAddress = bus.read(0xB9) == 0 ?
                     FileUtil.read(file, wordBus.readWord(0xC3), bus) :
                     FileUtil.read(file, bus);
 

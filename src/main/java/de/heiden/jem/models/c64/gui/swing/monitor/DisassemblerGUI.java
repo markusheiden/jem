@@ -104,7 +104,7 @@ public class DisassemblerGUI extends JPanel {
             var model = new DefaultListModel<String>();
             var code = new BusCodeBuffer(scrollBar.getValue(), bus);
             model.addElement("TOP");
-            for (int i = 0; i < text.getRows() && code.hasMore(); i++) {
+            for (var i = 0; i < text.getRows() && code.hasMore(); i++) {
                 var output = new StringWriter(64);
                 disassembler.disassemble(code, output);
                 model.addElement(output.toString());

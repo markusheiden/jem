@@ -51,7 +51,7 @@ public class RAM extends AbstractMemory {
      */
     @Override
     public final int read(int address) {
-        int result = memory[address & mask];
+        var result = memory[address & mask];
         assert result >= 0 && result < 0x100 : "result >= 0 && result < 0x100";
         return result;
     }

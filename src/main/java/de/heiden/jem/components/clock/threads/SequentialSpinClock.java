@@ -31,7 +31,7 @@ public final class SequentialSpinClock extends AbstractSynchronizedClock {
     protected void doSynchronizedInit() {
         var components = clockedComponents();
         componentThreads = new Thread[components.length];
-        for (int state = 0; state < components.length; state++) {
+        for (var state = 0; state < components.length; state++) {
             var component = components[state];
             var tick = new SequentialSpinTick(state, currentState);
             component.setTick(tick);
@@ -53,8 +53,8 @@ public final class SequentialSpinClock extends AbstractSynchronizedClock {
      * Execution of ticks.
      */
     private void executeTicks(final int finalState) {
-        final Thread thread = currentThread();
-        final AtomicInteger state = currentState;
+        final var thread = currentThread();
+        final var state = currentState;
         while (!thread.isInterrupted()) {
             startTick();
             // Execute all component threads.
@@ -71,7 +71,7 @@ public final class SequentialSpinClock extends AbstractSynchronizedClock {
         super.doClose();
         var components = clockedComponents();
         var finalState = components.length;
-        for (int state = 0; state < finalState; state++) {
+        for (var state = 0; state < finalState; state++) {
             currentState.set(state);
             join(componentThreads[state]);
         }
@@ -83,7 +83,7 @@ public final class SequentialSpinClock extends AbstractSynchronizedClock {
      * Ensure that the thread has been joined.
      */
     private void join(Thread thread) {
-        boolean failed = true;
+        var failed = true;
         while (failed) {
             try {
                 thread.join();

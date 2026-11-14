@@ -21,9 +21,9 @@ public final class SequentialClock extends AbstractSynchronizedClock {
         var components = clockedComponents();
         Thread firstThread = null;
         SequentialTick previousTick = null;
-        for (int i = 0; i < components.length; i++) {
-            final int state = i;
-            final int nextState = i + 1;
+        for (var i = 0; i < components.length; i++) {
+            final var state = i;
+            final var nextState = i + 1;
 
             var component = components[state];
             var tick = new SequentialTick(state);
@@ -107,7 +107,7 @@ public final class SequentialClock extends AbstractSynchronizedClock {
 
         @Override
         public void waitForTick() {
-            final int tickState = this.tickState;
+            final var tickState = this.tickState;
             // Execute next component thread.
             state = tickState + 1;
             unpark(nextThread);

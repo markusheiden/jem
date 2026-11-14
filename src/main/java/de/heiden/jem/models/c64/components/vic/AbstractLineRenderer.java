@@ -58,8 +58,8 @@ abstract class AbstractLineRenderer implements LineRenderer {
      * @return next index in screen data
      */
     protected static int renderHires(byte[] screen, boolean[] foreground, int ptr, int bitmap, byte color0, byte color1) {
-        for (int mask = 0x80; mask != 0; mask >>= 1, ptr++) {
-            boolean set = (bitmap & mask) != 0;
+        for (var mask = 0x80; mask != 0; mask >>= 1, ptr++) {
+            var set = (bitmap & mask) != 0;
             screen[ptr] = set ? color1 : color0;
             foreground[ptr] = set;
         }
@@ -72,15 +72,15 @@ abstract class AbstractLineRenderer implements LineRenderer {
      * @return next index in screen data
      */
     protected static int renderMultiColor(byte[] screen, boolean[] foreground, int ptr, int bitmap, byte color0, byte color1, byte color2, byte color3) {
-        for (int shift = 6; shift >= 0; shift -= 2) {
-            int index = (bitmap >> shift) & 0x03;
-            byte pixel = switch (index) {
+        for (var shift = 6; shift >= 0; shift -= 2) {
+            var index = (bitmap >> shift) & 0x03;
+            var pixel = switch (index) {
                 case 0 -> color0;
                 case 1 -> color1;
                 case 2 -> color2;
                 default -> color3;
             };
-            boolean isForeground = index >= 2;
+            var isForeground = index >= 2;
             screen[ptr] = pixel;
             foreground[ptr++] = isForeground;
             screen[ptr] = pixel;

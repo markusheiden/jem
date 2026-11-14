@@ -75,16 +75,16 @@ public class C64 {
     public C64(Clock clock, boolean debug) throws Exception {
         this.clock = clock;
 
-        RAM ram = new RAM(0x10000);
-        ColorRAM colorRam = new ColorRAM(0x400);
-        ROM basic = ROMLoader.basic(ROMLoader.DEFAULT_BASIC);
-        ROM kernel = ROMLoader.kernel(ROMLoader.DEFAULT_KERNEL);
-        ROM charset = ROMLoader.character(ROMLoader.DEFAULT_CHARACTER);
+        var ram = new RAM(0x10000);
+        var colorRam = new ColorRAM(0x400);
+        var basic = ROMLoader.basic(ROMLoader.DEFAULT_BASIC);
+        var kernel = ROMLoader.kernel(ROMLoader.DEFAULT_KERNEL);
+        var charset = ROMLoader.character(ROMLoader.DEFAULT_CHARACTER);
 
-        CIA6526 cia1 = new CIA6526(clock);
-        CIA6526 cia2 = new CIA6526(clock);
+        var cia1 = new CIA6526(clock);
+        var cia2 = new CIA6526(clock);
 
-        VICBus vicBus = new VICBus(cia2.portA(), ram, charset);
+        var vicBus = new VICBus(cia2.portA(), ram, charset);
         vic = new VIC6569PAL(clock, vicBus, colorRam);
 
         keyboard = new Keyboard(cia1.portA(), cia1.portB());
@@ -111,12 +111,12 @@ public class C64 {
     private void init() throws IOException {
         // Init RAM with 0x02 (crash) to easier detect wrong behaviour.
         // TODO 2010-06-22 mh: realistic init?
-        for (int addr = 0; addr < 0x10000; addr++) {
+        for (var addr = 0; addr < 0x10000; addr++) {
             cpuBus.write(0x02, addr);
         }
 
         // Fill the screen with the complete character set.
-        for (int i = 0; i < 0x400; i++) {
+        for (var i = 0; i < 0x400; i++) {
             cpuBus.write(i & 0xFF, 0x400 + i);
             cpuBus.write(i & 0x0F, 0xD800 + i);
         }

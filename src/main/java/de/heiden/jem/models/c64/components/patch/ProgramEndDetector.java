@@ -29,7 +29,7 @@ public class ProgramEndDetector extends Patch {
      * Has the program ended? Resets end flag.
      */
     public boolean hasEnded() {
-        boolean result = end;
+        var result = end;
         end = false;
         return result;
     }

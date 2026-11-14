@@ -37,7 +37,7 @@ public class KeyListener extends KeyAdapter {
     public void keyPressed(KeyEvent e) {
         var keys = keyMapping.getKeys(e);
         if (keys != null) {
-            for (Key key : keys) {
+            for (var key : keys) {
                 keyboard.press(key);
             }
         }
@@ -47,7 +47,7 @@ public class KeyListener extends KeyAdapter {
     public void keyReleased(KeyEvent e) {
         var keys = keyMapping.getKeys(e);
         if (keys != null) {
-            for (Key key : keys) {
+            for (var key : keys) {
                 keyboard.release(key);
             }
         }

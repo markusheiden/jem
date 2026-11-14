@@ -506,7 +506,7 @@ public class CIA6526 implements BusDevice {
      */
     protected void updateTimerAMode() {
         if ((controlA & CR_START) != 0) {
-            int mode = controlA & CRA_MODE_MASK;
+            var mode = controlA & CRA_MODE_MASK;
             if (mode == CR_MODE_O2) {
                 // timer A enabled
                 // start clock counting, if not already counting
@@ -552,8 +552,8 @@ public class CIA6526 implements BusDevice {
      */
     public void updateTimerARead() {
         if (timerACLK) {
-            long tick = clock.getTick();
-            int diff = (int) (tick - timerABase);
+            var tick = clock.getTick();
+            var diff = (int) (tick - timerABase);
             if (diff > 0) {
                 timerA -= diff;
                 timerABase = tick;
@@ -670,8 +670,8 @@ public class CIA6526 implements BusDevice {
      */
     public void updateTimerBRead() {
         if (timerBCLK) {
-            long tick = clock.getTick();
-            int diff = (int) (tick - timerBBase);
+            var tick = clock.getTick();
+            var diff = (int) (tick - timerBBase);
             if (diff > 0) {
                 timerB -= diff;
                 timerBBase = tick;

@@ -199,9 +199,9 @@ public class C64Bus implements BusDevice, Patchable {
 
         cpu.addInputPortListener((value, mask) -> {
             // TODO 2010-10-08 mh: consider signals from expansion port
-            int mode = ((value << 2) | 0x03) & 0x1f;
+            var mode = ((value << 2) | 0x03) & 0x1f;
 
-            BusDevice[] oldIoModeRead = ioModeRead;
+            var oldIoModeRead = ioModeRead;
             ioModeRead = ioModesRead[mode];
             ioModeWrite = ioModesWrite[mode];
             if (logger.isDebugEnabled() && oldIoModeRead != ioModeRead) {
@@ -212,26 +212,26 @@ public class C64Bus implements BusDevice, Patchable {
 
     private BusDevice[] computeIoModeRead(BusDevice ram, BusDevice x8000, BusDevice xA000, BusDevice xD000, BusDevice xE000) {
         var result = new BusDevice[256];
-        for (int i = 0x00; i <= 0x7F; i++) {
+        for (var i = 0x00; i <= 0x7F; i++) {
             result[i] = ram;
         }
-        for (int i = 0x80; i <= 0x9F; i++) {
+        for (var i = 0x80; i <= 0x9F; i++) {
             result[i] = x8000;
         }
-        for (int i = 0xA0; i <= 0xBF; i++) {
+        for (var i = 0xA0; i <= 0xBF; i++) {
             result[i] = xA000;
         }
-        for (int i = 0xC0; i <= 0xCF; i++) {
+        for (var i = 0xC0; i <= 0xCF; i++) {
             result[i] = ram;
         }
         if (xD000 != null) {
-            for (int i = 0xD0; i <= 0xDF; i++) {
+            for (var i = 0xD0; i <= 0xDF; i++) {
                 result[i] = xD000;
             }
         } else {
             setIo(result);
         }
-        for (int i = 0xE0; i <= 0xFF; i++) {
+        for (var i = 0xE0; i <= 0xFF; i++) {
             result[i] = xE000;
         }
 
@@ -240,7 +240,7 @@ public class C64Bus implements BusDevice, Patchable {
 
     private BusDevice[] computeIoModeWrite(BusDevice ram, boolean io) {
         var result = new BusDevice[256];
-        for (int i = 0x00; i <= 0xFF; i++) {
+        for (var i = 0x00; i <= 0xFF; i++) {
             result[i] = ram;
         }
         if (io) {
@@ -250,14 +250,14 @@ public class C64Bus implements BusDevice, Patchable {
     }
 
     private void setIo(BusDevice[] result) {
-        for (int i = 0xD0; i <= 0xD3; i++) {
+        for (var i = 0xD0; i <= 0xD3; i++) {
             result[i] = vic;
         }
         // TODO markus 2016-08-16: Add SID...
-        for (int i = 0xD4; i <= 0xD7; i++) {
+        for (var i = 0xD4; i <= 0xD7; i++) {
             result[i] = ram;
         }
-        for (int i = 0xD8; i <= 0xDB; i++) {
+        for (var i = 0xD8; i <= 0xDB; i++) {
             result[i] = colorRam;
         }
         result[0xDC] = cia1;

@@ -123,8 +123,8 @@ public final class InputPortImpl implements InputPort {
      * Update the current value of thee input port.
      */
     protected void updateInputPort() {
-        int inputData = 0xFF;
-        int inputMask = 0x00;
+        var inputData = 0xFF;
+        var inputMask = 0x00;
         for (var port : outputPorts) {
             inputData &= port.outputData();
             inputMask |= port.outputMask();
@@ -142,8 +142,8 @@ public final class InputPortImpl implements InputPort {
      * Notify all listeners.
      */
     protected void notifyInputPortListeners() {
-        final int inputData = this.inputData;
-        final int inputMask = this.inputMask;
+        final var inputData = this.inputData;
+        final var inputMask = this.inputMask;
         for (var listener : inputListeners) {
             listener.portChanged(inputData, inputMask);
         }

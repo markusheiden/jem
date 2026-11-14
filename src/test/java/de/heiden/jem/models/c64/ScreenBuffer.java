@@ -49,10 +49,10 @@ public class ScreenBuffer {
     public String capture() throws Exception {
         var screen = new StringBuilder(41 * 25);
 
-        int addr = this.addr;
+        var addr = this.addr;
         var bytes = new byte[1];
-        for (int r = 0; r < 25; r++) {
-            for (int c = 0; c < 40; c++) {
+        for (var r = 0; r < 25; r++) {
+            for (var c = 0; c < 40; c++) {
                 bytes[0] = (byte) bus.read(addr++);
                 try {
                     screen.append(decoder.decode(ByteBuffer.wrap(bytes)));

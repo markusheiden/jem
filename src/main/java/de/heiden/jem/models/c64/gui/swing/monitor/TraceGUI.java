@@ -52,7 +52,7 @@ public class TraceGUI extends JPanel {
             try {
                 var currentTrace = cpu.getCurrentTrace();
                 var traces = cpu.getTraces();
-                for (int i = 9; i >= 0; i--) {
+                for (var i = 9; i >= 0; i--) {
                     currentTrace--;
                     if (currentTrace < 0) {
                         currentTrace = traces.length - 1;

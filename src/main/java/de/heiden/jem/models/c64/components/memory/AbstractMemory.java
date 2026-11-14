@@ -42,7 +42,7 @@ public abstract class AbstractMemory implements BusDevice {
     protected AbstractMemory(byte[] content) {
         this(content.length);
 
-        for (int i = 0; i < content.length; i++) {
+        for (var i = 0; i < content.length; i++) {
             memory[i] = content[i] & 0xFF;
         }
     }

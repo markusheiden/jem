@@ -26,7 +26,7 @@ public class StringUtil {
      */
     public static String read(@Nonnull BusDevice bus, int addr, int len) {
         var result = new StringBuilder(len);
-        for (int i = 0; i < len; i++) {
+        for (var i = 0; i < len; i++) {
             result.append(charset.toChar((byte) bus.read(addr + i)));
         }
 
@@ -42,7 +42,7 @@ public class StringUtil {
      */
     public static String read(@Nonnull byte[] bytes) {
         var result = new StringBuilder(bytes.length);
-        for (byte b : bytes) {
+        for (var b : bytes) {
             result.append(charset.toChar(b));
         }
 

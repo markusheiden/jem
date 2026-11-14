@@ -29,7 +29,7 @@ class C64docTest extends AbstractTest {
         // Most tests need at max 21 seconds.
         // sbx needs 5778 seconds.
         // vsbx needs 6856 seconds.
-        int maxSeconds = LONG_RUNNING.contains(programName) ? 7000 : 30;
+        var maxSeconds = LONG_RUNNING.contains(programName) ? 7000 : 30;
         var passed = programEnd;
         var failed = brk;
         var result = waitSecondsFor(maxSeconds, passed, failed);

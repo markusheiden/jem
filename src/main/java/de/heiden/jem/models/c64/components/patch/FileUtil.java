@@ -41,7 +41,7 @@ public class FileUtil {
      */
     public static int read(@Nonnull InputStream file, @Nonnull BusDevice bus) throws IOException {
         try (var is = new BufferedInputStream(file)) {
-            int addr = toWord(is.read(), is.read());
+            var addr = toWord(is.read(), is.read());
             return readAll(is, addr, bus);
         }
     }

@@ -57,10 +57,10 @@ public class Monitor {
         // read opcode with arg
         var opcode = Opcode.values()[bus.read(addr)];
         var bytes = new int[] { opcode.getOpcode(), 0, 0 };
-        for (int i = 1; i <= opcode.getMode().getSize(); i++) {
+        for (var i = 1; i <= opcode.getMode().getSize(); i++) {
             bytes[i] = bus.read((addr + i) & 0xFFFF);
         }
-        int arg = bytes[1] + (bytes[2] << 8);
+        var arg = bytes[1] + (bytes[2] << 8);
 
         return disassemble(addr, bytes, opcode, arg);
     }
@@ -75,11 +75,11 @@ public class Monitor {
         // mem dump
         result.append(HexUtil.hexWordPlain(addr));
         result.append(' ');
-        for (int i = 0; i < opcode.getSize(); i++) {
+        for (var i = 0; i < opcode.getSize(); i++) {
             result.append(HexUtil.hexBytePlain(bytes[i]));
             result.append(' ');
         }
-        for (int i = opcode.getSize(); i < 3; i++) {
+        for (var i = opcode.getSize(); i < 3; i++) {
             result.append("   ");
         }
 
@@ -102,10 +102,10 @@ public class Monitor {
     public static String dump(int from, int to, BusDevice bus) {
         var result = new StringBuilder();
 
-        for (int i = from; i < to; ) {
+        for (var i = from; i < to; ) {
             result.append("M ");
             result.append(HexUtil.hexWordPlain(i));
-            for (int j = 0; j < 16 && i < to; i++, j++) {
+            for (var j = 0; j < 16 && i < to; i++, j++) {
                 result.append(" ");
                 result.append(HexUtil.hexBytePlain(bus.read(i)));
             }
