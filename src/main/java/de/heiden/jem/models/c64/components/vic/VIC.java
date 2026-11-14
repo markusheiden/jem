@@ -164,7 +164,7 @@ public abstract class VIC implements BusDevice {
         memAccessUnit = clock.addClockedComponent(Clock.VIC_MEM, new MemAccessUnit(this));
 
         logger.debug("start vic display unit");
-        displayUnit = clock.addClockedComponent(Clock.VIC_DISPLAY, new DisplayUnitSimple(this));
+        displayUnit = clock.addClockedComponent(Clock.VIC_DISPLAY, new DisplayUnit(this));
 
         irqPort = new OutputPortImpl();
         irqPort.setOutputMask(0x01);
