@@ -42,9 +42,11 @@ public final class Trace {
     public void read(int pc, BusDevice bus) {
         address = pc;
 
-        var opcode = OPCODES[bus.read(pc)];
-        size = opcode.getSize();
-        for (var i = 0; i < opcode.getSize(); i++) {
+        var opcode = bus.read(pc);
+        pc = (pc + 1) & 0xFFFF;
+        bytes[0] = (byte) opcode;
+        size = OPCODES[opcode].getSize();
+        for (var i = 1; i < size; i++) {
             bytes[i] = (byte) bus.read(pc);
             pc = (pc + 1) & 0xFFFF;
         }
