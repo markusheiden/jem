@@ -12,6 +12,8 @@ public interface Clock extends AutoCloseable {
      * TODO Should be in subclass...
      */
     int CPU = 1000;
+    int CIA1 = 1500;
+    int CIA2 = 1501;
     int VIC_DISPLAY = 2001;
 
     /**

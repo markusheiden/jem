@@ -1,5 +1,6 @@
 package de.heiden.jem.models.c64.components.joystick;
 
+import de.heiden.jem.components.clock.Clock;
 import de.heiden.jem.components.clock.serialthreads.SerialClock;
 import de.heiden.jem.models.c64.components.cia.CIA6526;
 import org.junit.jupiter.api.Test;
@@ -11,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 class JoystickTest {
     private final SerialClock clock = new SerialClock();
-    private final CIA6526 cia = new CIA6526(clock);
+    private final CIA6526 cia = new CIA6526(clock, Clock.CIA1);
     private final Joystick joystick1 = new Joystick(clock, cia.portB());
     private final Joystick joystick2 = new Joystick(clock, cia.portA());
 

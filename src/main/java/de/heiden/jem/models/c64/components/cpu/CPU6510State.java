@@ -168,6 +168,7 @@ public final class CPU6510State {
         C = (p & C_BIT) != 0;
         Z = (p & Z_BIT) != 0;
         I = (p & I_BIT) != 0;
+        interrupt = IRQ && !I;
         D = (p & D_BIT) != 0;
         B = true;
         V = (p & V_BIT) != 0;
@@ -186,7 +187,6 @@ public final class CPU6510State {
             p |= Z_BIT;
         }
         if (I) {
-            interrupt = false;
             p |= I_BIT;
         }
         if (D) {

@@ -102,8 +102,8 @@ public class C64 {
         var kernel = ROMLoader.kernel(ROMLoader.DEFAULT_KERNEL);
         var charset = ROMLoader.character(ROMLoader.DEFAULT_CHARACTER);
 
-        var cia1 = new CIA6526(clock);
-        var cia2 = new CIA6526(clock);
+        var cia1 = new CIA6526(clock, Clock.CIA1);
+        var cia2 = new CIA6526(clock, Clock.CIA2);
 
         var vicBus = new VICBus(cia2.portA(), ram, charset);
         vic = new VIC6569PAL(clock, vicBus, colorRam);

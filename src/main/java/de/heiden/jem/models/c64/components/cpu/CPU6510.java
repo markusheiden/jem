@@ -70,6 +70,19 @@ public class CPU6510 implements ClockedComponent {
     private boolean nmiState = false;
 
     /**
+     * Interrupt lines as seen in the last cycle.
+     */
+    private boolean irqLine = false;
+    private boolean nmiLine = false;
+
+    /**
+     * Interrupts polled in the last cycle: The interrupt lines as seen in the cycle before.
+     * At the start of an instruction they are the interrupts polled in the last cycle of the previous instruction.
+     */
+    private boolean irqPolled = false;
+    private boolean nmiPolled = false;
+
+    /**
      * Port for ready, e.g. connected to BA of the VIC. Low halts the CPU at its next read cycle.
      */
     private final InputPort rdy;
@@ -112,11 +125,10 @@ public class CPU6510 implements ClockedComponent {
         nmi = new InputPortImpl();
         nmi.addInputPortListener((value, mask) -> {
             // nmi is low active
+            // the falling edge is latched until the nmi is executed
             var nmi = (value & 0x01) == 0;
             if (nmi && !nmiState) {
                 state.NMI = true;
-            } else if (!nmi) {
-                state.NMI = false;
             }
             nmiState = nmi;
         });
@@ -212,13 +224,12 @@ public class CPU6510 implements ClockedComponent {
     public final void run() {
         reset();
 
-        var state = this.state;
         //noinspection InfiniteLoopStatement
         while (true) {
-            if (state.NMI) {
+            if (nmiPolled) {
                 nmi();
 
-            } else if (state.interrupt) {
+            } else if (irqPolled) {
                 irq();
 
             } else {
@@ -233,7 +244,10 @@ public class CPU6510 implements ClockedComponent {
     @Interruptible
     private void nmi() {
         state.NMI = false;
-        interrupt(0xFFFA);
+        // Opcode fetch and operand read are executed, but discarded.
+        idleRead();
+        idleRead();
+        interrupt(0xFFFA, state.getP() & ~CPU6510State.B_BIT);
     }
 
     /**
@@ -241,10 +255,10 @@ public class CPU6510 implements ClockedComponent {
      */
     @Interruptible
     private void irq() {
-        var state = this.state;
-        state.resetIRQ();
-        state.B = false;
-        interrupt(0xFFFE);
+        // Opcode fetch and operand read are executed, but discarded.
+        idleRead();
+        idleRead();
+        interrupt(0xFFFE, state.getP() & ~CPU6510State.B_BIT);
     }
 
     @Interruptible
@@ -266,11 +280,8 @@ public class CPU6510 implements ClockedComponent {
                         public void execute() // $00: BRK (7)
                         {
                             readBytePC();
-                            pushWord(state.PC);
                             state.B = true;
-                            pushByte(state.getP());
-                            state.I = true;
-                            state.PC = readAbsoluteAddress(0xFFFE);
+                            interrupt(0xFFFE, state.getP());
                         }
                     },
 
@@ -661,6 +672,8 @@ public class CPU6510 implements ClockedComponent {
                         @Interruptible
                         public void execute() // $28: PLP (4) // no
                         {
+                            idleRead();
+                            stackRead();
                             state.setP(popByte());
                         }
                     },
@@ -889,7 +902,8 @@ public class CPU6510 implements ClockedComponent {
                         @Interruptible
                         public void execute() // $40: RTI (6)
                         {
-                            // TODO 2 ticks
+                            idleRead();
+                            stackRead();
                             state.setP(popByte());
                             state.PC = popWord();
                         }
@@ -1265,6 +1279,8 @@ public class CPU6510 implements ClockedComponent {
                         @Interruptible
                         public void execute() // $68: PLA (4) // no
                         {
+                            idleRead();
+                            stackRead();
                             var a = popByte();
                             state.setZeroNegativeP(a);
                             state.A = a;
@@ -1669,7 +1685,7 @@ public class CPU6510 implements ClockedComponent {
                         public void execute() // $93: *AHX ($XX),Y
                         {
                             var addr = readZeropageIndirectYAddressPCForWrite();
-                            ahx(read(addr), addr);
+                            ahx(addr);
                         }
                     },
 
@@ -1754,7 +1770,7 @@ public class CPU6510 implements ClockedComponent {
                         public void execute() // $9C: *SHY $XXXX,X
                         {
                             var addr = readAbsoluteAddressPCForWrite(state.X);
-                            shy(read(addr), addr);
+                            shy(addr);
                         }
                     },
 
@@ -1773,7 +1789,7 @@ public class CPU6510 implements ClockedComponent {
                         public void execute() // $9E: *SHX $XXXX,Y
                         {
                             var addr = readAbsoluteAddressPCForWrite(state.Y);
-                            shx(read(addr), addr);
+                            shx(addr);
                         }
                     },
 
@@ -1783,7 +1799,7 @@ public class CPU6510 implements ClockedComponent {
                         public void execute() // $9F: *AHX $XXXX,Y
                         {
                             var addr = readAbsoluteAddressPCForWrite(state.Y);
-                            ahx(read(addr), addr);
+                            ahx(addr);
                         }
                     },
 
@@ -2696,18 +2712,28 @@ public class CPU6510 implements ClockedComponent {
     //
 
     /**
-     * Execute interrupt (IRQ or NMI)
+     * Execute interrupt sequence (BRK, IRQ or NMI) after the first 2 cycles.
+     * (5)
      *
-     * @param addr
+     * @param vector
      *         interrupt vector
+     * @param p
+     *         status register to push
      */
     @Interruptible
-    protected final void interrupt(int addr) {
-        // TODO ticks?
+    protected final void interrupt(int vector, int p) {
         pushWord(state.PC);
-        pushByte(state.getP());
-        state.I = true;
-        state.PC = readAbsoluteAddress(addr);
+        if (nmiLine) {
+            // A NMI detected until now hijacks the interrupt sequence.
+            state.NMI = false;
+            vector = 0xFFFA;
+        }
+        pushByte(p);
+        state.sei();
+        state.PC = readAbsoluteAddress(vector);
+        // The first instruction of the interrupt handler is executed before the next interrupt.
+        irqPolled = false;
+        nmiPolled = false;
     }
 
     /**
@@ -2972,7 +2998,7 @@ public class CPU6510 implements ClockedComponent {
 
     /**
      * Branch to relative addr if flag is set in P.
-     * (2/3 if condition)
+     * (2, 3 if branched, 4 if branched with page crossing)
      *
      * @param condition
      *         condition to branch
@@ -2981,8 +3007,20 @@ public class CPU6510 implements ClockedComponent {
     protected final void branchIf(boolean condition) {
         var addr = readRelativeAddressPC();
         if (condition) {
+            var pc = state.PC;
+            if (((pc ^ addr) & 0xFF00) != 0) {
+                read(pc);
+                // Page crossing: Dummy read with the high byte not yet fixed.
+                read(pc & 0xFF00 | addr & 0x00FF);
+            } else {
+                // Without page crossing interrupts are not polled again.
+                var irq = irqPolled;
+                var nmi = nmiPolled;
+                read(pc);
+                irqPolled = irq;
+                nmiPolled = nmi;
+            }
             state.PC = addr;
-            tick.waitForTick();
         }
     }
 
@@ -3004,6 +3042,15 @@ public class CPU6510 implements ClockedComponent {
     protected final void pushWord(int value) {
         pushByte(value >> 8);
         pushByte(value & 0xFF);
+    }
+
+    /**
+     * Dummy read at the stack pointer, without changing it.
+     * (1)
+     */
+    @Interruptible
+    protected final void stackRead() {
+        read(state.getS());
     }
 
     /**
@@ -3030,8 +3077,10 @@ public class CPU6510 implements ClockedComponent {
      */
     @Interruptible
     protected final void rts() {
-        // TODO 3 ticks
-        state.PC = (popWord() + 1) & 0xFFFF;
+        idleRead();
+        stackRead();
+        state.PC = popWord();
+        readBytePC();
     }
 
     //
@@ -3114,13 +3163,11 @@ public class CPU6510 implements ClockedComponent {
     /**
      * *AHX: A and X and (Highbyte of address + 1).
      *
-     * @param value
-     *         argument
      * @param addr
      *         address
      */
     @Interruptible
-    protected void ahx(int value, int addr) {
+    protected void ahx(int addr) {
         if (DEBUG) {
             reportIllegalOpcode();
         }
@@ -3381,13 +3428,11 @@ public class CPU6510 implements ClockedComponent {
     /**
      * *SHX: X and (High byte of address + 1).
      *
-     * @param value
-     *         argument
      * @param addr
      *         address
      */
     @Interruptible
-    protected void shx(int value, int addr) {
+    protected void shx(int addr) {
         if (DEBUG) {
             reportIllegalOpcode();
         }
@@ -3399,13 +3444,11 @@ public class CPU6510 implements ClockedComponent {
     /**
      * *SHY: Y and (High byte of address + 1).
      *
-     * @param value
-     *         argument
      * @param addr
      *         address
      */
     @Interruptible
-    protected void shy(int value, int addr) {
+    protected void shy(int addr) {
         if (DEBUG) {
             reportIllegalOpcode();
         }
@@ -3680,6 +3723,8 @@ public class CPU6510 implements ClockedComponent {
      */
     @Interruptible
     protected final void write(int value, int addr) {
+        poll();
+
         // always write to bus!
         bus.write(value, addr);
         if (addr <= 1) {
@@ -3722,6 +3767,7 @@ public class CPU6510 implements ClockedComponent {
         while (!ready) {
             tick.waitForTick();
         }
+        poll();
 
         // Always read from bus!
         var result = bus.read(addr);
@@ -3731,6 +3777,17 @@ public class CPU6510 implements ClockedComponent {
         tick.waitForTick();
 
         return result;
+    }
+
+    /**
+     * Poll interrupts.
+     */
+    private void poll() {
+        var state = this.state;
+        irqPolled = irqLine;
+        nmiPolled = nmiLine;
+        irqLine = state.interrupt;
+        nmiLine = state.NMI;
     }
 
     /**
