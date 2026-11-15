@@ -11,10 +11,10 @@ public interface Clock extends AutoCloseable {
      * <p>
      * TODO Should be in subclass...
      */
-    int CPU = 1000;
-    int CIA1 = 1500;
-    int CIA2 = 1501;
-    int VIC_DISPLAY = 2001;
+    int VIC_DISPLAY = 100;
+    int CPU = 200;
+    int CIA1 = 250;
+    int CIA2 = 260;
 
     /**
      * Dispose the clock and all its clocked components.

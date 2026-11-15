@@ -224,7 +224,7 @@ public abstract class VIC implements BusDevice {
     }
 
     /**
-     * Update the bad line condition and BA at the end of a cycle of the current raster line.
+     * Update the bad line condition and BA at the start of a cycle of the current raster line.
      * A bad line is a raster line in $30-$F7 whose lower 3 bits match the vertical scroll,
      * if the display has been enabled in raster line $30.
      * BA is low on bad lines and for the sprite data accesses, see {@link #isBALow(int, int, boolean)}.
@@ -241,10 +241,7 @@ public abstract class VIC implements BusDevice {
         }
         badLine = denInLine30 && raster >= 0x30 && raster <= 0xF7 && (raster & 0x07) == (regControl1 & CONTROL1_SCROLL_Y);
 
-        // BA is set for the next cycle, because the CPU executes before the VIC in each cycle.
-        var ba = cycle < cyclesPerLine ?
-                isBALow(raster, cycle + 1, badLine) :
-                isBALow((raster + 1) % linesPerScreen, 1, false);
+        var ba = isBALow(raster, cycle, badLine);
         var value = ba ? 0x00 : 0x01;
         if (value != baPort.outputData()) {
             baPort.setOutputData(value);
