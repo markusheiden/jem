@@ -130,10 +130,17 @@ public class DisplayUnit extends AbstractDisplayUnit {
         //noinspection InfiniteLoopStatement
         while (true) {
             for (var raster = 0; raster < vic.linesPerScreen; raster++) {
-                vic.setRasterLine(raster);
+                if (raster == 0) {
+                    // Line 0 is reached one cycle later than the other lines.
+                    vic.setRasterLine(raster);
+                }
                 startLine(raster);
                 for (var cycle = 1; cycle <= vic.cyclesPerLine; cycle++) {
                     cycle(raster, cycle);
+                    if (cycle == vic.cyclesPerLine && raster + 1 < vic.linesPerScreen) {
+                        // The raster line changes in cycle 1, so the CPU reads the new raster line in that cycle.
+                        vic.setRasterLine(raster + 1);
+                    }
                     tick.waitForTick();
                 }
             }
