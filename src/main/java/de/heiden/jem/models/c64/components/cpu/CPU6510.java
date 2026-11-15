@@ -89,6 +89,11 @@ public class CPU6510 implements ClockedComponent {
     private boolean ready = true;
 
     /**
+     * Has the CPU been halted by RDY at the last read cycle?
+     */
+    private boolean halted = false;
+
+    /**
      * Address -> Patch.
      */
     private final Map<Integer, Patch> patches = new HashMap<>();
@@ -1684,8 +1689,7 @@ public class CPU6510 implements ClockedComponent {
                         @Interruptible
                         public void execute() // $93: *AHX ($XX),Y
                         {
-                            var addr = readZeropageIndirectYAddressPCForWrite();
-                            ahx(addr);
+                            ahx(readAbsoluteAddressForIndirect(readAbsoluteZeropageAddressPC()), state.Y);
                         }
                     },
 
@@ -1760,7 +1764,7 @@ public class CPU6510 implements ClockedComponent {
                         @Interruptible
                         public void execute() // $9B: *TAS $XXXX,Y
                         {
-                            tas(readAbsoluteAddressPCForWrite(state.Y));
+                            tas(readAbsoluteAddressPC(), state.Y);
                         }
                     },
 
@@ -1769,8 +1773,7 @@ public class CPU6510 implements ClockedComponent {
                         @Interruptible
                         public void execute() // $9C: *SHY $XXXX,X
                         {
-                            var addr = readAbsoluteAddressPCForWrite(state.X);
-                            shy(addr);
+                            shy(readAbsoluteAddressPC(), state.X);
                         }
                     },
 
@@ -1788,8 +1791,7 @@ public class CPU6510 implements ClockedComponent {
                         @Interruptible
                         public void execute() // $9E: *SHX $XXXX,Y
                         {
-                            var addr = readAbsoluteAddressPCForWrite(state.Y);
-                            shx(addr);
+                            shx(readAbsoluteAddressPC(), state.Y);
                         }
                     },
 
@@ -1798,8 +1800,7 @@ public class CPU6510 implements ClockedComponent {
                         @Interruptible
                         public void execute() // $9F: *AHX $XXXX,Y
                         {
-                            var addr = readAbsoluteAddressPCForWrite(state.Y);
-                            ahx(addr);
+                            ahx(readAbsoluteAddressPC(), state.Y);
                         }
                     },
 
@@ -2868,37 +2869,29 @@ public class CPU6510 implements ClockedComponent {
     }
 
     /**
-     * Add value to A (binary mode).
+     * Add value to A (decimal mode of the NMOS 6502).
+     * Z is set like in binary mode, N and V from the result before the decimal correction of the high nibble.
      *
      * @param value
      *         value
      */
     private void addDecimal(int value) {
-        // add low nibbles
-        var lo = (state.A & 0x0F) + (value & 0x0F);
-        if (state.C) {
-            lo += 0x01;
+        var a = state.A;
+        var c = state.C ? 1 : 0;
+        var lo = (a & 0x0F) + (value & 0x0F) + c;
+        if (lo > 0x09) {
+            lo += 0x06;
         }
-        var clo = lo > 0x09;
+        var result = (lo & 0x0F) + (a & 0xF0) + (value & 0xF0) + (lo > 0x0F ? 0x10 : 0x00);
 
-        // add high nibbles
-        var hi = (state.A & 0xF0) + (value & 0xF0);
-        if (clo) {
-            hi += 0x10;
+        state.Z = ((a + value + c) & 0xFF) == 0;
+        state.N = (result & 0x80) != 0;
+        state.V = ((a ^ result) & ~(a ^ value) & 0x80) != 0;
+        if ((result & 0x1F0) > 0x90) {
+            result += 0x60;
         }
-        var chi = hi > 0x90;
-
-        state.setCarryZeroOverflowNegativeP(state.A, value, lo & 0x0F | hi);
-
-        if (clo) {
-            lo -= 0x0A;
-        }
-        if (chi) {
-            hi -= 0xA0;
-        }
-
-        state.A = lo & 0x0F | hi & 0xF0;
-        state.C = chi;
+        state.C = (result & 0xFF0) > 0xF0;
+        state.A = result & 0xFF;
     }
 
     /**
@@ -2909,44 +2902,32 @@ public class CPU6510 implements ClockedComponent {
      */
     protected final void subtract(int value) {
         if (state.D) {
-            subtractDecimal(value ^ 0xFF);
+            subtractDecimal(value);
         } else {
             addBinary(value ^ 0xFF);
         }
     }
 
     /**
-     * Add value to A (binary mode).
+     * Subtract value from A (decimal mode of the NMOS 6502).
+     * The flags are set like in binary mode.
      *
      * @param value
      *         value
      */
     private void subtractDecimal(int value) {
-        // add low nibbles
-        var lo = (state.A & 0x0F) + (value & 0x0F);
-        if (state.C) {
-            lo += 0x01;
-        }
-        var clo = lo <= 0x0F;
-
-        // add high nibbles
-        var hi = (state.A & 0xF0) + (value & 0xF0);
-        if (!clo) {
-            hi += 0x10;
-        }
-        var chi = hi <= 0xF0;
-
-        state.setCarryZeroOverflowNegativeP(state.A, value, lo & 0x0F | hi);
-
-        if (clo) {
-            lo -= 0x06;
-        }
-        if (chi) {
-            hi -= 0x60;
+        var a = state.A;
+        var borrow = state.C ? 0 : 1;
+        var lo = (a & 0x0F) - (value & 0x0F) - borrow;
+        var result = (lo & 0x10) != 0 ?
+                (lo - 0x06) & 0x0F | (a & 0xF0) - (value & 0xF0) - 0x10 :
+                lo & 0x0F | (a & 0xF0) - (value & 0xF0);
+        if ((result & 0x100) != 0) {
+            result -= 0x60;
         }
 
-        state.A = lo & 0x0F | hi & 0xF0;
-        state.C = !chi;
+        state.setCarryZeroOverflowNegativeP(a, value ^ 0xFF, a + (value ^ 0xFF) + 1 - borrow);
+        state.A = result & 0xFF;
     }
 
     /**
@@ -3163,18 +3144,18 @@ public class CPU6510 implements ClockedComponent {
     /**
      * *AHX: A and X and (Highbyte of address + 1).
      *
-     * @param addr
-     *         address
+     * @param base
+     *         base address
+     * @param index
+     *         index
      */
     @Interruptible
-    protected void ahx(int addr) {
+    protected void ahx(int base, int index) {
         if (DEBUG) {
             reportIllegalOpcode();
         }
 
-        var result = state.A & state.X & ((addr >> 8) + 1);
-        // no state change!
-        write(result, addr);
+        storeAndHighByte(state.A & state.X, base, index);
     }
 
     /**
@@ -3190,21 +3171,21 @@ public class CPU6510 implements ClockedComponent {
         }
 
         if (state.D) {
-            var result = state.A & value;
-            state.V = ((result ^ (result << 1)) & 0x80) != 0;
-            result = result >> 1;
+            // N, Z and V are set from the rotated value, the decimal corrections are based on the value before.
+            var and = state.A & value;
+            var result = and >> 1;
             if (state.C) {
                 result |= 0x80;
             }
-            if ((result & 0x0F) > 0x09) {
-                result -= 0x0A;
-            }
-            if ((result & 0xF0) > 0x90) {
-                result -= 0xA0;
-            }
-
             state.setZeroNegativeP(result);
-            state.C = (result & 0x40) != 0;
+            state.V = ((and ^ result) & 0x40) != 0;
+            if ((and & 0x0F) + (and & 0x01) > 0x05) {
+                result = result & 0xF0 | (result + 0x06) & 0x0F;
+            }
+            state.C = (and & 0xF0) + (and & 0x10) > 0x50;
+            if (state.C) {
+                result = result & 0x0F | (result + 0x60) & 0xF0;
+            }
             state.A = result;
 
         } else {
@@ -3428,51 +3409,70 @@ public class CPU6510 implements ClockedComponent {
     /**
      * *SHX: X and (High byte of address + 1).
      *
-     * @param addr
-     *         address
+     * @param base
+     *         base address
+     * @param index
+     *         index
      */
     @Interruptible
-    protected void shx(int addr) {
+    protected void shx(int base, int index) {
         if (DEBUG) {
             reportIllegalOpcode();
         }
 
-        var result = state.X & ((addr >> 8) + 1);
-        write(result, addr);
+        storeAndHighByte(state.X, base, index);
     }
 
     /**
      * *SHY: Y and (High byte of address + 1).
      *
-     * @param addr
-     *         address
+     * @param base
+     *         base address
+     * @param index
+     *         index
      */
     @Interruptible
-    protected void shy(int addr) {
+    protected void shy(int base, int index) {
         if (DEBUG) {
             reportIllegalOpcode();
         }
 
-        var result = state.Y & ((addr >> 8) + 1);
-        write(result, addr);
+        storeAndHighByte(state.Y, base, index);
     }
 
     /**
      * *TAS: S = A amd X, write S and (High byte of address + 1).
      *
-     * @param addr
-     *         address
+     * @param base
+     *         base address
+     * @param index
+     *         index
      */
     @Interruptible
-    protected void tas(int addr) {
+    protected void tas(int base, int index) {
         if (DEBUG) {
             reportIllegalOpcode();
         }
 
         state.S = state.A & state.X;
-        var result = state.S & ((addr >> 8) + 1);
-        // no state change!
-        write(result, addr);
+        storeAndHighByte(state.S, base, index);
+    }
+
+    /**
+     * Store of *AHX, *SHX, *SHY and *TAS: Value and (high byte of base address + 1) to base address + index.
+     * If the page is crossed, the high byte of the address is replaced by that result.
+     * If the CPU has been halted by RDY at the dummy read,
+     * the "and (high byte of base address + 1)" drops off for the stored value, but not for the address.
+     * (2)
+     */
+    @Interruptible
+    private void storeAndHighByte(int value, int base, int index) {
+        var addr = indexWithDummyRead(base, index);
+        var result = value & ((base >> 8) + 1);
+        if (((base ^ addr) & 0xFF00) != 0) {
+            addr = result << 8 | addr & 0x00FF;
+        }
+        write(halted ? value : result, addr);
     }
 
     /**
@@ -3764,6 +3764,7 @@ public class CPU6510 implements ClockedComponent {
     @Interruptible
     protected final int read(int addr) {
         // The CPU halts at read cycles while not ready. Write cycles are not affected.
+        halted = !ready;
         while (!ready) {
             tick.waitForTick();
         }
