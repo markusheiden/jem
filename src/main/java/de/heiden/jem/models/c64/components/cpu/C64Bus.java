@@ -28,6 +28,7 @@ public class C64Bus implements BusDevice, Patchable {
     private final BusDevice ram;
     private final BusDevice basic;
     private final BusDevice vic;
+    private final BusDevice sid;
     private final BusDevice colorRam;
     private final BusDevice cia1;
     private final BusDevice cia2;
@@ -47,7 +48,7 @@ public class C64Bus implements BusDevice, Patchable {
     private final BusDevice[][] ioModesWrite;
 
     /**
-     * Constructor.
+     * Constructor. The SID is not emulated, so its area is mapped to RAM.
      *
      * @param ram
      *         RAM
@@ -65,15 +66,6 @@ public class C64Bus implements BusDevice, Patchable {
      *         Charset ROM
      * @param kernel
      *         Kernel ROM
-     * @require cpu != null
-     * @require ram != null
-     * @require basic != null
-     * @require vic != null
-     * @require colorRam != null
-     * @require cia1 != null
-     * @require cia2 != null
-     * @require charset != null
-     * @require kernel != null
      */
     public C64Bus(
             @Nonnull BusDevice ram,
@@ -84,9 +76,55 @@ public class C64Bus implements BusDevice, Patchable {
             @Nonnull BusDevice cia2,
             @Nonnull BusDevice charset,
             @Nonnull BusDevice kernel) {
+        this(ram, basic, vic, ram, colorRam, cia1, cia2, charset, kernel);
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param ram
+     *         RAM
+     * @param basic
+     *         Basic ROM
+     * @param vic
+     *         VIC
+     * @param sid
+     *         Device for the SID area $D400-$D7FF
+     * @param colorRam
+     *         Color RAM
+     * @param cia1
+     *         CIA1
+     * @param cia2
+     *         CIA2
+     * @param charset
+     *         Charset ROM
+     * @param kernel
+     *         Kernel ROM
+     * @require cpu != null
+     * @require ram != null
+     * @require basic != null
+     * @require vic != null
+     * @require sid != null
+     * @require colorRam != null
+     * @require cia1 != null
+     * @require cia2 != null
+     * @require charset != null
+     * @require kernel != null
+     */
+    public C64Bus(
+            @Nonnull BusDevice ram,
+            @Nonnull BusDevice basic,
+            @Nonnull BusDevice vic,
+            @Nonnull BusDevice sid,
+            @Nonnull BusDevice colorRam,
+            @Nonnull BusDevice cia1,
+            @Nonnull BusDevice cia2,
+            @Nonnull BusDevice charset,
+            @Nonnull BusDevice kernel) {
         this.ram = ram;
         this.basic = basic;
         this.vic = vic;
+        this.sid = sid;
         this.colorRam = colorRam;
         this.cia1 = cia1;
         this.cia2 = cia2;
@@ -253,9 +291,8 @@ public class C64Bus implements BusDevice, Patchable {
         for (var i = 0xD0; i <= 0xD3; i++) {
             result[i] = vic;
         }
-        // TODO markus 2016-08-16: Add SID...
         for (var i = 0xD4; i <= 0xD7; i++) {
-            result[i] = ram;
+            result[i] = sid;
         }
         for (var i = 0xD8; i <= 0xDB; i++) {
             result[i] = colorRam;

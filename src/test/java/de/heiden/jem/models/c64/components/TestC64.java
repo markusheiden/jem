@@ -62,6 +62,11 @@ public class TestC64 {
     private final VIC6569PAL vic;
 
     /**
+     * Debug cartridge.
+     */
+    private final DebugCartridge debugCartridge;
+
+    /**
      * Buffer for capturing console output.
      */
     private final SystemOut systemOut = new SystemOut();
@@ -97,7 +102,8 @@ public class TestC64 {
         keyboard = new Keyboard(clock, cia1.portA(), cia1.portB());
 
         cpu = clock.addClockedComponent(Clock.CPU, new CPU6510Debugger());
-        cpuBus = new C64Bus(ram, basic, vic, colorRam, cia1, cia2, charset, kernel);
+        debugCartridge = new DebugCartridge(ram);
+        cpuBus = new C64Bus(ram, basic, vic, debugCartridge, colorRam, cia1, cia2, charset, kernel);
         cpuBus.connect(cpu.getPort());
         cpu.connect(cpuBus);
         cpu.getIRQ().connect(cia1.getIRQ());
@@ -160,6 +166,20 @@ public class TestC64 {
      */
     public BusDevice getBus() {
         return cpuBus;
+    }
+
+    /**
+     * VIC, to read its registers independent of the memory configuration.
+     */
+    public BusDevice getVic() {
+        return vic;
+    }
+
+    /**
+     * Debug cartridge.
+     */
+    public DebugCartridge getDebugCartridge() {
+        return debugCartridge;
     }
 
     /**

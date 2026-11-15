@@ -52,12 +52,6 @@ public abstract class AbstractTest {
     protected static final int BORDER = 0xD020;
 
     /**
-     * Register of the VICE debug cartridge, to which the VICE test programs write their result.
-     * Without a SID it is just RAM, which {@link TestC64} initializes with $02.
-     */
-    protected static final int DEBUG_CARTRIDGE = 0xD7FF;
-
-    /**
      * Color green.
      */
     protected static final int RED = 0x02;
@@ -591,27 +585,27 @@ public abstract class AbstractTest {
     /**
      * Green border. Usually "test passed".
      */
-    protected final Condition greenBorder = inMemory(BORDER, GREEN);
+    protected final Condition greenBorder = inVic(BORDER, GREEN);
 
     /**
      * Light-red border. Usually "test failed".
      */
-    protected final Condition lightRedBorder = inMemory(BORDER, LIGHT_RED);
+    protected final Condition lightRedBorder = inVic(BORDER, LIGHT_RED);
 
     /**
      * Red border.  Usually "test failed".
      */
-    protected final Condition redBorder = inMemory(BORDER, RED);
+    protected final Condition redBorder = inVic(BORDER, RED);
 
     /**
      * Debug cartridge reports "test passed".
      */
-    protected final Condition debugCartridgePassed = inMemory(DEBUG_CARTRIDGE, 0x00);
+    protected final Condition debugCartridgePassed = debugCartridge(0x00);
 
     /**
      * Debug cartridge reports "test failed".
      */
-    protected final Condition debugCartridgeFailed = inMemory(DEBUG_CARTRIDGE, 0xFF);
+    protected final Condition debugCartridgeFailed = debugCartridge(0xFF);
 
     /**
      * Condition, which has to be met at two consecutive tests.
@@ -662,6 +656,41 @@ public abstract class AbstractTest {
      */
     protected Condition inMemory(int addr, int value) {
         return new InMemory(addr, value);
+    }
+
+    /**
+     * Condition "value in VIC register".
+     * Independent of the memory configuration, e.g. when I/O is banked out.
+     */
+    protected Condition inVic(int addr, int value) {
+        return new Condition() {
+            @Override
+            public boolean test() {
+                return c64.getVic().read(addr) == value;
+            }
+
+            @Override
+            public String toString() {
+                return "VIC " + hexWord(addr) + " == " + hexByte(value);
+            }
+        };
+    }
+
+    /**
+     * Condition "result written to the debug cartridge".
+     */
+    protected Condition debugCartridge(int value) {
+        return new Condition() {
+            @Override
+            public boolean test() {
+                return c64.getDebugCartridge().getResult() == value;
+            }
+
+            @Override
+            public String toString() {
+                return "Debug cartridge == " + hexByte(value);
+            }
+        };
     }
 
     /**
