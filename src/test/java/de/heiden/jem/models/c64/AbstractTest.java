@@ -52,6 +52,12 @@ public abstract class AbstractTest {
     protected static final int BORDER = 0xD020;
 
     /**
+     * Register of the VICE debug cartridge, to which the VICE test programs write their result.
+     * Without a SID it is just RAM, which {@link TestC64} initializes with $02.
+     */
+    protected static final int DEBUG_CARTRIDGE = 0xD7FF;
+
+    /**
      * Color green.
      */
     protected static final int RED = 0x02;
@@ -282,15 +288,22 @@ public abstract class AbstractTest {
      *         Capture screen and print it to {@link System#out}?.
      */
     protected final void doTestBorderResult(int maxSeconds, boolean screenCapture) throws Exception {
-        var passed = greenBorder;
-        var failed1 = lightRedBorder;
-        var failed2 = redBorder;
-        var result = waitSecondsFor(maxSeconds, passed, failed1, failed2);
+        // Test programs may change the border temporarily while running, so the border color has to be stable.
+        var passed = stable(greenBorder);
+        var failed1 = stable(lightRedBorder);
+        var failed2 = stable(redBorder);
+        var result = waitSecondsFor(maxSeconds, debugCartridgePassed, debugCartridgeFailed, passed, failed1, failed2);
+        if (result == programEnd && greenBorder.test()) {
+            // The border does not change anymore after the end of the program.
+            result = passed;
+        }
         if (screenCapture) {
             printScreen();
         }
 
-        assertSame(passed, result, "Test failed");
+        if (result != debugCartridgePassed) {
+            assertSame(passed, result, "Test failed");
+        }
     }
 
     static class TestWatcher implements TestExecutionExceptionHandler {
@@ -589,6 +602,60 @@ public abstract class AbstractTest {
      * Red border.  Usually "test failed".
      */
     protected final Condition redBorder = inMemory(BORDER, RED);
+
+    /**
+     * Debug cartridge reports "test passed".
+     */
+    protected final Condition debugCartridgePassed = inMemory(DEBUG_CARTRIDGE, 0x00);
+
+    /**
+     * Debug cartridge reports "test failed".
+     */
+    protected final Condition debugCartridgeFailed = inMemory(DEBUG_CARTRIDGE, 0xFF);
+
+    /**
+     * Condition, which has to be met at two consecutive tests.
+     */
+    protected Condition stable(Condition condition) {
+        return new Stable(condition);
+    }
+
+    /**
+     * Condition, which has to be met at two consecutive tests.
+     */
+    private static final class Stable implements Condition {
+        /**
+         * Condition.
+         */
+        private final Condition condition;
+
+        /**
+         * Has the condition been met at the last test?.
+         */
+        private boolean met = false;
+
+        /**
+         * Constructor.
+         *
+         * @param condition
+         *         Condition.
+         */
+        public Stable(Condition condition) {
+            this.condition = condition;
+        }
+
+        @Override
+        public boolean test() throws Exception {
+            var metBefore = met;
+            met = condition.test();
+            return metBefore && met;
+        }
+
+        @Override
+        public String toString() {
+            return condition.toString();
+        }
+    }
 
     /**
      * Condition "value in memory".

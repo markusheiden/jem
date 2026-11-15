@@ -22,6 +22,7 @@ class CiaCountsTest extends AbstractTest {
         assertNotEquals("cmp-b-counts-a-new", programName, "Not implemented yet");
         assertNotEquals("cmp-b-counts-a-new_ntsc", programName, "Not implemented yet");
         assertNotEquals("cmp-b-counts-a-old_ntsc", programName, "Not implemented yet");
+        assertNotEquals("cia-b-counts-a_ntsc", programName, "Not implemented yet");
 
         testBorderResult(program, 60, false);
     }

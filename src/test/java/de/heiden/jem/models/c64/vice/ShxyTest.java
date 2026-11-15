@@ -7,7 +7,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 
 import java.nio.file.Path;
 
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
 
 /**
@@ -16,15 +15,10 @@ import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
 @Execution(CONCURRENT)
 class ShxyTest extends AbstractTest {
     @ParameterizedTest(name = "{1}")
-    @ProgramSuiteSource(resource = "/vice-emu-testprogs/CPU/shxy/shx-t2.prg")
+    // shx-t2 is an interactive test without result.
+    @ProgramSuiteSource(resource = "/vice-emu-testprogs/CPU/shxy/shxy1.prg", ignore = "shx-t2")
     void test(Path program, String programName) throws Exception {
-        // These tests seem to run endlessly, let them fail fast for now.
-        assertNotEquals("shx-t2", programName, "Not correctly implemented yet");
-        assertNotEquals("shxy3", programName, "Not correctly implemented yet");
-        assertNotEquals("shxy4", programName, "Not correctly implemented yet");
-        assertNotEquals("shyx3", programName, "Not correctly implemented yet");
-        assertNotEquals("shyx4", programName, "Not correctly implemented yet");
-
-        testBorderResult(program, 60, true);
+        // shx-test loops over all values of X and all pages, which takes about 150 seconds.
+        testBorderResult(program, "shx-test".equals(programName) ? 200 : 60, true);
     }
 }

@@ -28,8 +28,8 @@ class Banking00Test extends AbstractTest {
         var io = Pattern.compile("io->ram fails (\\p{XDigit}{8})").matcher(screen);
 
         assertTrue(passed.find() && ram.find() && io.find(), "Result page is visible.");
-        assertEquals("ram -> io error counter is 0.", "00000000", ram.group(1));
-        assertEquals("io -> ram error counter is 0.", "00000000", io.group(1));
+        assertEquals("00000000", ram.group(1), "ram -> io error counter is 0.");
+        assertEquals("00000000", io.group(1), "io -> ram error counter is 0.");
         var passes = Integer.parseInt(passed.group(1), 16);
         assertTrue(passes > 1, "Check that more than one pass has been executed, but just executed " + passes + " passes.");
     }
