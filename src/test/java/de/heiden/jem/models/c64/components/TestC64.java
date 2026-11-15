@@ -108,9 +108,10 @@ public class TestC64 {
 
         keyboardBuffer = new KeyboardBuffer(clock, cpuBus);
 
-        // init RAM with 0x02 (crash) to easier detect wrong behaviour
+        // init RAM with 0x02 (crash) to easier detect wrong behaviour.
+        // Not via the bus, because that would write to the registers of the I/O chips too.
         for (var addr = 0; addr < 0x10000; addr++) {
-            cpuBus.write(0x02, addr);
+            ram.write(0x02, addr);
         }
 
         //

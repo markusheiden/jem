@@ -11,6 +11,8 @@ import de.heiden.jem.components.ports.OutputPortImpl;
 import jakarta.annotation.Nonnull;
 import org.serialthreads.Interruptible;
 
+import java.util.Arrays;
+
 /**
  * CIA 6526 (old CIA), executed cycle by cycle after the CPU:
  * A CPU read sees the state at the end of the previous cycle, a CPU write is processed in the same cycle.
@@ -19,8 +21,6 @@ import org.serialthreads.Interruptible;
  * The first decrement happens 2 cycles after a timer has been started,
  * a forced load happens 1 cycle after it has been requested,
  * the IRQ follows an interrupt flag 1 cycle later.
- * <p>
- * Not implemented: Time of day clock, serial shift register, counting CNT edges.
  */
 public class CIA6526 implements BusDevice, ClockedComponent {
     public static final int ICR_UNDERFLOW_TIMER_A = 0x01;
@@ -37,16 +37,25 @@ public class CIA6526 implements BusDevice, ClockedComponent {
     public static final int CR_ONE_SHOT = 0x08;
     public static final int CR_LOAD = 0x10;
     public static final int CR_COUNT_CNT = 0x20;
+    public static final int CRA_SERIAL_OUT = 0x40;
+    public static final int CRA_TOD_50HZ = 0x80;
 
     public static final int CRB_MODE_MASK = 0x60;
+    public static final int CRB_MODE_CNT = 0x20;
     public static final int CRB_MODE_TIMER_A = 0x40;
+    public static final int CRB_MODE_TIMER_A_CNT = 0x60;
     public static final int CRB_SET_ALARM = 0x80;
 
     /**
-     * Pipeline: Interrupt flag set, IRQ follows in the next cycle.
+     * Serial port: Bits of SP and CNT.
      */
-    private static final int INT0 = 1 << 0;
-    private static final int INT1 = 1 << 1;
+    public static final int SERIAL_SP = 0x01;
+    public static final int SERIAL_CNT = 0x02;
+
+    /**
+     * Cycles per tick of the TOD input: The 50 Hz of the power line of a PAL C64 (985248 Hz).
+     */
+    private static final int TOD_CYCLES = 985248 / 50;
 
     /**
      * Address mask.
@@ -66,9 +75,30 @@ public class CIA6526 implements BusDevice, ClockedComponent {
     private final InputOutputPortImpl portSerial = new InputOutputPortImpl();
 
     /**
-     * Serial shift register.
+     * Serial data register.
      */
     private int sdr; // 0x0C
+
+    /**
+     * Serial shift register.
+     */
+    private int shift = 0;
+
+    /**
+     * Output mode: Remaining timer A underflows (2 per bit) of the current transfer, 0 if idle.
+     * Input mode: Number of bits shifted in.
+     */
+    private int shiftCount = 0;
+
+    /**
+     * Output mode: Has the serial data register been written during a transfer?
+     */
+    private boolean sdrPending = false;
+
+    /**
+     * Level of the CNT input.
+     */
+    private boolean cnt = true;
 
     /**
      * Timers.
@@ -77,20 +107,40 @@ public class CIA6526 implements BusDevice, ClockedComponent {
     private final Timer timerB = new Timer(CIA6526.ICR_UNDERFLOW_TIMER_B, 0x80);
 
     /**
-     * Time of day.
+     * Time of day: Tenths, seconds, minutes, hours (0x08-0x0B). At power up the time is 01:00:00.0.
      */
-    private int timeTenth; // 0x08
-    private int timeSec; // 0x09
-    private int timeMin; // 0x0A
-    private int timeHour; // 0x0B
-    private boolean timeLock;
-    private int timeTenthTemp;
-    private int timeSecTemp;
-    private int timeMinTemp;
-    private int alarmTenth;
-    private int alarmSec;
-    private int alarmMin;
-    private int alarmHour;
+    private final int[] tod = {0x00, 0x00, 0x00, 0x01};
+
+    /**
+     * Alarm: Tenths, seconds, minutes, hours.
+     */
+    private final int[] alarm = new int[4];
+
+    /**
+     * Time of day latched by a read of the hours, until the tenths are read.
+     */
+    private final int[] todLatch = new int[4];
+
+    /**
+     * Has the time of day been latched?
+     */
+    private boolean todLatched = false;
+
+    /**
+     * Has the time of day been stopped by a write to the hours?
+     * At power up the time of day is stopped until the tenths are written.
+     */
+    private boolean todStopped = true;
+
+    /**
+     * Counter of the ticks of the TOD input.
+     */
+    private int todTicks = 0;
+
+    /**
+     * Counter of the cycles until the next tick of the TOD input.
+     */
+    private int todCycles = 0;
 
     /**
      * Interrupt control: Flags and mask.
@@ -99,9 +149,35 @@ public class CIA6526 implements BusDevice, ClockedComponent {
     private int icrMask; // 0x0D
 
     /**
-     * Interrupt pipeline.
+     * Interrupt flags of the last cycle, which are enabled.
+     * The IRQ follows them one cycle later.
      */
-    private int intDelay = 0;
+    private int irqSource = 0;
+
+    /**
+     * Serial interrupt of the current cycle, whose IRQ follows without delay.
+     */
+    private int irqImmediate = 0;
+
+    /**
+     * Interrupt flags set in the current cycle.
+     */
+    private int newFlags = 0;
+
+    /**
+     * Has the interrupt control register been read in the current cycle?
+     */
+    private boolean icrRead = false;
+
+    /**
+     * Has the interrupt control register been written in the current cycle?
+     */
+    private boolean icrWritten = false;
+
+    /**
+     * Is the IRQ output active?
+     */
+    private boolean irq = false;
 
     /**
      * IRQ output, low active.
@@ -120,12 +196,20 @@ public class CIA6526 implements BusDevice, ClockedComponent {
         irqPort.setOutputMask(0x01);
         irqPort.setOutputData(0x01);
 
+        portSerial.addInputPortListener((value, mask) -> {
+            var high = (value & SERIAL_CNT) != 0;
+            if (high && !cnt) {
+                cntRisingEdge();
+            }
+            cnt = high;
+        });
+
         clock.addClockedComponent(position, this);
     }
 
     public void reset() {
-        // TODO
-        timeLock = false;
+        todLatched = false;
+        todStopped = true;
     }
 
     @Override
@@ -180,47 +264,25 @@ public class CIA6526 implements BusDevice, ClockedComponent {
             case 0x05 -> timerA.writeLatchHigh(value);
             case 0x06 -> timerB.writeLatchLow(value);
             case 0x07 -> timerB.writeLatchHigh(value);
-            case 0x08 -> {
-                if ((timerB.control & CRB_SET_ALARM) == 0) {
-                    timeTenth = value & 0x0F;
-                } else {
-                    alarmTenth = value & 0x0F;
-                }
-            }
-            case 0x09 -> {
-                if ((timerB.control & CRB_SET_ALARM) == 0) {
-                    timeSec = value & 0x7F;
-                } else {
-                    alarmSec = value & 0x7F;
-                }
-            }
-            case 0x0A -> {
-                if ((timerB.control & CRB_SET_ALARM) == 0) {
-                    timeMin = value & 0x7F;
-                } else {
-                    alarmMin = value & 0x7F;
-                }
-            }
-            case 0x0B -> {
-                if ((timerB.control & CRB_SET_ALARM) == 0) {
-                    timeHour = value & 0x9F;
-                } else {
-                    alarmHour = value & 0x9F;
-                }
-            }
-            case 0x0C -> sdr = value;
+            case 0x08 -> writeTod(0, value & 0x0F);
+            case 0x09 -> writeTod(1, value & 0x7F);
+            case 0x0A -> writeTod(2, value & 0x7F);
+            case 0x0B -> writeTod(3, value & 0x9F);
+            case 0x0C -> writeSdr(value);
             case 0x0D -> {
+                icrWritten = true;
                 if ((value & 0x80) == 0) {
                     icrMask &= ~value & ICR_FLAGS;
                 } else {
                     icrMask |= value & ICR_FLAGS;
                 }
-                // Pending interrupts trigger an IRQ, if they are enabled now.
-                if ((icr & icrMask) != 0) {
-                    intDelay |= INT0;
-                }
             }
-            case 0x0E -> timerA.writeControl(value);
+            case 0x0E -> {
+                if (((value ^ timerA.control) & CRA_SERIAL_OUT) != 0) {
+                    changeSerialMode(value);
+                }
+                timerA.writeControl(value);
+            }
             case 0x0F -> timerB.writeControl(value);
             default -> {
                 // ignore
@@ -239,22 +301,7 @@ public class CIA6526 implements BusDevice, ClockedComponent {
             case 0x05 -> timerA.counter >> 8;
             case 0x06 -> timerB.counter & 0xFF;
             case 0x07 -> timerB.counter >> 8;
-            case 0x08 -> {
-                var value = timeLock ? timeTenthTemp : timeTenth;
-                // unlock current time
-                timeLock = false;
-                yield value;
-            }
-            case 0x09 -> timeLock ? timeSecTemp : timeSec;
-            case 0x0A -> timeLock ? timeMinTemp : timeMin;
-            case 0x0B -> {
-                // lock current time in temp registers
-                timeTenthTemp = timeTenth;
-                timeSecTemp = timeSec;
-                timeMinTemp = timeMin;
-                timeLock = true;
-                yield timeHour;
-            }
+            case 0x08, 0x09, 0x0A, 0x0B -> readTod(address & 0x03);
             case 0x0C -> sdr;
             case 0x0D -> readICR();
             case 0x0E -> timerA.control;
@@ -266,13 +313,225 @@ public class CIA6526 implements BusDevice, ClockedComponent {
     }
 
     /**
+     * Write the serial data register. In output mode this starts a transfer, if no transfer is running.
+     */
+    private void writeSdr(int value) {
+        sdr = value;
+        if ((timerA.control & CRA_SERIAL_OUT) == 0) {
+            return;
+        }
+        if (shiftCount == 0) {
+            shift = value;
+            shiftCount = 16;
+        } else {
+            sdrPending = true;
+        }
+    }
+
+    /**
+     * Change of the serial port mode: Aborts a running transfer.
+     * In output mode SP and CNT are driven by the CIA, idle CNT is high.
+     *
+     * @param control
+     *         new value of the control register A
+     */
+    private void changeSerialMode(int control) {
+        shiftCount = 0;
+        sdrPending = false;
+        if ((control & CRA_SERIAL_OUT) != 0) {
+            portSerial.setOutputData(0xFF);
+            portSerial.setOutputMask(SERIAL_SP | SERIAL_CNT);
+        } else {
+            portSerial.setOutputMask(0x00);
+            portSerial.setOutputData(0xFF);
+        }
+    }
+
+    /**
+     * Output mode: Timer A underflow, which toggles CNT.
+     * CNT goes low and the next bit is put to SP, then CNT goes high again.
+     * After the 8th bit the serial interrupt is set and a pending byte is transferred.
+     */
+    private void shiftOut() {
+        if (shiftCount == 0) {
+            return;
+        }
+        shiftCount--;
+        if ((shiftCount & 0x01) != 0) {
+            var sp = (shift & 0x80) != 0 ? SERIAL_SP : 0;
+            shift = shift << 1 & 0xFF;
+            portSerial.setOutputData(0xFF & ~SERIAL_CNT & ~SERIAL_SP | sp);
+        } else {
+            portSerial.setOutputData(portSerial.outputData() | SERIAL_CNT);
+        }
+
+        if (shiftCount == 0) {
+            // The IRQ of the serial interrupt follows without delay.
+            setInterrupt(ICR_SDR);
+            irqImmediate = ICR_SDR;
+            if (sdrPending) {
+                sdrPending = false;
+                shift = sdr;
+                shiftCount = 16;
+            }
+        }
+    }
+
+    /**
+     * Rising edge of the CNT input: Counts for the timers and shifts SP in, in input mode.
+     * After the 8th bit the shift register is copied to the serial data register and the serial interrupt is set.
+     */
+    private void cntRisingEdge() {
+        if ((timerA.control & CR_COUNT_CNT) != 0) {
+            timerA.count();
+        }
+        if ((timerB.control & CRB_MODE_MASK) == CRB_MODE_CNT) {
+            timerB.count();
+        }
+
+        if ((timerA.control & CRA_SERIAL_OUT) == 0) {
+            shift = (shift << 1 | portSerial.inputData() & SERIAL_SP) & 0xFF;
+            if (++shiftCount == 8) {
+                shiftCount = 0;
+                sdr = shift;
+                setInterrupt(ICR_SDR);
+            }
+        }
+    }
+
+    /**
+     * Write a time of day register or, if selected by CRB, an alarm register.
+     *
+     * @param index
+     *         index of the register: 0 = tenths, 1 = seconds, 2 = minutes, 3 = hours
+     * @param value
+     *         value without undefined bits
+     */
+    private void writeTod(int index, int value) {
+        var setAlarm = (timerB.control & CRB_SET_ALARM) != 0;
+        if (!setAlarm) {
+            if (index == 3) {
+                // Writing hour 12 flips AM/PM.
+                if ((value & 0x1F) == 0x12) {
+                    value ^= 0x80;
+                }
+                // Writing the hours stops the time of day.
+                todStopped = true;
+            } else if (index == 0) {
+                // Writing the tenths (re)starts the time of day. A restart resets the counter of the TOD input.
+                if (todStopped) {
+                    todTicks = 0;
+                }
+                todStopped = false;
+            }
+        }
+
+        var registers = setAlarm ? alarm : tod;
+        if (registers[index] != value) {
+            registers[index] = value;
+            checkAlarm();
+        }
+    }
+
+    /**
+     * Read a time of day register.
+     * Reading the hours latches the time of day, reading the tenths releases it.
+     *
+     * @param index
+     *         index of the register: 0 = tenths, 1 = seconds, 2 = minutes, 3 = hours
+     */
+    private int readTod(int index) {
+        if (!todLatched) {
+            System.arraycopy(tod, 0, todLatch, 0, tod.length);
+        }
+        if (index == 0) {
+            todLatched = false;
+        } else if (index == 3) {
+            todLatched = true;
+        }
+        return todLatch[index];
+    }
+
+    /**
+     * Tick of the TOD input: Counts the time of day every 5 (50 Hz) or 6 (60 Hz) ticks.
+     */
+    private void todTick() {
+        if (todStopped) {
+            return;
+        }
+        todTicks = (todTicks + 1) & 0x07;
+        if (todTicks != ((timerA.control & CRA_TOD_50HZ) != 0 ? 5 : 6)) {
+            return;
+        }
+        todTicks = 0;
+
+        // The digits are binary counters, which carry over by comparison of their values.
+        var tenths = (tod[0] + 1) & 0x0F;
+        var secLow = tod[1] & 0x0F;
+        var secHigh = tod[1] >> 4;
+        var minLow = tod[2] & 0x0F;
+        var minHigh = tod[2] >> 4;
+        var hourLow = tod[3] & 0x0F;
+        var hourHigh = tod[3] >> 4 & 0x01;
+        var pm = tod[3] & 0x80;
+        if (tenths == 10) {
+            tenths = 0;
+            secLow = (secLow + 1) & 0x0F;
+            if (secLow == 10) {
+                secLow = 0;
+                secHigh = (secHigh + 1) & 0x07;
+                if (secHigh == 6) {
+                    secHigh = 0;
+                    minLow = (minLow + 1) & 0x0F;
+                    if (minLow == 10) {
+                        minLow = 0;
+                        minHigh = (minHigh + 1) & 0x07;
+                        if (minHigh == 6) {
+                            minHigh = 0;
+                            hourLow = (hourLow + 1) & 0x0F;
+                            if (hourHigh != 0) {
+                                if (hourLow == 2) {
+                                    // From 11 to 12 AM/PM flips.
+                                    pm ^= 0x80;
+                                } else if (hourLow == 3) {
+                                    // From 12 to 1.
+                                    hourLow = 1;
+                                    hourHigh = 0;
+                                }
+                            } else if (hourLow == 10) {
+                                hourLow = 0;
+                                hourHigh = 1;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        tod[0] = tenths;
+        tod[1] = secHigh << 4 | secLow;
+        tod[2] = minHigh << 4 | minLow;
+        tod[3] = pm | hourHigh << 4 | hourLow;
+
+        checkAlarm();
+    }
+
+    /**
+     * Set the alarm interrupt flag, if the time of day equals the alarm.
+     */
+    private void checkAlarm() {
+        if (Arrays.equals(tod, alarm)) {
+            setInterrupt(ICR_ALARM);
+        }
+    }
+
+    /**
      * Read the interrupt control register: Clears all flags and releases the IRQ.
      */
     private int readICR() {
         var result = icr;
         icr = 0;
-        intDelay = 0;
-        irqPort.setOutputData(0x01);
+        icrRead = true;
+        setIrq(false);
         return result;
     }
 
@@ -280,25 +539,65 @@ public class CIA6526 implements BusDevice, ClockedComponent {
      * Execute one cycle.
      */
     private void cycle() {
+        if (++todCycles == TOD_CYCLES) {
+            todCycles = 0;
+            todTick();
+        }
+
         var underflowA = timerA.cycle();
         var underflowB = timerB.cycle();
-        if (underflowA && (timerB.control & CRB_MODE_TIMER_A) != 0) {
-            // Timer B counts underflows of timer A one cycle later. CNT is not emulated, so it is considered high.
-            timerB.count();
-        }
-
         if (underflowA) {
+            // Timer B counts underflows of timer A one cycle later, optionally only while CNT is high.
+            var modeB = timerB.control & CRB_MODE_MASK;
+            if (modeB == CRB_MODE_TIMER_A || modeB == CRB_MODE_TIMER_A_CNT && cnt) {
+                timerB.count();
+            }
+            if ((timerA.control & CRA_SERIAL_OUT) != 0) {
+                shiftOut();
+            }
             setInterrupt(ICR_UNDERFLOW_TIMER_A);
         }
+        var lost = 0;
         if (underflowB) {
-            setInterrupt(ICR_UNDERFLOW_TIMER_B);
+            if (!icrRead) {
+                setInterrupt(ICR_UNDERFLOW_TIMER_B);
+            } else {
+                // Timer B bug of the old CIA: If the ICR is read in the cycle of the underflow,
+                // the interrupt flag is lost, but the IRQ still occurs.
+                lost = ICR_UNDERFLOW_TIMER_B;
+            }
         }
 
-        if ((intDelay & INT1) != 0) {
+        // The IRQ bit is set by the enabled interrupt flags of the last cycle.
+        // So it is set again by flags, which have just been cleared by a read, but a read in the same cycle
+        // suppresses the IRQ output. Such an IRQ bit without IRQ output is cleared, when no flags are left.
+        if ((irqSource | irqImmediate & icrMask) != 0) {
             icr |= ICR_IRQ;
-            irqPort.setOutputData(0x00);
+            if (!icrRead) {
+                setIrq(true);
+            }
+        } else if ((icr & ICR_FLAGS) == 0 && !irq) {
+            icr = 0;
         }
-        intDelay = intDelay << 1 & INT1;
+        // A write to the ICR suppresses the IRQ of the interrupt flags set in the same cycle.
+        irqSource = (icr | lost) & icrMask & ~(icrWritten ? newFlags | lost : 0);
+        irqImmediate = 0;
+        newFlags = 0;
+        icrRead = false;
+        icrWritten = false;
+    }
+
+    /**
+     * Set the IRQ output.
+     *
+     * @param irq
+     *         IRQ active?
+     */
+    private void setIrq(boolean irq) {
+        if (this.irq != irq) {
+            this.irq = irq;
+            irqPort.setOutputData(irq ? 0x00 : 0x01);
+        }
     }
 
     /**
@@ -306,9 +605,7 @@ public class CIA6526 implements BusDevice, ClockedComponent {
      */
     private void setInterrupt(int flag) {
         icr |= flag;
-        if ((icrMask & flag) != 0) {
-            intDelay |= INT0;
-        }
+        newFlags |= flag;
     }
 
     /**
