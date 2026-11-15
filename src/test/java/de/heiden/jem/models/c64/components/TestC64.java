@@ -5,6 +5,7 @@ import de.heiden.jem.components.clock.Clock;
 import de.heiden.jem.components.clock.ClockEvent;
 import de.heiden.jem.components.clock.serialthreads.SerialClock;
 import de.heiden.jem.models.c64.components.cia.CIA6526;
+import de.heiden.jem.models.c64.components.cia.CIA6526A;
 import de.heiden.jem.models.c64.components.cpu.C64Bus;
 import de.heiden.jem.models.c64.components.cpu.CPU6510Debugger;
 import de.heiden.jem.models.c64.components.cpu.Patch;
@@ -82,9 +83,19 @@ public class TestC64 {
     private final BrkDetector brk = new BrkDetector();
 
     /**
-     * Constructor.
+     * Constructor with old CIAs.
      */
     public TestC64() throws Exception {
+        this(false);
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param newCias
+     *         Use new CIAs (6526A) instead of old CIAs (6526)?
+     */
+    public TestC64(boolean newCias) throws Exception {
         clock = new SerialClock();
 
         var ram = new RAM(0x10000);
@@ -93,8 +104,8 @@ public class TestC64 {
         var kernel = ROMLoader.kernel(ROMLoader.DEFAULT_KERNEL);
         var charset = ROMLoader.character(ROMLoader.DEFAULT_CHARACTER);
 
-        var cia1 = new CIA6526(clock, Clock.CIA1);
-        var cia2 = new CIA6526(clock, Clock.CIA2);
+        var cia1 = newCias ? new CIA6526A(clock, Clock.CIA1) : new CIA6526(clock, Clock.CIA1);
+        var cia2 = newCias ? new CIA6526A(clock, Clock.CIA2) : new CIA6526(clock, Clock.CIA2);
 
         var vicBus = new VICBus(cia2.portA(), ram, charset);
         vic = new VIC6569PAL(clock, vicBus, colorRam);

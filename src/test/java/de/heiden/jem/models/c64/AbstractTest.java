@@ -72,6 +72,11 @@ public abstract class AbstractTest {
     protected TestC64 c64;
 
     /**
+     * Use new CIAs (6526A) instead of old CIAs (6526)?
+     */
+    protected boolean newCias = false;
+
+    /**
      * Console output of test C64.
      */
     protected final ConsoleBuffer console = new ConsoleBuffer();
@@ -103,7 +108,7 @@ public abstract class AbstractTest {
      *         Name C64 thread.
      */
     protected void createC64(String threadName) throws Exception {
-        c64 = new TestC64();
+        c64 = new TestC64(newCias);
         c64.setSystemOut(console);
         systemIn = c64.getSystemIn();
 
