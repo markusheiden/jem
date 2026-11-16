@@ -28,6 +28,11 @@ public class DisplayUnit extends AbstractDisplayUnit {
     private static final int SPRITE_RENDER_CYCLE = 11;
 
     /**
+     * No border pixel.
+     */
+    private static final byte NO_BORDER = -1;
+
+    /**
      * Number of X coordinates in a line buffer.
      */
     private static final int X_COORDINATES = 512;
@@ -68,13 +73,13 @@ public class DisplayUnit extends AbstractDisplayUnit {
     private final int[] colors = new int[COLUMNS];
 
     /**
-     * Columns of the last two g-accesses, the pixels of which may still be affected by register changes:
+     * Columns of the last three g-accesses, the pixels of which may still be affected by register changes:
      * X coordinate of the first pixel (-1 for none), graphics data, video matrix data and color.
      */
-    private final int[] columnX = {-1, -1};
-    private final int[] columnData = new int[2];
-    private final int[] columnCharacter = new int[2];
-    private final int[] columnColor = new int[2];
+    private final int[] columnX = {-1, -1, -1};
+    private final int[] columnData = new int[3];
+    private final int[] columnCharacter = new int[3];
+    private final int[] columnColor = new int[3];
 
     /**
      * Buffers to render a column again after a register change.
@@ -118,12 +123,27 @@ public class DisplayUnit extends AbstractDisplayUnit {
     private boolean verticalBorder = true;
 
     /**
-     * Raster line of the cycle whose pixels are output in the next cycle.
+     * Border pixels of the line, indexed by X coordinate, {@link #NO_BORDER} for no border.
+     */
+    private final byte[] border = new byte[X_COORDINATES];
+
+    /**
+     * Raster line of the last cycle. Its border is evaluated in the next cycle.
+     */
+    private int lastRaster = 0;
+
+    /**
+     * Last cycle, 0 if none. Its border is evaluated in the next cycle.
+     */
+    private int lastCycle = 0;
+
+    /**
+     * Raster line of the cycle whose pixels are output next.
      */
     private int outputRaster = 0;
 
     /**
-     * Cycle whose pixels are output in the next cycle, 0 if none.
+     * Cycle whose pixels are output next, 0 if none.
      */
     private int outputCycle = 0;
 
@@ -181,8 +201,7 @@ public class DisplayUnit extends AbstractDisplayUnit {
         // Pixels outside of the columns, e.g. visible with opened borders, show the background.
         Arrays.fill(graphics, background());
         Arrays.fill(foreground, false);
-        columnX[0] = -1;
-        columnX[1] = -1;
+        Arrays.fill(columnX, -1);
     }
 
     /**
@@ -208,10 +227,22 @@ public class DisplayUnit extends AbstractDisplayUnit {
      *         cycle, starting with 1
      */
     private void cycle(int raster, int cycle) {
-        // The pixels of the last cycle are output after the CPU accessed the registers in that cycle.
+        // The pixels of a cycle are output two cycles later, because register writes of the CPU affect pixels
+        // of the cycle before. The border of the last cycle is evaluated after the CPU accessed the registers in it.
         if (outputCycle != 0) {
             output(outputRaster, outputCycle);
-            outputBorder(outputRaster, outputCycle);
+        }
+        if (lastCycle != 0) {
+            updateBorder(lastRaster, lastCycle);
+        }
+        outputRaster = lastRaster;
+        outputCycle = lastCycle;
+        if (cycle == 1 || cycle == SPRITE_RENDER_CYCLE) {
+            // The line buffers are about to change.
+            if (outputCycle != 0) {
+                output(outputRaster, outputCycle);
+                outputCycle = 0;
+            }
         }
         if (cycle == 1) {
             startLine(raster);
@@ -258,8 +289,8 @@ public class DisplayUnit extends AbstractDisplayUnit {
             }
         }
 
-        outputRaster = raster;
-        outputCycle = cycle;
+        lastRaster = raster;
+        lastCycle = cycle;
     }
 
     /**
@@ -268,27 +299,27 @@ public class DisplayUnit extends AbstractDisplayUnit {
      */
     @Override
     void graphicsChanged() {
-        var cycle = outputCycle;
+        var cycle = lastCycle;
         if (cycle == 0) {
             // Not running yet.
             return;
         }
 
-        // Changes are delayed by one pixel relative to the pixels of a column without horizontal scrolling.
-        var changeX = (FIRST_X + (cycle - 1) * 8 + 5) % vic.lastX;
+        // Changes are aligned with the pixels of a column with a horizontal scroll of 1, starting in the cycle before.
+        var changeX = (FIRST_X + (cycle - 1) * 8 - 3 + vic.lastX) % vic.lastX;
 
-        if (cycle < 16) {
-            // Left of the first column.
-            if (changeX >= FIRST_X) {
-                Arrays.fill(graphics, changeX, vic.lastX, background());
-                changeX = 0;
-            }
-            Arrays.fill(graphics, changeX, vic.firstX_25, background());
-            return;
+        // Left of the first column.
+        if (changeX >= FIRST_X && cycle > 1) {
+            Arrays.fill(graphics, changeX, vic.lastX, background());
+            changeX = 0;
+        }
+        var first = vic.firstX_25 + (vic.regControl2 & VIC.CONTROL2_SCROLL_X);
+        if (changeX < first) {
+            Arrays.fill(graphics, changeX, first, background());
         }
 
         var renderer = lineRenderers[mode()];
-        for (var i = 0; i < 2; i++) {
+        for (var i = 0; i < columnX.length; i++) {
             var x = columnX[i];
             if (x >= 0 && x + 8 > changeX) {
                 renderer.render(changedGraphics, changedForeground, x, columnData[i], columnCharacter[i], columnColor[i]);
@@ -298,7 +329,7 @@ public class DisplayUnit extends AbstractDisplayUnit {
             }
         }
 
-        if (cycle >= 56) {
+        if (cycle >= 56 || cycle == 1) {
             // Right of the last column.
             var x = Math.max(changeX, vic.lastX_25 + (vic.regControl2 & VIC.CONTROL2_SCROLL_X));
             if (x < FIRST_X) {
@@ -350,7 +381,7 @@ public class DisplayUnit extends AbstractDisplayUnit {
         }
         renderer.render(graphics, foreground, x, data, character, color);
 
-        var i = column & 1;
+        var i = column % columnX.length;
         columnX[i] = x;
         columnData[i] = data;
         columnCharacter[i] = character;
@@ -358,8 +389,7 @@ public class DisplayUnit extends AbstractDisplayUnit {
     }
 
     /**
-     * Output the 8 pixels of a cycle: Sprites or graphics.
-     * Executed in the next cycle, so that register writes of the CPU in the cycle are considered.
+     * Output the 8 pixels of a cycle: Border, sprites or graphics.
      */
     private void output(int raster, int cycle) {
         var row = raster - vic.lastVBlank;
@@ -371,7 +401,8 @@ public class DisplayUnit extends AbstractDisplayUnit {
         for (var i = 0; i < 8; i++) {
             var index = (x - vic.firstVisibleX + vic.lastX) % vic.lastX;
             if (visible && index < lineLength) {
-                screenRender[lineStart + index] = pixel(x);
+                var borderPixel = border[x];
+                screenRender[lineStart + index] = borderPixel != NO_BORDER ? borderPixel : pixel(x);
             }
             if (++x == vic.lastX) {
                 x = 0;
@@ -380,22 +411,15 @@ public class DisplayUnit extends AbstractDisplayUnit {
     }
 
     /**
-     * Output the border over the 8 pixels of a cycle.
-     * Executed in the next cycle too, e.g. switching to 38 columns in cycle 56 opens the side border.
+     * Evaluate the border of the 8 pixels of a cycle.
+     * Executed in the next cycle, so that register writes of the CPU in the cycle are considered,
+     * e.g. switching to 38 columns in cycle 56 opens the side border.
      */
-    private void outputBorder(int raster, int cycle) {
-        var row = raster - vic.lastVBlank;
-        var visible = row >= 0 && row < getLines();
-        var lineLength = getLineLength();
-        var lineStart = row * lineLength;
-
+    private void updateBorder(int raster, int cycle) {
         var x = (FIRST_X + (cycle - 1) * 8) % vic.lastX;
         for (var i = 0; i < 8; i++) {
             updateMainBorder(raster, x);
-            var index = (x - vic.firstVisibleX + vic.lastX) % vic.lastX;
-            if (mainBorder && visible && index < lineLength) {
-                screenRender[lineStart + index] = vic.regExteriorColor;
-            }
+            border[x] = mainBorder ? vic.regExteriorColor : NO_BORDER;
             if (++x == vic.lastX) {
                 x = 0;
             }
