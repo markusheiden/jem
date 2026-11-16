@@ -173,8 +173,7 @@ public abstract class VIC implements BusDevice {
             sprites[i] = new Sprite(i);
         }
 
-        logger.debug("start vic display unit");
-        displayUnit = clock.addClockedComponent(Clock.VIC_DISPLAY, new DisplayUnit(this));
+        displayUnit = new DisplayUnit(this);
 
         irqPort = new OutputPortImpl();
         irqPort.setOutputMask(0x01);

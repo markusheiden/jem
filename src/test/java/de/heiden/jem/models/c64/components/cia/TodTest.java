@@ -1,7 +1,5 @@
 package de.heiden.jem.models.c64.components.cia;
 
-import de.heiden.jem.components.clock.Clock;
-import de.heiden.jem.components.clock.serialthreads.SerialClock;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -76,7 +74,7 @@ class TodTest {
      *         control register A
      */
     private static AbstractCIA start(TodInput todInput, int cra) {
-        var cia = new CIA6526(new SerialClock(), Clock.CIA1, todInput);
+        var cia = new CIA6526(todInput);
         cia.write(cra, 0x0E);
         cia.write(0x00, 0x0B);
         cia.write(0x00, 0x0A);

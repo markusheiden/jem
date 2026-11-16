@@ -104,11 +104,12 @@ public class TestC64 {
         var kernel = ROMLoader.kernel(ROMLoader.DEFAULT_KERNEL);
         var charset = ROMLoader.character(ROMLoader.DEFAULT_CHARACTER);
 
-        var cia1 = newCias ? new CIA6526A(clock, Clock.CIA1) : new CIA6526(clock, Clock.CIA1);
-        var cia2 = newCias ? new CIA6526A(clock, Clock.CIA2) : new CIA6526(clock, Clock.CIA2);
+        var cia1 = clock.addClockedComponent(Clock.CIA1, newCias ? new CIA6526A() : new CIA6526());
+        var cia2 = clock.addClockedComponent(Clock.CIA2, newCias ? new CIA6526A() : new CIA6526());
 
         var vicBus = new VICBus(cia2.portA(), ram, charset);
         vic = new VIC6569PAL(clock, vicBus, colorRam);
+        clock.addClockedComponent(Clock.VIC_DISPLAY, vic.displayUnit);
 
         keyboard = new Keyboard(clock, cia1.portA(), cia1.portB());
 

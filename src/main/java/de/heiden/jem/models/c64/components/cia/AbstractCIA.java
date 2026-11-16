@@ -1,7 +1,6 @@
 package de.heiden.jem.models.c64.components.cia;
 
 import de.heiden.jem.components.bus.BusDevice;
-import de.heiden.jem.components.clock.Clock;
 import de.heiden.jem.components.clock.ClockedComponent;
 import de.heiden.jem.components.clock.Tick;
 import de.heiden.jem.components.ports.InputOutputPort;
@@ -183,14 +182,10 @@ public abstract class AbstractCIA implements BusDevice, ClockedComponent {
     /**
      * Constructor.
      *
-     * @param clock
-     *         clock
-     * @param position
-     *         position of the CIA in the clock, after the CPU
      * @param todInput
      *         TOD input
      */
-    protected AbstractCIA(@Nonnull Clock clock, int position, @Nonnull TodInput todInput) {
+    protected AbstractCIA(@Nonnull TodInput todInput) {
         this.todInput = todInput;
         irqPort.setOutputMask(0x01);
         irqPort.setOutputData(0x01);
@@ -202,8 +197,6 @@ public abstract class AbstractCIA implements BusDevice, ClockedComponent {
             }
             cnt = high;
         });
-
-        clock.addClockedComponent(position, this);
     }
 
     public void reset() {

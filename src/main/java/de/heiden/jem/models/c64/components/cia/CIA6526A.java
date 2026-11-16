@@ -1,6 +1,5 @@
 package de.heiden.jem.models.c64.components.cia;
 
-import de.heiden.jem.components.clock.Clock;
 import jakarta.annotation.Nonnull;
 
 /**
@@ -21,28 +20,19 @@ public class CIA6526A extends AbstractCIA {
 
     /**
      * Constructor for a PAL C64.
-     *
-     * @param clock
-     *         clock
-     * @param position
-     *         position of the CIA in the clock, after the CPU
      */
-    public CIA6526A(@Nonnull Clock clock, int position) {
-        this(clock, position, TodInput.PAL);
+    public CIA6526A() {
+        this(TodInput.PAL);
     }
 
     /**
      * Constructor.
      *
-     * @param clock
-     *         clock
-     * @param position
-     *         position of the CIA in the clock, after the CPU
      * @param todInput
      *         TOD input
      */
-    public CIA6526A(@Nonnull Clock clock, int position, @Nonnull TodInput todInput) {
-        super(clock, position, todInput);
+    public CIA6526A(@Nonnull TodInput todInput) {
+        super(todInput);
     }
 
     @Override
