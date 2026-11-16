@@ -70,12 +70,12 @@ public abstract class VIC implements BusDevice {
     protected Sprite[] sprites;
 
     private int regSpritesEnable; // 0x15
-    private int regSpritesMSBX; // 0x11
-    private int regSpritesExpandX; // 0x17
-    private int regSpritesExpandY; // 0x1D
+    private int regSpritesMSBX; // 0x10
+    private int regSpritesExpandY; // 0x17
+    private int regSpritesExpandX; // 0x1D
     private int regSpritesMulticolorMode; // 0x1C
-    protected byte regSpritesMulticolor0; // 0x15
-    protected byte regSpritesMulticolor1; // 0x16
+    protected byte regSpritesMulticolor0; // 0x25
+    protected byte regSpritesMulticolor1; // 0x26
 
     private int regSpritesSpriteCollision; // 0x1E
     private int regSpritesBackgroundCollision; // 0x1F
@@ -503,9 +503,9 @@ public abstract class VIC implements BusDevice {
                 break;
             }
             case 0x17: {
-                regSpritesExpandX = value;
+                regSpritesExpandY = value;
                 for (var sprite : sprites) {
-                    sprite.setExpandX(value);
+                    sprite.setExpandY(value);
                 }
                 break;
             }
@@ -543,9 +543,9 @@ public abstract class VIC implements BusDevice {
                 break;
             }
             case 0x1D: {
-                regSpritesExpandY = value;
+                regSpritesExpandX = value;
                 for (var sprite : sprites) {
-                    sprite.setExpandY(value);
+                    sprite.setExpandX(value);
                 }
                 break;
             }
@@ -747,7 +747,7 @@ public abstract class VIC implements BusDevice {
                 break;
             }
             case 0x17: {
-                result = regSpritesExpandX;
+                result = regSpritesExpandY;
                 break;
             }
             case 0x18: {
@@ -771,7 +771,7 @@ public abstract class VIC implements BusDevice {
                 break;
             }
             case 0x1D: {
-                result = regSpritesExpandY;
+                result = regSpritesExpandX;
                 break;
             }
             case 0x1E: {
