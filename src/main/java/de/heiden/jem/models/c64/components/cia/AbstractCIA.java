@@ -211,24 +211,6 @@ public abstract class AbstractCIA implements BusDevice, ClockedComponent {
         todStopped = true;
     }
 
-    /**
-     * TOD input.
-     */
-    public @Nonnull TodInput getTodInput() {
-        return todInput;
-    }
-
-    /**
-     * Change the TOD input, e.g. to another frequency of the power line.
-     *
-     * @param todInput
-     *         TOD input
-     */
-    public void setTodInput(@Nonnull TodInput todInput) {
-        this.todInput = todInput;
-        todPhase = 0;
-    }
-
     @Override
     public String getName() {
         return getClass().getSimpleName();
