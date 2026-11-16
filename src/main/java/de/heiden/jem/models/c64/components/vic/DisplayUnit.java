@@ -14,8 +14,7 @@ import java.util.Arrays;
  * <p>
  * Simplifications: The graphics of a column are rendered with the registers of its g-access cycle,
  * changes of the graphics mode and the background colors by the CPU are applied to the pixels following the change.
- * The sprites of a line are rendered in cycle 11 with the registers of that cycle,
- * changes of the X coordinates by the CPU are applied to sprites not yet reached by the raster beam.
+ * A sprite is rendered with the registers of the cycle, in which the raster beam reaches its X coordinate.
  */
 public class DisplayUnit extends AbstractDisplayUnit {
     /**
@@ -24,9 +23,14 @@ public class DisplayUnit extends AbstractDisplayUnit {
     private static final int FIRST_X = 0x194;
 
     /**
-     * Cycle after the last sprite data access of a line, in which the sprites of the line are rendered.
+     * Number of pixels into a cycle, after which a write of the CPU to the X coordinate of a sprite takes effect.
      */
-    private static final int SPRITE_RENDER_CYCLE = 11;
+    private static final int SPRITE_X_DELAY = 4;
+
+    /**
+     * Delay in pixels, after which a collision is visible in the collision registers.
+     */
+    private static final int COLLISION_DELAY = 12;
 
     /**
      * No border pixel.
@@ -238,22 +242,22 @@ public class DisplayUnit extends AbstractDisplayUnit {
         }
         outputRaster = lastRaster;
         outputCycle = lastCycle;
-        if (cycle == 1 || cycle == SPRITE_RENDER_CYCLE) {
+        if (cycle == 1) {
             // The line buffers are about to change.
             if (outputCycle != 0) {
                 output(outputRaster, outputCycle);
                 outputCycle = 0;
             }
-        }
-        if (cycle == 1) {
             startLine(raster);
         }
 
+        // Sprites reached by the raster beam since the last write of the CPU, before and after the sprite sequencer.
+        var beamX = (FIRST_X + (cycle - 1) * 8) % vic.lastX;
+        spriteRenderer.trigger((beamX - 8 + SPRITE_X_DELAY + vic.lastX) % vic.lastX, 8 - SPRITE_X_DELAY, FIRST_X);
+
         vic.spriteCycle(raster, cycle);
         vic.updateBA(cycle);
-        if (cycle == SPRITE_RENDER_CYCLE) {
-            spriteRenderer.startLine();
-        }
+        spriteRenderer.trigger(beamX, SPRITE_X_DELAY, FIRST_X);
         var badLine = vic.isBadLine();
         if (badLine) {
             displayState = true;
@@ -290,8 +294,42 @@ public class DisplayUnit extends AbstractDisplayUnit {
             }
         }
 
+        detectCollisions(cycle);
+
         lastRaster = raster;
         lastCycle = cycle;
+    }
+
+    /**
+     * Detect the collisions of sprites with other sprites and with the foreground of the graphics
+     * for the 8 pixels, which become visible in the collision registers in a cycle.
+     * The border does not prevent collisions.
+     */
+    private void detectCollisions(int cycle) {
+        var sprites = 0;
+        var background = 0;
+        var x = (FIRST_X + (cycle - 1) * 8 - COLLISION_DELAY + vic.lastX) % vic.lastX;
+        for (var i = 0; i < 8; i++) {
+            var mask = spriteRenderer.sprites[x] & 0xFF;
+            if (mask != 0) {
+                if ((mask & (mask - 1)) != 0) {
+                    sprites |= mask;
+                }
+                if (foreground[x]) {
+                    background |= mask;
+                }
+            }
+            if (++x == vic.lastX) {
+                x = 0;
+            }
+        }
+
+        if ((sprites | background) != 0) {
+            vic.spriteCollisions(sprites, background);
+        }
+
+        // All pixels up to the cycle before the last cycle have been output.
+        spriteRenderer.clear((FIRST_X + (cycle - 3) * 8 + vic.lastX) % vic.lastX, 8);
     }
 
     /**
@@ -336,18 +374,6 @@ public class DisplayUnit extends AbstractDisplayUnit {
             if (x < FIRST_X) {
                 Arrays.fill(graphics, x, FIRST_X, background());
             }
-        }
-    }
-
-    /**
-     * The CPU changed X coordinates of sprites in the current cycle.
-     */
-    @Override
-    void spriteXChanged() {
-        var cycle = lastCycle;
-        if (cycle >= SPRITE_RENDER_CYCLE) {
-            // The write happens in the second half of the cycle.
-            spriteRenderer.xChanged((cycle - 1) * 8 + 5, FIRST_X);
         }
     }
 

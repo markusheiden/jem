@@ -3,7 +3,7 @@ package de.heiden.jem.models.c64.components.vic;
 import java.util.Arrays;
 
 /**
- * Renders the sprites of one line into a line buffer, indexed by X coordinate.
+ * Renders the sprites into a line buffer, indexed by X coordinate, when the raster beam reaches them.
  * The display unit combines it with the graphics and the border.
  */
 class SpriteRenderer {
@@ -28,6 +28,21 @@ class SpriteRenderer {
     final boolean[] behind;
 
     /**
+     * Bit masks of the sprites with a pixel at the X coordinates, for collisions.
+     */
+    final byte[] sprites;
+
+    /**
+     * Number of pixels of the currently rendered sprite, until its data is read.
+     */
+    private int remaining;
+
+    /**
+     * Color of the last displayed pixel of the currently rendered sprite.
+     */
+    private int lastColor;
+
+    /**
      * Constructor.
      *
      * @param vic
@@ -39,65 +54,69 @@ class SpriteRenderer {
         this.vic = vic;
         this.pixels = new byte[width];
         this.behind = new boolean[width];
-    }
-
-    /**
-     * Start of a line: Render the displayed sprites with the data the sprite sequencer read for the line.
-     */
-    void startLine() {
-        for (var sprite : vic.sprites) {
-            // X coordinates beyond the end of the line are never reached.
-            sprite.lineX = sprite.display && sprite.x < vic.lastX ? sprite.x : -1;
-            sprite.lineData = sprite.data;
-        }
-        render();
-    }
-
-    /**
-     * The CPU changed X coordinates of sprites: Sprites not yet reached by the raster beam are displayed
-     * at their new X coordinate, if the raster beam still reaches it in this line.
-     *
-     * @param position
-     *         position of the change in pixels from the start of the line
-     * @param firstX
-     *         X coordinate of the first pixel of the line
-     */
-    void xChanged(int position, int firstX) {
-        var changed = false;
-        for (var sprite : vic.sprites) {
-            var lineX = sprite.lineX;
-            if (sprite.x != lineX && sprite.display && (lineX < 0 || position(lineX, firstX) >= position)) {
-                sprite.lineX = sprite.x < vic.lastX && position(sprite.x, firstX) >= position ? sprite.x : -1;
-                changed |= sprite.lineX != lineX;
-            }
-        }
-        if (changed) {
-            render();
-        }
-    }
-
-    /**
-     * Position of an X coordinate in pixels from the start of the line.
-     */
-    private int position(int x, int firstX) {
-        return (x - firstX + vic.lastX) % vic.lastX;
-    }
-
-    /**
-     * Render the sprites of the line. Sprite 0 has the highest priority, so it is rendered last.
-     */
-    private void render() {
+        this.sprites = new byte[width];
         Arrays.fill(pixels, NONE);
+    }
 
-        for (var i = 7; i >= 0; i--) {
-            var sprite = vic.sprites[i];
-            if (sprite.lineX >= 0) {
-                var isBehind = (vic.regSpritesBackgroundPriority & sprite.bitmask) != 0;
-                var x = sprite.lineX;
-                for (var shift = 16; shift >= 0; shift -= 8) {
-                    x = renderByte(x, (sprite.lineData >> shift) & 0xFF, sprite, isBehind);
+    /**
+     * Start to display the sprites, whose X coordinate is reached by the raster beam.
+     * A sprite displays the data, which has been read last, once.
+     * A sprite is not displayed while its data is read:
+     * From 1 pixel before its 2 access cycles up to 3 pixels into its second access cycle.
+     *
+     * @param x
+     *         X coordinate of the first pixel
+     * @param count
+     *         number of pixels
+     * @param firstX
+     *         X coordinate of the first pixel of a line
+     */
+    void trigger(int x, int count, int firstX) {
+        var lastX = vic.lastX;
+        for (var sprite : vic.sprites) {
+            if (sprite.armed && sprite.display && (sprite.x - x + lastX) % lastX < count && sprite.x < lastX) {
+                sprite.armed = false;
+
+                var access = firstX + (VIC.spriteAccessCycle(sprite.number) - 1) * 8 - 1;
+                if ((sprite.x - access + 2 * lastX) % lastX >= 12) {
+                    // The display stops, when the data is read: The last pixel is displayed until then.
+                    remaining = (access - sprite.x + 2 * lastX) % lastX;
+                    render(sprite);
+                    if (remaining <= 0 && lastColor != NONE) {
+                        remaining = 12;
+                        renderPixel(access, 12, lastColor, sprite, (vic.regSpritesBackgroundPriority & sprite.bitmask) != 0);
+                    }
                 }
             }
+        }
+    }
+
+    /**
+     * The pixels have been output: Remove them.
+     *
+     * @param x
+     *         X coordinate of the first pixel
+     * @param count
+     *         number of pixels
+     */
+    void clear(int x, int count) {
+        for (var i = 0; i < count; i++) {
+            pixels[x] = NONE;
+            sprites[x] = 0;
+            if (++x == vic.lastX) {
+                x = 0;
+            }
+        }
+    }
+
+    /**
+     * Render the current line of a sprite.
+     */
+    private void render(Sprite sprite) {
+        var isBehind = (vic.regSpritesBackgroundPriority & sprite.bitmask) != 0;
+        var x = sprite.x;
+        for (var shift = 16; shift >= 0; shift -= 8) {
+            x = renderByte(x, (sprite.data >> shift) & 0xFF, sprite, isBehind);
         }
     }
 
@@ -110,30 +129,38 @@ class SpriteRenderer {
         var width = sprite.expandX ? 2 : 1;
         if (sprite.multicolor) {
             for (var shift = 6; shift >= 0; shift -= 2) {
-                x = renderPixel(x, 2 * width, multiColor((bitmap >> shift) & 0x03, sprite.color), isBehind);
+                x = renderPixel(x, 2 * width, multiColor((bitmap >> shift) & 0x03, sprite.color), sprite, isBehind);
             }
         } else {
             for (var mask = 0x80; mask != 0; mask >>= 1) {
-                x = renderPixel(x, width, (bitmap & mask) == 0 ? NONE : sprite.color, isBehind);
+                x = renderPixel(x, width, (bitmap & mask) == 0 ? NONE : sprite.color, sprite, isBehind);
             }
         }
         return x;
     }
 
     /**
-     * Render one sprite pixel. Transparent pixels keep the pixels of sprites with lower priority.
+     * Render one sprite pixel. Sprites with a lower number have priority.
      * Sprites wrap around at the end of the line.
      *
      * @param color
      *         color or {@link #NONE} for transparent
      * @return X coordinate of the next pixel
      */
-    private int renderPixel(int x, int width, int color, boolean isBehind) {
+    private int renderPixel(int x, int width, int color, Sprite sprite, boolean isBehind) {
+        var visible = Math.min(width, remaining);
+        remaining -= width;
+        if (visible > 0) {
+            lastColor = color;
+        }
         if (color != NONE) {
-            for (int i = x, to = x + width; i < to; i++) {
+            for (int i = x, to = x + visible; i < to; i++) {
                 var index = i % vic.lastX;
-                pixels[index] = (byte) color;
-                behind[index] = isBehind;
+                if ((sprites[index] & (sprite.bitmask - 1)) == 0) {
+                    pixels[index] = (byte) color;
+                    behind[index] = isBehind;
+                }
+                sprites[index] |= (byte) sprite.bitmask;
             }
         }
         return x + width;

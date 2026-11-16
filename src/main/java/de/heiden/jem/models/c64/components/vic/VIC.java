@@ -115,6 +115,8 @@ public abstract class VIC implements BusDevice {
     protected int regInterruptMask; // 0x1A
     protected static final int INTERRUPT_MASK = 0x0F;
     protected static final int INTERRUPT_RASTER = 1 << 0;
+    protected static final int INTERRUPT_SPRITE_BACKGROUND = 1 << 1;
+    protected static final int INTERRUPT_SPRITE_SPRITE = 1 << 2;
     protected static final int INTERRUPT_ANY = 1 << 7;
     // color register
     protected byte regExteriorColor; // 0x20
@@ -288,7 +290,7 @@ public abstract class VIC implements BusDevice {
     /**
      * First of the 2 cycles in which the VIC reads the pointer and the data of a sprite (PAL 6569).
      */
-    private static int spriteAccessCycle(int number) {
+    static int spriteAccessCycle(int number) {
         return number < 3 ? 58 + 2 * number : 1 + 2 * (number - 3);
     }
 
@@ -347,7 +349,11 @@ public abstract class VIC implements BusDevice {
         // The data of a sprite is read in the second of its 2 access cycles.
         for (var i = 0; i < 8; i++) {
             var sprite = sprites[i];
-            if (sprite.dma && cycle == spriteAccessCycle(i) + 1) {
+            if (cycle != spriteAccessCycle(i) + 1) {
+                continue;
+            }
+            sprite.armed = sprite.dma;
+            if (sprite.dma) {
                 var address = bus.read(baseCharacterMode + 0x03F8 + i) << 6;
                 var data = 0;
                 for (var b = 0; b < 3; b++) {
@@ -388,7 +394,6 @@ public abstract class VIC implements BusDevice {
         switch (address & mask) {
             case 0x00: {
                 sprites[0].setXLSB(value);
-                displayUnit.spriteXChanged();
                 break;
             }
             case 0x01: {
@@ -397,7 +402,6 @@ public abstract class VIC implements BusDevice {
             }
             case 0x02: {
                 sprites[1].setXLSB(value);
-                displayUnit.spriteXChanged();
                 break;
             }
             case 0x03: {
@@ -406,7 +410,6 @@ public abstract class VIC implements BusDevice {
             }
             case 0x04: {
                 sprites[2].setXLSB(value);
-                displayUnit.spriteXChanged();
                 break;
             }
             case 0x05: {
@@ -415,7 +418,6 @@ public abstract class VIC implements BusDevice {
             }
             case 0x06: {
                 sprites[3].setXLSB(value);
-                displayUnit.spriteXChanged();
                 break;
             }
             case 0x07: {
@@ -424,7 +426,6 @@ public abstract class VIC implements BusDevice {
             }
             case 0x08: {
                 sprites[4].setXLSB(value);
-                displayUnit.spriteXChanged();
                 break;
             }
             case 0x09: {
@@ -433,7 +434,6 @@ public abstract class VIC implements BusDevice {
             }
             case 0x0A: {
                 sprites[5].setXLSB(value);
-                displayUnit.spriteXChanged();
                 break;
             }
             case 0x0B: {
@@ -442,7 +442,6 @@ public abstract class VIC implements BusDevice {
             }
             case 0x0C: {
                 sprites[6].setXLSB(value);
-                displayUnit.spriteXChanged();
                 break;
             }
             case 0x0D: {
@@ -451,7 +450,6 @@ public abstract class VIC implements BusDevice {
             }
             case 0x0E: {
                 sprites[7].setXLSB(value);
-                displayUnit.spriteXChanged();
                 break;
             }
             case 0x0F: {
@@ -463,7 +461,6 @@ public abstract class VIC implements BusDevice {
                 for (var sprite : sprites) {
                     sprite.setXMSB(value);
                 }
-                displayUnit.spriteXChanged();
                 break;
             }
             case 0x11: {
@@ -535,20 +532,14 @@ public abstract class VIC implements BusDevice {
                 break;
             }
             case 0x19: {
-                // 1-bits in value disable the corresponding interrupt bits in the irq register
+                // 1-bits in value clear the corresponding interrupt bits in the irq register
                 regInterruptRequest &= ~(value & INTERRUPT_MASK);
-                if ((regInterruptRequest & INTERRUPT_MASK) == 0) {
-                    // no pending irq anymore:
-
-                    // clear "master" interrupt bit
-                    regInterruptRequest = 0x00;
-                    // reset irq
-                    irqPort.setOutputData(0x1);
-                }
+                updateIRQ();
                 break;
             }
             case 0x1A: {
-                regInterruptMask = value;
+                regInterruptMask = value & INTERRUPT_MASK;
+                updateIRQ();
                 break;
             }
             case 0x1B: {
@@ -569,12 +560,9 @@ public abstract class VIC implements BusDevice {
                 }
                 break;
             }
-            case 0x1E: {
-                regSpritesSpriteCollision = value;
-                break;
-            }
+            case 0x1E:
             case 0x1F: {
-                regSpritesBackgroundCollision = value;
+                // The collision registers are read only.
                 break;
             }
             case 0x20: {
@@ -780,6 +768,9 @@ public abstract class VIC implements BusDevice {
             }
             case 0x19: {
                 result = regInterruptRequest | 0x70; // unused bits are 1
+                if ((regInterruptRequest & regInterruptMask) != 0) {
+                    result |= INTERRUPT_ANY;
+                }
                 break;
             }
             case 0x1A: {
@@ -799,11 +790,15 @@ public abstract class VIC implements BusDevice {
                 break;
             }
             case 0x1E: {
+                // Reading clears the collisions.
                 result = regSpritesSpriteCollision;
+                regSpritesSpriteCollision = 0;
                 break;
             }
             case 0x1F: {
+                // Reading clears the collisions.
                 result = regSpritesBackgroundCollision;
+                regSpritesBackgroundCollision = 0;
                 break;
             }
             case 0x20: {
@@ -896,11 +891,47 @@ public abstract class VIC implements BusDevice {
      */
     protected void setRasterLine(int line) {
         regRaster = line;
-        if (line == regRasterIRQ && (regInterruptMask & INTERRUPT_RASTER) != 0) {
-            regInterruptRequest |= INTERRUPT_RASTER | INTERRUPT_ANY;
-            irqPort.setOutputData(0x0);
+        if (line == regRasterIRQ) {
+            regInterruptRequest |= INTERRUPT_RASTER;
+            updateIRQ();
 
             logger.debug("Raster irq at line {} at tick {}", regRaster, clock.getTick());
+        }
+    }
+
+    /**
+     * Sprites collided with other sprites and / or with the foreground of the graphics.
+     * The first collision after reading the collision register requests an interrupt.
+     *
+     * @param sprites
+     *         bit mask of the sprites which collided with other sprites
+     * @param background
+     *         bit mask of the sprites which collided with the foreground of the graphics
+     */
+    protected final void spriteCollisions(int sprites, int background) {
+        if (sprites != 0) {
+            if (regSpritesSpriteCollision == 0) {
+                regInterruptRequest |= INTERRUPT_SPRITE_SPRITE;
+                updateIRQ();
+            }
+            regSpritesSpriteCollision |= sprites;
+        }
+        if (background != 0) {
+            if (regSpritesBackgroundCollision == 0) {
+                regInterruptRequest |= INTERRUPT_SPRITE_BACKGROUND;
+                updateIRQ();
+            }
+            regSpritesBackgroundCollision |= background;
+        }
+    }
+
+    /**
+     * Update the IRQ output: It is low, as long as an enabled interrupt is requested.
+     */
+    private void updateIRQ() {
+        var value = (regInterruptRequest & regInterruptMask) != 0 ? 0x0 : 0x1;
+        if (value != irqPort.outputData()) {
+            irqPort.setOutputData(value);
         }
     }
 
