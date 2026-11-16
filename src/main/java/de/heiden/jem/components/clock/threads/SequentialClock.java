@@ -81,7 +81,7 @@ public final class SequentialClock extends AbstractSynchronizedClock {
      *         State to reach.
      */
     void waitForState(int state) {
-        for (var i = 0; i < SPIN_LIMIT; i++) {
+        for (var i = spinLimit(); i > 0; i--) {
             if (this.state == state) {
                 return;
             }

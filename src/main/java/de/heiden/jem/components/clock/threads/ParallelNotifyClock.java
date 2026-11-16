@@ -15,7 +15,7 @@ public final class ParallelNotifyClock extends AbstractSynchronizedClock {
         var ticks = new ParallelSpinTick[components.length];
         for (var i = 0; i < components.length; i++) {
             var component = components[i];
-            var tick = new ParallelSpinTick();
+            var tick = new ParallelSpinTick(spinLimit());
             component.setTick(tick);
             ticks[i] = tick;
 
@@ -60,6 +60,21 @@ public final class ParallelNotifyClock extends AbstractSynchronizedClock {
          */
         private volatile boolean state = false;
 
+        /**
+         * Number of spins to wait for the state before blocking.
+         */
+        private final int spinLimit;
+
+        /**
+         * Constructor.
+         *
+         * @param spinLimit
+         *         Number of spins to wait for the state before blocking.
+         */
+        private ParallelSpinTick(int spinLimit) {
+            this.spinLimit = spinLimit;
+        }
+
         @Override
         public void waitForTick() {
             setState(true);
@@ -94,7 +109,7 @@ public final class ParallelNotifyClock extends AbstractSynchronizedClock {
          * Wait until the state is reached.
          */
         private void waitForState(boolean state) {
-            for (var i = 0; i < SPIN_LIMIT; i++) {
+            for (var i = spinLimit; i > 0; i--) {
                 if (this.state == state) {
                     return;
                 }

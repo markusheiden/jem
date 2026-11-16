@@ -21,10 +21,17 @@ import static java.util.Collections.synchronizedCollection;
  */
 public abstract class AbstractSynchronizedClock extends AbstractClock {
     /**
-     * Number of spins to wait for a tick before blocking.
-     * Blocking and waking up a thread is much more expensive than a short busy wait.
+     * Number of spins to wait for a tick before blocking, if there is a processor for each component thread.
+     * Blocking and waking up a thread is much more expensive than a busy wait.
+     * The busy wait has to last longer than waking up a thread,
+     * otherwise a single blocked thread lets all other threads run into blocking too.
      */
-    protected static final int SPIN_LIMIT = Integer.getInteger("clock.spin", 1000);
+    private static final int SPIN_LIMIT = 100_000;
+
+    /**
+     * Number of spins to wait for a tick before blocking.
+     */
+    private int spinLimit;
 
     /**
      * Component threads.
@@ -98,6 +105,9 @@ public abstract class AbstractSynchronizedClock extends AbstractClock {
         // Suspend execution at the start of the first tick.
         addClockEvent(0, suspendEvent);
 
+        // Busy waiting with fewer processors than threads prevents the threads being waited for from executing.
+        spinLimit = clockedComponents().length < Runtime.getRuntime().availableProcessors() ? SPIN_LIMIT : 0;
+
         doSynchronizedInit();
 
         // Wait until all threads are at the start of the first click.
@@ -106,6 +116,14 @@ public abstract class AbstractSynchronizedClock extends AbstractClock {
 
     protected void doSynchronizedInit() {
         // overwrite, if needed
+    }
+
+    /**
+     * Number of spins to wait for a tick before blocking.
+     * Only valid after the start of the initialization.
+     */
+    protected final int spinLimit() {
+        return spinLimit;
     }
 
     /**

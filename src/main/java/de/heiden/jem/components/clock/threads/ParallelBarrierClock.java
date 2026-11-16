@@ -73,7 +73,7 @@ public final class ParallelBarrierClock extends AbstractSynchronizedClock {
             return;
         }
 
-        for (var i = 0; i < SPIN_LIMIT; i++) {
+        for (var i = spinLimit(); i > 0; i--) {
             if (this.generation != generation) {
                 return;
             }
