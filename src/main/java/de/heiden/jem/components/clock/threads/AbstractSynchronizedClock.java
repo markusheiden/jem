@@ -21,6 +21,12 @@ import static java.util.Collections.synchronizedCollection;
  */
 public abstract class AbstractSynchronizedClock extends AbstractClock {
     /**
+     * Number of spins to wait for a tick before blocking.
+     * Blocking and waking up a thread is much more expensive than a short busy wait.
+     */
+    protected static final int SPIN_LIMIT = Integer.getInteger("clock.spin", 1000);
+
+    /**
      * Component threads.
      */
     private final Collection<Thread> componentThreads = synchronizedCollection(new ArrayList<>());
@@ -64,6 +70,12 @@ public abstract class AbstractSynchronizedClock extends AbstractClock {
 
     @Override
     protected final void executeEvents(long tick) {
+        // Avoid synchronization, if there is no event to execute.
+        // This is safe, because ticks are started while no component is executing
+        // and the handover between the threads makes the events of the components visible.
+        if (nextEventTick() != tick) {
+            return;
+        }
         synchronized (monitor) {
             super.executeEvents(tick);
         }
@@ -145,8 +157,11 @@ public abstract class AbstractSynchronizedClock extends AbstractClock {
      */
     protected final void startTick() {
         // First: Increment tick.
+        // Ticks are never started concurrently, so no atomic increment is needed.
+        var tick = this.tick.getPlain() + 1;
+        this.tick.setRelease(tick);
         // Second: Execute events.
-        executeEvents(tick.incrementAndGet());
+        executeEvents(tick);
         // Third: Execute components: Done by the caller.
     }
 

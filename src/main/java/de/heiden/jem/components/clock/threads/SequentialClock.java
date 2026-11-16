@@ -1,14 +1,16 @@
 package de.heiden.jem.components.clock.threads;
 
-import static de.heiden.jem.components.clock.ManualAbort.abortIfInterrupted;
 import de.heiden.jem.components.clock.Tick;
 
 import java.util.concurrent.locks.LockSupport;
 
+import static de.heiden.jem.components.clock.ManualAbort.abortIfInterrupted;
+import static java.lang.Thread.onSpinWait;
 import static java.util.concurrent.locks.LockSupport.unpark;
 
 /**
  * Clock implemented with synchronization sequentially executing component threads.
+ * The thread of the last component starts the next tick, so there is no separate tick manager thread.
  */
 public final class SequentialClock extends AbstractSynchronizedClock {
     /**
@@ -17,12 +19,19 @@ public final class SequentialClock extends AbstractSynchronizedClock {
      */
     volatile int state = 0;
 
+    /**
+     * Thread of the first component.
+     * Set before the thread of the last component, which is the only one reading it, is started.
+     */
+    private Thread firstThread;
+
     @Override
     protected void doSynchronizedInit() {
         var components = clockedComponents();
+        var last = components.length - 1;
         Thread firstThread = null;
         SequentialTick previousTick = null;
-        for (var i = 0; i < components.length; i++) {
+        for (var i = 0; i < last; i++) {
             var state = i;
             var nextState = i + 1;
 
@@ -44,43 +53,47 @@ public final class SequentialClock extends AbstractSynchronizedClock {
             previousTick = tick;
         }
 
-        // Start tick manager.
-        var finalFirstThread = firstThread;
-        var tickThread = createDaemonThread("Tick", () -> executeTicks(components.length, finalFirstThread));
-        previousTick.nextThread = tickThread;
-        tickThread.start();
-    }
-
-    /**
-     * Execution of ticks.
-     */
-    private void executeTicks(int state, Thread nextThread) {
-        //noinspection InfiniteLoopStatement
-        while (true) {
+        // Start the last component. It starts the first tick when reaching its first tick.
+        var component = components[last];
+        Tick tick = () -> {
             startTick();
-            // Execute all component threads.
-            this.state = 0;
-            unpark(nextThread);
-            // Wait for all component threads to finish tick.
-            waitForState(state);
+            // Execute first component thread.
+            state = 0;
+            unpark(this.firstThread);
+            // Wait for the next tick.
+            waitForState(last);
+        };
+        component.setTick(tick);
+        var lastThread = createDaemonThread(component.getName(), () -> executeComponent(component, tick));
+        this.firstThread = firstThread != null ? firstThread : lastThread;
+        if (previousTick != null) {
+            previousTick.nextThread = lastThread;
         }
+        lastThread.start();
     }
 
     /**
-     * Busy wait until the state is reached.
+     * Wait until the state is reached.
+     * First busy waits, because parking and unparking a thread is expensive.
      * Package visible to avoid synthetic accessors.
      *
      * @param state
      *         State to reach.
      */
     void waitForState(int state) {
-        do {
+        for (var i = 0; i < SPIN_LIMIT; i++) {
+            if (this.state == state) {
+                return;
+            }
+            onSpinWait();
+        }
+        while (this.state != state) {
             // There is no problem, if this thread is not parked when the previous threads unparks it:
             // In this case this park will not block, see LockSupport.unpark() javadoc.
             LockSupport.park(this);
             // park() does not block anymore, if the thread has been interrupted.
             abortIfInterrupted();
-        } while (this.state != state);
+        }
     }
 
     /**

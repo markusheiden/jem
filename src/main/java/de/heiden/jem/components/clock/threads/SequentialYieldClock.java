@@ -1,10 +1,12 @@
 package de.heiden.jem.components.clock.threads;
 
-import static de.heiden.jem.components.clock.ManualAbort.abortIfInterrupted;
 import de.heiden.jem.components.clock.Tick;
+
+import static de.heiden.jem.components.clock.ManualAbort.abortIfInterrupted;
 
 /**
  * Clock implemented without synchronization sequentially executing component threads by using yield locks (busy wait).
+ * The thread of the last component starts the next tick, so there is no separate tick manager thread.
  */
 public final class SequentialYieldClock extends AbstractSynchronizedClock {
     /**
@@ -16,7 +18,8 @@ public final class SequentialYieldClock extends AbstractSynchronizedClock {
     @Override
     protected void doSynchronizedInit() {
         var components = clockedComponents();
-        for (var state = 0; state < components.length; state++) {
+        var last = components.length - 1;
+        for (var state = 0; state < last; state++) {
             var component = components[state];
             var tick = new SequentialSpinTick(state);
             component.setTick(tick);
@@ -24,30 +27,33 @@ public final class SequentialYieldClock extends AbstractSynchronizedClock {
             // Start component.
             createStartedDaemonThread(component.getName(), () -> executeComponent(component, tick));
             // Wait for component to reach first tick.
-            while (this.state != state + 1) {
-                Thread.yield();
-                abortIfInterrupted();
-            }
+            waitForState(state + 1);
         }
 
-        // Start tick manager.
-        createStartedDaemonThread("Tick", () -> executeTicks(components.length));
+        // Start the last component. It starts the first tick when reaching its first tick.
+        var component = components[last];
+        Tick tick = () -> {
+            startTick();
+            // Execute first component thread.
+            state = 0;
+            // Wait for the next tick.
+            waitForState(last);
+        };
+        component.setTick(tick);
+        createStartedDaemonThread(component.getName(), () -> executeComponent(component, tick));
     }
 
     /**
-     * Execution of ticks.
+     * Wait until the state is reached.
+     * Package visible to avoid synthetic accessors.
+     *
+     * @param state
+     *         State to reach.
      */
-    private void executeTicks(int finalState) {
-        //noinspection InfiniteLoopStatement
-        while (true) {
-            startTick();
-            // Execute all component threads.
-            state = 0;
-            // Wait for all component threads to finish tick.
-            do {
-                Thread.yield();
-                abortIfInterrupted();
-            } while (state != finalState);
+    void waitForState(int state) {
+        while (this.state != state) {
+            Thread.yield();
+            abortIfInterrupted();
         }
     }
 
@@ -76,10 +82,7 @@ public final class SequentialYieldClock extends AbstractSynchronizedClock {
             // Execute next component thread.
             state = tickState + 1;
             // Wait for the next tick.
-            do {
-                Thread.yield();
-                abortIfInterrupted();
-            } while (state != tickState);
+            waitForState(tickState);
         }
     }
 }

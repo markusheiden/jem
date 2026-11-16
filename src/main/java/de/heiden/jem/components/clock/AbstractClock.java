@@ -269,6 +269,13 @@ public abstract class AbstractClock implements Clock {
     }
 
     /**
+     * Tick of the next event that gets executed.
+     */
+    protected final long nextEventTick() {
+        return events.tick;
+    }
+
+    /**
      * Execute current events, if any.
      *
      * @param tick

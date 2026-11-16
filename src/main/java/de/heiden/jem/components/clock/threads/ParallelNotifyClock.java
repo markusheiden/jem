@@ -3,8 +3,10 @@ package de.heiden.jem.components.clock.threads;
 import de.heiden.jem.components.clock.ManualAbort;
 import de.heiden.jem.components.clock.Tick;
 
+import static java.lang.Thread.onSpinWait;
+
 /**
- * Clock implemented without synchronization sequentially executing components by using spin locks (busy wait).
+ * Clock implemented with synchronization, executing component threads in parallel by using wait / notify.
  */
 public final class ParallelNotifyClock extends AbstractSynchronizedClock {
     @Override
@@ -48,6 +50,7 @@ public final class ParallelNotifyClock extends AbstractSynchronizedClock {
 
     /**
      * Special tick, waiting for its state.
+     * First busy waits, because blocking and notifying a thread is expensive.
      */
     private static final class ParallelSpinTick implements Tick {
         /**
@@ -55,39 +58,56 @@ public final class ParallelNotifyClock extends AbstractSynchronizedClock {
          * True: Current tick finished, waiting for next tick.
          * False: Start next tick.
          */
-        private boolean state = false;
+        private volatile boolean state = false;
 
         @Override
-        public synchronized void waitForTick() {
-            state = true;
-            notifyAll();
-            try {
-                do {
-                    wait();
-                } while (state);
-            } catch (InterruptedException e) {
-                throw new ManualAbort();
-            }
+        public void waitForTick() {
+            setState(true);
+            waitForState(false);
         }
 
         /**
          * Start next tick.
          */
-        synchronized void startTick() {
-            state = false;
-            notifyAll();
+        void startTick() {
+            setState(false);
         }
 
         /**
          * Wait for tick to finish.
          */
-        synchronized void waitForTickEnd() {
-            try {
-                while (!state) {
-                    wait();
+        void waitForTickEnd() {
+            waitForState(true);
+        }
+
+        /**
+         * Set state and notify the thread waiting for it, if it is blocked.
+         */
+        private void setState(boolean state) {
+            this.state = state;
+            synchronized (this) {
+                notifyAll();
+            }
+        }
+
+        /**
+         * Wait until the state is reached.
+         */
+        private void waitForState(boolean state) {
+            for (var i = 0; i < SPIN_LIMIT; i++) {
+                if (this.state == state) {
+                    return;
                 }
-            } catch (InterruptedException e) {
-                throw new ManualAbort();
+                onSpinWait();
+            }
+            synchronized (this) {
+                try {
+                    while (this.state != state) {
+                        wait();
+                    }
+                } catch (InterruptedException e) {
+                    throw new ManualAbort();
+                }
             }
         }
     }
