@@ -1,87 +1,101 @@
 package de.heiden.jem.components.clock.loom;
 
 import de.heiden.jem.components.clock.AbstractSimpleClock;
+import de.heiden.jem.components.clock.ManualAbort;
 
-import java.util.concurrent.Executor;
+import java.util.List;
 import java.util.concurrent.Semaphore;
 
 /**
- * Clock executing {@link Thread fibers} of project loom on an {@link Executor}.
+ * Clock using {@link Thread fibers} from project loom.
+ * The thread running the clock and the fibers of the components hand over execution via semaphores.
  */
 public final class SequentialFiberLatchClock extends AbstractSimpleClock {
+    /**
+     * Fibers of the components.
+     */
+    private Thread[] fibers;
+
+    /**
+     * Semaphores of the components followed by the semaphore of the thread running the clock.
+     */
+    private Semaphore[] semaphores;
+
+    @Override
+    protected void doInit() {
+        var components = clockedComponents();
+        var numComponents = components.length;
+
+        semaphores = new Semaphore[numComponents + 1];
+        for (var i = 0; i < semaphores.length; i++) {
+            semaphores[i] = new Semaphore(0);
+        }
+
+        fibers = new Thread[numComponents];
+        for (var i = 0; i < numComponents; i++) {
+            var component = components[i];
+            var semaphore = semaphores[i];
+            // Execute next component and wait for the next tick. The last component hands over to the clock.
+            var next = semaphores[i + 1];
+            component.setTick(() -> executeNext(next, semaphore));
+            fibers[i] = Thread.ofVirtual().name(component.getName()).start(() -> {
+                // Wait for the first tick.
+                acquire(semaphore);
+                component.run();
+            });
+        }
+    }
+
     @Override
     protected void doRun() {
-        var semaphores = createVirtualThreads(true);
-        semaphores.first.release();
+        var first = semaphores[0];
+        var last = semaphores[semaphores.length - 1];
+        //noinspection InfiniteLoopStatement
+        while (true) {
+            startTick();
+            // Execute first component and wait for the last component to finish the tick.
+            executeNext(first, last);
+        }
     }
 
     @Override
     protected void doRun(int ticks) {
         assert ticks >= 0 : "Precondition: ticks >= 0";
 
-        var semaphores = createVirtualThreads(false);
-        var firstSemaphore = semaphores.first;
-        var lastSemaphore = semaphores.last;
+        var first = semaphores[0];
+        var last = semaphores[semaphores.length - 1];
         for (long stop = getTick() + ticks; getTick() < stop; ) {
-            try {
-                firstSemaphore.release();
-                lastSemaphore.acquire();
-            } catch (Exception e) {
-                throw new IllegalStateException("May not happen.", e);
-            }
+            startTick();
+            // Execute first component and wait for the last component to finish the tick.
+            executeNext(first, last);
         }
     }
 
     /**
-     * Create a virtual thread for each component.
+     * Execute next thread and wait for the current thread to execute again.
      */
-    private Semaphores createVirtualThreads(boolean endless) {
-        var components = clockedComponents();
-
-        var semaphores = new Semaphore[components.length + 1];
-        for (var i = 0; i < semaphores.length; i++) {
-            semaphores[i] = new Semaphore(0);
-        }
-        if (endless) {
-            semaphores[semaphores.length - 1] = semaphores[0];
-        }
-
-        for (var i = 0; i < components.length; i++) {
-            var component = components[i];
-            var semaphore = semaphores[i];
-            var next = semaphores[i + 1];
-            if (i == 0) {
-                component.setTick(() -> {
-                    try {
-                        startTick();
-                        next.release();
-                        semaphore.acquire();
-                    } catch (InterruptedException e) {
-                        throw new IllegalStateException("May not happen.", e);
-                    }
-                });
-            } else {
-                component.setTick(() -> {
-                    try {
-                        next.release();
-                        semaphore.acquire();
-                    } catch (InterruptedException e) {
-                        throw new IllegalStateException("May not happen.", e);
-                    }
-                });
-            }
-            Thread.ofVirtual().start(() -> {
-                try {
-                    semaphore.acquire();
-                    component.run();
-                } catch (InterruptedException e) {
-                    throw new IllegalStateException("May not happen.", e);
-                }
-            });
-        }
-
-        return new Semaphores(semaphores[0], semaphores[semaphores.length - 1]);
+    private static void executeNext(Semaphore next, Semaphore semaphore) {
+        next.release();
+        acquire(semaphore);
     }
 
-    private record Semaphores(Semaphore first, Semaphore last) {}
+    /**
+     * Acquire the semaphore.
+     */
+    private static void acquire(Semaphore semaphore) {
+        try {
+            semaphore.acquire();
+        } catch (InterruptedException e) {
+            throw new ManualAbort();
+        }
+    }
+
+    @Override
+    protected void doClose() {
+        if (fibers != null) {
+            terminate(List.of(fibers));
+            fibers = null;
+            semaphores = null;
+        }
+    }
 }

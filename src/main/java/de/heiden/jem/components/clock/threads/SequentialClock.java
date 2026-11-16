@@ -1,5 +1,6 @@
 package de.heiden.jem.components.clock.threads;
 
+import static de.heiden.jem.components.clock.ManualAbort.abortIfInterrupted;
 import de.heiden.jem.components.clock.Tick;
 
 import java.util.concurrent.locks.LockSupport;
@@ -77,6 +78,8 @@ public final class SequentialClock extends AbstractSynchronizedClock {
             // There is no problem, if this thread is not parked when the previous threads unparks it:
             // In this case this park will not block, see LockSupport.unpark() javadoc.
             LockSupport.park(this);
+            // park() does not block anymore, if the thread has been interrupted.
+            abortIfInterrupted();
         } while (this.state != state);
     }
 

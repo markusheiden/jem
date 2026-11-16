@@ -10,6 +10,7 @@ import jakarta.annotation.Nonnull;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static java.util.Arrays.stream;
@@ -134,7 +135,9 @@ public abstract class AbstractSynchronizedClock extends AbstractClock {
         // Ensure that threads don't run into the ticks again and block or spin wait etc.
         stream(clockedComponents()).forEach(component ->
                 component.setTick(new ManualAbortTick()));
-        componentThreads.forEach(Thread::interrupt);
+        // Ticks abort waiting, if their thread has been interrupted.
+        terminate(List.copyOf(componentThreads));
+        componentThreads.clear();
     }
 
     /**

@@ -1,6 +1,5 @@
 package de.heiden.jem.models.c64;
 
-import de.heiden.jem.components.clock.loom.SequentialFiberExecutorClock;
 import de.heiden.jem.components.clock.loom.SequentialFiberLatchClock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,7 +7,7 @@ import org.slf4j.LoggerFactory;
 import static de.heiden.jem.models.c64.gui.javafx.emulator.C64Application.start;
 
 /**
- * C64 startup with {@link SequentialFiberExecutorClock}.
+ * C64 startup with {@link SequentialFiberLatchClock}.
  */
 public class C64SequentialFiberLatch {
     /**

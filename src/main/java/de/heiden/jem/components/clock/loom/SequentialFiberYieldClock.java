@@ -1,100 +1,95 @@
 package de.heiden.jem.components.clock.loom;
 
 import de.heiden.jem.components.clock.AbstractSimpleClock;
-import de.heiden.jem.components.clock.ManualAbort;
 
-import java.util.ArrayList;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.List;
+
+import static de.heiden.jem.components.clock.ManualAbort.abortIfInterrupted;
 
 /**
  * Clock using {@link Thread fibers} from project loom.
+ * The thread running the clock and the fibers of the components hand over execution via a state and yield.
  */
 public final class SequentialFiberYieldClock extends AbstractSimpleClock {
     /**
-     * The one and only thread to execute the fibers.
+     * Fibers of the components.
      */
-    private final ExecutorService executor = Executors.newSingleThreadExecutor();
+    private Thread[] fibers;
 
     /**
-     * Currently execute component.
+     * Ordinal of the component to execute.
+     * The number of components denotes the thread running the clock.
      */
-    private int state = -1;
+    private volatile int state;
+
+    @Override
+    protected void doInit() {
+        var components = clockedComponents();
+        var numComponents = components.length;
+
+        // The thread running the clock executes first.
+        state = numComponents;
+        fibers = new Thread[numComponents];
+        for (var i = 0; i < numComponents; i++) {
+            var component = components[i];
+            // Execute next component and wait for the next tick. The last component hands over to the clock.
+            var state = i;
+            var nextState = i + 1;
+            component.setTick(() -> executeNext(nextState, state));
+            fibers[i] = Thread.ofVirtual().name(component.getName()).start(() -> {
+                // Wait for the first tick.
+                waitForExecution(state);
+                component.run();
+            });
+        }
+    }
 
     @Override
     protected void doRun() {
-        createFibers(-1);
+        var finalState = fibers.length;
+        //noinspection InfiniteLoopStatement
+        while (true) {
+            startTick();
+            // Execute first component and wait for the last component to finish the tick.
+            executeNext(0, finalState);
+        }
     }
 
     @Override
     protected void doRun(int ticks) {
         assert ticks >= 0 : "Precondition: ticks >= 0";
 
-        createFibers(ticks);
-    }
-
-    /**
-     * Create fibers.
-     */
-    private void createFibers(int ticks) {
-        var components = clockedComponents();
-        var numComponents = components.length;
-
-        var fibers = new ArrayList<Thread>(numComponents);
-
-        var finalState = numComponents;
-        if (ticks < 0) {
-            buildVirtualThread(() -> {
-                //noinspection InfiniteLoopStatement
-                while (true) {
-                    startTick();
-                    // Execute first component and wait for last tick.
-                    executeNextComponent(0, finalState);
-                }
-            });
-        } else {
-            buildVirtualThread(() -> {
-                for (long stop = getTick() + ticks; getTick() < stop; ) {
-                    startTick();
-                    // Execute first component and wait for last tick.
-                    executeNextComponent(0, finalState);
-                }
-                fibers.forEach(Thread::interrupt);
-            });
-        }
-
-        for (var i = 0; i < numComponents; i++) {
-            var component = components[i];
-            // Execute next component thread and wait for next tick.
-            var state = i;
-            var nextState = i + 1;
-            component.setTick(() -> executeNextComponent(nextState, state));
-            var fiber = buildVirtualThread(component::run);
-            fibers.add(fiber);
+        var finalState = fibers.length;
+        for (long stop = getTick() + ticks; getTick() < stop; ) {
+            startTick();
+            // Execute first component and wait for the last component to finish the tick.
+            executeNext(0, finalState);
         }
     }
 
-    private Thread buildVirtualThread(Runnable task) {
-        return Thread.ofVirtual()
-//                .scheduler(executor)
-                .start(task);
-    }
-
     /**
-     * Execute next component and wait for this component to execute.
+     * Execute next component and wait for this component to execute again.
      */
-    private void executeNextComponent(int nextState, int state) {
+    private void executeNext(int nextState, int state) {
         this.state = nextState;
-        do {
+        waitForExecution(state);
+    }
+
+    /**
+     * Wait for the component to execute.
+     */
+    private void waitForExecution(int state) {
+        while (this.state != state) {
             Thread.yield();
-            if (Thread.interrupted()) {
-                throw new ManualAbort();
-            }
-        } while (this.state != state);
+            abortIfInterrupted();
+        }
     }
 
     @Override
     protected void doClose() {
-        executor.shutdown();
+        if (fibers != null) {
+            terminate(List.of(fibers));
+            fibers = null;
+        }
     }
 }

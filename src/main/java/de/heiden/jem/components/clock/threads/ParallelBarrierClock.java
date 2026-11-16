@@ -31,12 +31,6 @@ public final class ParallelBarrierClock extends AbstractSynchronizedClock {
         }
     }
 
-    @Override
-    protected void doClose() {
-        super.doClose();
-        barrier.reset();
-    }
-
     /**
      * Special tick, waiting for the barrier.
      */

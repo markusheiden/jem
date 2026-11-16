@@ -1,5 +1,6 @@
 package de.heiden.jem.components.clock.threads;
 
+import static de.heiden.jem.components.clock.ManualAbort.abortIfInterrupted;
 import de.heiden.jem.components.clock.Tick;
 
 /**
@@ -25,6 +26,7 @@ public final class SequentialYieldClock extends AbstractSynchronizedClock {
             // Wait for component to reach first tick.
             while (this.state != state + 1) {
                 Thread.yield();
+                abortIfInterrupted();
             }
         }
 
@@ -44,6 +46,7 @@ public final class SequentialYieldClock extends AbstractSynchronizedClock {
             // Wait for all component threads to finish tick.
             do {
                 Thread.yield();
+                abortIfInterrupted();
             } while (state != finalState);
         }
     }
@@ -75,6 +78,7 @@ public final class SequentialYieldClock extends AbstractSynchronizedClock {
             // Wait for the next tick.
             do {
                 Thread.yield();
+                abortIfInterrupted();
             } while (state != tickState);
         }
     }

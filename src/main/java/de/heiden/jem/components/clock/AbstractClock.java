@@ -4,14 +4,23 @@ import jakarta.annotation.Nonnull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Duration;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import static java.lang.Thread.State.NEW;
+import static java.lang.Thread.currentThread;
 
 /**
  * Base implementation for all clocks.
  */
 public abstract class AbstractClock implements Clock {
+    /**
+     * Maximum time to wait for the termination of all threads of a clock.
+     */
+    private static final Duration TERMINATION_TIMEOUT = Duration.ofSeconds(5);
+
     /**
      * Logger.
      */
@@ -163,6 +172,33 @@ public abstract class AbstractClock implements Clock {
      */
     protected void doClose() {
         // overwrite, if needed
+    }
+
+    /**
+     * Interrupt the threads and wait for their termination.
+     * The threads are expected to terminate, when they are interrupted while waiting for a tick.
+     *
+     * @param threads
+     *         Threads to terminate
+     * @throws IllegalStateException
+     *         if a thread did not terminate in time
+     */
+    protected static void terminate(Iterable<Thread> threads) {
+        threads.forEach(Thread::interrupt);
+        var deadline = System.nanoTime() + TERMINATION_TIMEOUT.toNanos();
+        threads.forEach(thread -> terminate(thread, deadline));
+    }
+
+    private static void terminate(Thread thread, long deadline) {
+        try {
+            if (thread.getState() != NEW &&
+                !thread.join(Duration.ofNanos(deadline - System.nanoTime()))) {
+                throw new IllegalStateException("Thread " + thread.getName() + " did not terminate.");
+            }
+        } catch (InterruptedException e) {
+            currentThread().interrupt();
+            throw new ManualAbort();
+        }
     }
 
     @Override

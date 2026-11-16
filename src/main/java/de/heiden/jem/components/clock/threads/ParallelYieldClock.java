@@ -1,5 +1,6 @@
 package de.heiden.jem.components.clock.threads;
 
+import static de.heiden.jem.components.clock.ManualAbort.abortIfInterrupted;
 import de.heiden.jem.components.clock.Tick;
 
 /**
@@ -61,6 +62,7 @@ public final class ParallelYieldClock extends AbstractSynchronizedClock {
             tickEnd = true;
             do {
                 Thread.yield();
+                abortIfInterrupted();
             } while (tickEnd);
         }
 
@@ -77,6 +79,7 @@ public final class ParallelYieldClock extends AbstractSynchronizedClock {
         void waitForTickEnd() {
             while (!tickEnd) {
                 Thread.yield();
+                abortIfInterrupted();
             }
         }
     }

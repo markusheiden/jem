@@ -2,137 +2,110 @@ package de.heiden.jem.components.clock.loom;
 
 import de.heiden.jem.components.clock.AbstractSimpleClock;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.RejectedExecutionException;
+import java.util.List;
 import java.util.concurrent.locks.LockSupport;
+
+import static de.heiden.jem.components.clock.ManualAbort.abortIfInterrupted;
 
 /**
  * Clock using {@link Thread fibers} from project loom.
+ * The thread running the clock and the fibers of the components hand over execution via park / unpark.
  */
 public final class SequentialFiberParkClock extends AbstractSimpleClock {
     /**
-     * The one and only thread to execute the fibers.
+     * Fibers of the components.
      */
-    private final ExecutorService executor = Executors.newSingleThreadExecutor();
+    private Thread[] fibers;
 
     /**
-     * Currently executed component.
+     * Thread running the clock.
      */
-    private Thread fiber = null;
+    private volatile Thread clockThread;
+
+    /**
+     * Thread that is allowed to execute.
+     */
+    private volatile Thread current;
+
+    @Override
+    protected void doInit() {
+        var components = clockedComponents();
+        var numComponents = components.length;
+
+        fibers = new Thread[numComponents];
+        for (var i = 0; i < numComponents; i++) {
+            var component = components[i];
+            fibers[i] = Thread.ofVirtual().name(component.getName()).unstarted(() -> {
+                // Wait for the first tick.
+                waitForExecution();
+                component.run();
+            });
+        }
+
+        for (var i = 0; i < numComponents; i++) {
+            // Execute next component and wait for the next tick. The last component hands over to the clock.
+            var next = i + 1;
+            components[i].setTick(() -> executeNext(next < numComponents ? fibers[next] : clockThread));
+        }
+
+        for (var fiber : fibers) {
+            fiber.start();
+        }
+    }
 
     @Override
     protected void doRun() {
-        createFibers(-1);
+        clockThread = Thread.currentThread();
+        var firstFiber = fibers[0];
+        //noinspection InfiniteLoopStatement
+        while (true) {
+            startTick();
+            // Execute first component and wait for the last component to finish the tick.
+            executeNext(firstFiber);
+        }
     }
 
     @Override
     protected void doRun(int ticks) {
         assert ticks >= 0 : "Precondition: ticks >= 0";
 
-        createFibers(ticks);
-    }
-
-    /**
-     * Create fibers.
-     */
-    private void createFibers(int ticks) {
-        var components = clockedComponents();
-        var numComponents = components.length;
-
-        var fibers = new Thread[numComponents + 1];
-        for (var i = 0; i < numComponents; i++) {
-            var component = components[i];
-            fibers[i] = buildVirtualThread(() -> {
-                LockSupport.park();
-                component.run();
-            });
-        }
-
+        clockThread = Thread.currentThread();
         var firstFiber = fibers[0];
-        Thread starterFiber;
-        if (ticks < 0) {
-            starterFiber = buildVirtualThread(() -> {
-                //noinspection InfiniteLoopStatement
-                while (true) {
-                    startTick();
-                    // Execute first component and wait for last tick.
-                    executeNextComponent(firstFiber);
-                }
-            });
-        } else {
-            starterFiber = buildVirtualThread(() -> {
-                for (long stop = getTick() + ticks; getTick() < stop; ) {
-                    startTick();
-                    // Execute first component and wait for last tick.
-                    executeNextComponent(firstFiber);
-                }
-                executor.shutdownNow();
-            });
+        for (long stop = getTick() + ticks; getTick() < stop; ) {
+            startTick();
+            // Execute first component and wait for the last component to finish the tick.
+            executeNext(firstFiber);
         }
-        fibers[numComponents] = starterFiber;
-
-        for (var i = 0; i < numComponents; i++) {
-            var component = components[i];
-            // Execute next component thread and wait for next tick.
-            var nextFiber = fibers[i + 1];
-            component.setTick(() -> executeNextComponent(nextFiber));
-        }
-
-        for (var i = 0; i < numComponents; i++) {
-            fibers[i].start();
-        }
-        try {
-            // Wait for component thread being parked.
-            Thread.sleep(100);
-        } catch (InterruptedException e) {
-            // Ignore.
-        }
-        starterFiber.start();
-    }
-
-    private Thread buildVirtualThread(Runnable task) {
-        return Thread.ofVirtual()
-//                .scheduler(executor)
-                .uncaughtExceptionHandler(this::uncaughtException)
-                .unstarted(task);
     }
 
     /**
-     * Execute next component and wait for this component to execute.
+     * Execute next thread and wait for the current thread to execute again.
      */
-    private void executeNextComponent(Thread nextFiber) {
-        this.fiber = nextFiber;
-        LockSupport.unpark(nextFiber);
-        LockSupport.park();
-        while (this.fiber != Thread.currentThread()) {
-            Thread.yield();
+    private void executeNext(Thread next) {
+        current = next;
+        LockSupport.unpark(next);
+        waitForExecution();
+    }
+
+    /**
+     * Wait for the current thread to execute.
+     */
+    private void waitForExecution() {
+        var thread = Thread.currentThread();
+        while (current != thread) {
+            // There is no problem, if this thread is not parked when the previous threads unparks it:
+            // In this case this park will not block, see LockSupport.unpark() javadoc.
+            LockSupport.park(this);
+            // park() does not block anymore, if the thread has been interrupted.
+            abortIfInterrupted();
         }
     }
 
     @Override
     protected void doClose() {
-        executor.shutdown();
-    }
-
-    /**
-     * Ignore {@link RejectedExecutionException}s which are caused by the executor being shutdown.
-     * Rethrows all other exceptions.
-     */
-    private void uncaughtException(Thread t, Throwable e) {
-        if (e instanceof Error error) {
-            throw error;
+        if (fibers != null) {
+            terminate(List.of(fibers));
+            fibers = null;
         }
-
-        if (e instanceof RejectedExecutionException) {
-            // Thread pool has been closed. Abort execution.
-            return;
-        }
-
-        if (e instanceof RuntimeException runtime) {
-            throw runtime;
-        }
-
-        throw new RuntimeException(e);
     }
 }

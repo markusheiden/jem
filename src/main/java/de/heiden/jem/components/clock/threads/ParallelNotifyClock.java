@@ -1,5 +1,6 @@
 package de.heiden.jem.components.clock.threads;
 
+import de.heiden.jem.components.clock.ManualAbort;
 import de.heiden.jem.components.clock.Tick;
 
 /**
@@ -65,7 +66,7 @@ public final class ParallelNotifyClock extends AbstractSynchronizedClock {
                     wait();
                 } while (state);
             } catch (InterruptedException e) {
-                // Ignore.
+                throw new ManualAbort();
             }
         }
 
@@ -86,7 +87,7 @@ public final class ParallelNotifyClock extends AbstractSynchronizedClock {
                     wait();
                 }
             } catch (InterruptedException e) {
-                // Ignore.
+                throw new ManualAbort();
             }
         }
     }
