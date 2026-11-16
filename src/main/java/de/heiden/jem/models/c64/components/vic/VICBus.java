@@ -43,7 +43,8 @@ public class VICBus implements BusDevice {
         this.ram = ram;
         this.character = character;
 
-        cia2PortA.addOutputPortListener((value, mask) -> vicBase = ((value ^ 0xFF) & 0x03) << 14);
+        // Bits not driven by the CIA (input) are pulled up, e.g. demos switch the bank via the data direction register.
+        cia2PortA.addOutputPortListener((value, mask) -> vicBase = (~(value | ~mask) & 0x03) << 14);
     }
 
     /**

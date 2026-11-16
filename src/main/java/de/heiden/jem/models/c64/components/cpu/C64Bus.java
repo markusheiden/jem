@@ -7,6 +7,7 @@ import de.heiden.jem.components.ports.InputPort;
 import de.heiden.jem.components.ports.InputPortImpl;
 import de.heiden.jem.components.ports.OutputPort;
 import de.heiden.jem.models.c64.components.memory.Patchable;
+import de.heiden.jem.models.c64.components.sid.SIDStub;
 import jakarta.annotation.Nonnull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,7 +77,7 @@ public class C64Bus implements BusDevice, Patchable {
             @Nonnull BusDevice cia2,
             @Nonnull BusDevice charset,
             @Nonnull BusDevice kernel) {
-        this(ram, basic, vic, ram, colorRam, cia1, cia2, charset, kernel);
+        this(ram, basic, vic, new SIDStub(), colorRam, cia1, cia2, charset, kernel);
     }
 
     /**

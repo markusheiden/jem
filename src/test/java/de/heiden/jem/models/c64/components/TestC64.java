@@ -19,6 +19,8 @@ import de.heiden.jem.models.c64.components.patch.ProgramEndDetector;
 import de.heiden.jem.models.c64.components.patch.Return;
 import de.heiden.jem.models.c64.components.patch.StopAtSystemIn;
 import de.heiden.jem.models.c64.components.patch.SystemOut;
+import de.heiden.jem.models.c64.components.sid.SIDStub;
+import de.heiden.jem.models.c64.components.vic.AbstractDisplayUnit;
 import de.heiden.jem.models.c64.components.vic.VIC6569PAL;
 import de.heiden.jem.models.c64.components.vic.VICBus;
 import de.heiden.jem.models.c64.gui.swing.emulator.KeyListener;
@@ -114,7 +116,7 @@ public class TestC64 {
         keyboard = new Keyboard(clock, cia1.portA(), cia1.portB());
 
         cpu = clock.addClockedComponent(Clock.CPU, new CPU6510Debugger());
-        debugCartridge = new DebugCartridge(ram);
+        debugCartridge = new DebugCartridge(new SIDStub());
         cpuBus = new C64Bus(ram, basic, vic, debugCartridge, colorRam, cia1, cia2, charset, kernel);
         cpuBus.connect(cpu.getPort());
         cpu.connect(cpuBus);
@@ -185,6 +187,20 @@ public class TestC64 {
      */
     public BusDevice getVic() {
         return vic;
+    }
+
+    /**
+     * Display unit of the VIC, to capture the rendered screen.
+     */
+    public AbstractDisplayUnit getDisplayUnit() {
+        return vic.displayUnit;
+    }
+
+    /**
+     * CPU.
+     */
+    public CPU6510Debugger getCpu() {
+        return cpu;
     }
 
     /**

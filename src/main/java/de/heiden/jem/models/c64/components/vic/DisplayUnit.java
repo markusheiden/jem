@@ -102,6 +102,16 @@ public class DisplayUnit extends AbstractDisplayUnit {
     private boolean verticalBorder = true;
 
     /**
+     * Raster line of the cycle whose border is output in the next cycle.
+     */
+    private int borderRaster = 0;
+
+    /**
+     * Cycle whose border is output in the next cycle, 0 if none.
+     */
+    private int borderCycle = 0;
+
+    /**
      * Hidden constructor.
      *
      * @param vic
@@ -167,6 +177,11 @@ public class DisplayUnit extends AbstractDisplayUnit {
      *         cycle, starting with 1
      */
     private void cycle(int raster, int cycle) {
+        // The border of the last cycle is evaluated after the CPU accessed the registers in that cycle.
+        if (borderCycle != 0) {
+            outputBorder(borderRaster, borderCycle);
+        }
+
         vic.spriteCycle(raster, cycle);
         vic.updateBA(cycle);
         if (cycle == SPRITE_RENDER_CYCLE) {
@@ -204,10 +219,8 @@ public class DisplayUnit extends AbstractDisplayUnit {
         }
 
         output(raster, cycle);
-
-        if (cycle == vic.cyclesPerLine) {
-            updateVerticalBorder(raster);
-        }
+        borderRaster = raster;
+        borderCycle = cycle;
     }
 
     /**
@@ -252,7 +265,8 @@ public class DisplayUnit extends AbstractDisplayUnit {
     }
 
     /**
-     * Output the 8 pixels of a cycle: Border, sprites or graphics.
+     * Output the 8 pixels of a cycle: Sprites or graphics.
+     * The border is output in the next cycle, see {@link #outputBorder(int, int)}.
      */
     private void output(int raster, int cycle) {
         var row = raster - vic.lastVBlank;
@@ -262,7 +276,6 @@ public class DisplayUnit extends AbstractDisplayUnit {
 
         var x = (FIRST_X + (cycle - 1) * 8) % vic.lastX;
         for (var i = 0; i < 8; i++) {
-            updateMainBorder(raster, x);
             var index = (x - vic.firstVisibleX + vic.lastX) % vic.lastX;
             if (visible && index < lineLength) {
                 screenRender[lineStart + index] = pixel(x);
@@ -274,13 +287,37 @@ public class DisplayUnit extends AbstractDisplayUnit {
     }
 
     /**
-     * Color of a pixel: Border, sprite or graphics.
+     * Output the border over the 8 pixels of a cycle.
+     * Executed in the next cycle, so that register writes of the CPU in the cycle are considered,
+     * e.g. switching to 38 columns in cycle 56 opens the side border.
      */
-    private byte pixel(int x) {
-        if (mainBorder) {
-            return vic.regExteriorColor;
+    private void outputBorder(int raster, int cycle) {
+        var row = raster - vic.lastVBlank;
+        var visible = row >= 0 && row < getLines();
+        var lineLength = getLineLength();
+        var lineStart = row * lineLength;
+
+        var x = (FIRST_X + (cycle - 1) * 8) % vic.lastX;
+        for (var i = 0; i < 8; i++) {
+            updateMainBorder(raster, x);
+            var index = (x - vic.firstVisibleX + vic.lastX) % vic.lastX;
+            if (mainBorder && visible && index < lineLength) {
+                screenRender[lineStart + index] = vic.regExteriorColor;
+            }
+            if (++x == vic.lastX) {
+                x = 0;
+            }
         }
 
+        if (cycle == vic.cyclesPerLine) {
+            updateVerticalBorder(raster);
+        }
+    }
+
+    /**
+     * Color of a pixel: Sprite or graphics.
+     */
+    private byte pixel(int x) {
         var sprite = spriteRenderer.pixels[x];
         if (sprite != SpriteRenderer.NONE && !(spriteRenderer.behind[x] && foreground[x])) {
             return sprite;

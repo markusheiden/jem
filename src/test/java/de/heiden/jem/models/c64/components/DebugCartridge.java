@@ -5,7 +5,7 @@ import de.heiden.jem.components.bus.BusDevice;
 /**
  * Debug cartridge of VICE in the SID area: Test programs write their result to $D7FF.
  * Only writes with I/O banked in reach it, writes with I/O banked out go to RAM.
- * Otherwise the SID area is mapped to RAM, like without this cartridge.
+ * Otherwise the SID area is mapped to the SID.
  */
 public class DebugCartridge implements BusDevice {
     /**
@@ -14,9 +14,9 @@ public class DebugCartridge implements BusDevice {
     public static final int RESULT = 0xD7FF;
 
     /**
-     * RAM.
+     * SID.
      */
-    private final BusDevice ram;
+    private final BusDevice sid;
 
     /**
      * Result written by the test program, -1 if none.
@@ -26,11 +26,11 @@ public class DebugCartridge implements BusDevice {
     /**
      * Constructor.
      *
-     * @param ram
-     *         RAM
+     * @param sid
+     *         SID
      */
-    public DebugCartridge(BusDevice ram) {
-        this.ram = ram;
+    public DebugCartridge(BusDevice sid) {
+        this.sid = sid;
     }
 
     /**
@@ -45,11 +45,11 @@ public class DebugCartridge implements BusDevice {
         if (address == RESULT) {
             result = value;
         }
-        ram.write(value, address);
+        sid.write(value, address);
     }
 
     @Override
     public int read(int address) {
-        return ram.read(address);
+        return sid.read(address);
     }
 }
