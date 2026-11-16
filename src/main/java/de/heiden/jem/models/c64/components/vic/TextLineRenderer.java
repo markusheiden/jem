@@ -9,7 +9,12 @@ class TextLineRenderer extends AbstractLineRenderer {
     }
 
     @Override
-    public void render(byte[] pixels, boolean[] foreground, int x, int vc, int rc, int character, int color) {
-        renderHires(pixels, foreground, x, readCharacter(character, rc), vic.regBackgroundColor0, (byte) color);
+    public int fetch(int vc, int rc, int character) {
+        return readCharacter(character, rc);
+    }
+
+    @Override
+    public void render(byte[] pixels, boolean[] foreground, int x, int data, int character, int color) {
+        renderHires(pixels, foreground, x, data, vic.regBackgroundColor0, (byte) color);
     }
 }

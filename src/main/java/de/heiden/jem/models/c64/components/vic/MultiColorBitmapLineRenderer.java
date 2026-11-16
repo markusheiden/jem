@@ -9,8 +9,13 @@ class MultiColorBitmapLineRenderer extends AbstractLineRenderer {
     }
 
     @Override
-    public void render(byte[] pixels, boolean[] foreground, int x, int vc, int rc, int character, int color) {
-        renderMultiColor(pixels, foreground, x, readBitmap(vc, rc),
+    public int fetch(int vc, int rc, int character) {
+        return readBitmap(vc, rc);
+    }
+
+    @Override
+    public void render(byte[] pixels, boolean[] foreground, int x, int data, int character, int color) {
+        renderMultiColor(pixels, foreground, x, data,
                 vic.regBackgroundColor0, (byte) (character >> 4), (byte) (character & 0x0F), (byte) color);
     }
 }

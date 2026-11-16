@@ -461,6 +461,7 @@ public abstract class VIC implements BusDevice {
                 regControl1 = value;
                 // bit 7 is high bit of raster irq line
                 regRasterIRQ = regRasterIRQ & 0xFF | (value & 0x80) << 1;
+                displayUnit.graphicsChanged();
 
                 if (logger.isDebugEnabled()) {
                     var bitmapMode = (regControl1 & VIC.CONTROL1_BITMAP) != 0;
@@ -492,6 +493,7 @@ public abstract class VIC implements BusDevice {
             }
             case 0x16: {
                 regControl2 = value;
+                displayUnit.graphicsChanged();
 
                 if (logger.isDebugEnabled()) {
                     var bitmapMode = (regControl1 & VIC.CONTROL1_BITMAP) != 0;
@@ -572,18 +574,22 @@ public abstract class VIC implements BusDevice {
             }
             case 0x21: {
                 regBackgroundColor0 = (byte) (value & 0x0F);
+                displayUnit.graphicsChanged();
                 break;
             }
             case 0x22: {
                 regBackgroundColor1 = (byte) (value & 0x0F);
+                displayUnit.graphicsChanged();
                 break;
             }
             case 0x23: {
                 regBackgroundColor2 = (byte) (value & 0x0F);
+                displayUnit.graphicsChanged();
                 break;
             }
             case 0x24: {
                 regBackgroundColor3 = (byte) (value & 0x0F);
+                displayUnit.graphicsChanged();
                 break;
             }
             case 0x25: {

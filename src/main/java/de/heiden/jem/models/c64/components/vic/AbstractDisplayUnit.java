@@ -58,6 +58,13 @@ public abstract class AbstractDisplayUnit implements ClockedComponent {
         screenDisplaying = screenToDisplay;
     }
 
+    /**
+     * The CPU changed the graphics mode or a background color in the current cycle.
+     */
+    void graphicsChanged() {
+        // nothing to do by default
+    }
+
     @Override
     public void setTick(Tick tick) {
         this.tick = tick;

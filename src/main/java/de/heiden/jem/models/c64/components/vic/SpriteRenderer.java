@@ -50,7 +50,8 @@ class SpriteRenderer {
 
         for (var i = 7; i >= 0; i--) {
             var sprite = vic.sprites[i];
-            if (sprite.display) {
+            // X coordinates beyond the end of the line are never reached.
+            if (sprite.display && sprite.x < vic.lastX) {
                 var isBehind = (vic.regSpritesBackgroundPriority & sprite.bitmask) != 0;
                 var x = sprite.x;
                 for (var shift = 16; shift >= 0; shift -= 8) {
@@ -81,6 +82,7 @@ class SpriteRenderer {
 
     /**
      * Render one sprite pixel. Transparent pixels keep the pixels of sprites with lower priority.
+     * Sprites wrap around at the end of the line.
      *
      * @param color
      *         color or {@link #NONE} for transparent
@@ -88,9 +90,10 @@ class SpriteRenderer {
      */
     private int renderPixel(int x, int width, int color, boolean isBehind) {
         if (color != NONE) {
-            for (int i = x, to = Math.min(x + width, pixels.length); i < to; i++) {
-                pixels[i] = (byte) color;
-                behind[i] = isBehind;
+            for (int i = x, to = x + width; i < to; i++) {
+                var index = i % vic.lastX;
+                pixels[index] = (byte) color;
+                behind[index] = isBehind;
             }
         }
         return x + width;

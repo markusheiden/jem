@@ -9,12 +9,16 @@ class MultiColorTextLineRenderer extends AbstractLineRenderer {
     }
 
     @Override
-    public void render(byte[] pixels, boolean[] foreground, int x, int vc, int rc, int character, int color) {
-        var bitmap = readCharacter(character, rc);
+    public int fetch(int vc, int rc, int character) {
+        return readCharacter(character, rc);
+    }
+
+    @Override
+    public void render(byte[] pixels, boolean[] foreground, int x, int data, int character, int color) {
         if ((color & 0x08) == 0) {
-            renderHires(pixels, foreground, x, bitmap, vic.regBackgroundColor0, (byte) color);
+            renderHires(pixels, foreground, x, data, vic.regBackgroundColor0, (byte) color);
         } else {
-            renderMultiColor(pixels, foreground, x, bitmap,
+            renderMultiColor(pixels, foreground, x, data,
                     vic.regBackgroundColor0, vic.regBackgroundColor1, vic.regBackgroundColor2, (byte) (color & 0x07));
         }
     }

@@ -10,8 +10,13 @@ class ExtendedColorTextLineRenderer extends AbstractLineRenderer {
     }
 
     @Override
-    public void render(byte[] pixels, boolean[] foreground, int x, int vc, int rc, int character, int color) {
-        renderHires(pixels, foreground, x, readCharacter(character & 0x3F, rc), backgroundColor(character >> 6), (byte) color);
+    public int fetch(int vc, int rc, int character) {
+        return readCharacter(character & 0x3F, rc);
+    }
+
+    @Override
+    public void render(byte[] pixels, boolean[] foreground, int x, int data, int character, int color) {
+        renderHires(pixels, foreground, x, data, backgroundColor(character >> 6), (byte) color);
     }
 
     /**
