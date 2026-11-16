@@ -3764,8 +3764,11 @@ public class CPU6510 implements ClockedComponent {
     @Interruptible
     protected final int read(int addr) {
         // The CPU halts at read cycles while not ready. Write cycles are not affected.
+        // The interrupt lines are still polled while halted,
+        // so an interrupt raised meanwhile is not delayed by another instruction.
         halted = !ready;
         while (!ready) {
+            poll();
             tick.waitForTick();
         }
         poll();
