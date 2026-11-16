@@ -66,6 +66,11 @@ public abstract class VIC implements BusDevice {
      */
     private boolean badLine = false;
 
+    /**
+     * Current cycle of the raster line, starting with 1.
+     */
+    private int cycle;
+
     // sprite register
     protected Sprite[] sprites;
 
@@ -290,10 +295,11 @@ public abstract class VIC implements BusDevice {
     /**
      * Execute the sprite sequencer for a cycle of the current raster line, as described by Christian Bauer:
      * DMA is turned on in cycles 55 and 56, if the Y coordinate matches the raster line.
+     * The expansion flip-flop of y expanded sprites is toggled in cycle 56.
      * The data counters are loaded in cycle 58, the display is turned on in cycle 58, if the Y coordinate matches.
      * In the 2 access cycles of a sprite with DMA on, the VIC reads the 3 bytes of its next line.
-     * In cycles 15 and 16, the data counter base advances, unless the expansion flip-flop doubles the line.
-     * DMA and display are turned off, when all 21 lines have been read.
+     * In cycle 16, the data counter base is loaded from the data counter, unless the expansion flip-flop doubles the line.
+     * DMA is turned off, when all 21 lines have been read, the display is turned off in the following cycle 58.
      *
      * @param raster
      *         raster line
@@ -301,38 +307,34 @@ public abstract class VIC implements BusDevice {
      *         cycle, starting with 1
      */
     protected final void spriteCycle(int raster, int cycle) {
+        this.cycle = cycle;
+
         switch (cycle) {
-            case 15 -> {
-                for (var sprite : sprites) {
-                    if (sprite.expansion) {
-                        sprite.mcBase = (sprite.mcBase + 2) & 0x3F;
-                    }
-                }
-            }
             case 16 -> {
                 for (var sprite : sprites) {
                     if (sprite.expansion) {
-                        sprite.mcBase = (sprite.mcBase + 1) & 0x3F;
-                    }
-                    if (sprite.mcBase == 63) {
-                        sprite.dma = false;
-                        sprite.display = false;
+                        sprite.mcBase = sprite.mc;
+                        if (sprite.mcBase == 63) {
+                            sprite.dma = false;
+                        }
                     }
                 }
             }
-            case 55 -> {
+            case 55 -> startSpriteDMA(raster);
+            case 56 -> {
+                startSpriteDMA(raster);
                 for (var sprite : sprites) {
-                    if (sprite.expandY) {
+                    if (sprite.dma && sprite.expandY) {
                         sprite.expansion = !sprite.expansion;
                     }
                 }
-                startSpriteDMA(raster);
             }
-            case 56 -> startSpriteDMA(raster);
             case 58 -> {
                 for (var sprite : sprites) {
                     sprite.mc = sprite.mcBase;
-                    if (sprite.dma && sprite.y == (raster & 0xFF)) {
+                    if (!sprite.dma) {
+                        sprite.display = false;
+                    } else if (sprite.enabled && sprite.y == (raster & 0xFF)) {
                         sprite.display = true;
                     }
                 }
@@ -365,9 +367,7 @@ public abstract class VIC implements BusDevice {
             if (sprite.enabled && !sprite.dma && sprite.y == (raster & 0xFF)) {
                 sprite.dma = true;
                 sprite.mcBase = 0;
-                if (sprite.expandY) {
-                    sprite.expansion = false;
-                }
+                sprite.expansion = true;
             }
         }
     }
@@ -506,6 +506,15 @@ public abstract class VIC implements BusDevice {
                 regSpritesExpandY = value;
                 for (var sprite : sprites) {
                     sprite.setExpandY(value);
+                    if (!sprite.expandY && !sprite.expansion) {
+                        if (cycle == 15) {
+                            // Sprite crunch: Clearing the y expansion in cycle 15 scrambles the data counter,
+                            // which is loaded into the data counter base in cycle 16.
+                            sprite.mc = 0x2A & (sprite.mcBase & sprite.mc) | 0x15 & (sprite.mcBase | sprite.mc);
+                        }
+                        // The expansion flip-flop is set as long as the sprite is not y expanded.
+                        sprite.expansion = true;
+                    }
                 }
                 break;
             }

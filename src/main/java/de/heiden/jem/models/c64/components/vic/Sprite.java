@@ -125,10 +125,6 @@ public class Sprite {
      */
     public void setExpandY(int bitmap) {
         expandY = (bitmap & bitmask) != 0;
-        // The expansion flip-flop is set as long as the sprite is not y expanded.
-        if (!expandY) {
-            expansion = true;
-        }
     }
 
     /**
