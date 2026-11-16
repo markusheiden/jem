@@ -388,6 +388,7 @@ public abstract class VIC implements BusDevice {
         switch (address & mask) {
             case 0x00: {
                 sprites[0].setXLSB(value);
+                displayUnit.spriteXChanged();
                 break;
             }
             case 0x01: {
@@ -396,6 +397,7 @@ public abstract class VIC implements BusDevice {
             }
             case 0x02: {
                 sprites[1].setXLSB(value);
+                displayUnit.spriteXChanged();
                 break;
             }
             case 0x03: {
@@ -404,6 +406,7 @@ public abstract class VIC implements BusDevice {
             }
             case 0x04: {
                 sprites[2].setXLSB(value);
+                displayUnit.spriteXChanged();
                 break;
             }
             case 0x05: {
@@ -412,6 +415,7 @@ public abstract class VIC implements BusDevice {
             }
             case 0x06: {
                 sprites[3].setXLSB(value);
+                displayUnit.spriteXChanged();
                 break;
             }
             case 0x07: {
@@ -420,6 +424,7 @@ public abstract class VIC implements BusDevice {
             }
             case 0x08: {
                 sprites[4].setXLSB(value);
+                displayUnit.spriteXChanged();
                 break;
             }
             case 0x09: {
@@ -428,6 +433,7 @@ public abstract class VIC implements BusDevice {
             }
             case 0x0A: {
                 sprites[5].setXLSB(value);
+                displayUnit.spriteXChanged();
                 break;
             }
             case 0x0B: {
@@ -436,6 +442,7 @@ public abstract class VIC implements BusDevice {
             }
             case 0x0C: {
                 sprites[6].setXLSB(value);
+                displayUnit.spriteXChanged();
                 break;
             }
             case 0x0D: {
@@ -444,6 +451,7 @@ public abstract class VIC implements BusDevice {
             }
             case 0x0E: {
                 sprites[7].setXLSB(value);
+                displayUnit.spriteXChanged();
                 break;
             }
             case 0x0F: {
@@ -455,6 +463,7 @@ public abstract class VIC implements BusDevice {
                 for (var sprite : sprites) {
                     sprite.setXMSB(value);
                 }
+                displayUnit.spriteXChanged();
                 break;
             }
             case 0x11: {

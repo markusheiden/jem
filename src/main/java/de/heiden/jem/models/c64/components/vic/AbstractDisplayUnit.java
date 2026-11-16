@@ -65,6 +65,13 @@ public abstract class AbstractDisplayUnit implements ClockedComponent {
         // nothing to do by default
     }
 
+    /**
+     * The CPU changed X coordinates of sprites in the current cycle.
+     */
+    void spriteXChanged() {
+        // nothing to do by default
+    }
+
     @Override
     public void setTick(Tick tick) {
         this.tick = tick;

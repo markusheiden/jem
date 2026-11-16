@@ -14,7 +14,8 @@ import java.util.Arrays;
  * <p>
  * Simplifications: The graphics of a column are rendered with the registers of its g-access cycle,
  * changes of the graphics mode and the background colors by the CPU are applied to the pixels following the change.
- * The sprites of a line are rendered in cycle 11 with the registers of that cycle.
+ * The sprites of a line are rendered in cycle 11 with the registers of that cycle,
+ * changes of the X coordinates by the CPU are applied to sprites not yet reached by the raster beam.
  */
 public class DisplayUnit extends AbstractDisplayUnit {
     /**
@@ -251,7 +252,7 @@ public class DisplayUnit extends AbstractDisplayUnit {
         vic.spriteCycle(raster, cycle);
         vic.updateBA(cycle);
         if (cycle == SPRITE_RENDER_CYCLE) {
-            spriteRenderer.render();
+            spriteRenderer.startLine();
         }
         var badLine = vic.isBadLine();
         if (badLine) {
@@ -335,6 +336,18 @@ public class DisplayUnit extends AbstractDisplayUnit {
             if (x < FIRST_X) {
                 Arrays.fill(graphics, x, FIRST_X, background());
             }
+        }
+    }
+
+    /**
+     * The CPU changed X coordinates of sprites in the current cycle.
+     */
+    @Override
+    void spriteXChanged() {
+        var cycle = lastCycle;
+        if (cycle >= SPRITE_RENDER_CYCLE) {
+            // The write happens in the second half of the cycle.
+            spriteRenderer.xChanged((cycle - 1) * 8 + 5, FIRST_X);
         }
     }
 

@@ -51,6 +51,16 @@ public class Sprite {
     public int data;
 
     /**
+     * Sprite renderer: X coordinate at which the sprite is displayed in the current line, -1 for none.
+     */
+    public int lineX = -1;
+
+    /**
+     * Sprite renderer: Data displayed in the current line, 24 bits.
+     */
+    public int lineData;
+
+    /**
      * Constructor.
      *
      * @param number
