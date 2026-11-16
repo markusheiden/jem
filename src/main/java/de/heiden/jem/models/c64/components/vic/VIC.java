@@ -767,7 +767,7 @@ public abstract class VIC implements BusDevice {
                 break;
             }
             case 0x16: {
-                result = regControl2;
+                result = regControl2 | 0xC0; // unused bits are 1
                 break;
             }
             case 0x17: {
@@ -779,11 +779,11 @@ public abstract class VIC implements BusDevice {
                 break;
             }
             case 0x19: {
-                result = regInterruptRequest;
+                result = regInterruptRequest | 0x70; // unused bits are 1
                 break;
             }
             case 0x1A: {
-                result = regInterruptMask;
+                result = regInterruptMask | 0xF0; // unused bits are 1
                 break;
             }
             case 0x1B: {
@@ -807,63 +807,63 @@ public abstract class VIC implements BusDevice {
                 break;
             }
             case 0x20: {
-                result = regExteriorColor;
+                result = regExteriorColor | 0xF0; // unused bits are 1
                 break;
             }
             case 0x21: {
-                result = regBackgroundColor0;
+                result = regBackgroundColor0 | 0xF0; // unused bits are 1
                 break;
             }
             case 0x22: {
-                result = regBackgroundColor1;
+                result = regBackgroundColor1 | 0xF0; // unused bits are 1
                 break;
             }
             case 0x23: {
-                result = regBackgroundColor2;
+                result = regBackgroundColor2 | 0xF0; // unused bits are 1
                 break;
             }
             case 0x24: {
-                result = regBackgroundColor3;
+                result = regBackgroundColor3 | 0xF0; // unused bits are 1
                 break;
             }
             case 0x25: {
-                result = regSpritesMulticolor0;
+                result = regSpritesMulticolor0 | 0xF0; // unused bits are 1
                 break;
             }
             case 0x26: {
-                result = regSpritesMulticolor1;
+                result = regSpritesMulticolor1 | 0xF0; // unused bits are 1
                 break;
             }
             case 0x27: {
-                result = sprites[0].color;
+                result = sprites[0].color | 0xF0; // unused bits are 1
                 break;
             }
             case 0x28: {
-                result = sprites[1].color;
+                result = sprites[1].color | 0xF0; // unused bits are 1
                 break;
             }
             case 0x29: {
-                result = sprites[2].color;
+                result = sprites[2].color | 0xF0; // unused bits are 1
                 break;
             }
             case 0x2A: {
-                result = sprites[3].color;
+                result = sprites[3].color | 0xF0; // unused bits are 1
                 break;
             }
             case 0x2B: {
-                result = sprites[4].color;
+                result = sprites[4].color | 0xF0; // unused bits are 1
                 break;
             }
             case 0x2C: {
-                result = sprites[5].color;
+                result = sprites[5].color | 0xF0; // unused bits are 1
                 break;
             }
             case 0x2D: {
-                result = sprites[6].color;
+                result = sprites[6].color | 0xF0; // unused bits are 1
                 break;
             }
             case 0x2E: {
-                result = sprites[7].color;
+                result = sprites[7].color | 0xF0; // unused bits are 1
                 break;
             }
             case 0x2F: {
