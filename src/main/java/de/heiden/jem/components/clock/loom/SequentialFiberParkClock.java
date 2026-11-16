@@ -27,6 +27,12 @@ public final class SequentialFiberParkClock extends AbstractSimpleClock {
      */
     private volatile Thread current;
 
+    /**
+     * Last tick to execute.
+     * Written by the clock thread before handing over execution to the fibers.
+     */
+    private long stop;
+
     @Override
     protected void doInit() {
         var components = clockedComponents();
@@ -42,11 +48,21 @@ public final class SequentialFiberParkClock extends AbstractSimpleClock {
             });
         }
 
-        for (var i = 0; i < numComponents; i++) {
-            // Execute next component and wait for the next tick. The last component hands over to the clock.
-            var next = i + 1;
-            components[i].setTick(() -> executeNext(next < numComponents ? fibers[next] : clockThread));
+        for (var i = 0; i < numComponents - 1; i++) {
+            // Execute next component and wait for the next tick.
+            var next = fibers[i + 1];
+            components[i].setTick(() -> executeNext(next));
         }
+        // The last component starts the next tick itself to avoid handing over to the clock thread for each tick.
+        var first = fibers[0];
+        components[numComponents - 1].setTick(() -> {
+            if (getTick() < stop) {
+                startTick();
+                executeNext(first);
+            } else {
+                executeNext(clockThread);
+            }
+        });
 
         for (var fiber : fibers) {
             fiber.start();
@@ -55,27 +71,29 @@ public final class SequentialFiberParkClock extends AbstractSimpleClock {
 
     @Override
     protected void doRun() {
-        clockThread = Thread.currentThread();
-        var firstFiber = fibers[0];
-        //noinspection InfiniteLoopStatement
-        while (true) {
-            startTick();
-            // Execute first component and wait for the last component to finish the tick.
-            executeNext(firstFiber);
-        }
+        execute(Long.MAX_VALUE);
     }
 
     @Override
     protected void doRun(int ticks) {
         assert ticks >= 0 : "Precondition: ticks >= 0";
 
-        clockThread = Thread.currentThread();
-        var firstFiber = fibers[0];
-        for (long stop = getTick() + ticks; getTick() < stop; ) {
-            startTick();
-            // Execute first component and wait for the last component to finish the tick.
-            executeNext(firstFiber);
+        execute(getTick() + ticks);
+    }
+
+    /**
+     * Execute ticks until the given tick.
+     * The fibers execute the ticks and hand over to the clock thread after the last tick.
+     */
+    private void execute(long stop) {
+        if (getTick() >= stop) {
+            return;
         }
+        clockThread = Thread.currentThread();
+        this.stop = stop;
+        startTick();
+        // Execute first component and wait for the last component to finish the last tick.
+        executeNext(fibers[0]);
     }
 
     /**
