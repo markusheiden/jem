@@ -25,14 +25,25 @@ public abstract class ClockTestBase {
         var runs = 10;
         var cycles = 1000;
         // @Timeout(10) does not work if synchronization ignores interrupts.
-        assertTimeoutPreemptively(Duration.ofSeconds(10), () -> run(runs, cycles));
+        assertTimeoutPreemptively(Duration.ofSeconds(10), () -> run(runs, cycles, numCounters()));
     }
 
-    private void run(int runs, int cycles) throws Exception {
+    /**
+     * Test for {@link Clock#run(int)} with fewer counters than processors.
+     * Some clocks wait differently for ticks in this case.
+     */
+    @Test
+    void runFewCounters() {
+        var runs = 10;
+        var cycles = 1000;
+        assertTimeoutPreemptively(Duration.ofSeconds(10), () -> run(runs, cycles, 2));
+    }
+
+    private void run(int runs, int cycles, int num) throws Exception {
         for (var i = 0; i < runs; i++) {
             System.out.println("Run " + i);
             try (var clock = createClock()) {
-                run(clock, cycles);
+                run(clock, cycles, num);
             }
             System.out.println();
             System.out.flush();
@@ -50,8 +61,7 @@ public abstract class ClockTestBase {
     /**
      * Test run clock.
      */
-    private void run(Clock clock, int cycles) {
-        var num = numCounters();
+    private void run(Clock clock, int cycles, int num) {
         var counters = new CounterComponent[num];
         for (var i = 0; i < num; i++) {
             var counter = new CounterComponent();
