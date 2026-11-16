@@ -54,11 +54,6 @@ public abstract class AbstractCIA implements BusDevice, ClockedComponent {
     public static final int SERIAL_CNT = 0x02;
 
     /**
-     * Cycles per tick of the TOD input: The 50 Hz of the power line of a PAL C64 (985248 Hz).
-     */
-    private static final int TOD_CYCLES = 985248 / 50;
-
-    /**
      * Address mask.
      */
     private static final int MASK = 0x0F;
@@ -139,9 +134,15 @@ public abstract class AbstractCIA implements BusDevice, ClockedComponent {
     private int todTicks = 0;
 
     /**
-     * Counter of the cycles until the next tick of the TOD input.
+     * TOD input.
      */
-    private int todCycles = 0;
+    private TodInput todInput;
+
+    /**
+     * Accumulator of the TOD input: Incremented every cycle, a tick happens when it reaches the CPU clock.
+     * Runs freely, because the power line is independent of the CIA.
+     */
+    private int todPhase = 0;
 
     /**
      * Interrupt control: Flags and mask.
@@ -186,9 +187,11 @@ public abstract class AbstractCIA implements BusDevice, ClockedComponent {
      *         clock
      * @param position
      *         position of the CIA in the clock, after the CPU
+     * @param todInput
+     *         TOD input
      */
-
-    protected AbstractCIA(@Nonnull Clock clock, int position) {
+    protected AbstractCIA(@Nonnull Clock clock, int position, @Nonnull TodInput todInput) {
+        this.todInput = todInput;
         irqPort.setOutputMask(0x01);
         irqPort.setOutputData(0x01);
 
@@ -206,6 +209,24 @@ public abstract class AbstractCIA implements BusDevice, ClockedComponent {
     public void reset() {
         todLatched = false;
         todStopped = true;
+    }
+
+    /**
+     * TOD input.
+     */
+    public @Nonnull TodInput getTodInput() {
+        return todInput;
+    }
+
+    /**
+     * Change the TOD input, e.g. to another frequency of the power line.
+     *
+     * @param todInput
+     *         TOD input
+     */
+    public void setTodInput(@Nonnull TodInput todInput) {
+        this.todInput = todInput;
+        todPhase = 0;
     }
 
     @Override
@@ -534,9 +555,10 @@ public abstract class AbstractCIA implements BusDevice, ClockedComponent {
     /**
      * Execute one cycle.
      */
-    private void cycle() {
-        if (++todCycles == TOD_CYCLES) {
-            todCycles = 0;
+    void cycle() {
+        todPhase += todInput.increment();
+        if (todPhase >= todInput.cpuClock()) {
+            todPhase -= todInput.cpuClock();
             todTick();
         }
 

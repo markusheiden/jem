@@ -20,7 +20,7 @@ public class CIA6526A extends AbstractCIA {
     private int icrReadValue = 0;
 
     /**
-     * Constructor.
+     * Constructor for a PAL C64.
      *
      * @param clock
      *         clock
@@ -28,7 +28,21 @@ public class CIA6526A extends AbstractCIA {
      *         position of the CIA in the clock, after the CPU
      */
     public CIA6526A(@Nonnull Clock clock, int position) {
-        super(clock, position);
+        this(clock, position, TodInput.PAL);
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param clock
+     *         clock
+     * @param position
+     *         position of the CIA in the clock, after the CPU
+     * @param todInput
+     *         TOD input
+     */
+    public CIA6526A(@Nonnull Clock clock, int position, @Nonnull TodInput todInput) {
+        super(clock, position, todInput);
     }
 
     @Override
