@@ -30,17 +30,17 @@ public class VICBus implements BusDevice {
     /**
      * Constructor.
      *
-     * @param cia2PortA
-     *         Port A of CIA 2 for VIC base address
      * @param ram
      *         RAM
      * @param character
      *         char rom
-     * @require cia2PortA != null
+     * @param cia2PortA
+     *         Port A of CIA 2 for VIC base address
      * @require ram != null
      * @require character != null
+     * @require cia2PortA != null
      */
-    public VICBus(OutputPort cia2PortA, BusDevice ram, BusDevice character) {
+    public VICBus(BusDevice ram, BusDevice character, OutputPort cia2PortA) {
         assert cia2PortA != null : "cia2PortA != null";
         assert ram != null : "ram != null";
         assert character != null : "character != null";

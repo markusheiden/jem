@@ -15,6 +15,10 @@ import de.heiden.jem.models.c64.components.memory.ROMLoader;
 import de.heiden.jem.models.c64.components.sid.SIDStub;
 import de.heiden.jem.models.c64.components.vic.VICBus;
 
+import static de.heiden.jem.models.c64.components.memory.ROMLoader.DEFAULT_BASIC;
+import static de.heiden.jem.models.c64.components.memory.ROMLoader.DEFAULT_CHARACTER;
+import static de.heiden.jem.models.c64.components.memory.ROMLoader.DEFAULT_KERNEL;
+
 /**
  * Builder for a C64, by default a PAL C64 with old CIAs.
  */
@@ -136,14 +140,14 @@ public class C64Builder {
 
         var ram = new RAM(0x10000);
         var colorRam = new ColorRAM(0x400);
-        var basic = ROMLoader.basic(ROMLoader.DEFAULT_BASIC);
-        var kernel = ROMLoader.kernel(ROMLoader.DEFAULT_KERNEL);
-        var charset = ROMLoader.character(ROMLoader.DEFAULT_CHARACTER);
+        var basic = ROMLoader.basic(DEFAULT_BASIC);
+        var kernel = ROMLoader.kernel(DEFAULT_KERNEL);
+        var charset = ROMLoader.character(DEFAULT_CHARACTER);
 
         var cia1 = createCia(todInput);
         var cia2 = createCia(todInput);
 
-        var vicBus = new VICBus(cia2.portA(), ram, charset);
+        var vicBus = new VICBus(ram, charset, cia2.portA());
         var vic = videoSystem.createVic(clock, vicBus, colorRam);
 
         var cpu = debug ? new CPU6510Debugger() : new CPU6510();
