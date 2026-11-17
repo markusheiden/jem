@@ -138,7 +138,7 @@ public class C64Builder {
     public C64 build() throws Exception {
         var todInput = videoSystem.todInput().withFrequency(powerLineFrequency());
 
-        var ram = new RAM(0x10000);
+        var ram = new RAM(0x10000).powerUpPattern();
         var colorRam = new ColorRAM(0x400);
         var basic = ROMLoader.basic(DEFAULT_BASIC);
         var kernel = ROMLoader.kernel(DEFAULT_KERNEL);

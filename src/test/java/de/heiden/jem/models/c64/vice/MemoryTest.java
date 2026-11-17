@@ -12,14 +12,14 @@ import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
  */
 @Execution(CONCURRENT)
 class MemoryTest extends AbstractTest {
-    // These tests fail:
-    // C64/raminitpattern/cyberloadtest.prg, darkstarbbstest.prg and platoontest.prg:
-    // The RAM is not initialized with the pattern of a real C64.
-    // general/ram0001/test1.prg: Writes to $00/$01 do not write the last value on the bus to the RAM below.
+    // general/ram0001/test1.prg fails: Writes to $00/$01 do not write the last value on the bus to the RAM below.
     @ParameterizedTest
     @ValueSource(strings = {
             "C64/bankio/bankio.prg",
             "C64/openio/gauntlet.prg",
+            "C64/raminitpattern/cyberloadtest.prg",
+            "C64/raminitpattern/darkstarbbstest.prg",
+            "C64/raminitpattern/platoontest.prg",
             "C64/raminitpattern/typicaltest.prg",
     })
     void test(String program) throws Exception {

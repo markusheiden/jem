@@ -27,6 +27,21 @@ public class RAM extends AbstractMemory {
     }
 
     /**
+     * Initialize the RAM with the pattern of a C64 after power-up:
+     * Blocks of 4 bytes $00 and 4 bytes $FF, starting with 2 bytes $00, inverted every 16 KB.
+     * Some programs depend on that pattern. It is the default of VICE without random bits,
+     * that passes all tests of the VICE testprogs C64/raminitpattern. Real C64s show similar patterns.
+     */
+    public RAM powerUpPattern() {
+        for (var address = 0; address < memory.length; address++) {
+            var value = ((address + 2) / 4 & 1) != 0 ? 0xFF : 0x00;
+            var pattern = (address / 0x4000 & 1) != 0 ? 0xFF : 0x00;
+            memory[address] = value ^ pattern;
+        }
+        return this;
+    }
+
+    /**
      * Write byte to RAM.
      *
      * @param value
