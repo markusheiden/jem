@@ -80,11 +80,14 @@ Each `C64*.java` in `de.heiden.jem.models.c64` is an entry point that wires up t
 
 ### Integration Tests
 
-Tests in `de.heiden.jem.models.c64.vice` run real C64 test programs (`.prg` files) and detect pass/fail by reading the VIC border color (green = pass, red/light-red = fail). They depend on VICE emu test programs checked out at:
+Tests in `de.heiden.jem.models.c64.vice` run real C64 test programs (`.prg` files) and detect pass/fail by reading the VIC border color (green = pass, red/light-red = fail). They depend on the VICE emu test programs in the git submodule `src/test/resources/vice-emu-testprogs`, a git mirror of the VICE SVN testprogs (each commit names its SVN revision in its `git-svn-id`). The submodule is pinned, because the test exclusions depend on the versions of the test programs:
 
 ```
-src/test/resources/vice-emu-testprogs
-svn checkout svn://svn.code.sf.net/p/vice-emu/code/testprogs src/test/resources/vice-emu-testprogs
+# Fetch after cloning (or clone with --recurse-submodules)
+git submodule update --init
+
+# Update to the latest test programs, re-run the tests, then commit the new submodule commit
+git submodule update --remote src/test/resources/vice-emu-testprogs
 ```
 
 `AbstractTest` is the base class for all C64 integration tests and provides helpers for loading/running programs, waiting for conditions, and reading the screen/console.

@@ -1,0 +1,3 @@
+[submodule "src/test/resources/vice-emu-testprogs"]
+	path = src/test/resources/vice-emu-testprogs
+	url = https://github.com/libsidplayfp/VICE-testprogs.git

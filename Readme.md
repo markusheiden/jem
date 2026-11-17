@@ -10,9 +10,11 @@ C64 emulator implemented using serial threads.
 
 ## Vice emu testprogs
 
-Checkout svn://svn.code.sf.net/p/vice-emu/code/testprogs into src/test/vice-emu-testprogs to make integration test work.
+The integration tests need the VICE testprogs (svn://svn.code.sf.net/p/vice-emu/code/testprogs).
+They are included as git submodule src/test/resources/vice-emu-testprogs from a git mirror of them.
+Fetch them after cloning (or clone with --recurse-submodules):
 
-    $ svn checkout svn://svn.code.sf.net/p/vice-emu/code/testprogs src/test/resources/vice-emu-testprogs
+    $ git submodule update --init
     
 ### TODOs
 

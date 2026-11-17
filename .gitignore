@@ -6,7 +6,6 @@ build
 
 .claude
 
-src/test/resources/vice-emu-testprogs
 serialthreads.log
 
 # Local "disk" for testing.
