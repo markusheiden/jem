@@ -1,19 +1,22 @@
 package de.heiden.jem.models.c64.components;
 
+import de.heiden.jem.components.bus.BusDevice;
 import de.heiden.jem.components.clock.Clock;
 import de.heiden.jem.components.clock.RealTimeSlowDown;
+import de.heiden.jem.models.c64.components.cia.AbstractCIA;
 import de.heiden.jem.models.c64.components.cpu.C64Bus;
 import de.heiden.jem.models.c64.components.cpu.CPU6510;
-import de.heiden.jem.models.c64.components.cpu.CPU6510Debugger;
 import de.heiden.jem.models.c64.components.joystick.Joystick;
 import de.heiden.jem.models.c64.components.keyboard.Keyboard;
 import de.heiden.jem.models.c64.components.keyboard.KeyboardBuffer;
 import de.heiden.jem.models.c64.components.memory.ColorRAM;
 import de.heiden.jem.models.c64.components.memory.RAM;
-import de.heiden.jem.models.c64.components.memory.ROMLoader;
+import de.heiden.jem.models.c64.components.memory.ROM;
 import de.heiden.jem.models.c64.components.patch.LoadFromDirectory;
 import de.heiden.jem.models.c64.components.vic.VIC;
 import de.heiden.jem.models.c64.components.vic.VICBus;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -86,36 +89,65 @@ public class C64 {
     }
 
     /**
-     * Constructor.
+     * Constructor: Wires up the components.
      *
-     * @param builder
-     *         configuration
+     * @param clock
+     *         Clock.
+     * @param ram
+     *         RAM
+     * @param colorRam
+     *         Color RAM
+     * @param basic
+     *         Basic ROM
+     * @param kernel
+     *         Kernel ROM
+     * @param charset
+     *         Charset ROM
+     * @param cia1
+     *         CIA1
+     * @param cia2
+     *         CIA2
+     * @param vicBus
+     *         Bus of the VIC
+     * @param vic
+     *         VIC
+     * @param sid
+     *         Device for the SID area $D400-$D7FF
+     * @param cpu
+     *         CPU
+     * @param realTimeSlowDown
+     *         Slow down to real time, null to run as fast as possible
      */
-    C64(C64Builder builder) throws Exception {
-        clock = builder.clock;
-        var videoSystem = builder.videoSystem;
-        var todInput = videoSystem.todInput().withFrequency(builder.powerLineFrequency());
+    C64(
+            @Nonnull Clock clock,
+            @Nonnull RAM ram,
+            @Nonnull ColorRAM colorRam,
+            @Nonnull ROM basic,
+            @Nonnull ROM kernel,
+            @Nonnull ROM charset,
+            @Nonnull AbstractCIA cia1,
+            @Nonnull AbstractCIA cia2,
+            @Nonnull VICBus vicBus,
+            @Nonnull VIC vic,
+            @Nonnull BusDevice sid,
+            @Nonnull CPU6510 cpu,
+            @Nullable RealTimeSlowDown realTimeSlowDown) throws IOException {
+        this.clock = clock;
+        this.vic = vic;
+        this.cpu = cpu;
+        this.realTimeSlowDown = realTimeSlowDown;
 
-        var ram = new RAM(0x10000);
-        var colorRam = new ColorRAM(0x400);
-        var basic = ROMLoader.basic(ROMLoader.DEFAULT_BASIC);
-        var kernel = ROMLoader.kernel(ROMLoader.DEFAULT_KERNEL);
-        var charset = ROMLoader.character(ROMLoader.DEFAULT_CHARACTER);
-
-        var cia1 = clock.addClockedComponent(Clock.CIA1, builder.createCia(todInput));
-        var cia2 = clock.addClockedComponent(Clock.CIA2, builder.createCia(todInput));
-
-        var vicBus = new VICBus(cia2.portA(), ram, charset);
-        vic = videoSystem.createVic(clock, vicBus, colorRam);
+        clock.addClockedComponent(Clock.CIA1, cia1);
+        clock.addClockedComponent(Clock.CIA2, cia2);
         clock.addClockedComponent(Clock.VIC_DISPLAY, vic.displayUnit);
+        clock.addClockedComponent(Clock.CPU, cpu);
 
         keyboard = new Keyboard(clock, cia1.portA(), cia1.portB());
         // Joystick port 1 is connected to CIA 1 port B, joystick port 2 to CIA 1 port A.
         joystick1 = new Joystick(clock, cia1.portB());
         joystick2 = new Joystick(clock, cia1.portA());
 
-        cpu = clock.addClockedComponent(Clock.CPU, builder.debug ? new CPU6510Debugger() : new CPU6510());
-        cpuBus = new C64Bus(ram, basic, vic, builder.sid, colorRam, cia1, cia2, charset, kernel, vicBus.openBus());
+        cpuBus = new C64Bus(ram, basic, vic, sid, colorRam, cia1, cia2, charset, kernel, vicBus.openBus());
         cpuBus.connect(cpu.getPort());
         cpu.connect(cpuBus);
         cpu.getIRQ().connect(cia1.getIRQ());
@@ -125,9 +157,6 @@ public class C64 {
         cpu.getRDY().connect(vic.getBA());
 
         keyboardBuffer = new KeyboardBuffer(clock, cpuBus);
-
-        // real time measurement
-        realTimeSlowDown = builder.realTime ? new RealTimeSlowDown(clock, videoSystem.cpuFrequency(), 100) : null;
 
         init(ram, colorRam);
     }
