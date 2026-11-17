@@ -416,6 +416,10 @@ public abstract class AbstractTest {
      */
     protected Condition waitCyclesFor(long maxCycles, Condition... conditions) throws Exception {
         for (long start = getTick(), end = start + maxCycles; ; ) {
+            // Test the program end first, because the C64 is still running:
+            // Otherwise a condition met just before the program end may be missed.
+            var ended = programEnd.test();
+
             for (var condition : conditions) {
                 if (condition.test()) {
                     messageTimeSince(condition.toString(), start);
@@ -423,7 +427,7 @@ public abstract class AbstractTest {
                 }
             }
 
-            if (programEnd.test()) {
+            if (ended) {
                 messageTimeSince("Program end", start);
                 return programEnd;
             }

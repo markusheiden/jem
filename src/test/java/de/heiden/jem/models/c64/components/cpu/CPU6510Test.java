@@ -8,7 +8,6 @@ import de.heiden.jem.components.clock.serialthreads.SerialClock;
 import de.heiden.jem.models.c64.components.memory.RAM;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.serialthreads.agent.Transform;
 import org.slf4j.Logger;
@@ -691,7 +690,6 @@ class CPU6510Test {
     //
     //
 
-    @Disabled("Runs endlessly")
     public static class TXA_Test extends ValueTest {
         public TXA_Test() {
             super(0x8A);
