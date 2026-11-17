@@ -20,4 +20,9 @@ class SequentialYieldClockTest extends ClockTestBase {
     protected Clock createClock() {
         return new SequentialYieldClock();
     }
+
+    @Override
+    protected boolean isSequential() {
+        return true;
+    }
 }

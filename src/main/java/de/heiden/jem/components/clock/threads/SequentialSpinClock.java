@@ -21,9 +21,12 @@ public final class SequentialSpinClock extends AbstractSynchronizedClock {
     private final AtomicInteger currentState = new AtomicInteger(0);
 
     @Override
-    protected void doSynchronizedInit() {
-        requireMultipleCarriers();
+    protected boolean isBusyWaiting() {
+        return true;
+    }
 
+    @Override
+    protected void doSynchronizedInit() {
         var components = clockedComponents();
         var last = components.length - 1;
         for (var state = 0; state < last; state++) {

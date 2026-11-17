@@ -10,8 +10,8 @@ import java.util.Arrays;
  * The fiber of the last component starts the next tick, so all components and events are executed by fibers.
  * The thread running the clock just waits for the fibers to finish the last tick.
  * <p>
- * Executed on a {@link FiberScheduler#useSingleCarrier() single carrier thread},
- * all components and events are executed by the same thread.
+ * All components and events are executed by the same thread, if the fibers of this JVM are limited to a
+ * {@link FiberScheduler#useSingleCarrier() single carrier thread}. Otherwise, a warning is logged.
  */
 public abstract class AbstractFiberClock extends AbstractSimpleClock {
     /**
@@ -28,7 +28,7 @@ public abstract class AbstractFiberClock extends AbstractSimpleClock {
     @Override
     protected final void doInit() {
         if (!FiberScheduler.isSingleCarrier()) {
-            logger.info("Fibers are not limited to a single carrier thread: Components are executed by multiple threads.");
+            logger.warn("Fibers are not limited to a single carrier thread: Components are executed by multiple threads.");
         }
 
         var components = clockedComponents();

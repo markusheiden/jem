@@ -12,8 +12,8 @@ import static java.lang.Thread.onSpinWait;
  * Threads waiting for long park instead of yielding.
  * The thread of the last component starts the next tick, so there is no separate tick manager thread.
  * <p>
- * Executed on a {@link FiberScheduler#useSingleCarrier() single carrier thread},
- * all components and events are executed by the same thread.
+ * All components and events are executed by the same thread, if the component threads of this JVM are limited to a
+ * {@link FiberScheduler#useSingleCarrier() single carrier thread}. Otherwise, a warning is logged.
  */
 public final class SequentialYieldClock extends AbstractSynchronizedClock {
     /**
@@ -24,9 +24,12 @@ public final class SequentialYieldClock extends AbstractSynchronizedClock {
     YieldHandover handover;
 
     @Override
-    protected void doSynchronizedInit() {
-        logCarrier();
+    protected boolean isSequential() {
+        return true;
+    }
 
+    @Override
+    protected void doSynchronizedInit() {
         var components = clockedComponents();
         var last = components.length - 1;
         handover = new YieldHandover(components.length, components.length, 0);

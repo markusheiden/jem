@@ -11,4 +11,9 @@ class SequentialClockTest extends ClockTestBase {
     protected Clock createClock() {
         return new SequentialClock();
     }
+
+    @Override
+    protected boolean isSequential() {
+        return true;
+    }
 }

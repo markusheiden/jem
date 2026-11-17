@@ -11,4 +11,9 @@ class SequentialFiberQueueClockTest extends ClockTestBase {
     protected Clock createClock() {
         return new SequentialFiberQueueClock();
     }
+
+    @Override
+    protected boolean isSequential() {
+        return true;
+    }
 }

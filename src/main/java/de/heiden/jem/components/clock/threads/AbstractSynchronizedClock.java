@@ -107,9 +107,17 @@ public abstract class AbstractSynchronizedClock extends AbstractClock {
         // Suspend execution at the start of the first tick.
         addClockEvent(0, suspendEvent);
 
+        var singleCarrier = FiberScheduler.isSingleCarrier();
+        if (isSequential() && !singleCarrier) {
+            logger.warn("Component threads are not limited to a single carrier thread: Components are executed by multiple threads.");
+        } else if (isBusyWaiting() && singleCarrier) {
+            // The carrier thread would never be handed over to the thread being waited for.
+            throw new IllegalStateException(getClass().getSimpleName() + " needs more than one carrier thread.");
+        }
+
         // Busy waiting with fewer processors or carrier threads than component threads
         // prevents the threads being waited for from executing.
-        spinLimit = !FiberScheduler.isSingleCarrier() &&
+        spinLimit = !singleCarrier &&
                     clockedComponents().length < Runtime.getRuntime().availableProcessors() ? SPIN_LIMIT : 0;
 
         doSynchronizedInit();
@@ -123,26 +131,20 @@ public abstract class AbstractSynchronizedClock extends AbstractClock {
     }
 
     /**
-     * Check that the component threads are not limited to a single carrier thread.
-     * Clocks solely waiting busily never hand over the carrier thread to the thread being waited for.
-     *
-     * @throws IllegalStateException
-     *         if there is just a single carrier thread
+     * Does this clock execute its components sequentially?
+     * In this case all components and events are executed by the same thread, if the component threads of this JVM
+     * are limited to a {@link FiberScheduler#useSingleCarrier() single carrier thread}. Otherwise, a warning is logged.
      */
-    protected final void requireMultipleCarriers() {
-        if (FiberScheduler.isSingleCarrier()) {
-            throw new IllegalStateException(getClass().getSimpleName() + " needs more than one carrier thread.");
-        }
+    protected boolean isSequential() {
+        return false;
     }
 
     /**
-     * Log, whether all components and events are executed by the same thread.
-     * For clocks executing their components sequentially.
+     * Does this clock solely wait busily?
+     * In this case it needs more than one carrier thread.
      */
-    protected final void logCarrier() {
-        if (!FiberScheduler.isSingleCarrier()) {
-            logger.info("Component threads are not limited to a single carrier thread: Components are executed by multiple threads.");
-        }
+    protected boolean isBusyWaiting() {
+        return false;
     }
 
     /**

@@ -9,9 +9,9 @@ import de.heiden.jem.models.c64.components.cpu.Patch;
  */
 public class ProgramEndDetector extends Patch {
     /**
-     * Has the program ended?.
+     * Has the program ended?. Set by the C64 thread, reset by any thread.
      */
-    private boolean end = false;
+    private volatile boolean end = false;
 
     /**
      * Error code at the program end.
@@ -29,9 +29,12 @@ public class ProgramEndDetector extends Patch {
      * Has the program ended? Resets end flag.
      */
     public boolean hasEnded() {
-        var result = end;
+        // Reset the flag only if set, to not lose a concurrent program end.
+        if (!end) {
+            return false;
+        }
         end = false;
-        return result;
+        return true;
     }
 
     /**

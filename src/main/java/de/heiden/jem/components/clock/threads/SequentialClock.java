@@ -13,8 +13,8 @@ import static java.util.concurrent.locks.LockSupport.unpark;
  * Clock implemented with synchronization sequentially executing component threads.
  * The thread of the last component starts the next tick, so there is no separate tick manager thread.
  * <p>
- * Executed on a {@link FiberScheduler#useSingleCarrier() single carrier thread},
- * all components and events are executed by the same thread.
+ * All components and events are executed by the same thread, if the component threads of this JVM are limited to a
+ * {@link FiberScheduler#useSingleCarrier() single carrier thread}. Otherwise, a warning is logged.
  */
 public final class SequentialClock extends AbstractSynchronizedClock {
     /**
@@ -30,9 +30,12 @@ public final class SequentialClock extends AbstractSynchronizedClock {
     private Thread firstThread;
 
     @Override
-    protected void doSynchronizedInit() {
-        logCarrier();
+    protected boolean isSequential() {
+        return true;
+    }
 
+    @Override
+    protected void doSynchronizedInit() {
         var components = clockedComponents();
         var last = components.length - 1;
         Thread firstThread = null;

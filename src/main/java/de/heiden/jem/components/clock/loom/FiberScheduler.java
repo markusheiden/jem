@@ -1,7 +1,12 @@
 package de.heiden.jem.components.clock.loom;
 
+import jdk.management.VirtualThreadSchedulerMXBean;
+
+import java.lang.management.ManagementFactory;
+
 /**
  * Configuration of the scheduler of the {@link Thread fibers} of project loom.
+ * The configuration applies to all fibers of this JVM.
  */
 public final class FiberScheduler {
     /**
@@ -20,20 +25,38 @@ public final class FiberScheduler {
      * Additionally, handing over execution between fibers is much faster then,
      * because it becomes a switch on the same thread instead of waking up another thread.
      * <p>
-     * Has to be called before the first fiber is created.
+     * Called before the first fiber is created, there never will be more than one carrier thread.
+     * Called later, the scheduler stops using its other carrier threads.
      * Do not use with clocks that solely wait busily:
      * These keep the carrier thread busy, so the fiber being waited for never gets executed.
      */
-    public static void useSingleCarrier() {
+    public static synchronized void useSingleCarrier() {
+        // Only has an effect, if the scheduler has not been created yet.
         System.setProperty(PARALLELISM, "1");
         System.setProperty(MAX_POOL_SIZE, "1");
+
+        var scheduler = scheduler();
+        if (scheduler.getParallelism() != 1) {
+            scheduler.setParallelism(1);
+        }
     }
 
     /**
      * Are all fibers of this JVM executed on a single carrier thread?
      */
     public static boolean isSingleCarrier() {
-        return Integer.getInteger(PARALLELISM, 0) == 1 && Integer.getInteger(MAX_POOL_SIZE, 0) == 1;
+        return scheduler().getParallelism() == 1;
+    }
+
+    /**
+     * Number of carrier threads of this JVM.
+     */
+    public static int carrierThreads() {
+        return scheduler().getPoolSize();
+    }
+
+    private static VirtualThreadSchedulerMXBean scheduler() {
+        return ManagementFactory.getPlatformMXBean(VirtualThreadSchedulerMXBean.class);
     }
 
     private FiberScheduler() {

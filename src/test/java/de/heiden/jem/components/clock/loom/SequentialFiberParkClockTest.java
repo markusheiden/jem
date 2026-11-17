@@ -11,4 +11,9 @@ class SequentialFiberParkClockTest extends ClockTestBase {
     protected Clock createClock() {
         return new SequentialFiberParkClock();
     }
+
+    @Override
+    protected boolean isSequential() {
+        return true;
+    }
 }

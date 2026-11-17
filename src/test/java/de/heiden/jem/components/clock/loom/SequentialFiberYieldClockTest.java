@@ -20,4 +20,9 @@ class SequentialFiberYieldClockTest extends ClockTestBase {
     protected Clock createClock() {
         return new SequentialFiberYieldClock();
     }
+
+    @Override
+    protected boolean isSequential() {
+        return true;
+    }
 }
