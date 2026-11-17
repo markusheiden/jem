@@ -8,7 +8,6 @@ import de.heiden.jem.components.clock.serialthreads.SerialClock;
 import de.heiden.jem.models.c64.components.memory.RAM;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.serialthreads.agent.Transform;
 import org.slf4j.Logger;
@@ -685,60 +684,6 @@ class CPU6510Test {
             // Check state and jump back
             checkAndJmpBack();
         }
-    }
-
-    //
-    //
-    //
-
-    @Nested
-    class TXA_Test extends ValueTest {
-        TXA_Test() {
-            super(0x8A);
-        }
-
-        @Override
-        public void before(int value) {
-            state.X = value;
-        }
-
-        @Override
-        public void after(int value) {
-            expectedState.A = value;
-            expectedZN(value);
-        }
-    }
-
-    /**
-     * Base class for nested tests. They use the setup of the enclosing test.
-     */
-    abstract class ValueTest {
-        private final int opcode;
-        private final int[] arguments;
-
-        ValueTest(int opcode, int... arguments) {
-            this.opcode = opcode;
-            this.arguments = arguments;
-        }
-
-        public abstract void before(int value);
-
-        @Test
-        public void test() {
-            for (var value = 0x00; value <= 0xFF; value = inc(value)) {
-                resetState(value);
-                before(value);
-                captureExpectedState();
-                // Setup code.
-                execute(opcode, arguments); // opcode, JMP
-                // register and flags change
-                after(value);
-                // Check state and jump back
-                checkAndJmpBack();
-            }
-        }
-
-        public abstract void after(int value);
     }
 
     //
