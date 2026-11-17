@@ -51,6 +51,11 @@ public class Sprite {
     public int data;
 
     /**
+     * Sprite sequencer: Sprite pointer, read in the first access cycle.
+     */
+    public int pointer;
+
+    /**
      * Sprite sequencer: Has the data been read, but not been displayed yet?
      */
     public boolean armed;

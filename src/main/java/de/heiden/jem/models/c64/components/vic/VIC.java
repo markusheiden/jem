@@ -71,6 +71,11 @@ public abstract class VIC implements BusDevice {
      */
     private int cycle;
 
+    /**
+     * Refresh counter: Low byte of the address of the next refresh access.
+     */
+    private int refresh = 0xFF;
+
     // sprite register
     protected Sprite[] sprites;
 
@@ -299,9 +304,13 @@ public abstract class VIC implements BusDevice {
      * DMA is turned on in cycles 55 and 56, if the Y coordinate matches the raster line.
      * The expansion flip-flop of y expanded sprites is toggled in cycle 56.
      * The data counters are loaded in cycle 58, the display is turned on in cycle 58, if the Y coordinate matches.
+     * In the first access cycle of a sprite, the VIC reads its pointer.
      * In the 2 access cycles of a sprite with DMA on, the VIC reads the 3 bytes of its next line.
      * In cycle 16, the data counter base is loaded from the data counter, unless the expansion flip-flop doubles the line.
      * DMA is turned off, when all 21 lines have been read, the display is turned off in the following cycle 58.
+     * <p>
+     * In the first phase of cycles without sprite or graphics access, the VIC refreshes the RAM (cycles 11 to 15)
+     * or does an idle access to $3FFF. The CPU reads the byte of the first phase from the open bus.
      *
      * @param raster
      *         raster line
@@ -346,22 +355,45 @@ public abstract class VIC implements BusDevice {
             }
         }
 
-        // The data of a sprite is read in the second of its 2 access cycles.
+        // Graphics are accessed in cycles 16 to 55.
+        var idle = cycle < 16 || cycle > 55;
+
+        if (cycle >= 11 && cycle <= 15) {
+            if (raster == 0 && cycle == 11) {
+                refresh = 0xFF;
+            }
+            bus.read(0x3F00 | refresh);
+            refresh = (refresh - 1) & 0xFF;
+            idle = false;
+        }
+
+        // The pointer of a sprite is read in the first of its 2 access cycles, its data in the second.
         for (var i = 0; i < 8; i++) {
             var sprite = sprites[i];
-            if (cycle != spriteAccessCycle(i) + 1) {
+            var access = spriteAccessCycle(i);
+            if (cycle == access) {
+                sprite.pointer = bus.read(baseCharacterMode + 0x03F8 + i);
+                idle = false;
+            }
+            if (cycle != access + 1) {
                 continue;
             }
             sprite.armed = sprite.dma;
             if (sprite.dma) {
-                var address = bus.read(baseCharacterMode + 0x03F8 + i) << 6;
+                // The CPU is halted, so it does not matter, that the last byte is not read in the first phase.
+                var address = sprite.pointer << 6;
                 var data = 0;
                 for (var b = 0; b < 3; b++) {
                     data = data << 8 | bus.read(address + sprite.mc);
                     sprite.mc = (sprite.mc + 1) & 0x3F;
                 }
                 sprite.data = data;
+                idle = false;
             }
+        }
+
+        if (idle) {
+            bus.read(0x3FFF);
         }
     }
 

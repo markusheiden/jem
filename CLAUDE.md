@@ -25,9 +25,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 # Check for dependency updates
 ./gradlew dependencyUpdates
+
+# Benchmark the thread and fiber based clocks (each clock in its own JVM)
+./gradlew clockBenchmark
 ```
 
-The shadow JAR is the primary artifact; the plain JAR is disabled. Tests ignore failures (`ignoreFailures = true`) so the build won't fail on test errors.
+The shadow JAR is the primary artifact; the plain JAR is disabled. Test failures fail the build (`ignoreFailures = false`).
 
 ## Architecture
 
@@ -49,8 +52,8 @@ Multiple clock strategies exist under `de.heiden.jem.components.clock`:
 | Package | Strategy |
 |---|---|
 | `serialthreads/` | Serial coroutines via bytecode transformation (default) |
-| `threads/` | OS threads: Sequential, Parallel variants (Spin, Yield, Notify, Barrier) |
-| `loom/` | Java Virtual Threads (Project Loom): Fiber variants (Yield, Park, Latch, Executor) |
+| `threads/` | One thread per component: Sequential, Parallel variants (Spin, Yield, Notify, Barrier) |
+| `loom/` | Java Virtual Threads (Project Loom): Fiber variants (Yield, Park, Latch, Queue) |
 
 Each `C64*.java` in `de.heiden.jem.models.c64` is an entry point that wires up the C64 hardware with a specific clock.
 

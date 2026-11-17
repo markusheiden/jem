@@ -23,6 +23,11 @@ public class VICBus implements BusDevice {
     private int vicBase;
 
     /**
+     * Byte read last.
+     */
+    private int data = 0xFF;
+
+    /**
      * Constructor.
      *
      * @param cia2PortA
@@ -60,7 +65,25 @@ public class VICBus implements BusDevice {
         assert address >= 0x0000 && address < 0x4000 : "address >= 0x0000 && address < 0x4000";
 
         var cpuAddress = vicBase + address;
-        return ((cpuAddress & 0x7000) == 0x1000 ? character : ram).read(cpuAddress);
+        data = ((cpuAddress & 0x7000) == 0x1000 ? character : ram).read(cpuAddress);
+        return data;
+    }
+
+    /**
+     * Open bus: At addresses of the CPU bus without a device, the CPU reads the byte the VIC has read last.
+     */
+    public BusDevice openBus() {
+        return new BusDevice() {
+            @Override
+            public int read(int address) {
+                return data;
+            }
+
+            @Override
+            public void write(int value, int address) {
+                // ignored
+            }
+        };
     }
 
     /**

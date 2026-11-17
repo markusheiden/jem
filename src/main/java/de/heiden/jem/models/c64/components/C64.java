@@ -115,7 +115,7 @@ public class C64 {
         joystick2 = new Joystick(clock, cia1.portA());
 
         cpu = clock.addClockedComponent(Clock.CPU, debug ? new CPU6510Debugger() : new CPU6510());
-        cpuBus = new C64Bus(ram, basic, vic, colorRam, cia1, cia2, charset, kernel);
+        cpuBus = new C64Bus(ram, basic, vic, colorRam, cia1, cia2, charset, kernel, vicBus.openBus());
         cpuBus.connect(cpu.getPort());
         cpu.connect(cpuBus);
         cpu.getIRQ().connect(cia1.getIRQ());

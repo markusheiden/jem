@@ -117,7 +117,7 @@ public class TestC64 {
 
         cpu = clock.addClockedComponent(Clock.CPU, new CPU6510Debugger());
         debugCartridge = new DebugCartridge(new SIDStub());
-        cpuBus = new C64Bus(ram, basic, vic, debugCartridge, colorRam, cia1, cia2, charset, kernel);
+        cpuBus = new C64Bus(ram, basic, vic, debugCartridge, colorRam, cia1, cia2, charset, kernel, vicBus.openBus());
         cpuBus.connect(cpu.getPort());
         cpu.connect(cpuBus);
         cpu.getIRQ().connect(cia1.getIRQ());

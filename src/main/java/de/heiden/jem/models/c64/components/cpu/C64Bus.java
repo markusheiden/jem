@@ -40,7 +40,7 @@ public class C64Bus implements BusDevice, Patchable {
     private BusDevice cartridgeH;
     private BusDevice cartridge;
 
-    private final BusDevice noBusDevice;
+    private final BusDevice openBus;
 
     private BusDevice[] ioModeRead;
     private BusDevice[] ioModeWrite;
@@ -67,6 +67,8 @@ public class C64Bus implements BusDevice, Patchable {
      *         Charset ROM
      * @param kernel
      *         Kernel ROM
+     * @param openBus
+     *         Device for the areas without a device $DE00-$DFFF
      */
     public C64Bus(
             @Nonnull BusDevice ram,
@@ -76,8 +78,9 @@ public class C64Bus implements BusDevice, Patchable {
             @Nonnull BusDevice cia1,
             @Nonnull BusDevice cia2,
             @Nonnull BusDevice charset,
-            @Nonnull BusDevice kernel) {
-        this(ram, basic, vic, new SIDStub(), colorRam, cia1, cia2, charset, kernel);
+            @Nonnull BusDevice kernel,
+            @Nonnull BusDevice openBus) {
+        this(ram, basic, vic, new SIDStub(), colorRam, cia1, cia2, charset, kernel, openBus);
     }
 
     /**
@@ -101,6 +104,8 @@ public class C64Bus implements BusDevice, Patchable {
      *         Charset ROM
      * @param kernel
      *         Kernel ROM
+     * @param openBus
+     *         Device for the areas without a device $DE00-$DFFF
      * @require cpu != null
      * @require ram != null
      * @require basic != null
@@ -111,6 +116,7 @@ public class C64Bus implements BusDevice, Patchable {
      * @require cia2 != null
      * @require charset != null
      * @require kernel != null
+     * @require openBus != null
      */
     public C64Bus(
             @Nonnull BusDevice ram,
@@ -121,7 +127,8 @@ public class C64Bus implements BusDevice, Patchable {
             @Nonnull BusDevice cia1,
             @Nonnull BusDevice cia2,
             @Nonnull BusDevice charset,
-            @Nonnull BusDevice kernel) {
+            @Nonnull BusDevice kernel,
+            @Nonnull BusDevice openBus) {
         this.ram = ram;
         this.basic = basic;
         this.vic = vic;
@@ -131,7 +138,7 @@ public class C64Bus implements BusDevice, Patchable {
         this.cia2 = cia2;
         this.charset = charset;
         this.kernel = kernel;
-        noBusDevice = new NoBusDevice();
+        this.openBus = openBus;
 
         cartridge = new NoBusDevice(); // TODO
         cartridgeL = new NoBusDevice(); // TODO
@@ -300,8 +307,8 @@ public class C64Bus implements BusDevice, Patchable {
         }
         result[0xDC] = cia1;
         result[0xDD] = cia2;
-        result[0xDE] = noBusDevice;
-        result[0xDF] = noBusDevice;
+        result[0xDE] = openBus;
+        result[0xDF] = openBus;
     }
 
     //

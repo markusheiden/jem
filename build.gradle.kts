@@ -123,6 +123,14 @@ tasks.register<JavaExec>("runAgent") {
     }
 }
 
+// Benchmark the thread and fiber based clocks. Each clock is executed in its own JVM without the JaCoCo agent.
+tasks.register<JavaExec>("clockBenchmark") {
+    group = "verification"
+    description = "Benchmarks the thread and fiber based clocks."
+    mainClass = "de.heiden.jem.components.clock.ClockBenchmark"
+    classpath = sourceSets.test.get().runtimeClasspath
+}
+
 tasks.shadowJar {
     archiveClassifier = ""
     manifest {
