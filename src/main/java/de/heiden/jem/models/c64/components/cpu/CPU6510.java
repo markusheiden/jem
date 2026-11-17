@@ -3489,14 +3489,17 @@ public class CPU6510 implements ClockedComponent {
 
     /**
      * *XAA (*ANE): TXA and AND.
+     * The "magic constant" is unstable and depends on the CPU.
+     * $EF makes most programs work, $EE if the CPU has been halted by RDY at the read of the argument
+     * (see VICE testprogs CPU/ane).
      *
      * @param value
      *         argument
      */
     @Interruptible
     protected final void xaa(int value) {
-        // TODO 0xEE is cpu dependant
-        var result = (state.A | 0xEE) & state.X & value;
+        var magic = halted ? 0xEE : 0xEF;
+        var result = (state.A | magic) & state.X & value;
         state.setZeroNegativeP(result);
         state.A = result;
     }

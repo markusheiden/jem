@@ -17,10 +17,12 @@ class CpuTest extends AbstractTest {
     /**
      * ANE #imm and LAX #imm with the "magic constant": Without DMA, with bad lines and with sprite DMA.
      * Each test takes 70 seconds on a C64.
-     * The ane tests fail: ANE uses the magic constant $EE instead of $EF ($EE just in the cycle, in which RDY is low).
      */
     @ParameterizedTest
     @ValueSource(strings = {
+            "ane/ane.prg",
+            "ane/ane-none.prg",
+            "ane/ane-border.prg",
             "lax/lax.prg",
             "lax/lax-none.prg",
             "lax/lax-border.prg",
