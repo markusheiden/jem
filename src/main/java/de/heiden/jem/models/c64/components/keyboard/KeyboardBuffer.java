@@ -56,8 +56,15 @@ public class KeyboardBuffer extends ClockEvent {
      *         PETSCII code
      * @param tick
      *         tick, before which the key is not typed
+     * @param exact
+     *         type the key exactly at the tick instead of at the next check?
      */
-    private record Key(int petscii, long tick) {}
+    private record Key(int petscii, long tick, boolean exact) {}
+
+    /**
+     * Tick of the next regular check.
+     */
+    private long nextCheck = INTERVAL;
 
     /**
      * Constructor.
@@ -89,13 +96,26 @@ public class KeyboardBuffer extends ClockEvent {
      * A tick in the future types the text at a reproducible point in time. May be called from any thread.
      */
     public void type(@Nonnull String text, long tick) {
+        type(text, tick, false);
+    }
+
+    /**
+     * Type the given text exactly at the given tick, which has to be in the future.
+     * This defines the phase of the typing relative to the raster beam, {@link #type(String, long)} types
+     * always at the same position of the raster beam. May be called from any thread.
+     */
+    public void typeAt(@Nonnull String text, long tick) {
+        type(text, tick, true);
+    }
+
+    private void type(String text, long tick, boolean exact) {
         var previous = ' ';
         for (var c : text.toCharArray()) {
             // Windows line separator "\r\n": Type only one return.
             if (!(c == '\n' && previous == '\r')) {
                 var petscii = toPetscii(c);
                 if (petscii >= 0) {
-                    pending.add(new Key(petscii, tick));
+                    pending.add(new Key(petscii, tick, exact));
                 }
             }
             previous = c;
@@ -115,7 +135,13 @@ public class KeyboardBuffer extends ClockEvent {
             }
         }
 
-        clock.addClockEvent(tick + INTERVAL, this);
+        if (tick >= nextCheck) {
+            nextCheck += INTERVAL;
+        }
+        // Exactly timed keys are typed between the regular checks.
+        var key = pending.peek();
+        var exact = key != null && key.exact && key.tick > tick && key.tick < nextCheck;
+        clock.addClockEvent(exact ? key.tick : nextCheck, this);
     }
 
     /**

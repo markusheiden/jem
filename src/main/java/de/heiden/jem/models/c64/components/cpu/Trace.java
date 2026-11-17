@@ -32,6 +32,12 @@ public final class Trace {
     public final byte[] bytes = new byte[3];
 
     /**
+     * I/O area of the C64. Opcodes in it are traced without their bytes.
+     */
+    private static final int IO = 0xD000;
+    private static final int IO_END = 0xE000;
+
+    /**
      * Read trace data from the bus.
      *
      * @param pc
@@ -41,6 +47,13 @@ public final class Trace {
      */
     public void read(int pc, BusDevice bus) {
         address = pc;
+
+        if (pc >= IO - 2 && pc < IO_END) {
+            // Do not read the I/O area: Reading a register may have side effects,
+            // e.g. reading the interrupt control register of a CIA clears its interrupt flags.
+            size = 0;
+            return;
+        }
 
         var opcode = bus.read(pc);
         pc = (pc + 1) & 0xFFFF;

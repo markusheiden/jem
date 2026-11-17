@@ -8,7 +8,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 
 import java.nio.file.Path;
 
-import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
 
 /**
@@ -90,7 +89,6 @@ class CiaTest extends AbstractTest {
      */
     @Test
     void todStability() throws Exception {
-        loadAndRun("/vice-emu-testprogs/CIA/tod/stability.prg");
-        assertSame(debugCartridgePassed, waitSecondsFor(50, debugCartridgePassed, debugCartridgeFailed));
+        testDebugCartridgeResult(path("/vice-emu-testprogs/CIA/tod/stability.prg"), 50);
     }
 }

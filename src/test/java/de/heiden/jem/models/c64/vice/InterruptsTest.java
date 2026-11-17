@@ -17,12 +17,24 @@ import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
  */
 @Execution(CONCURRENT)
 class InterruptsTest extends AbstractTest {
-    // cia-int/cia-int-nmi.prg fails: The old CIA 6526 misses one NMI, when its ICR is read as an operand.
+    /**
+     * Interrupts of the CIAs, while their interrupt control register is read as part of an opcode.
+     * The border is green from the start, so just the debug cartridge tells the result.
+     */
     @ParameterizedTest
     @ValueSource(strings = {
             "cia-int/cia-int-irq.prg",
             "cia-int/cia-int-irq-new.prg",
+            "cia-int/cia-int-nmi.prg",
             "cia-int/cia-int-nmi-new.prg",
+    })
+    void ciaInt(String program) throws Exception {
+        newCias = program.contains("new");
+        testDebugCartridgeResult(path("/vice-emu-testprogs/interrupts/" + program), 30);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
             "irq-ackn-bug/cia1.prg",
             "irq-ackn-bug/cia1new.prg",
             "irq-ackn-bug/cia2.prg",

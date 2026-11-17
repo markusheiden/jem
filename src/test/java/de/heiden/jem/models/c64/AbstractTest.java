@@ -79,6 +79,12 @@ public abstract class AbstractTest {
     private static final long RUN_TICK = 4000000;
 
     /**
+     * Cycles to delay the run command, 0 types it at the regular position of the raster beam.
+     * Changes the phase of the start of the program relative to the raster beam.
+     */
+    protected int runDelay = 0;
+
+    /**
      * Transformed test C64.
      */
     protected TestC64 c64;
@@ -199,7 +205,11 @@ public abstract class AbstractTest {
         c64.hasEnded();
 
         console.clear();
-        c64.getKeyboardBuffer().type("run\n", RUN_TICK);
+        if (runDelay == 0) {
+            c64.getKeyboardBuffer().type("run\n", RUN_TICK);
+        } else {
+            c64.getKeyboardBuffer().typeAt("run\n", RUN_TICK + runDelay);
+        }
         waitCycles(RUN_TICK - getTick());
     }
 
@@ -234,6 +244,21 @@ public abstract class AbstractTest {
             throws Exception {
         loadAndRun(programName, program);
         doTestBorderResult(maxSeconds, screenCapture);
+    }
+
+    /**
+     * Load and run the program, evaluate just the debug cartridge to determine the test result.
+     * For test programs, which use the border for other purposes while running.
+     *
+     * @param program
+     *         Path to program.
+     * @param maxSeconds
+     *         Max seconds to wait. Assumes 1 MHz clock.
+     */
+    protected void testDebugCartridgeResult(Path program, int maxSeconds) throws Exception {
+        loadAndRun(program);
+        var result = waitSecondsFor(maxSeconds, debugCartridgePassed, debugCartridgeFailed);
+        assertSame(debugCartridgePassed, result, "Test failed");
     }
 
     /**
