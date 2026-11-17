@@ -41,11 +41,11 @@ public final class SequentialFiberParkClock extends AbstractSimpleClock {
         fibers = new Thread[numComponents];
         for (var i = 0; i < numComponents; i++) {
             var component = components[i];
-            fibers[i] = Thread.ofVirtual().name(component.getName()).unstarted(() -> {
+            fibers[i] = Thread.ofVirtual().name(component.getName()).unstarted(() -> runUntilAbort(() -> {
                 // Wait for the first tick.
                 waitForExecution();
                 component.run();
-            });
+            }));
         }
 
         for (var i = 0; i < numComponents - 1; i++) {

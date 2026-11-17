@@ -54,11 +54,11 @@ public final class SequentialFiberYieldClock extends AbstractSimpleClock {
                     }
                 });
             }
-            fibers[i] = Thread.ofVirtual().name(component.getName()).start(() -> {
+            fibers[i] = Thread.ofVirtual().name(component.getName()).start(() -> runUntilAbort(() -> {
                 // Wait for the first tick.
                 waitForExecution(state);
                 component.run();
-            });
+            }));
         }
     }
 

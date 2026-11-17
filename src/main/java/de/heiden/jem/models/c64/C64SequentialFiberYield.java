@@ -1,6 +1,5 @@
 package de.heiden.jem.models.c64;
 
-import de.heiden.jem.components.clock.loom.FiberScheduler;
 import de.heiden.jem.components.clock.loom.SequentialFiberYieldClock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,8 +20,9 @@ public class C64SequentialFiberYield {
      */
     public static void main(String[] args) {
         try {
-            // The fibers execute strictly sequentially, so one carrier thread is sufficient and much faster.
-            FiberScheduler.useSingleCarrier();
+            // Do not use a single carrier thread here:
+            // Fibers woken up from sleeping (real time slow down) would never get executed again,
+            // because the yielding fibers keep the carrier thread busy with its local queue.
             start("--clock=" + SequentialFiberYieldClock.class.getName());
         } catch (Exception e) {
             logger.error("Unable to startup", e);

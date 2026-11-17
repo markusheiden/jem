@@ -175,6 +175,18 @@ public abstract class AbstractClock implements Clock {
     }
 
     /**
+     * Run the task of a thread of this clock until it gets manually aborted.
+     * A manual abort is the regular way to terminate the threads of a clock, so it is not reported.
+     */
+    protected static void runUntilAbort(Runnable task) {
+        try {
+            task.run();
+        } catch (ManualAbort e) {
+            // Let the thread terminate.
+        }
+    }
+
+    /**
      * Interrupt the threads and wait for their termination.
      * The threads are expected to terminate, when they are interrupted while waiting for a tick.
      *

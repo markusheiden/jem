@@ -57,11 +57,11 @@ public final class SequentialFiberLatchClock extends AbstractSimpleClock {
                     }
                 });
             }
-            fibers[i] = Thread.ofVirtual().name(component.getName()).start(() -> {
+            fibers[i] = Thread.ofVirtual().name(component.getName()).start(() -> runUntilAbort(() -> {
                 // Wait for the first tick.
                 acquire(semaphore);
                 component.run();
-            });
+            }));
         }
     }
 

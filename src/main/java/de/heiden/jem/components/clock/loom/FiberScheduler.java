@@ -10,7 +10,8 @@ public final class FiberScheduler {
      * because it becomes a switch on the same thread instead of waking up another thread.
      * <p>
      * Has to be called before the first fiber is created.
-     * Do not use with clocks that execute busy waiting fibers concurrently.
+     * Do not use with clocks that execute busy waiting or yielding fibers:
+     * These keep the carrier thread busy, so fibers woken up from blocking or sleeping never get executed again.
      */
     public static void useSingleCarrier() {
         System.setProperty("jdk.virtualThreadScheduler.parallelism", "1");
