@@ -18,11 +18,11 @@ import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
 @Execution(CONCURRENT)
 class LorenzTest extends AbstractTest {
     @ParameterizedTest(name = "{1}")
-    @ProgramSuiteSource(resource = "/vice-emu-testprogs/general/Lorenz-2.15/src/start.prg", ignore = {
-            "start", "nextdisk1", "nextdisk2", "finish",
-            // Not updated for the new CIA 6526A yet, they fail on a real C64C too (see readme.txt of the suite):
-            // They still expect the NMI at the cycle of the old CIA 6526.
-            "cia2tanew", "cia2tbnew"
+    // Skip the variants for the C64DTV and the Plus/4.
+    @ProgramSuiteSource(resource = "/vice-emu-testprogs/general/Lorenz-2.15/src/start.prg", filter = "^(?!.*-(dtv|plus4)$)", ignore = {
+            "start", "nextdisk1", "nextdisk2", "nextdisk3", "finish",
+            // C128 only.
+            "cpuport128"
             // Passing tests. Ignore them for now to get faster to the failing ones.
             // "adca", "adcax", "adcay", "adcb", "adcix", "adciy", "adcz", "adczx",
             // "alrb", "ancb",

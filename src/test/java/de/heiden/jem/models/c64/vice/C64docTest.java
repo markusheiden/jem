@@ -15,7 +15,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
 
 /**
@@ -34,27 +33,26 @@ class C64docTest extends AbstractTest {
     private static final int BASIC = 0x0801;
 
     /**
-     * Address of the code, which starts the test program. The CPU stays at its end, if the test program passed.
+     * Address of the code, which starts the test program.
      */
-    private static final int PASSED = 0xC000;
+    private static final int START = 0xC000;
 
     /**
-     * Address of the BRK handler. The CPU stays at it, if the test program failed.
+     * Debug cartridge register: The test programs write 0 to it, if they passed, and $FF, if they failed.
      */
-    private static final int FAILED = 0xC010;
+    private static final int DEBUG_CARTRIDGE = 0xD7FF;
+
+    /**
+     * Value of the debug cartridge register before the test program wrote its result.
+     */
+    private static final int NO_RESULT = 0x80;
 
     // sbx and vsbx take too long on a complete C64, see cpu().
     @ProgramSuiteSource(resource = DIRECTORY + "dadc.prg", ignore = {"sbx", "vsbx"})
     @ParameterizedTest(name = "{1}")
     void test(Path program, String programName) throws Exception {
-        loadAndRun(program);
-
         // The tests need at max 21 seconds.
-        var passed = programEnd;
-        var failed = brk;
-        var result = waitSecondsFor(30, passed, failed);
-
-        assertSame(passed, result);
+        testBorderResult(program, 30, false);
     }
 
     /**
@@ -80,20 +78,19 @@ class C64docTest extends AbstractTest {
             write(ram, 0x002B, BASIC & 0xFF, BASIC >> 8);
             // CHROUT, the program prints its progress: RTS.
             write(ram, 0xFFD2, 0x60);
-            // Reset: Start the program like its BASIC line does (SYS start of BASIC + 26). Stay here, when it returns.
-            write(ram, PASSED, 0x20, (BASIC + 26) & 0xFF, (BASIC + 26) >> 8, 0x4C, (PASSED + 3) & 0xFF, PASSED >> 8);
-            write(ram, 0xFFFC, PASSED & 0xFF, PASSED >> 8);
-            // BRK: Stay here.
-            write(ram, FAILED, 0x4C, FAILED & 0xFF, FAILED >> 8);
-            write(ram, 0xFFFE, FAILED & 0xFF, FAILED >> 8);
+            // Reset: Start the program like its BASIC line does (SYS start of BASIC + 26).
+            write(ram, START, 0x4C, (BASIC + 26) & 0xFF, (BASIC + 26) >> 8);
+            write(ram, 0xFFFC, START & 0xFF, START >> 8);
+            // Without I/O, the result written to the debug cartridge register ends up in the RAM.
+            write(ram, DEBUG_CARTRIDGE, NO_RESULT);
 
             var result = "Timeout";
             for (var end = 8000 * 1000000L; result.equals("Timeout") && clock.getTick() < end; ) {
                 clock.run(10000000);
-                var pc = cpu.getState().PC;
-                if (pc >= PASSED + 3 && pc < PASSED + 6) {
+                var debugCartridge = ram.read(DEBUG_CARTRIDGE);
+                if (debugCartridge == 0x00) {
                     result = "Passed";
-                } else if (pc >= FAILED && pc < FAILED + 3) {
+                } else if (debugCartridge != NO_RESULT) {
                     result = "Failed";
                 }
             }

@@ -8,6 +8,7 @@ import de.heiden.jem.components.clock.serialthreads.SerialClock;
 import de.heiden.jem.models.c64.components.memory.RAM;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.serialthreads.agent.Transform;
 import org.slf4j.Logger;
@@ -690,8 +691,9 @@ class CPU6510Test {
     //
     //
 
-    public static class TXA_Test extends ValueTest {
-        public TXA_Test() {
+    @Nested
+    class TXA_Test extends ValueTest {
+        TXA_Test() {
             super(0x8A);
         }
 
@@ -707,11 +709,14 @@ class CPU6510Test {
         }
     }
 
-    public static abstract class ValueTest extends CPU6510Test {
-        private int opcode;
-        private int[] arguments;
+    /**
+     * Base class for nested tests. They use the setup of the enclosing test.
+     */
+    abstract class ValueTest {
+        private final int opcode;
+        private final int[] arguments;
 
-        public ValueTest(int opcode, int... arguments) {
+        ValueTest(int opcode, int... arguments) {
             this.opcode = opcode;
             this.arguments = arguments;
         }

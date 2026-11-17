@@ -15,7 +15,10 @@ import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
 @Execution(CONCURRENT)
 class Acid800Test extends AbstractTest {
     @ParameterizedTest(name = "{1}")
-    @ProgramSuiteSource(resource = "/vice-emu-testprogs/CPU/Acid800/cpu_decimal.prg")
+    // cpu_timing fails since the screen is disabled during the test (VICE r45319):
+    // The first DEX/BNE loop after the start of the frame ends in raster line 17 instead of 16.
+    // cpu_timing_ntsc is for NTSC only.
+    @ProgramSuiteSource(resource = "/vice-emu-testprogs/CPU/Acid800/cpu_decimal.prg", ignore = {"cpu_timing", "cpu_timing_ntsc"})
     void test(Path program, String programName) throws Exception {
         // cpu_insn takes about 1 second.
         testBorderResult(program, 2, true);

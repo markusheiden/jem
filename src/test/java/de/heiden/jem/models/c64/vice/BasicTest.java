@@ -15,7 +15,8 @@ import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
  */
 @Execution(CONCURRENT)
 class BasicTest extends AbstractTest {
-    @ProgramSuiteSource(resource = "/vice-emu-testprogs/C64/autostart/basic/basictest.prg")
+    // batest just prints the device number in $BA, it has no result.
+    @ProgramSuiteSource(resource = "/vice-emu-testprogs/C64/autostart/basic/basictest.prg", ignore = "batest")
     @ParameterizedTest(name = "{1}")
     void test(Path program, String programName) throws Exception {
         testBorderResult(program, 1, false);

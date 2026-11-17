@@ -15,7 +15,8 @@ import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
  */
 @Execution(CONCURRENT)
 class VicTest extends AbstractTest {
-    // spritegap2 and spritegap3 move all pairs of sprites over all X coordinates. That takes 290 seconds.
+    // spritegap/spritegap2.prg and spritegap/spritegap3.prg fail randomly since their VIC init enables all sprites
+    // for a frame (VICE r36660): 3 of 7 runs failed, the old versions passed 5 of 5 runs.
     @ParameterizedTest
     @Timeout(180)
     @ValueSource(strings = {
@@ -24,8 +25,6 @@ class VicTest extends AbstractTest {
             "split-tests/bascan/bascan.prg",
             "split-tests/spritescan/spritescan.prg",
             "spritecollisions/sprite-sprite.prg",
-            "spritegap/spritegap2.prg",
-            "spritegap/spritegap3.prg",
             "spritesteal/spritesteal.prg",
             "spritex/testsuite.prg",
             "spritey/spritey.prg",
