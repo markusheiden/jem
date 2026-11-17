@@ -1,5 +1,6 @@
 package de.heiden.jem.models.c64.components;
 
+import de.heiden.jem.components.bus.BusDevice;
 import de.heiden.jem.components.clock.Clock;
 import de.heiden.jem.components.clock.RealTimeSlowDown;
 import de.heiden.jem.models.c64.components.cia.AbstractCIA;
@@ -16,6 +17,7 @@ import de.heiden.jem.models.c64.components.memory.ColorRAM;
 import de.heiden.jem.models.c64.components.memory.RAM;
 import de.heiden.jem.models.c64.components.memory.ROMLoader;
 import de.heiden.jem.models.c64.components.patch.LoadFromDirectory;
+import de.heiden.jem.models.c64.components.sid.SIDStub;
 import de.heiden.jem.models.c64.components.vic.VIC;
 import de.heiden.jem.models.c64.components.vic.VICBus;
 import org.slf4j.Logger;
@@ -75,6 +77,7 @@ public class C64 {
 
     /**
      * Slow down to real time, measures the time needed for each simulated second.
+     * Null, if the emulation runs as fast as possible.
      */
     private final RealTimeSlowDown realTimeSlowDown;
 
@@ -118,7 +121,7 @@ public class C64 {
         joystick2 = new Joystick(clock, cia1.portA());
 
         cpu = clock.addClockedComponent(Clock.CPU, builder.debug ? new CPU6510Debugger() : new CPU6510());
-        cpuBus = new C64Bus(ram, basic, vic, colorRam, cia1, cia2, charset, kernel, vicBus.openBus());
+        cpuBus = new C64Bus(ram, basic, vic, builder.sid, colorRam, cia1, cia2, charset, kernel, vicBus.openBus());
         cpuBus.connect(cpu.getPort());
         cpu.connect(cpuBus);
         cpu.getIRQ().connect(cia1.getIRQ());
@@ -130,25 +133,26 @@ public class C64 {
         keyboardBuffer = new KeyboardBuffer(clock, cpuBus);
 
         // real time measurement
-        realTimeSlowDown = new RealTimeSlowDown(clock, videoSystem.cpuFrequency(), 100);
+        realTimeSlowDown = builder.realTime ? new RealTimeSlowDown(clock, videoSystem.cpuFrequency(), 100) : null;
 
-        init();
+        init(ram, colorRam);
     }
 
     /**
      * Additional init for test purposes.
      */
-    private void init() throws IOException {
+    private void init(RAM ram, ColorRAM colorRam) throws IOException {
         // Init RAM with 0x02 (crash) to easier detect wrong behaviour.
+        // Not via the bus, because that would write to the registers of the I/O chips too.
         // TODO 2010-06-22 mh: realistic init?
         for (var addr = 0; addr < 0x10000; addr++) {
-            cpuBus.write(0x02, addr);
+            ram.write(0x02, addr);
         }
 
         // Fill the screen with the complete character set.
         for (var i = 0; i < 0x400; i++) {
-            cpuBus.write(i & 0xFF, 0x400 + i);
-            cpuBus.write(i & 0x0F, 0xD800 + i);
+            ram.write(i & 0xFF, 0x400 + i);
+            colorRam.write(i & 0x0F, i);
         }
 
         // Load files from the disk directory, e.g. LOAD"GAME",8,1.
@@ -238,7 +242,15 @@ public class C64 {
     }
 
     /**
+     * Clock.
+     */
+    public Clock getClock() {
+        return clock;
+    }
+
+    /**
      * Slow down to real time, measures the time needed for each simulated second.
+     * Null, if the emulation runs as fast as possible.
      */
     public RealTimeSlowDown getRealTimeSlowDown() {
         return realTimeSlowDown;
@@ -272,6 +284,16 @@ public class C64 {
          * Frequency of the power line in Hz, 0 for the frequency of the video system.
          */
         private int powerLineFrequency = 0;
+
+        /**
+         * Device in the SID area $D400-$D7FF.
+         */
+        private BusDevice sid = new SIDStub();
+
+        /**
+         * Slow down the emulation to real time?
+         */
+        private boolean realTime = true;
 
         /**
          * Constructor.
@@ -328,6 +350,22 @@ public class C64 {
         public Builder powerLineFrequency(int powerLineFrequency) {
             assert powerLineFrequency > 0 : "powerLineFrequency > 0";
             this.powerLineFrequency = powerLineFrequency;
+            return this;
+        }
+
+        /**
+         * Device in the SID area $D400-$D7FF, e.g. a debug cartridge. Default: SID stub.
+         */
+        public Builder sid(BusDevice sid) {
+            this.sid = sid;
+            return this;
+        }
+
+        /**
+         * Slow down the emulation to real time? Default: yes.
+         */
+        public Builder realTime(boolean realTime) {
+            this.realTime = realTime;
             return this;
         }
 

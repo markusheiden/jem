@@ -4,16 +4,11 @@ import de.heiden.jem.components.bus.BusDevice;
 import de.heiden.jem.components.clock.Clock;
 import de.heiden.jem.components.clock.ClockEvent;
 import de.heiden.jem.components.clock.serialthreads.SerialClock;
-import de.heiden.jem.models.c64.components.cia.CIA6526;
-import de.heiden.jem.models.c64.components.cia.CIA6526A;
 import de.heiden.jem.models.c64.components.cpu.C64Bus;
 import de.heiden.jem.models.c64.components.cpu.CPU6510Debugger;
 import de.heiden.jem.models.c64.components.cpu.Patch;
 import de.heiden.jem.models.c64.components.keyboard.Keyboard;
 import de.heiden.jem.models.c64.components.keyboard.KeyboardBuffer;
-import de.heiden.jem.models.c64.components.memory.ColorRAM;
-import de.heiden.jem.models.c64.components.memory.RAM;
-import de.heiden.jem.models.c64.components.memory.ROMLoader;
 import de.heiden.jem.models.c64.components.patch.BrkDetector;
 import de.heiden.jem.models.c64.components.patch.ProgramEndDetector;
 import de.heiden.jem.models.c64.components.patch.Return;
@@ -22,7 +17,6 @@ import de.heiden.jem.models.c64.components.patch.SystemOut;
 import de.heiden.jem.models.c64.components.sid.SIDStub;
 import de.heiden.jem.models.c64.components.vic.AbstractDisplayUnit;
 import de.heiden.jem.models.c64.components.vic.VIC;
-import de.heiden.jem.models.c64.components.vic.VICBus;
 import de.heiden.jem.models.c64.gui.swing.emulator.KeyListener;
 import de.heiden.jem.models.c64.gui.swing.emulator.PCMapping;
 
@@ -111,41 +105,20 @@ public class TestC64 {
      */
     public TestC64(boolean newCias, VideoSystem videoSystem) throws Exception {
         clock = new SerialClock();
-
-        var ram = new RAM(0x10000);
-        var colorRam = new ColorRAM(0x400);
-        var basic = ROMLoader.basic(ROMLoader.DEFAULT_BASIC);
-        var kernel = ROMLoader.kernel(ROMLoader.DEFAULT_KERNEL);
-        var charset = ROMLoader.character(ROMLoader.DEFAULT_CHARACTER);
-
-        var todInput = videoSystem.todInput();
-        var cia1 = clock.addClockedComponent(Clock.CIA1, newCias ? new CIA6526A(todInput) : new CIA6526(todInput));
-        var cia2 = clock.addClockedComponent(Clock.CIA2, newCias ? new CIA6526A(todInput) : new CIA6526(todInput));
-
-        var vicBus = new VICBus(cia2.portA(), ram, charset);
-        vic = videoSystem.createVic(clock, vicBus, colorRam);
-        clock.addClockedComponent(Clock.VIC_DISPLAY, vic.displayUnit);
-
-        keyboard = new Keyboard(clock, cia1.portA(), cia1.portB());
-
-        cpu = clock.addClockedComponent(Clock.CPU, new CPU6510Debugger());
         debugCartridge = new DebugCartridge(new SIDStub());
-        cpuBus = new C64Bus(ram, basic, vic, debugCartridge, colorRam, cia1, cia2, charset, kernel, vicBus.openBus());
-        cpuBus.connect(cpu.getPort());
-        cpu.connect(cpuBus);
-        cpu.getIRQ().connect(cia1.getIRQ());
-        cpu.getIRQ().connect(vic.getIRQ());
-        cpu.getNMI().connect(cia2.getIRQ());
-        cpu.getNMI().connect(keyboard.getNMI());
-        cpu.getRDY().connect(vic.getBA());
+        var c64 = C64.builder(clock)
+                .videoSystem(videoSystem)
+                .newCias(newCias)
+                .debug(true)
+                .sid(debugCartridge)
+                .realTime(false)
+                .build();
 
-        keyboardBuffer = new KeyboardBuffer(clock, cpuBus);
-
-        // init RAM with 0x02 (crash) to easier detect wrong behaviour.
-        // Not via the bus, because that would write to the registers of the I/O chips too.
-        for (var addr = 0; addr < 0x10000; addr++) {
-            ram.write(0x02, addr);
-        }
+        cpuBus = c64.getCpuBus();
+        keyboardBuffer = c64.getKeyboardBuffer();
+        cpu = (CPU6510Debugger) c64.getCpu();
+        keyboard = c64.getKeyboard();
+        vic = c64.getVIC();
 
         //
         // ROM patches
