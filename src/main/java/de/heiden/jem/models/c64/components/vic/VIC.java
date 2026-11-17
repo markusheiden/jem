@@ -29,6 +29,7 @@ public abstract class VIC implements BusDevice {
     protected final int lastVBlank;
 
     protected final int cyclesPerLine;
+    protected final int firstX;
     protected final int firstX_25 = 24;
     protected final int firstX_24 = 31;
     protected final int lastX_25 = 343 + 1;
@@ -153,13 +154,15 @@ public abstract class VIC implements BusDevice {
      * @param lastVisibleX
      *         last x value
      * @param lastX
+     * @param firstX
+     *         X coordinate of the first pixel of cycle 1
      * @require clock != null
      * @require bus != null
      * @require colorRam != null
      */
     public VIC(Clock clock, VICBus bus, ColorRAM colorRam,
             int cyclesPerLine, int linesPerScreen, int firstVBlank, int lastVBlank,
-            int firstVisibleX, int lastVisibleX, int lastX) {
+            int firstVisibleX, int lastVisibleX, int lastX, int firstX) {
         assert clock != null : "clock != null";
         assert bus != null : "bus != null";
         assert colorRam != null : "colorRam != null";
@@ -175,6 +178,7 @@ public abstract class VIC implements BusDevice {
         this.firstVisibleX = (firstVisibleX + 0x007) & 0x01F8;
         this.lastVisibleX = lastVisibleX & 0x01F8;
         this.lastX = lastX;
+        this.firstX = firstX;
 
         // address mask
         mask = 0x3F;
@@ -262,8 +266,8 @@ public abstract class VIC implements BusDevice {
     /**
      * Is BA low in the given cycle?
      * BA is low in cycles 12-54 of bad lines, because the VIC reads the video matrix,
-     * and from 3 cycles before up to the 2 cycles in which the VIC reads the data of a sprite with DMA on (PAL 6569):
-     * Sprites 0-2 in cycles 58-63, sprites 3-7 in cycles 1-10 of the next line.
+     * and from 3 cycles before up to the 2 cycles in which the VIC reads the data of a sprite with DMA on,
+     * see {@link #spriteAccessCycle(int)}.
      *
      * @param raster
      *         raster line
@@ -279,12 +283,9 @@ public abstract class VIC implements BusDevice {
 
         for (var i = 0; i < 8; i++) {
             if (sprites[i].dma) {
+                // The 5 cycles may span the end of the line.
                 var first = spriteAccessCycle(i);
-                if (cycle >= first - 3 && cycle <= first + 1) {
-                    return true;
-                }
-                // The 3 cycles before the first cycle may be at the end of the previous line.
-                if (cycle >= cyclesPerLine + first - 3) {
+                if ((cycle - first + 3 + cyclesPerLine) % cyclesPerLine <= 4) {
                     return true;
                 }
             }
@@ -293,11 +294,39 @@ public abstract class VIC implements BusDevice {
     }
 
     /**
-     * First of the 2 cycles in which the VIC reads the pointer and the data of a sprite (PAL 6569).
+     * First of the 2 cycles in which the VIC reads the pointer and the data of a sprite.
+     * The sprites are read one after another at the end of a line and at the start of the next line:
+     * Sprite 0 from cycle 58 of the PAL 6569 and from cycle 59 of the NTSC 6567s.
+     * So sprite 3 is read from cycle 1 (6569, 6567R56A) or from the last cycle 65 of the line (6567R8).
      */
-    static int spriteAccessCycle(int number) {
-        return number < 3 ? 58 + 2 * number : 1 + 2 * (number - 3);
+    final int spriteAccessCycle(int number) {
+        var cycle = (cyclesPerLine == 63 ? 58 : 59) + 2 * number;
+        return cycle > cyclesPerLine ? cycle - cyclesPerLine : cycle;
     }
+
+    /**
+     * X coordinate of the first pixel of a cycle.
+     * The X coordinates of the cycles 13 and up are the same for all VICs.
+     * The 6567R8 has 8 pixels more per line than X coordinates, it repeats the X coordinates of cycle 62 in cycle 63.
+     *
+     * @param cycle
+     *         cycle, starting with 1. Cycles below 1 are cycles of the previous line.
+     */
+    final int x(int cycle) {
+        if (cycle < 1) {
+            cycle += cyclesPerLine;
+        }
+        var x = firstX + (cycle - 1) * 8;
+        if (cycle > REPEATED_X_CYCLE) {
+            x -= cyclesPerLine * 8 - lastX;
+        }
+        return x % lastX;
+    }
+
+    /**
+     * Cycle, whose X coordinates are repeated in the next cycle, if a line has more pixels than X coordinates.
+     */
+    private static final int REPEATED_X_CYCLE = 62;
 
     /**
      * Execute the sprite sequencer for a cycle of the current raster line, as described by Christian Bauer:
@@ -375,7 +404,7 @@ public abstract class VIC implements BusDevice {
                 sprite.pointer = bus.read(baseCharacterMode + 0x03F8 + i);
                 idle = false;
             }
-            if (cycle != access + 1) {
+            if (cycle != access % cyclesPerLine + 1) {
                 continue;
             }
             sprite.armed = sprite.dma;

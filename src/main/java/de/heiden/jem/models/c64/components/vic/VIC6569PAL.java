@@ -22,7 +22,7 @@ public class VIC6569PAL extends VIC {
      */
     public VIC6569PAL(Clock clock, VICBus bus, ColorRAM colorRam) {
         super(clock, bus, colorRam,
-                63, 312, 300, 15, 480, 380, 504);
+                63, 312, 300, 15, 480, 380, 504, 0x194);
 
         // 6569
         // cyclesPerLine = 63;

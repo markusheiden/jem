@@ -22,7 +22,7 @@ public class VIC6567R8NTSC extends VIC {
      */
     public VIC6567R8NTSC(Clock clock, VICBus bus, ColorRAM colorRam) {
         super(clock, bus, colorRam,
-                65, 263, 13, 40, 489, 396, 512);
+                65, 263, 13, 40, 489, 396, 512, 0x19C);
 
         // cyclesPerLine = 65;
         // linesPerScreen = 263;

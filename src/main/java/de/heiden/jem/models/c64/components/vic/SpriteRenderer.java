@@ -68,16 +68,14 @@ class SpriteRenderer {
      *         X coordinate of the first pixel
      * @param count
      *         number of pixels
-     * @param firstX
-     *         X coordinate of the first pixel of a line
      */
-    void trigger(int x, int count, int firstX) {
+    void trigger(int x, int count) {
         var lastX = vic.lastX;
         for (var sprite : vic.sprites) {
             if (sprite.armed && sprite.display && (sprite.x - x + lastX) % lastX < count && sprite.x < lastX) {
                 sprite.armed = false;
 
-                var access = firstX + (VIC.spriteAccessCycle(sprite.number) - 1) * 8 - 1;
+                var access = vic.x(vic.spriteAccessCycle(sprite.number)) + lastX - 1;
                 if ((sprite.x - access + 2 * lastX) % lastX >= 12) {
                     // The display stops, when the data is read: The last pixel is displayed until then.
                     remaining = (access - sprite.x + 2 * lastX) % lastX;

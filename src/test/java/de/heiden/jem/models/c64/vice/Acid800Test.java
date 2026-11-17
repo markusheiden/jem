@@ -15,9 +15,9 @@ import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
 @Execution(CONCURRENT)
 class Acid800Test extends AbstractTest {
     @ParameterizedTest(name = "{1}")
-    // cpu_timing_ntsc is for NTSC only.
-    @ProgramSuiteSource(resource = "/vice-emu-testprogs/CPU/Acid800/cpu_decimal.prg", ignore = "cpu_timing_ntsc")
+    @ProgramSuiteSource(resource = "/vice-emu-testprogs/CPU/Acid800/cpu_decimal.prg")
     void test(Path program, String programName) throws Exception {
+        videoSystem = videoSystemOf(programName);
         if ("cpu_timing".equals(programName)) {
             // cpu_timing waits for the start of the frame by polling every 8 cycles, so its result depends on its start:
             // Started at the regular position of the raster beam, its first loop ends just in the cycle,

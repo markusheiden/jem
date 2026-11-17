@@ -2,9 +2,9 @@ package de.heiden.jem.models.c64.vice;
 
 import de.heiden.jem.models.c64.AbstractTest;
 import de.heiden.jem.models.c64.ProgramSuiteSource;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.nio.file.Path;
 
@@ -76,7 +76,7 @@ class CiaTest extends AbstractTest {
         testBorderResult(program, 120, false);
     }
 
-    // stability is tested by todStability(). stability-ntsc is for NTSC only.
+    // stability and stability-ntsc are tested by todStability().
     @ProgramSuiteSource(resource = "/vice-emu-testprogs/CIA/tod/alarm.prg", ignore = {"stability", "stability-ntsc"})
     @ParameterizedTest(name = "{1}")
     void tod(Path program, String programName) throws Exception {
@@ -87,8 +87,10 @@ class CiaTest extends AbstractTest {
      * stability measures the time between the ticks of the TOD for about 30 seconds.
      * It shows its progress in the border, so just the debug cartridge tells the result.
      */
-    @Test
-    void todStability() throws Exception {
-        testDebugCartridgeResult(path("/vice-emu-testprogs/CIA/tod/stability.prg"), 50);
+    @ParameterizedTest
+    @ValueSource(strings = {"stability", "stability-ntsc"})
+    void todStability(String programName) throws Exception {
+        videoSystem = videoSystemOf(programName);
+        testDebugCartridgeResult(path("/vice-emu-testprogs/CIA/tod/" + programName + ".prg"), 50);
     }
 }

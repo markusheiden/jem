@@ -22,7 +22,7 @@ public class VIC6567R56ANTSC extends VIC {
      */
     public VIC6567R56ANTSC(Clock clock, VICBus bus, ColorRAM colorRam) {
         super(clock, bus, colorRam,
-                64, 262, 13, 40, 488, 388, 512);
+                64, 262, 13, 40, 488, 388, 512, 0x19C);
 
         // 6569R56A
         // cyclesPerLine = 64;

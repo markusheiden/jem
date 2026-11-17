@@ -21,7 +21,7 @@ import de.heiden.jem.models.c64.components.patch.StopAtSystemIn;
 import de.heiden.jem.models.c64.components.patch.SystemOut;
 import de.heiden.jem.models.c64.components.sid.SIDStub;
 import de.heiden.jem.models.c64.components.vic.AbstractDisplayUnit;
-import de.heiden.jem.models.c64.components.vic.VIC6569PAL;
+import de.heiden.jem.models.c64.components.vic.VIC;
 import de.heiden.jem.models.c64.components.vic.VICBus;
 import de.heiden.jem.models.c64.gui.swing.emulator.KeyListener;
 import de.heiden.jem.models.c64.gui.swing.emulator.PCMapping;
@@ -62,7 +62,7 @@ public class TestC64 {
     /**
      * VIC.
      */
-    private final VIC6569PAL vic;
+    private final VIC vic;
 
     /**
      * Debug cartridge.
@@ -98,6 +98,18 @@ public class TestC64 {
      *         Use new CIAs (6526A) instead of old CIAs (6526)?
      */
     public TestC64(boolean newCias) throws Exception {
+        this(newCias, VideoSystem.PAL);
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param newCias
+     *         Use new CIAs (6526A) instead of old CIAs (6526)?
+     * @param videoSystem
+     *         video system
+     */
+    public TestC64(boolean newCias, VideoSystem videoSystem) throws Exception {
         clock = new SerialClock();
 
         var ram = new RAM(0x10000);
@@ -106,11 +118,12 @@ public class TestC64 {
         var kernel = ROMLoader.kernel(ROMLoader.DEFAULT_KERNEL);
         var charset = ROMLoader.character(ROMLoader.DEFAULT_CHARACTER);
 
-        var cia1 = clock.addClockedComponent(Clock.CIA1, newCias ? new CIA6526A() : new CIA6526());
-        var cia2 = clock.addClockedComponent(Clock.CIA2, newCias ? new CIA6526A() : new CIA6526());
+        var todInput = videoSystem.todInput();
+        var cia1 = clock.addClockedComponent(Clock.CIA1, newCias ? new CIA6526A(todInput) : new CIA6526(todInput));
+        var cia2 = clock.addClockedComponent(Clock.CIA2, newCias ? new CIA6526A(todInput) : new CIA6526(todInput));
 
         var vicBus = new VICBus(cia2.portA(), ram, charset);
-        vic = new VIC6569PAL(clock, vicBus, colorRam);
+        vic = videoSystem.createVic(clock, vicBus, colorRam);
         clock.addClockedComponent(Clock.VIC_DISPLAY, vic.displayUnit);
 
         keyboard = new Keyboard(clock, cia1.portA(), cia1.portB());

@@ -4,10 +4,11 @@ import de.heiden.jem.models.c64.AbstractTest;
 import de.heiden.jem.models.c64.ProgramSuiteSource;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 
 import static de.heiden.c64dt.bytes.HexUtil.hexByte;
 import static de.heiden.c64dt.bytes.HexUtil.hexWord;
@@ -30,13 +31,17 @@ class CiaCountsTest extends AbstractTest {
      */
     private static final int DATA = 0x4000;
 
-    // NTSC is not implemented yet.
-    // cia-b-counts-a has no result, see data().
-    @ProgramSuiteSource(resource = DIRECTORY + "cia-b-counts-a.prg", filter = "^(?!.*ntsc).*$",
-            ignore = "cia-b-counts-a")
+    /**
+     * Length of the data created by cia-b-counts-a.
+     */
+    private static final int DATA_LENGTH = 0x1200;
+
+    // cia-b-counts-a and cia-b-counts-a_ntsc have no result, see data().
+    @ProgramSuiteSource(resource = DIRECTORY + "cia-b-counts-a.prg", ignore = {"cia-b-counts-a", "cia-b-counts-a_ntsc"})
     @ParameterizedTest(name = "{1}")
     void test(Path program, String programName) throws Exception {
         newCias = programName.contains("-new");
+        videoSystem = videoSystemOf(programName);
         testBorderResult(program, 60, false);
     }
 
@@ -44,17 +49,24 @@ class CiaCountsTest extends AbstractTest {
      * cia-b-counts-a has no result, it creates the data the other tests compare against.
      * So its data is compared with the dumps of the real CIAs.
      */
-    @ParameterizedTest(name = "cia-b-counts-a, new CIAs: {0}")
-    @ValueSource(booleans = {false, true})
-    void data(boolean newCias) throws Exception {
+    @ParameterizedTest(name = "{0}, new CIAs: {1}")
+    @CsvSource({
+            "cia-b-counts-a, false, dump-oldcia.bin",
+            "cia-b-counts-a, true, dump-newcia.bin",
+            "cia-b-counts-a_ntsc, false, dump-oldcia-ntsc.bin",
+            "cia-b-counts-a_ntsc, true, dump-newcia-ntsc.bin",
+    })
+    void data(String programName, boolean newCias, String dump) throws Exception {
         this.newCias = newCias;
-        loadAndRun(path(DIRECTORY + "cia-b-counts-a.prg"));
+        videoSystem = videoSystemOf(programName);
+        loadAndRun(path(DIRECTORY + programName + ".prg"));
 
         // The program runs in the interrupt after it ended.
         assertSame(programEnd, waitSecondsFor(5, programEnd));
         assertSame(debugCartridgePassed, waitSecondsFor(60, debugCartridgePassed));
 
-        var expected = Files.readAllBytes(path(DIRECTORY + (newCias ? "dump-newcia.bin" : "dump-oldcia.bin")));
+        // The NTSC dumps contain some bytes after the data.
+        var expected = Arrays.copyOf(Files.readAllBytes(path(DIRECTORY + dump)), DATA_LENGTH);
         var actual = new byte[expected.length];
         for (var i = 0; i < actual.length; i++) {
             actual[i] = (byte) c64.getBus().read(DATA + i);

@@ -5,6 +5,7 @@ import de.heiden.c64dt.assembler.Disassembler;
 import de.heiden.c64dt.assembler.Dumper;
 import de.heiden.jem.models.c64.AbstractTest.TestWatcher;
 import de.heiden.jem.models.c64.components.TestC64;
+import de.heiden.jem.models.c64.components.VideoSystem;
 import de.heiden.jem.models.c64.components.patch.LoadFile;
 import de.heiden.jem.models.c64.components.patch.LoadFromDirectory;
 import org.junit.jupiter.api.AfterEach;
@@ -85,6 +86,11 @@ public abstract class AbstractTest {
     protected int runDelay = 0;
 
     /**
+     * Video system of the test C64.
+     */
+    protected VideoSystem videoSystem = VideoSystem.PAL;
+
+    /**
      * Transformed test C64.
      */
     protected TestC64 c64;
@@ -120,13 +126,22 @@ public abstract class AbstractTest {
     private byte[] bytes;
 
     /**
+     * Video system a test program is made for, by the naming convention of the VICE test programs:
+     * "ntscold" for the old NTSC VIC 6567R56A, "ntsc" for the NTSC VIC 6567R8, PAL otherwise.
+     */
+    protected static VideoSystem videoSystemOf(String programName) {
+        return programName.contains("ntscold") ? VideoSystem.NTSC_OLD :
+                programName.contains("ntsc") ? VideoSystem.NTSC : VideoSystem.PAL;
+    }
+
+    /**
      * Create test C64.
      *
      * @param threadName
      *         Name C64 thread.
      */
     protected void createC64(String threadName) throws Exception {
-        c64 = new TestC64(newCias);
+        c64 = new TestC64(newCias, videoSystem);
         c64.setSystemOut(console);
         systemIn = c64.getSystemIn();
 

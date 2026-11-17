@@ -18,11 +18,6 @@ import java.util.Arrays;
  */
 public class DisplayUnit extends AbstractDisplayUnit {
     /**
-     * X coordinate of the first pixel of cycle 1 (PAL 6569).
-     */
-    private static final int FIRST_X = 0x194;
-
-    /**
      * Number of pixels into a cycle, after which a write of the CPU to the X coordinate of a sprite takes effect.
      */
     private static final int SPRITE_X_DELAY = 4;
@@ -161,8 +156,8 @@ public class DisplayUnit extends AbstractDisplayUnit {
     DisplayUnit(VIC vic) {
         super(vic,
                 0,
-                vic.lastX - vic.firstVisibleX + vic.lastVisibleX, vic.firstVBlank - vic.lastVBlank,
-                vic.lastX - vic.firstVisibleX + vic.lastVisibleX, vic.firstVBlank - vic.lastVBlank);
+                vic.lastX - vic.firstVisibleX + vic.lastVisibleX, visibleLines(vic),
+                vic.lastX - vic.firstVisibleX + vic.lastVisibleX, visibleLines(vic));
 
         var invalidMode = new InvalidModeLineRenderer();
         lineRenderers = new LineRenderer[]{
@@ -171,6 +166,13 @@ public class DisplayUnit extends AbstractDisplayUnit {
                 new ExtendedColorTextLineRenderer(vic), invalidMode,
                 invalidMode, invalidMode};
         spriteRenderer = new SpriteRenderer(vic, X_COORDINATES);
+    }
+
+    /**
+     * Number of raster lines outside of the vertical blanking. It starts at the end of the frame of the NTSC VICs.
+     */
+    private static int visibleLines(VIC vic) {
+        return (vic.firstVBlank - vic.lastVBlank + vic.linesPerScreen) % vic.linesPerScreen;
     }
 
     @Override
@@ -252,12 +254,12 @@ public class DisplayUnit extends AbstractDisplayUnit {
         }
 
         // Sprites reached by the raster beam since the last write of the CPU, before and after the sprite sequencer.
-        var beamX = (FIRST_X + (cycle - 1) * 8) % vic.lastX;
-        spriteRenderer.trigger((beamX - 8 + SPRITE_X_DELAY + vic.lastX) % vic.lastX, 8 - SPRITE_X_DELAY, FIRST_X);
+        var beamX = vic.x(cycle);
+        spriteRenderer.trigger((vic.x(cycle - 1) + SPRITE_X_DELAY) % vic.lastX, 8 - SPRITE_X_DELAY);
 
         vic.spriteCycle(raster, cycle);
         vic.updateBA(cycle);
-        spriteRenderer.trigger(beamX, SPRITE_X_DELAY, FIRST_X);
+        spriteRenderer.trigger(beamX, SPRITE_X_DELAY);
         var badLine = vic.isBadLine();
         if (badLine) {
             displayState = true;
@@ -280,8 +282,8 @@ public class DisplayUnit extends AbstractDisplayUnit {
         } else if (cycle == 56) {
             // Right of the last column.
             var x = vic.lastX_25 + (vic.regControl2 & VIC.CONTROL2_SCROLL_X);
-            Arrays.fill(graphics, x, FIRST_X, background());
-            Arrays.fill(foreground, x, FIRST_X, false);
+            Arrays.fill(graphics, x, vic.firstX, background());
+            Arrays.fill(foreground, x, vic.firstX, false);
         }
 
         if (cycle == 58) {
@@ -308,7 +310,7 @@ public class DisplayUnit extends AbstractDisplayUnit {
     private void detectCollisions(int cycle) {
         var sprites = 0;
         var background = 0;
-        var x = (FIRST_X + (cycle - 1) * 8 - COLLISION_DELAY + vic.lastX) % vic.lastX;
+        var x = (vic.x(cycle) - COLLISION_DELAY + vic.lastX) % vic.lastX;
         for (var i = 0; i < 8; i++) {
             var mask = spriteRenderer.sprites[x] & 0xFF;
             if (mask != 0) {
@@ -329,7 +331,7 @@ public class DisplayUnit extends AbstractDisplayUnit {
         }
 
         // All pixels up to the cycle before the last cycle have been output.
-        spriteRenderer.clear((FIRST_X + (cycle - 3) * 8 + vic.lastX) % vic.lastX, 8);
+        spriteRenderer.clear(vic.x(cycle - 2), 8);
     }
 
     /**
@@ -345,10 +347,10 @@ public class DisplayUnit extends AbstractDisplayUnit {
         }
 
         // Changes are aligned with the pixels of a column with a horizontal scroll of 1, starting in the cycle before.
-        var changeX = (FIRST_X + (cycle - 1) * 8 - 3 + vic.lastX) % vic.lastX;
+        var changeX = (vic.x(cycle) - 3 + vic.lastX) % vic.lastX;
 
         // Left of the first column.
-        if (changeX >= FIRST_X && cycle > 1) {
+        if (changeX >= vic.firstX && cycle > 1) {
             Arrays.fill(graphics, changeX, vic.lastX, background());
             changeX = 0;
         }
@@ -371,8 +373,8 @@ public class DisplayUnit extends AbstractDisplayUnit {
         if (cycle >= 56 || cycle == 1) {
             // Right of the last column.
             var x = Math.max(changeX, vic.lastX_25 + (vic.regControl2 & VIC.CONTROL2_SCROLL_X));
-            if (x < FIRST_X) {
-                Arrays.fill(graphics, x, FIRST_X, background());
+            if (x < vic.firstX) {
+                Arrays.fill(graphics, x, vic.firstX, background());
             }
         }
     }
@@ -431,12 +433,12 @@ public class DisplayUnit extends AbstractDisplayUnit {
      * Output the 8 pixels of a cycle: Border, sprites or graphics.
      */
     private void output(int raster, int cycle) {
-        var row = raster - vic.lastVBlank;
-        var visible = row >= 0 && row < getLines();
+        var row = (raster - vic.lastVBlank + vic.linesPerScreen) % vic.linesPerScreen;
+        var visible = row < getLines();
         var lineLength = getLineLength();
         var lineStart = row * lineLength;
 
-        var x = (FIRST_X + (cycle - 1) * 8) % vic.lastX;
+        var x = vic.x(cycle);
         for (var i = 0; i < 8; i++) {
             var index = (x - vic.firstVisibleX + vic.lastX) % vic.lastX;
             if (visible && index < lineLength) {
@@ -455,7 +457,7 @@ public class DisplayUnit extends AbstractDisplayUnit {
      * e.g. switching to 38 columns in cycle 56 opens the side border.
      */
     private void updateBorder(int raster, int cycle) {
-        var x = (FIRST_X + (cycle - 1) * 8) % vic.lastX;
+        var x = vic.x(cycle);
         for (var i = 0; i < 8; i++) {
             updateMainBorder(raster, x);
             border[x] = mainBorder ? vic.regExteriorColor : NO_BORDER;

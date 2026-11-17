@@ -13,7 +13,7 @@ import de.heiden.jem.models.c64.components.memory.ColorRAM;
 import de.heiden.jem.models.c64.components.memory.RAM;
 import de.heiden.jem.models.c64.components.memory.ROMLoader;
 import de.heiden.jem.models.c64.components.patch.LoadFromDirectory;
-import de.heiden.jem.models.c64.components.vic.VIC6569PAL;
+import de.heiden.jem.models.c64.components.vic.VIC;
 import de.heiden.jem.models.c64.components.vic.VICBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,7 +68,7 @@ public class C64 {
     /**
      * VIC.
      */
-    private final VIC6569PAL vic;
+    private final VIC vic;
 
     /**
      * Slow down to real time, measures the time needed for each simulated second.
@@ -94,6 +94,20 @@ public class C64 {
      *         use debugger cpu?
      */
     public C64(Clock clock, boolean debug) throws Exception {
+        this(clock, debug, VideoSystem.selected());
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param clock
+     *         Clock.
+     * @param debug
+     *         use debugger cpu?
+     * @param videoSystem
+     *         video system
+     */
+    public C64(Clock clock, boolean debug, VideoSystem videoSystem) throws Exception {
         this.clock = clock;
 
         var ram = new RAM(0x10000);
@@ -102,11 +116,11 @@ public class C64 {
         var kernel = ROMLoader.kernel(ROMLoader.DEFAULT_KERNEL);
         var charset = ROMLoader.character(ROMLoader.DEFAULT_CHARACTER);
 
-        var cia1 = clock.addClockedComponent(Clock.CIA1, new CIA6526());
-        var cia2 = clock.addClockedComponent(Clock.CIA2, new CIA6526());
+        var cia1 = clock.addClockedComponent(Clock.CIA1, new CIA6526(videoSystem.todInput()));
+        var cia2 = clock.addClockedComponent(Clock.CIA2, new CIA6526(videoSystem.todInput()));
 
         var vicBus = new VICBus(cia2.portA(), ram, charset);
-        vic = new VIC6569PAL(clock, vicBus, colorRam);
+        vic = videoSystem.createVic(clock, vicBus, colorRam);
         clock.addClockedComponent(Clock.VIC_DISPLAY, vic.displayUnit);
 
         keyboard = new Keyboard(clock, cia1.portA(), cia1.portB());
@@ -127,8 +141,7 @@ public class C64 {
         keyboardBuffer = new KeyboardBuffer(clock, cpuBus);
 
         // real time measurement
-        // TODO 2010-03-14 mh: NTSC: 1022700 Hz
-        realTimeSlowDown = new RealTimeSlowDown(clock, 985248, 100);
+        realTimeSlowDown = new RealTimeSlowDown(clock, videoSystem.cpuFrequency(), 100);
 
         init();
     }
@@ -231,7 +244,7 @@ public class C64 {
     /**
      * VIC.
      */
-    public VIC6569PAL getVIC() {
+    public VIC getVIC() {
         return vic;
     }
 
