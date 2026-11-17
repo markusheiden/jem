@@ -1,12 +1,7 @@
 package de.heiden.jem.models.c64.components;
 
-import de.heiden.jem.components.bus.BusDevice;
 import de.heiden.jem.components.clock.Clock;
 import de.heiden.jem.components.clock.RealTimeSlowDown;
-import de.heiden.jem.models.c64.components.cia.AbstractCIA;
-import de.heiden.jem.models.c64.components.cia.CIA6526;
-import de.heiden.jem.models.c64.components.cia.CIA6526A;
-import de.heiden.jem.models.c64.components.cia.TodInput;
 import de.heiden.jem.models.c64.components.cpu.C64Bus;
 import de.heiden.jem.models.c64.components.cpu.CPU6510;
 import de.heiden.jem.models.c64.components.cpu.CPU6510Debugger;
@@ -17,7 +12,6 @@ import de.heiden.jem.models.c64.components.memory.ColorRAM;
 import de.heiden.jem.models.c64.components.memory.RAM;
 import de.heiden.jem.models.c64.components.memory.ROMLoader;
 import de.heiden.jem.models.c64.components.patch.LoadFromDirectory;
-import de.heiden.jem.models.c64.components.sid.SIDStub;
 import de.heiden.jem.models.c64.components.vic.VIC;
 import de.heiden.jem.models.c64.components.vic.VICBus;
 import org.slf4j.Logger;
@@ -87,8 +81,8 @@ public class C64 {
      * @param clock
      *         Clock.
      */
-    public static Builder builder(Clock clock) {
-        return new Builder(clock);
+    public static C64Builder builder(Clock clock) {
+        return new C64Builder(clock);
     }
 
     /**
@@ -97,7 +91,7 @@ public class C64 {
      * @param builder
      *         configuration
      */
-    private C64(Builder builder) throws Exception {
+    C64(C64Builder builder) throws Exception {
         clock = builder.clock;
         var videoSystem = builder.videoSystem;
         var todInput = videoSystem.todInput().withFrequency(builder.powerLineFrequency());
@@ -254,140 +248,5 @@ public class C64 {
      */
     public RealTimeSlowDown getRealTimeSlowDown() {
         return realTimeSlowDown;
-    }
-
-    /**
-     * Builder for a C64.
-     */
-    public static class Builder {
-        /**
-         * Main clock.
-         */
-        private final Clock clock;
-
-        /**
-         * Use debugger cpu?
-         */
-        private boolean debug = false;
-
-        /**
-         * Video system.
-         */
-        private VideoSystem videoSystem = VideoSystem.PAL;
-
-        /**
-         * Use new CIAs (6526A) instead of old CIAs (6526)?
-         */
-        private boolean newCias = false;
-
-        /**
-         * Frequency of the power line in Hz, 0 for the frequency of the video system.
-         */
-        private int powerLineFrequency = 0;
-
-        /**
-         * Device in the SID area $D400-$D7FF.
-         */
-        private BusDevice sid = new SIDStub();
-
-        /**
-         * Slow down the emulation to real time?
-         */
-        private boolean realTime = true;
-
-        /**
-         * Constructor.
-         *
-         * @param clock
-         *         Clock.
-         */
-        private Builder(Clock clock) {
-            this.clock = clock;
-        }
-
-        /**
-         * Use debugger cpu? Default: no.
-         */
-        public Builder debug(boolean debug) {
-            this.debug = debug;
-            return this;
-        }
-
-        /**
-         * Video system. Default: PAL.
-         */
-        public Builder videoSystem(VideoSystem videoSystem) {
-            this.videoSystem = videoSystem;
-            return this;
-        }
-
-        /**
-         * Use old CIAs (6526), as in the breadbin C64. Default.
-         */
-        public Builder oldCias() {
-            return newCias(false);
-        }
-
-        /**
-         * Use new CIAs (6526A), as in the C64C.
-         */
-        public Builder newCias() {
-            return newCias(true);
-        }
-
-        /**
-         * Use new CIAs (6526A) instead of old CIAs (6526)? Default: no.
-         */
-        public Builder newCias(boolean newCias) {
-            this.newCias = newCias;
-            return this;
-        }
-
-        /**
-         * Frequency of the power line in Hz, e.g. 50 or 60, which drives the TOD clocks of the CIAs.
-         * Default: The frequency of the video system, 50 Hz for PAL and 60 Hz for NTSC.
-         */
-        public Builder powerLineFrequency(int powerLineFrequency) {
-            assert powerLineFrequency > 0 : "powerLineFrequency > 0";
-            this.powerLineFrequency = powerLineFrequency;
-            return this;
-        }
-
-        /**
-         * Device in the SID area $D400-$D7FF, e.g. a debug cartridge. Default: SID stub.
-         */
-        public Builder sid(BusDevice sid) {
-            this.sid = sid;
-            return this;
-        }
-
-        /**
-         * Slow down the emulation to real time? Default: yes.
-         */
-        public Builder realTime(boolean realTime) {
-            this.realTime = realTime;
-            return this;
-        }
-
-        /**
-         * Build the C64.
-         */
-        public C64 build() throws Exception {
-            return new C64(this);
-        }
-
-        /**
-         * Frequency of the power line in Hz.
-         */
-        private int powerLineFrequency() {
-            return powerLineFrequency > 0 ? powerLineFrequency : videoSystem.todInput().frequency();
-        }
-
-        /**
-         * Create a CIA.
-         */
-        private AbstractCIA createCia(TodInput todInput) {
-            return newCias ? new CIA6526A(todInput) : new CIA6526(todInput);
-        }
     }
 }
