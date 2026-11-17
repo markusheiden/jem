@@ -96,6 +96,11 @@ tasks.startScripts {
     dependsOn(tasks.shadowJar)
 }
 
+// Pass the video system of the emulator to its JVM, e.g. ./gradlew run -Djem.video=ntsc
+tasks.withType<JavaExec>().configureEach {
+    System.getProperty("jem.video")?.let { systemProperty("jem.video", it) }
+}
+
 tasks.named<JavaExec>("run") {
     // The JavaFX plugin puts JavaFX on the module path.
     jvmArgs("--enable-native-access=javafx.graphics", "--add-exports=$continuationExports")
