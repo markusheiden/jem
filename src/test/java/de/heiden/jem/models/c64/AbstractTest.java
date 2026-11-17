@@ -140,6 +140,9 @@ public abstract class AbstractTest {
 
         // Wait for the boot to finish.
         assertSame(programEnd, waitSecondsFor(3, programEnd));
+        // The program end is detected before "READY." is printed.
+        // Wait for it, so that it is not mistaken for the "READY." after the load.
+        assertSame(ready, waitSecondsFor(1, ready));
 
         // Reset the program end flag.
         c64.hasEnded();
