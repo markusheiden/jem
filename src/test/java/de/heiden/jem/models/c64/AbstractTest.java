@@ -3,9 +3,13 @@ package de.heiden.jem.models.c64;
 import de.heiden.c64dt.assembler.CodeBuffer;
 import de.heiden.c64dt.assembler.Disassembler;
 import de.heiden.c64dt.assembler.Dumper;
+import de.heiden.jem.components.clock.Clock;
+import de.heiden.jem.components.clock.serialthreads.SerialClock;
 import de.heiden.jem.models.c64.AbstractTest.TestWatcher;
 import de.heiden.jem.models.c64.components.TestC64;
 import de.heiden.jem.models.c64.components.VideoSystem;
+import de.heiden.jem.models.c64.components.cpu.CPU6510;
+import de.heiden.jem.models.c64.components.memory.RAM;
 import de.heiden.jem.models.c64.components.patch.LoadFile;
 import de.heiden.jem.models.c64.components.patch.LoadFromDirectory;
 import org.junit.jupiter.api.AfterEach;
@@ -31,6 +35,7 @@ import static de.heiden.c64dt.bytes.HexUtil.hexWord;
 import static java.lang.Thread.sleep;
 import static java.util.Arrays.stream;
 import static org.apache.commons.lang3.StringUtils.join;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -51,6 +56,11 @@ public abstract class AbstractTest {
      * VIC border color.
      */
     protected static final int BORDER = 0xD020;
+
+    /**
+     * Debug cartridge register, test programs write their result to.
+     */
+    protected static final int DEBUG_CARTRIDGE = 0xD7FF;
 
     /**
      * Color green.
@@ -274,6 +284,58 @@ public abstract class AbstractTest {
         loadAndRun(program);
         var result = waitSecondsFor(maxSeconds, debugCartridgePassed, debugCartridgeFailed);
         assertSame(debugCartridgePassed, result, "Test failed");
+    }
+
+    /**
+     * Run a test program on just the CPU with 64 KB RAM, which is much faster than on a complete C64.
+     * For test programs, which need just the CPU and run for a long time.
+     * Writes to the I/O area end up in the RAM, so the result is read from the RAM of the debug cartridge register.
+     * The pointer to the start of BASIC points to the load address, CHROUT just returns.
+     *
+     * @param program
+     *         Path to the program file.
+     * @param start
+     *         Start address of the program.
+     * @param maxSeconds
+     *         Max seconds to run. Assumes 1 MHz clock.
+     */
+    protected static void testCpuResult(Path program, int start, int maxSeconds) throws Exception {
+        var bytes = Files.readAllBytes(program);
+
+        try (var clock = new SerialClock()) {
+            var ram = new RAM(0x10000);
+            var cpu = clock.addClockedComponent(Clock.CPU, new CPU6510());
+            cpu.connect(ram);
+
+            // Load the program.
+            var loadAddress = bytes[0] & 0xFF | (bytes[1] & 0xFF) << 8;
+            for (var i = 2; i < bytes.length; i++) {
+                ram.write(bytes[i] & 0xFF, loadAddress + i - 2);
+            }
+            write(ram, 0x002B, loadAddress & 0xFF, loadAddress >> 8);
+            // CHROUT: RTS.
+            write(ram, 0xFFD2, 0x60);
+            // Reset: Start the program.
+            write(ram, 0xFFFC, start & 0xFF, start >> 8);
+            // No result yet. The program writes $00 for passed and $FF for failed.
+            var noResult = 0x80;
+            write(ram, DEBUG_CARTRIDGE, noResult);
+
+            for (var end = maxSeconds * 1000000L; ram.read(DEBUG_CARTRIDGE) == noResult && clock.getTick() < end; ) {
+                clock.run(10000000);
+            }
+
+            assertEquals(0x00, ram.read(DEBUG_CARTRIDGE), "Debug cartridge");
+        }
+    }
+
+    /**
+     * Write bytes to the RAM.
+     */
+    private static void write(RAM ram, int addr, int... bytes) {
+        for (var i = 0; i < bytes.length; i++) {
+            ram.write(bytes[i], addr + i);
+        }
     }
 
     /**

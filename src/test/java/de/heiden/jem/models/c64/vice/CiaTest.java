@@ -93,4 +93,14 @@ class CiaTest extends AbstractTest {
         videoSystem = videoSystemOf(programName);
         testDebugCartridgeResult(path("/vice-emu-testprogs/CIA/tod/" + programName + ".prg"), 50);
     }
+
+    /**
+     * Mirrors of the registers, timer output on PB6/PB7
+     * and acknowledging the interrupts by the dummy read of STA abs,X to $DD0D.
+     */
+    @ParameterizedTest
+    @ValueSource(strings = {"mirrors/ciamirrors.prg", "pb6pb7/main.prg", "dd0drw/dd0drw.prg"})
+    void various(String program) throws Exception {
+        testDebugCartridgeResult(path("/vice-emu-testprogs/CIA/" + program), 15);
+    }
 }

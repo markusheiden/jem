@@ -53,4 +53,23 @@ class VicTest extends AbstractTest {
         waitSeconds(5);
         assertTrue(debugCartridgePassed.test(), "Test failed");
     }
+
+    /**
+     * Clearing of sprite collisions, restarting sprites and VSP (variable screen position).
+     * These tests fail:
+     * lp-trigger/test2.prg and lplatency/lplatency.prg: The light pen is not emulated.
+     * spritevssprite/spritevssprite.prg: Collisions of sprites at the same position.
+     */
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "spritecollclear/bug2135.prg",
+            "spriterestart/spriterestart.prg",
+            "vspbug/vsp_bug.prg",
+            "vsp-tester/vsp-tester.prg",
+            "vsp-tester/vsp-tester-ntsc.prg",
+    })
+    void various(String program) throws Exception {
+        videoSystem = videoSystemOf(program);
+        testDebugCartridgeResult(path("/vice-emu-testprogs/VICII/" + program), 40);
+    }
 }

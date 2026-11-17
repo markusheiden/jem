@@ -50,6 +50,25 @@ class InterruptsTest extends AbstractTest {
     }
 
     /**
+     * Interrupts during branches and interrupts, which are not acknowledged.
+     * irqnoack/ackraster is not tested, because it is expected to never end.
+     */
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "branchquirk/branchquirk-old.prg",
+            "branchquirk/branchquirk-new.prg",
+            "branchquirk/branchquirk-nmiold.prg",
+            "branchquirk/branchquirk-nminew.prg",
+            "irqnoack/ackcia.prg",
+            "irqnoack/ackcia2.prg",
+            "irqnoack/ackcia3.prg",
+    })
+    void branchesAndAcknowledge(String program) throws Exception {
+        newCias = program.contains("new");
+        testDebugCartridgeResult(path("/vice-emu-testprogs/interrupts/" + program), 20);
+    }
+
+    /**
      * Interrupts while the VIC steals cycles from the CPU.
      * Each test compares the timing of 16384 interrupts with a real C64. That takes 330 seconds.
      */
