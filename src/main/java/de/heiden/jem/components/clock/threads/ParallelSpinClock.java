@@ -9,6 +9,8 @@ import de.heiden.jem.components.clock.Tick;
 public final class ParallelSpinClock extends AbstractSynchronizedClock {
     @Override
     protected void doSynchronizedInit() {
+        requireMultipleCarriers();
+
         var components = clockedComponents();
         var ticks = new ParallelSpinTick[components.length];
         for (var i = 0; i < components.length; i++) {

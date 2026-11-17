@@ -21,7 +21,7 @@ public class C64SequentialFiberQueue {
      */
     public static void main(String[] args) {
         try {
-            // The fibers execute strictly sequentially, so one carrier thread is sufficient and much faster.
+            // The components execute strictly sequentially: Execute them and the events with the same thread.
             FiberScheduler.useSingleCarrier();
             start("--clock=" + SequentialFiberQueueClock.class.getName());
         } catch (Exception e) {

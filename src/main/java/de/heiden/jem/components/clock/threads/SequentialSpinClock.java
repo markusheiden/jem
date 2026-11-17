@@ -10,6 +10,8 @@ import static java.lang.Thread.onSpinWait;
 /**
  * Clock implemented without synchronization sequentially executing component threads by using spin locks (busy wait).
  * The thread of the last component starts the next tick, so there is no separate tick manager thread.
+ * <p>
+ * Just for reference: Busy waiting needs a processor per component, so the components are executed by multiple threads.
  */
 public final class SequentialSpinClock extends AbstractSynchronizedClock {
     /**
@@ -20,6 +22,8 @@ public final class SequentialSpinClock extends AbstractSynchronizedClock {
 
     @Override
     protected void doSynchronizedInit() {
+        requireMultipleCarriers();
+
         var components = clockedComponents();
         var last = components.length - 1;
         for (var state = 0; state < last; state++) {

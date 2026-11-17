@@ -6,6 +6,7 @@ import de.heiden.jem.components.clock.ClockEvent;
 import de.heiden.jem.components.clock.ClockedComponent;
 import de.heiden.jem.components.clock.ManualAbort;
 import de.heiden.jem.components.clock.Tick;
+import de.heiden.jem.components.clock.loom.FiberScheduler;
 import jakarta.annotation.Nonnull;
 
 import java.util.ArrayList;
@@ -21,7 +22,8 @@ import static java.util.Collections.synchronizedCollection;
  */
 public abstract class AbstractSynchronizedClock extends AbstractClock {
     /**
-     * Number of spins to wait for a tick before blocking, if there is a processor for each component thread.
+     * Number of spins to wait for a tick before blocking, if there is a processor for each component thread
+     * and the component threads are not limited to a single carrier thread.
      * Blocking and waking up a thread is much more expensive than a busy wait.
      * The busy wait has to last longer than waking up a thread,
      * otherwise a single blocked thread lets all other threads run into blocking too.
@@ -105,8 +107,10 @@ public abstract class AbstractSynchronizedClock extends AbstractClock {
         // Suspend execution at the start of the first tick.
         addClockEvent(0, suspendEvent);
 
-        // Busy waiting with fewer processors than threads prevents the threads being waited for from executing.
-        spinLimit = clockedComponents().length < Runtime.getRuntime().availableProcessors() ? SPIN_LIMIT : 0;
+        // Busy waiting with fewer processors or carrier threads than component threads
+        // prevents the threads being waited for from executing.
+        spinLimit = !FiberScheduler.isSingleCarrier() &&
+                    clockedComponents().length < Runtime.getRuntime().availableProcessors() ? SPIN_LIMIT : 0;
 
         doSynchronizedInit();
 
@@ -116,6 +120,29 @@ public abstract class AbstractSynchronizedClock extends AbstractClock {
 
     protected void doSynchronizedInit() {
         // overwrite, if needed
+    }
+
+    /**
+     * Check that the component threads are not limited to a single carrier thread.
+     * Clocks solely waiting busily never hand over the carrier thread to the thread being waited for.
+     *
+     * @throws IllegalStateException
+     *         if there is just a single carrier thread
+     */
+    protected final void requireMultipleCarriers() {
+        if (FiberScheduler.isSingleCarrier()) {
+            throw new IllegalStateException(getClass().getSimpleName() + " needs more than one carrier thread.");
+        }
+    }
+
+    /**
+     * Log, whether all components and events are executed by the same thread.
+     * For clocks executing their components sequentially.
+     */
+    protected final void logCarrier() {
+        if (!FiberScheduler.isSingleCarrier()) {
+            logger.info("Component threads are not limited to a single carrier thread: Components are executed by multiple threads.");
+        }
     }
 
     /**

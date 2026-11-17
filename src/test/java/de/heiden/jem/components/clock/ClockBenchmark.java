@@ -1,5 +1,6 @@
 package de.heiden.jem.components.clock;
 
+import de.heiden.jem.components.clock.loom.ContinuationClock;
 import de.heiden.jem.components.clock.loom.SequentialFiberLatchClock;
 import de.heiden.jem.components.clock.loom.SequentialFiberParkClock;
 import de.heiden.jem.components.clock.loom.SequentialFiberQueueClock;
@@ -18,11 +19,12 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Benchmark for the overhead per tick of the thread and fiber based clocks.
+ * Benchmark for the overhead per tick of the thread, fiber and continuation based clocks.
  * The components just count, so only the handover between the components is measured.
  * <p>
- * Without arguments, each clock is benchmarked in its own JVM, the fiber based clocks additionally with a single
- * carrier thread. With the class name of a clock as argument, just this clock is benchmarked in this JVM.
+ * Without arguments, each clock is benchmarked in its own JVM. The clocks executing their components sequentially
+ * are additionally benchmarked with a single carrier thread, as far as they support it.
+ * With the class name of a clock as argument, just this clock is benchmarked in this JVM.
  * The number of components may be set via the system property "components".
  * <p>
  * The serial clock is not part of this benchmark, because it needs byte code transformation.
@@ -44,6 +46,17 @@ public final class ClockBenchmark {
      * Fiber based clocks.
      */
     private static final List<Class<? extends Clock>> FIBER_CLOCKS = List.of(
+            SequentialFiberLatchClock.class,
+            SequentialFiberParkClock.class,
+            SequentialFiberQueueClock.class,
+            SequentialFiberYieldClock.class);
+
+    /**
+     * Clocks executing all components and events with the same thread, if there is just a single carrier thread.
+     */
+    private static final List<Class<? extends Clock>> SINGLE_CARRIER_CLOCKS = List.of(
+            SequentialClock.class,
+            SequentialYieldClock.class,
             SequentialFiberLatchClock.class,
             SequentialFiberParkClock.class,
             SequentialFiberQueueClock.class,
@@ -92,8 +105,9 @@ public final class ClockBenchmark {
             for (var clock : FIBER_CLOCKS) {
                 fork(clock, List.of());
             }
-            System.out.println("Fibers on a single carrier thread:");
-            for (var clock : FIBER_CLOCKS) {
+            fork(ContinuationClock.class, List.of());
+            System.out.println("Single carrier thread:");
+            for (var clock : SINGLE_CARRIER_CLOCKS) {
                 fork(clock, SINGLE_CARRIER);
             }
         } else {
@@ -108,6 +122,8 @@ public final class ClockBenchmark {
         var command = new ArrayList<String>();
         command.add(System.getProperty("java.home") + "/bin/java");
         command.add("-Dcomponents=" + COMPONENTS);
+        // For the continuation clock.
+        command.add("--add-exports=java.base/jdk.internal.vm=ALL-UNNAMED");
         command.addAll(jvmArgs);
         command.add("-cp");
         command.add(System.getProperty("java.class.path"));

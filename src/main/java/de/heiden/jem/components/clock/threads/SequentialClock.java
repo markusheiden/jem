@@ -1,6 +1,7 @@
 package de.heiden.jem.components.clock.threads;
 
 import de.heiden.jem.components.clock.Tick;
+import de.heiden.jem.components.clock.loom.FiberScheduler;
 
 import java.util.concurrent.locks.LockSupport;
 
@@ -11,6 +12,9 @@ import static java.util.concurrent.locks.LockSupport.unpark;
 /**
  * Clock implemented with synchronization sequentially executing component threads.
  * The thread of the last component starts the next tick, so there is no separate tick manager thread.
+ * <p>
+ * Executed on a {@link FiberScheduler#useSingleCarrier() single carrier thread},
+ * all components and events are executed by the same thread.
  */
 public final class SequentialClock extends AbstractSynchronizedClock {
     /**
@@ -27,6 +31,8 @@ public final class SequentialClock extends AbstractSynchronizedClock {
 
     @Override
     protected void doSynchronizedInit() {
+        logCarrier();
+
         var components = clockedComponents();
         var last = components.length - 1;
         Thread firstThread = null;

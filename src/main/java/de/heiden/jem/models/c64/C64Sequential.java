@@ -1,5 +1,6 @@
 package de.heiden.jem.models.c64;
 
+import de.heiden.jem.components.clock.loom.FiberScheduler;
 import de.heiden.jem.components.clock.threads.SequentialClock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +21,8 @@ public class C64Sequential {
      */
     public static void main(String[] args) {
         try {
+            // The components execute strictly sequentially: Execute them and the events with the same thread.
+            FiberScheduler.useSingleCarrier();
             start("--clock=" + SequentialClock.class.getName());
         } catch (Exception e) {
             logger.error("Unable to startup", e);

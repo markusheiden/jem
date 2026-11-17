@@ -1,29 +1,38 @@
 package de.heiden.jem.components.clock.threads;
 
 import de.heiden.jem.components.clock.Tick;
+import de.heiden.jem.components.clock.loom.FiberScheduler;
+import de.heiden.jem.components.clock.loom.YieldHandover;
 
-import static de.heiden.jem.components.clock.ManualAbort.abortIfInterrupted;
 import static java.lang.Thread.onSpinWait;
 
 /**
  * Clock implemented without synchronization sequentially executing component threads by using yield locks (busy wait).
  * Before yielding the threads spin for a while, if there are enough processors.
+ * Threads waiting for long park instead of yielding.
  * The thread of the last component starts the next tick, so there is no separate tick manager thread.
+ * <p>
+ * Executed on a {@link FiberScheduler#useSingleCarrier() single carrier thread},
+ * all components and events are executed by the same thread.
  */
 public final class SequentialYieldClock extends AbstractSynchronizedClock {
     /**
-     * Ordinal of component thread to execute.
+     * Handover of execution between the component threads by their ordinal.
+     * While starting the component threads, the starting thread waits with the ordinal of the next component thread.
      * Package visible to avoid synthetic accessors.
      */
-    volatile int state = 0;
+    YieldHandover handover;
 
     @Override
     protected void doSynchronizedInit() {
+        logCarrier();
+
         var components = clockedComponents();
         var last = components.length - 1;
+        handover = new YieldHandover(components.length, components.length, 0);
         for (var state = 0; state < last; state++) {
             var component = components[state];
-            var tick = new SequentialSpinTick(state);
+            var tick = new SequentialYieldTick(state);
             component.setTick(tick);
 
             // Start component.
@@ -37,7 +46,7 @@ public final class SequentialYieldClock extends AbstractSynchronizedClock {
         Tick tick = () -> {
             startTick();
             // Execute first component thread.
-            state = 0;
+            handover.resume(0);
             // Wait for the next tick.
             waitForState(last);
         };
@@ -53,23 +62,21 @@ public final class SequentialYieldClock extends AbstractSynchronizedClock {
      *         State to reach.
      */
     void waitForState(int state) {
+        var handover = this.handover;
         // First busy wait, because yielding is expensive.
         for (var i = spinLimit(); i > 0; i--) {
-            if (this.state == state) {
+            if (handover.isCurrent(state)) {
                 return;
             }
             onSpinWait();
         }
-        while (this.state != state) {
-            Thread.yield();
-            abortIfInterrupted();
-        }
+        handover.await(state);
     }
 
     /**
      * Special tick, waiting for its state.
      */
-    private final class SequentialSpinTick implements Tick {
+    private final class SequentialYieldTick implements Tick {
         /**
          * Ordinal of component thread.
          */
@@ -81,7 +88,7 @@ public final class SequentialYieldClock extends AbstractSynchronizedClock {
          * @param state
          *         Ordinal of component thread.
          */
-        private SequentialSpinTick(int state) {
+        private SequentialYieldTick(int state) {
             this.tickState = state;
         }
 
@@ -89,7 +96,7 @@ public final class SequentialYieldClock extends AbstractSynchronizedClock {
         public void waitForTick() {
             var tickState = this.tickState;
             // Execute next component thread.
-            state = tickState + 1;
+            handover.resume(tickState + 1);
             // Wait for the next tick.
             waitForState(tickState);
         }
