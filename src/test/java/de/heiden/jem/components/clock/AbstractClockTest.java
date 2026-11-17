@@ -60,6 +60,26 @@ class AbstractClockTest {
     }
 
     @Test
+    void addClockEvent_registered() {
+        try (var clock = new TestClock()) {
+            var event1 = new TestClockEvent();
+            var event2 = new TestClockEvent();
+
+            clock.addClockEvent(1, event1);
+            clock.addClockEvent(2, event2);
+
+            // Add an already registered event -> It gets moved.
+            clock.addClockEvent(3, event1);
+            assertSame(event2, clock.getNextEvent());
+            assertNull(event2.previous);
+            assertSame(event1, event2.next);
+            assertSame(event2, event1.previous);
+            assertNotNull(event1.next);
+            assertEquals(2, clock.getNextEventTick());
+        }
+    }
+
+    @Test
     void updateClockEvent() {
         try (var clock = new TestClock()) {
             var event10 = new TestClockEvent();
@@ -162,6 +182,97 @@ class AbstractClockTest {
             assertSame(event1, event3.previous);
             assertSame(event1, clock.getNextEvent());
             assertEquals(1, clock.getNextEventTick());
+        }
+    }
+
+    @Test
+    void removeClockEvent_twice() {
+        try (var clock = new TestClock()) {
+            var event1 = new TestClockEvent();
+            var event2 = new TestClockEvent();
+            var event3 = new TestClockEvent();
+
+            clock.addClockEvent(1, event1);
+            clock.addClockEvent(2, event2);
+            clock.removeClockEvent(event2);
+            clock.addClockEvent(3, event3);
+
+            // Remove the already removed event again -> The other events have to stay registered.
+            clock.removeClockEvent(event2);
+            assertNull(event2.previous);
+            assertNull(event2.next);
+            assertSame(event1, clock.getNextEvent());
+            assertSame(event3, event1.next);
+            assertSame(event1, event3.previous);
+            assertNotNull(event3.next);
+        }
+    }
+
+    @Test
+    void removeClockEvent_executed() {
+        try (var clock = new TestClock()) {
+            var event1 = new TestClockEvent();
+            var event2 = new TestClockEvent();
+            var event3 = new TestClockEvent();
+
+            clock.addClockEvent(1, event1);
+            clock.addClockEvent(2, event2);
+            clock.addClockEvent(3, event3);
+            clock.executeEvents(1);
+            assertNull(event1.next);
+            assertNull(event2.previous);
+
+            // Remove the already executed event -> The other events have to stay registered.
+            clock.removeClockEvent(event1);
+            assertSame(event2, clock.getNextEvent());
+            assertNull(event2.previous);
+            assertSame(event3, event2.next);
+            assertSame(event2, event3.previous);
+        }
+    }
+
+    @Test
+    void updateClockEvent_executed() {
+        try (var clock = new TestClock()) {
+            var event1 = new TestClockEvent();
+            var event2 = new TestClockEvent();
+            var event3 = new TestClockEvent();
+
+            clock.addClockEvent(1, event1);
+            clock.addClockEvent(2, event2);
+            clock.addClockEvent(4, event3);
+            clock.executeEvents(1);
+
+            // Update the already executed event -> It gets registered again, the other events stay registered.
+            clock.updateClockEvent(3, event1);
+            assertSame(event2, clock.getNextEvent());
+            assertSame(event1, event2.next);
+            assertSame(event2, event1.previous);
+            assertSame(event3, event1.next);
+            assertSame(event1, event3.previous);
+        }
+    }
+
+    @Test
+    void execute_reregister() {
+        try (var clock = new TestClock()) {
+            var event2 = new TestClockEvent();
+            var event1 = new ClockEvent("Re-registering event") {
+                @Override
+                public void execute(long tick) {
+                    clock.addClockEvent(3, this);
+                }
+            };
+
+            clock.addClockEvent(1, event1);
+            clock.addClockEvent(2, event2);
+            clock.executeEvents(1);
+
+            assertSame(event2, clock.getNextEvent());
+            assertNull(event2.previous);
+            assertSame(event1, event2.next);
+            assertSame(event2, event1.previous);
+            assertNotNull(event1.next);
         }
     }
 

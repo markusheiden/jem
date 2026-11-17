@@ -1,10 +1,13 @@
 package de.heiden.jem.components.clock.threads;
 
-import static de.heiden.jem.components.clock.ManualAbort.abortIfInterrupted;
 import de.heiden.jem.components.clock.Tick;
+
+import static de.heiden.jem.components.clock.ManualAbort.abortIfInterrupted;
+import static java.lang.Thread.onSpinWait;
 
 /**
  * Clock implemented without synchronization sequentially executing components by using yield (busy wait).
+ * Before yielding the threads spin for a while, if there are enough processors.
  */
 public final class ParallelYieldClock extends AbstractSynchronizedClock {
     @Override
@@ -13,7 +16,7 @@ public final class ParallelYieldClock extends AbstractSynchronizedClock {
         var ticks = new ParallelSpinTick[components.length];
         for (var i = 0; i < components.length; i++) {
             var component = components[i];
-            var tick = new ParallelSpinTick();
+            var tick = new ParallelSpinTick(spinLimit());
             component.setTick(tick);
             ticks[i] = tick;
 
@@ -57,13 +60,25 @@ public final class ParallelYieldClock extends AbstractSynchronizedClock {
          */
         private volatile boolean tickEnd = false;
 
+        /**
+         * Number of spins to wait for the state before yielding.
+         */
+        private final int spinLimit;
+
+        /**
+         * Constructor.
+         *
+         * @param spinLimit
+         *         Number of spins to wait for the state before yielding.
+         */
+        private ParallelSpinTick(int spinLimit) {
+            this.spinLimit = spinLimit;
+        }
+
         @Override
         public void waitForTick() {
             tickEnd = true;
-            do {
-                Thread.yield();
-                abortIfInterrupted();
-            } while (tickEnd);
+            waitFor(false);
         }
 
         /**
@@ -77,7 +92,21 @@ public final class ParallelYieldClock extends AbstractSynchronizedClock {
          * Wait for tick to finish.
          */
         void waitForTickEnd() {
-            while (!tickEnd) {
+            waitFor(true);
+        }
+
+        /**
+         * Wait until the state is reached.
+         * First busy waits, because yielding is expensive.
+         */
+        private void waitFor(boolean tickEnd) {
+            for (var i = spinLimit; i > 0; i--) {
+                if (this.tickEnd == tickEnd) {
+                    return;
+                }
+                onSpinWait();
+            }
+            while (this.tickEnd != tickEnd) {
                 Thread.yield();
                 abortIfInterrupted();
             }

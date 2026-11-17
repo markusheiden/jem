@@ -3,9 +3,11 @@ package de.heiden.jem.components.clock.threads;
 import de.heiden.jem.components.clock.Tick;
 
 import static de.heiden.jem.components.clock.ManualAbort.abortIfInterrupted;
+import static java.lang.Thread.onSpinWait;
 
 /**
  * Clock implemented without synchronization sequentially executing component threads by using yield locks (busy wait).
+ * Before yielding the threads spin for a while, if there are enough processors.
  * The thread of the last component starts the next tick, so there is no separate tick manager thread.
  */
 public final class SequentialYieldClock extends AbstractSynchronizedClock {
@@ -51,6 +53,13 @@ public final class SequentialYieldClock extends AbstractSynchronizedClock {
      *         State to reach.
      */
     void waitForState(int state) {
+        // First busy wait, because yielding is expensive.
+        for (var i = spinLimit(); i > 0; i--) {
+            if (this.state == state) {
+                return;
+            }
+            onSpinWait();
+        }
         while (this.state != state) {
             Thread.yield();
             abortIfInterrupted();

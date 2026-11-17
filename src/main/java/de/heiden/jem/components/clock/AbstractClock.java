@@ -209,6 +209,10 @@ public abstract class AbstractClock implements Clock {
 //      logger.debug("Add event {} at {}.", newEvent, tick);
 //    }
 
+        if (newEvent.next != null) {
+            // The event is already registered -> Move it. Otherwise, the list of events would get corrupted.
+            removeClockEvent(newEvent);
+        }
         newEvent.tick = tick;
 
         var nextEvent = events;
@@ -238,7 +242,7 @@ public abstract class AbstractClock implements Clock {
         }
 
         // TODO mh: check, if events needs to be moved. otherwise exit early.
-        removeClockEvent(eventToUpdate);
+        // Adding a registered event moves it.
         addClockEvent(tick, eventToUpdate);
     }
 
@@ -250,15 +254,22 @@ public abstract class AbstractClock implements Clock {
 
         var previousEvent = oldEvent.previous;
         var nextEvent = oldEvent.next;
+        if (nextEvent == null) {
+            // All registered events have a next event, at least the end marker.
+            // The event is not registered, e.g. because it has already been executed or removed -> Nothing to do.
+            return;
+        }
 
-        if (oldEvent == events) {
+        if (previousEvent == null) {
             events = nextEvent;
-        } else if (previousEvent != null) {
+        } else {
             previousEvent.next = nextEvent;
         }
-        if (nextEvent != null) {
-            nextEvent.previous = previousEvent;
-        }
+        nextEvent.previous = previousEvent;
+
+        // Unlink the event to mark it as not registered.
+        oldEvent.previous = null;
+        oldEvent.next = null;
     }
 
     /**
@@ -283,8 +294,12 @@ public abstract class AbstractClock implements Clock {
      */
     protected void executeEvents(long tick) {
         for (var event = events; event.tick == tick; event = events) {
-            // Remove it.
-            events = event.next;
+            // Remove it and unlink it to mark it as not registered.
+            // This has to happen before executing it, because events may re-register themselves.
+            var nextEvent = event.next;
+            events = nextEvent;
+            nextEvent.previous = null;
+            event.next = null;
 
             // Execute it.
 //      if (logger.isDebugEnabled()) {
