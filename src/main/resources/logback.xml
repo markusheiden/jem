@@ -15,9 +15,9 @@
     </encoder>
   </appender>
 
-  <logger name="org.serialthreads" level="DEBUG" additivity="false">
+  <!--logger name="org.serialthreads" level="DEBUG" additivity="false">
     <appender-ref ref="FILE" />
-  </logger>
+  </logger-->
 
   <logger name="de.heiden.jem.components.clock.RealTimeSlowDown" level="INFO" />
   <logger name="org.serialthreads.transformer.strategies.frequent3.MethodTransformer" level="ERROR" />
