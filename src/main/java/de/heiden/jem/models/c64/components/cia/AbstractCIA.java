@@ -53,6 +53,13 @@ public abstract class AbstractCIA implements BusDevice, ClockedComponent {
     public static final int SERIAL_CNT = 0x02;
 
     /**
+     * Serial port, delays in cycles: From the timer A underflow to the toggle of CNT
+     * and from the last bit or an aborted transfer to the serial interrupt flag.
+     */
+    private static final int SERIAL_TOGGLE_DELAY = 2;
+    private static final int SERIAL_INTERRUPT_DELAY = 2;
+
+    /**
      * Address mask.
      */
     private static final int MASK = 0x0F;
@@ -80,7 +87,8 @@ public abstract class AbstractCIA implements BusDevice, ClockedComponent {
     private int shift = 0;
 
     /**
-     * Output mode: Remaining timer A underflows (2 per bit) of the current transfer, 0 if idle.
+     * Output mode: Remaining timer A underflows (2 per bit) of the current transfer:
+     * 16 at its start, 1 after its last bit has been shifted out, 0 if idle.
      * Input mode: Number of bits shifted in.
      */
     private int shiftCount = 0;
@@ -89,6 +97,40 @@ public abstract class AbstractCIA implements BusDevice, ClockedComponent {
      * Output mode: Has the serial data register been written during a transfer?
      */
     private boolean sdrPending = false;
+
+    /**
+     * Is the serial port in output mode?
+     */
+    private boolean serialOut = false;
+
+    /**
+     * Output mode: Has the serial data register been written in the current cycle?
+     */
+    private boolean serialLoad = false;
+
+    /**
+     * Output mode, pipelines of the serial port. Bit n is an event, which happens in n cycles:
+     * Toggle CNT, suppressed toggle of CNT and set the serial interrupt flag.
+     */
+    private int serialToggle = 0;
+    private int serialNoToggle = 0;
+    private int serialInterrupt = 0;
+
+    /**
+     * Output mode: Level of the CNT output.
+     */
+    private boolean cntOut = true;
+
+    /**
+     * Output mode: History of the CNT output. Bit n is its level at the end of the cycle n + 1 cycles ago.
+     */
+    private int cntOutHistory = 0x07;
+
+    /**
+     * Has the output mode been left while a bit was shifted out?
+     * In this case the serial interrupt flag is set, when the output mode is entered again.
+     */
+    private boolean serialAborted = false;
 
     /**
      * Level of the CNT input.
@@ -305,15 +347,23 @@ public abstract class AbstractCIA implements BusDevice, ClockedComponent {
     }
 
     /**
-     * Write the serial data register. In output mode this starts a transfer, if no transfer is running.
+     * Write the serial data register.
+     * In output mode it is loaded into the shift register at the end of the cycle, see {@link #loadShift()}.
      */
     private void writeSdr(int value) {
         sdr = value;
-        if ((timerA.control & CRA_SERIAL_OUT) == 0) {
-            return;
-        }
-        if (shiftCount == 0) {
-            shift = value;
+        serialLoad = serialOut;
+    }
+
+    /**
+     * Output mode: Load the shift register from the serial data register.
+     * This starts a transfer, if no transfer is running. Otherwise the byte is transferred after the current one.
+     * A transfer takes 15 underflows of timer A until its last bit is shifted out.
+     */
+    private void loadShift() {
+        if (shiftCount <= 1) {
+            // Idle or the last bit has been shifted out already: CNT is still low, its rising edge is missing.
+            shift = sdr;
             shiftCount = 16;
         } else {
             sdrPending = true;
@@ -321,52 +371,107 @@ public abstract class AbstractCIA implements BusDevice, ClockedComponent {
     }
 
     /**
+     * Output mode: Timer A underflow, which toggles CNT two cycles later, while a transfer is running.
+     * Underflows in consecutive cycles are too close to be detected: Just the first one toggles CNT.
+     */
+    private void shiftOutUnderflow() {
+        if (shiftCount == 0 && !sdrPending) {
+            return;
+        }
+        if (((serialToggle | serialNoToggle) & 1 << SERIAL_TOGGLE_DELAY - 1) != 0) {
+            serialNoToggle |= 1 << SERIAL_TOGGLE_DELAY;
+        } else {
+            serialToggle |= 1 << SERIAL_TOGGLE_DELAY;
+        }
+    }
+
+    /**
+     * Output mode: Toggle CNT.
+     * CNT goes low and the next bit is put to SP, then CNT goes high again.
+     * When the 8th bit is put to SP, the serial interrupt flag is set a few cycles later
+     * and a pending byte is loaded into the shift register.
+     */
+    private void toggleCnt() {
+        if (shiftCount != 0 && (--shiftCount & 0x01) != 0) {
+            var sp = (shift & 0x80) != 0 ? SERIAL_SP : 0;
+            shift = shift << 1 & 0xFF;
+            cntOut = false;
+            portSerial.setOutputData(0xFF & ~SERIAL_CNT & ~SERIAL_SP | sp);
+
+            if (shiftCount == 1) {
+                serialInterrupt |= 1 << SERIAL_INTERRUPT_DELAY;
+                if (sdrPending) {
+                    sdrPending = false;
+                    shift = sdr;
+                    shiftCount = 17;
+                }
+            }
+        } else {
+            cntOut = true;
+            portSerial.setOutputData(portSerial.outputData() | SERIAL_CNT);
+        }
+    }
+
+    /**
+     * Execute the pipelines of the serial port for one cycle.
+     */
+    private void cycleSerial() {
+        if (serialLoad) {
+            serialLoad = false;
+            loadShift();
+        }
+        if ((serialToggle & 0x01) != 0) {
+            toggleCnt();
+        }
+        if ((serialInterrupt & 0x01) != 0) {
+            // The IRQ of the serial interrupt follows without delay.
+            setInterrupt(ICR_SDR);
+            irqImmediate = ICR_SDR;
+        }
+        serialToggle >>= 1;
+        serialNoToggle >>= 1;
+        serialInterrupt >>= 1;
+        cntOutHistory = cntOutHistory << 1 & 0x07 | (cntOut ? 0x01 : 0x00);
+    }
+
+    /**
      * Change of the serial port mode: Aborts a running transfer.
      * In output mode SP and CNT are driven by the CIA, idle CNT is high.
+     * <p>
+     * An aborted transfer sets the serial interrupt flag (VICE bug #1219):
+     * At once, if at least one bit but the last one has been shifted out.
+     * When the output mode is entered again, if the output mode has been left while CNT was low.
      *
      * @param control
      *         new value of the control register A
      */
     private void changeSerialMode(int control) {
-        shiftCount = 0;
-        sdrPending = false;
-        if ((control & CRA_SERIAL_OUT) != 0) {
+        // CNT needs some cycles to settle.
+        var cntWasHigh = (cntOutHistory & 0x06) == 0x06;
+        if (shiftCount > 1 && shiftCount < 15 || shiftCount == 15 && (cntOutHistory & 0x04) == 0) {
+            serialInterrupt |= 1 << SERIAL_INTERRUPT_DELAY;
+        }
+
+        serialOut = (control & CRA_SERIAL_OUT) != 0;
+        if (serialOut) {
+            if (serialAborted) {
+                serialAborted = false;
+                serialInterrupt |= 1 << SERIAL_INTERRUPT_DELAY;
+            }
             portSerial.setOutputData(0xFF);
             portSerial.setOutputMask(SERIAL_SP | SERIAL_CNT);
         } else {
+            // CNT is low or toggles in this cycle.
+            serialAborted = !cntWasHigh || shiftCount != 2 && (serialToggle & 0x01) != 0;
             portSerial.setOutputMask(0x00);
             portSerial.setOutputData(0xFF);
         }
-    }
 
-    /**
-     * Output mode: Timer A underflow, which toggles CNT.
-     * CNT goes low and the next bit is put to SP, then CNT goes high again.
-     * After the 8th bit the serial interrupt is set and a pending byte is transferred.
-     */
-    private void shiftOut() {
-        if (shiftCount == 0) {
-            return;
-        }
-        shiftCount--;
-        if ((shiftCount & 0x01) != 0) {
-            var sp = (shift & 0x80) != 0 ? SERIAL_SP : 0;
-            shift = shift << 1 & 0xFF;
-            portSerial.setOutputData(0xFF & ~SERIAL_CNT & ~SERIAL_SP | sp);
-        } else {
-            portSerial.setOutputData(portSerial.outputData() | SERIAL_CNT);
-        }
-
-        if (shiftCount == 0) {
-            // The IRQ of the serial interrupt follows without delay.
-            setInterrupt(ICR_SDR);
-            irqImmediate = ICR_SDR;
-            if (sdrPending) {
-                sdrPending = false;
-                shift = sdr;
-                shiftCount = 16;
-            }
-        }
+        shiftCount = 0;
+        sdrPending = false;
+        serialToggle = 0;
+        serialNoToggle = 0;
+        cntOut = true;
     }
 
     /**
@@ -381,7 +486,7 @@ public abstract class AbstractCIA implements BusDevice, ClockedComponent {
             timerB.count();
         }
 
-        if ((timerA.control & CRA_SERIAL_OUT) == 0) {
+        if (!serialOut) {
             shift = (shift << 1 | portSerial.inputData() & SERIAL_SP) & 0xFF;
             if (++shiftCount == 8) {
                 shiftCount = 0;
@@ -545,14 +650,15 @@ public abstract class AbstractCIA implements BusDevice, ClockedComponent {
             if (modeB == CRB_MODE_TIMER_A || modeB == CRB_MODE_TIMER_A_CNT && cnt) {
                 timerB.count();
             }
-            if ((timerA.control & CRA_SERIAL_OUT) != 0) {
-                shiftOut();
+            if (serialOut) {
+                shiftOutUnderflow();
             }
             setInterrupt(ICR_UNDERFLOW_TIMER_A);
         }
         if (underflowB) {
             timerBUnderflow();
         }
+        cycleSerial();
 
         updateIrq();
         irqImmediate = 0;

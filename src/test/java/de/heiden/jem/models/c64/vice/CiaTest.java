@@ -2,16 +2,18 @@ package de.heiden.jem.models.c64.vice;
 
 import de.heiden.jem.models.c64.AbstractTest;
 import de.heiden.jem.models.c64.ProgramSuiteSource;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.params.ParameterizedTest;
 
 import java.nio.file.Path;
 
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
 
 /**
  * VICE test suite for the old CIA 6526 (PAL).
- * Tests for the new CIA 6526A and interactive tests without result are ignored.
+ * Tests for the new CIA 6526A are ignored.
  */
 @Execution(CONCURRENT)
 class CiaTest extends AbstractTest {
@@ -39,9 +41,7 @@ class CiaTest extends AbstractTest {
         testBorderResult(program, 120, false);
     }
 
-    // irqdelay, irqdelay2 and irqdelay-oneshot are interactive tests without result.
-    @ProgramSuiteSource(resource = "/vice-emu-testprogs/CIA/irqdelay/irqdelay-cia1.prg", filter = OLD_CIA,
-            ignore = {"irqdelay", "irqdelay2", "irqdelay-oneshot"})
+    @ProgramSuiteSource(resource = "/vice-emu-testprogs/CIA/irqdelay/irqdelay-cia1.prg", filter = OLD_CIA)
     @ParameterizedTest(name = "{1}")
     void irqDelay(Path program, String programName) throws Exception {
         testBorderResult(program, 30, false);
@@ -53,12 +53,22 @@ class CiaTest extends AbstractTest {
         testBorderResult(program, 40, false);
     }
 
-    // The cia-sdr-* tests fail: The timing of loading the SDR into the shift register is not emulated yet (VICE bug #1219).
-    @ProgramSuiteSource(resource = "/vice-emu-testprogs/CIA/shiftregister/cia-sp-test-oneshot-old.prg", filter = OLD_CIA,
-            ignore = {"cia-sdr-delay", "cia-sdr-init", "cia-sdr-load"})
+    @ProgramSuiteSource(resource = "/vice-emu-testprogs/CIA/shiftregister/cia-sp-test-oneshot-old.prg", filter = OLD_CIA)
     @ParameterizedTest(name = "{1}")
     void shiftRegister(Path program, String programName) throws Exception {
         testBorderResult(program, 70, false);
+    }
+
+    /**
+     * Serial interrupt flag for each cycle of a transfer and after an aborted transfer (VICE bug #1219).
+     * The tests for the CIAs with the timestamp 4485 are ignored, they behave differently.
+     * The tests for all timer values (_7f) pass too, but are ignored, because each takes 130 seconds.
+     */
+    @ProgramSuiteSource(resource = "/vice-emu-testprogs/CIA/shiftregister/cia-sdr-icr/cia1-sdr-icr-0.prg",
+            filter = "^(?!.*(4485|_7f)).*$")
+    @ParameterizedTest(name = "{1}")
+    void shiftRegisterIcr(Path program, String programName) throws Exception {
+        testBorderResult(program, 30, false);
     }
 
     @ProgramSuiteSource(resource = "/vice-emu-testprogs/CIA/timerbasics/test.prg", filter = OLD_CIA)
@@ -67,10 +77,20 @@ class CiaTest extends AbstractTest {
         testBorderResult(program, 120, false);
     }
 
-    // stability and stability-ntsc are interactive tests without result.
+    // stability is tested by todStability(). stability-ntsc is for NTSC only.
     @ProgramSuiteSource(resource = "/vice-emu-testprogs/CIA/tod/alarm.prg", ignore = {"stability", "stability-ntsc"})
     @ParameterizedTest(name = "{1}")
     void tod(Path program, String programName) throws Exception {
         testBorderResult(program, 120, false);
+    }
+
+    /**
+     * stability measures the time between the ticks of the TOD for about 30 seconds.
+     * It shows its progress in the border, so just the debug cartridge tells the result.
+     */
+    @Test
+    void todStability() throws Exception {
+        loadAndRun("/vice-emu-testprogs/CIA/tod/stability.prg");
+        assertSame(debugCartridgePassed, waitSecondsFor(50, debugCartridgePassed, debugCartridgeFailed));
     }
 }

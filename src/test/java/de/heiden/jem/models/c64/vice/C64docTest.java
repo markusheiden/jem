@@ -33,19 +33,9 @@ class C64docTest extends AbstractTest {
     private static final int BASIC = 0x0801;
 
     /**
-     * Address of the code, which starts the test program.
-     */
-    private static final int START = 0xC000;
-
-    /**
-     * Debug cartridge register: The test programs write 0 to it, if they passed, and $FF, if they failed.
+     * Register of the debug cartridge, the test programs write their result to.
      */
     private static final int DEBUG_CARTRIDGE = 0xD7FF;
-
-    /**
-     * Value of the debug cartridge register before the test program wrote its result.
-     */
-    private static final int NO_RESULT = 0x80;
 
     // sbx and vsbx take too long on a complete C64, see cpu().
     @ProgramSuiteSource(resource = DIRECTORY + "dadc.prg", ignore = {"sbx", "vsbx"})
@@ -79,23 +69,16 @@ class C64docTest extends AbstractTest {
             // CHROUT, the program prints its progress: RTS.
             write(ram, 0xFFD2, 0x60);
             // Reset: Start the program like its BASIC line does (SYS start of BASIC + 26).
-            write(ram, START, 0x4C, (BASIC + 26) & 0xFF, (BASIC + 26) >> 8);
-            write(ram, 0xFFFC, START & 0xFF, START >> 8);
-            // Without I/O, the result written to the debug cartridge register ends up in the RAM.
-            write(ram, DEBUG_CARTRIDGE, NO_RESULT);
+            write(ram, 0xFFFC, (BASIC + 26) & 0xFF, (BASIC + 26) >> 8);
+            // No result yet. The program writes $00 for passed and $FF for failed.
+            var noResult = 0x80;
+            write(ram, DEBUG_CARTRIDGE, noResult);
 
-            var result = "Timeout";
-            for (var end = 8000 * 1000000L; result.equals("Timeout") && clock.getTick() < end; ) {
+            for (var end = 8000 * 1000000L; ram.read(DEBUG_CARTRIDGE) == noResult && clock.getTick() < end; ) {
                 clock.run(10000000);
-                var debugCartridge = ram.read(DEBUG_CARTRIDGE);
-                if (debugCartridge == 0x00) {
-                    result = "Passed";
-                } else if (debugCartridge != NO_RESULT) {
-                    result = "Failed";
-                }
             }
 
-            assertEquals("Passed", result);
+            assertEquals(0x00, ram.read(DEBUG_CARTRIDGE), "Result of " + programName);
         }
     }
 
