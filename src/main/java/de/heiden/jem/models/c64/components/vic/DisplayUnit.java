@@ -261,7 +261,9 @@ public class DisplayUnit extends AbstractDisplayUnit {
         vic.updateBA(cycle);
         spriteRenderer.trigger(beamX, SPRITE_X_DELAY);
         var badLine = vic.isBadLine();
-        if (badLine) {
+        // A bad line condition, which arises in idle state, switches to display state after the g-access of the cycle.
+        var badLineInIdleState = badLine && !displayState;
+        if (badLine && !(badLineInIdleState && cycle >= 16 && cycle <= 55)) {
             displayState = true;
         }
 
@@ -278,7 +280,10 @@ public class DisplayUnit extends AbstractDisplayUnit {
         }
 
         if (cycle >= 16 && cycle <= 55) {
-            readGraphics(cycle - 16);
+            readGraphics(cycle - 16, badLineInIdleState);
+            if (badLine) {
+                displayState = true;
+            }
         } else if (cycle == 56) {
             // Right of the last column.
             var x = vic.lastX_25 + (vic.regControl2 & VIC.CONTROL2_SCROLL_X);
@@ -394,11 +399,15 @@ public class DisplayUnit extends AbstractDisplayUnit {
     /**
      * g-access: Render the graphics of a column with the current registers.
      * In idle state the graphics data is read from $3FFF ($39FF in extended color mode), with video matrix data 0.
+     * In the cycle, in which a bad line condition arises in idle state, it is read from $38FF instead
+     * (VICE bug #1855, measured with the 6569 and the 6567R8).
      *
      * @param column
      *         column
+     * @param badLineInIdleState
+     *         has a bad line condition arisen in idle state in this cycle?
      */
-    private void readGraphics(int column) {
+    private void readGraphics(int column, boolean badLineInIdleState) {
         var x = vic.firstX_25 + (vic.regControl2 & VIC.CONTROL2_SCROLL_X) + 8 * column;
 
         if (column == 0) {
@@ -418,7 +427,7 @@ public class DisplayUnit extends AbstractDisplayUnit {
             vc = (vc + 1) & 0x03FF;
             vmli++;
         } else {
-            data = vic.bus.read((vic.regControl1 & VIC.CONTROL1_EXT_COLOR) != 0 ? 0x39FF : 0x3FFF);
+            data = vic.bus.read(badLineInIdleState ? 0x38FF : (vic.regControl1 & VIC.CONTROL1_EXT_COLOR) != 0 ? 0x39FF : 0x3FFF);
         }
         renderer.render(graphics, foreground, x, data, character, color);
 
