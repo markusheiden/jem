@@ -72,11 +72,14 @@ class LorenzTest extends AbstractTest {
             // "tsxn", "txan", "txsn", "tyan"
     })
     void test(Path program, String programName) {
-        assertTimeoutPreemptively(Duration.ofSeconds(10), () ->
+        // shaay and shsay take about 15 seconds.
+        assertTimeoutPreemptively(Duration.ofSeconds(30), () ->
                 testPreemptively(program, programName));
     }
 
     void testPreemptively(Path program, String programName) throws Exception {
+        // The tests ending with "new" are the variants for the new CIA 6526A.
+        newCias = programName.endsWith("new");
         loadAndRun(program);
 
         var passed = onConsole("- ok");

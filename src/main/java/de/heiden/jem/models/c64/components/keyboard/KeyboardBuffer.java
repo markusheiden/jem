@@ -45,9 +45,19 @@ public class KeyboardBuffer extends ClockEvent {
     private final BusDevice bus;
 
     /**
-     * PETSCII codes still to type. Filled by any thread, consumed by the C64 thread.
+     * Keys still to type. Filled by any thread, consumed by the C64 thread.
      */
-    private final Queue<Integer> pending = new ConcurrentLinkedQueue<>();
+    private final Queue<Key> pending = new ConcurrentLinkedQueue<>();
+
+    /**
+     * Key to type.
+     *
+     * @param petscii
+     *         PETSCII code
+     * @param tick
+     *         tick, before which the key is not typed
+     */
+    private record Key(int petscii, long tick) {}
 
     /**
      * Constructor.
@@ -71,13 +81,21 @@ public class KeyboardBuffer extends ClockEvent {
      * May be called from any thread.
      */
     public void type(@Nonnull String text) {
+        type(text, 0);
+    }
+
+    /**
+     * Type the given text, but not before the given tick. Characters without PETSCII equivalent are skipped.
+     * A tick in the future types the text at a reproducible point in time. May be called from any thread.
+     */
+    public void type(@Nonnull String text, long tick) {
         var previous = ' ';
         for (var c : text.toCharArray()) {
             // Windows line separator "\r\n": Type only one return.
             if (!(c == '\n' && previous == '\r')) {
                 var petscii = toPetscii(c);
                 if (petscii >= 0) {
-                    pending.add(petscii);
+                    pending.add(new Key(petscii, tick));
                 }
             }
             previous = c;
@@ -88,10 +106,13 @@ public class KeyboardBuffer extends ClockEvent {
     public void execute(long tick) {
         if (!pending.isEmpty() && bus.read(COUNT) == 0) {
             var count = 0;
-            for (Integer petscii; count < SIZE && (petscii = pending.poll()) != null; count++) {
-                bus.write(petscii, BUFFER + count);
+            for (Key key; count < SIZE && (key = pending.peek()) != null && key.tick <= tick; count++) {
+                pending.remove();
+                bus.write(key.petscii, BUFFER + count);
             }
-            bus.write(count, COUNT);
+            if (count > 0) {
+                bus.write(count, COUNT);
+            }
         }
 
         clock.addClockEvent(tick + INTERVAL, this);
@@ -112,6 +133,8 @@ public class KeyboardBuffer extends ClockEvent {
         }
         return switch (c) {
             case '\n', '\r' -> 0x0D;
+            // Commodore + P, the underscore of file names.
+            case '_' -> 0xAF;
             case '£' -> 0x5C;
             case '^', '↑' -> 0x5E;
             case '←' -> 0x5F;

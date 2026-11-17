@@ -598,13 +598,14 @@ public class CPU6510 implements ClockedComponent {
                     new Opcode() {
                         @Override
                         @Interruptible
-                        public void execute() // $20: JSR $XXXX (6) (TODO rework: see AAY64)
+                        public void execute() // $20: JSR $XXXX (6)
                         {
-                            var addr = readAbsoluteAddressPC();
-                            var returnAddr = (state.PC - 1) & 0xFFFF;
-                            tick.waitForTick(); // internal operation
-                            pushWord(returnAddr);
-                            state.PC = addr;
+                            var low = readBytePC();
+                            // Internal operation: Dummy read from the stack.
+                            stackRead();
+                            // The return address is the address of the high byte, it is read after the pushes.
+                            pushWord(state.PC);
+                            state.PC = low | read(state.PC) << 8;
                         }
                     },
 
@@ -1133,8 +1134,14 @@ public class CPU6510 implements ClockedComponent {
                         @Interruptible
                         public void execute() // $58: CLI (2) // no
                         {
-                            idleRead(); // during operation
-                            state.cli();
+                            if (ready) {
+                                idleRead(); // during operation
+                                state.cli();
+                            } else {
+                                // Halted: The flag is changed before the interrupts are polled again.
+                                state.cli();
+                                idleRead();
+                            }
                         }
                     },
 
@@ -1436,6 +1443,11 @@ public class CPU6510 implements ClockedComponent {
                         @Interruptible
                         public void execute() // $78: SEI (2) // no
                         {
+                            // An IRQ raised while the CPU is halted at this cycle is masked already.
+                            while (!ready) {
+                                pollNmi();
+                                tick.waitForTick();
+                            }
                             idleRead(); // during operation
                             state.sei();
                         }
@@ -3627,8 +3639,7 @@ public class CPU6510 implements ClockedComponent {
      */
     @Interruptible
     protected final int readZeropageIndirectXAddressPC() {
-        tick.waitForTick(); // + X needs 1 tick, TODO read address first?
-        return readAbsoluteAddressForIndirect((readAbsoluteZeropageAddressPC() + state.X) & 0xFF);
+        return readAbsoluteAddressForIndirect(readAbsoluteZeropageAddressPC(state.X));
     }
 
     /**
@@ -3791,6 +3802,14 @@ public class CPU6510 implements ClockedComponent {
         irqPolled = irqLine;
         nmiPolled = nmiLine;
         irqLine = state.interrupt;
+        nmiLine = state.NMI;
+    }
+
+    /**
+     * Poll the NMI only.
+     */
+    private void pollNmi() {
+        nmiPolled = nmiLine;
         nmiLine = state.NMI;
     }
 

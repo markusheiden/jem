@@ -67,6 +67,18 @@ public abstract class AbstractTest {
     protected static final int LIGHT_RED = 0x0A;
 
     /**
+     * Tick at which the load command is typed. The boot has finished by then.
+     * The load and the run command are typed at fixed ticks, so that a test is reproducible:
+     * Its result does not depend on the speed of the test thread.
+     */
+    private static final long LOAD_TICK = 3000000;
+
+    /**
+     * Tick at which the run command is typed.
+     */
+    private static final long RUN_TICK = 4000000;
+
+    /**
      * Transformed test C64.
      */
     protected TestC64 c64;
@@ -171,7 +183,8 @@ public abstract class AbstractTest {
         c64.hasEnded();
 
         console.clear();
-        type("load\"" + programName + "\"," + device + "," + secondary + "\n");
+        c64.getKeyboardBuffer().type("load\"" + programName + "\"," + device + "," + secondary + "\n", LOAD_TICK);
+        waitCycles(LOAD_TICK - getTick());
         assertSame(ready, waitSecondsFor(10, ready));
     }
 
@@ -183,7 +196,8 @@ public abstract class AbstractTest {
         c64.hasEnded();
 
         console.clear();
-        type("run\n");
+        c64.getKeyboardBuffer().type("run\n", RUN_TICK);
+        waitCycles(RUN_TICK - getTick());
     }
 
     /**
@@ -664,14 +678,14 @@ public abstract class AbstractTest {
     }
 
     /**
-     * Condition "value in VIC register".
+     * Condition "color in VIC color register". The unused upper 4 bits of the register are ignored.
      * Independent of the memory configuration, e.g. when I/O is banked out.
      */
     protected Condition inVic(int addr, int value) {
         return new Condition() {
             @Override
             public boolean test() {
-                return c64.getVic().read(addr) == value;
+                return (c64.getVic().read(addr) & 0x0F) == value;
             }
 
             @Override

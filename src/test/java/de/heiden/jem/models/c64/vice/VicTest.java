@@ -1,6 +1,7 @@
 package de.heiden.jem.models.c64.vice;
 
 import de.heiden.jem.models.c64.AbstractTest;
+import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -14,8 +15,11 @@ import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
  */
 @Execution(CONCURRENT)
 class VicTest extends AbstractTest {
+    // spritegap2 and spritegap3 move all pairs of sprites over all X coordinates. That takes 290 seconds.
     @ParameterizedTest
+    @Timeout(180)
     @ValueSource(strings = {
+            "colorram/test.prg",
             "phi1timing/phi1timing.prg",
             "split-tests/bascan/bascan.prg",
             "split-tests/spritescan/spritescan.prg",

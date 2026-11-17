@@ -28,6 +28,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 # Benchmark the thread and fiber based clocks (each clock in its own JVM)
 ./gradlew clockBenchmark
+
+# Test the sequential clocks on a single carrier thread (part of check)
+./gradlew singleCarrierTest
 ```
 
 The shadow JAR is the primary artifact; the plain JAR is disabled. Test failures fail the build (`ignoreFailures = false`).
@@ -53,7 +56,9 @@ Multiple clock strategies exist under `de.heiden.jem.components.clock`:
 |---|---|
 | `serialthreads/` | Serial coroutines via bytecode transformation (default) |
 | `threads/` | One thread per component: Sequential, Parallel variants (Spin, Yield, Notify, Barrier) |
-| `loom/` | Java Virtual Threads (Project Loom): Fiber variants (Yield, Park, Latch, Queue) |
+| `loom/` | Java Virtual Threads (Project Loom): Fiber variants (Yield, Park, Latch, Queue) and `ContinuationClock` |
+
+The emulated components are not thread-safe. The Parallel clocks and `SequentialSpinClock` execute the components with multiple threads, so they are just for reference. The Sequential and Fiber clocks execute all components and events with the same thread, if their entry point calls `FiberScheduler.useSingleCarrier()` (JVM-wide single carrier thread for virtual threads). `ContinuationClock` executes everything with the thread running the clock, it uses the JDK-internal continuations (`--add-exports java.base/jdk.internal.vm=ALL-UNNAMED`, configured in `build.gradle.kts`).
 
 Each `C64*.java` in `de.heiden.jem.models.c64` is an entry point that wires up the C64 hardware with a specific clock.
 

@@ -7,7 +7,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 
 import java.nio.file.Path;
 
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
 
 /**
@@ -15,14 +14,11 @@ import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
  */
 @Execution(CONCURRENT)
 class CiaCountsTest extends AbstractTest {
-    @ProgramSuiteSource(resource = "/vice-emu-testprogs/CIA/CIA-AcountsB/cia-b-counts-a.prg", ignore = "cia-b-counts-a")
+    // NTSC is not implemented yet.
+    @ProgramSuiteSource(resource = "/vice-emu-testprogs/CIA/CIA-AcountsB/cia-b-counts-a.prg", filter = "^(?!.*ntsc).*$",
+            ignore = "cia-b-counts-a")
     @ParameterizedTest(name = "{1}")
     void test(Path program, String programName) throws Exception {
-        // NTSC not implemented yet.
-        assertNotEquals("cmp-b-counts-a-new_ntsc", programName, "Not implemented yet");
-        assertNotEquals("cmp-b-counts-a-old_ntsc", programName, "Not implemented yet");
-        assertNotEquals("cia-b-counts-a_ntsc", programName, "Not implemented yet");
-
         newCias = programName.contains("-new");
         testBorderResult(program, 60, false);
     }

@@ -19,10 +19,13 @@ repositories {
     mavenCentral()
 }
 
+// The continuation clock uses the continuations of the JDK, which are an internal API.
+val continuationExports = "java.base/jdk.internal.vm=ALL-UNNAMED"
+
 application {
     mainClass = "de.heiden.jem.models.c64.C64Serial"
     // JavaFX loads native libraries.
-    applicationDefaultJvmArgs = listOf("--enable-native-access=ALL-UNNAMED")
+    applicationDefaultJvmArgs = listOf("--enable-native-access=ALL-UNNAMED", "--add-exports=$continuationExports")
 }
 
 java {
@@ -69,7 +72,8 @@ tasks.withType<JavaCompile>().configureEach {
     options.encoding = "UTF-8"
     options.compilerArgs.addAll(listOf(
         // Persist parameter names for reflection.
-        "-parameters"
+        "-parameters",
+        "--add-exports=$continuationExports"
     ))
 
     options.errorprone {
@@ -94,7 +98,7 @@ tasks.startScripts {
 
 tasks.named<JavaExec>("run") {
     // The JavaFX plugin puts JavaFX on the module path.
-    jvmArgs("--enable-native-access=javafx.graphics")
+    jvmArgs("--enable-native-access=javafx.graphics", "--add-exports=$continuationExports")
     // The JavaFX plugin accesses the task extensions at execution time.
     notCompatibleWithConfigurationCache("JavaFX plugin is not compatible with the configuration cache")
 }
@@ -114,6 +118,7 @@ tasks.register<JavaExec>("runAgent") {
             "--module-path", javafxModules.asPath,
             "--add-modules", javafx.modules.joinToString(","),
             "--enable-native-access=javafx.graphics",
+            "--add-exports=$continuationExports",
         )
     })
     doFirst {
@@ -129,6 +134,7 @@ tasks.register<JavaExec>("clockBenchmark") {
     description = "Benchmarks the thread and fiber based clocks."
     mainClass = "de.heiden.jem.components.clock.ClockBenchmark"
     classpath = sourceSets.test.get().runtimeClasspath
+    jvmArgs("--add-exports=$continuationExports")
 }
 
 tasks.shadowJar {
@@ -139,12 +145,13 @@ tasks.shadowJar {
             "Implementation-Version" to archiveVersion,
             // JavaFX loads native libraries.
             "Enable-Native-Access" to "ALL-UNNAMED",
+            "Add-Exports" to "java.base/jdk.internal.vm",
             // "Launcher-Agent-Class" to "org.serialthreads.agent.Agent",
         )
     }
 }
 
-tasks.test {
+tasks.withType<Test>().configureEach {
     useJUnitPlatform()
 
     jvmArgs(
@@ -154,12 +161,36 @@ tasks.test {
         "-Duser.country=US",
         "-Duser.timezone=UTC",
         // Prevent warnings from test setups. Avoid conflicts with JaCoCo.
-        "-Xshare:off"
+        "-Xshare:off",
+        "--add-exports=$continuationExports"
     )
 
     ignoreFailures = false
+}
 
+tasks.test {
     finalizedBy(tasks.jacocoTestReport)
+}
+
+// Test the clocks executing their components sequentially on a single carrier thread,
+// so all components and events are executed by the same thread.
+// The other clocks need multiple carrier threads, so this is not possible in the JVM of the other tests.
+val singleCarrierTest = tasks.register<Test>("singleCarrierTest") {
+    group = "verification"
+    description = "Tests the sequential thread and fiber based clocks on a single carrier thread."
+    testClassesDirs = sourceSets.test.get().output.classesDirs
+    classpath = sourceSets.test.get().runtimeClasspath
+    filter {
+        includeTestsMatching("de.heiden.jem.components.clock.threads.SequentialClockTest")
+        includeTestsMatching("de.heiden.jem.components.clock.threads.SequentialYieldClockTest")
+        includeTestsMatching("de.heiden.jem.components.clock.loom.SequentialFiber*ClockTest")
+    }
+    systemProperty("jdk.virtualThreadScheduler.parallelism", "1")
+    systemProperty("jdk.virtualThreadScheduler.maxPoolSize", "1")
+}
+
+tasks.check {
+    dependsOn(singleCarrierTest)
 }
 
 tasks.jacocoTestReport {
