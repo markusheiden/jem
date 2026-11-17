@@ -2,7 +2,10 @@ package de.heiden.jem.models.c64.components;
 
 import de.heiden.jem.components.clock.Clock;
 import de.heiden.jem.components.clock.RealTimeSlowDown;
+import de.heiden.jem.models.c64.components.cia.AbstractCIA;
 import de.heiden.jem.models.c64.components.cia.CIA6526;
+import de.heiden.jem.models.c64.components.cia.CIA6526A;
+import de.heiden.jem.models.c64.components.cia.TodInput;
 import de.heiden.jem.models.c64.components.cpu.C64Bus;
 import de.heiden.jem.models.c64.components.cpu.CPU6510;
 import de.heiden.jem.models.c64.components.cpu.CPU6510Debugger;
@@ -76,39 +79,25 @@ public class C64 {
     private final RealTimeSlowDown realTimeSlowDown;
 
     /**
-     * Constructor.
+     * Builder for a C64, by default a PAL C64 with old CIAs.
      *
      * @param clock
      *         Clock.
      */
-    public C64(Clock clock) throws Exception {
-        this(clock, false);
+    public static Builder builder(Clock clock) {
+        return new Builder(clock);
     }
 
     /**
      * Constructor.
      *
-     * @param clock
-     *         Clock.
-     * @param debug
-     *         use debugger cpu?
+     * @param builder
+     *         configuration
      */
-    public C64(Clock clock, boolean debug) throws Exception {
-        this(clock, debug, VideoSystem.selected());
-    }
-
-    /**
-     * Constructor.
-     *
-     * @param clock
-     *         Clock.
-     * @param debug
-     *         use debugger cpu?
-     * @param videoSystem
-     *         video system
-     */
-    public C64(Clock clock, boolean debug, VideoSystem videoSystem) throws Exception {
-        this.clock = clock;
+    private C64(Builder builder) throws Exception {
+        clock = builder.clock;
+        var videoSystem = builder.videoSystem;
+        var todInput = videoSystem.todInput().withFrequency(builder.powerLineFrequency());
 
         var ram = new RAM(0x10000);
         var colorRam = new ColorRAM(0x400);
@@ -116,8 +105,8 @@ public class C64 {
         var kernel = ROMLoader.kernel(ROMLoader.DEFAULT_KERNEL);
         var charset = ROMLoader.character(ROMLoader.DEFAULT_CHARACTER);
 
-        var cia1 = clock.addClockedComponent(Clock.CIA1, new CIA6526(videoSystem.todInput()));
-        var cia2 = clock.addClockedComponent(Clock.CIA2, new CIA6526(videoSystem.todInput()));
+        var cia1 = clock.addClockedComponent(Clock.CIA1, builder.createCia(todInput));
+        var cia2 = clock.addClockedComponent(Clock.CIA2, builder.createCia(todInput));
 
         var vicBus = new VICBus(cia2.portA(), ram, charset);
         vic = videoSystem.createVic(clock, vicBus, colorRam);
@@ -128,7 +117,7 @@ public class C64 {
         joystick1 = new Joystick(clock, cia1.portB());
         joystick2 = new Joystick(clock, cia1.portA());
 
-        cpu = clock.addClockedComponent(Clock.CPU, debug ? new CPU6510Debugger() : new CPU6510());
+        cpu = clock.addClockedComponent(Clock.CPU, builder.debug ? new CPU6510Debugger() : new CPU6510());
         cpuBus = new C64Bus(ram, basic, vic, colorRam, cia1, cia2, charset, kernel, vicBus.openBus());
         cpuBus.connect(cpu.getPort());
         cpu.connect(cpuBus);
@@ -253,5 +242,114 @@ public class C64 {
      */
     public RealTimeSlowDown getRealTimeSlowDown() {
         return realTimeSlowDown;
+    }
+
+    /**
+     * Builder for a C64.
+     */
+    public static class Builder {
+        /**
+         * Main clock.
+         */
+        private final Clock clock;
+
+        /**
+         * Use debugger cpu?
+         */
+        private boolean debug = false;
+
+        /**
+         * Video system.
+         */
+        private VideoSystem videoSystem = VideoSystem.PAL;
+
+        /**
+         * Use new CIAs (6526A) instead of old CIAs (6526)?
+         */
+        private boolean newCias = false;
+
+        /**
+         * Frequency of the power line in Hz, 0 for the frequency of the video system.
+         */
+        private int powerLineFrequency = 0;
+
+        /**
+         * Constructor.
+         *
+         * @param clock
+         *         Clock.
+         */
+        private Builder(Clock clock) {
+            this.clock = clock;
+        }
+
+        /**
+         * Use debugger cpu? Default: no.
+         */
+        public Builder debug(boolean debug) {
+            this.debug = debug;
+            return this;
+        }
+
+        /**
+         * Video system. Default: PAL.
+         */
+        public Builder videoSystem(VideoSystem videoSystem) {
+            this.videoSystem = videoSystem;
+            return this;
+        }
+
+        /**
+         * Use old CIAs (6526), as in the breadbin C64. Default.
+         */
+        public Builder oldCias() {
+            return newCias(false);
+        }
+
+        /**
+         * Use new CIAs (6526A), as in the C64C.
+         */
+        public Builder newCias() {
+            return newCias(true);
+        }
+
+        /**
+         * Use new CIAs (6526A) instead of old CIAs (6526)? Default: no.
+         */
+        public Builder newCias(boolean newCias) {
+            this.newCias = newCias;
+            return this;
+        }
+
+        /**
+         * Frequency of the power line in Hz, e.g. 50 or 60, which drives the TOD clocks of the CIAs.
+         * Default: The frequency of the video system, 50 Hz for PAL and 60 Hz for NTSC.
+         */
+        public Builder powerLineFrequency(int powerLineFrequency) {
+            assert powerLineFrequency > 0 : "powerLineFrequency > 0";
+            this.powerLineFrequency = powerLineFrequency;
+            return this;
+        }
+
+        /**
+         * Build the C64.
+         */
+        public C64 build() throws Exception {
+            return new C64(this);
+        }
+
+        /**
+         * Frequency of the power line in Hz.
+         */
+        private int powerLineFrequency() {
+            return powerLineFrequency > 0 ? powerLineFrequency : videoSystem.todInput().frequency();
+        }
+
+        /**
+         * Create a CIA.
+         */
+        private AbstractCIA createCia(TodInput todInput) {
+            return newCias ? new CIA6526A(todInput) : new CIA6526(todInput);
+        }
     }
 }

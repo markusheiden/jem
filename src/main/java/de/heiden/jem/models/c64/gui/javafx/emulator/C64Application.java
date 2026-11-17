@@ -2,6 +2,7 @@ package de.heiden.jem.models.c64.gui.javafx.emulator;
 
 import de.heiden.jem.components.clock.Clock;
 import de.heiden.jem.models.c64.components.C64;
+import de.heiden.jem.models.c64.components.VideoSystem;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
@@ -39,7 +40,7 @@ public class C64Application extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        c64 = new C64(createClock());
+        c64 = C64.builder(createClock()).videoSystem(VideoSystem.selected()).build();
 
         var screen = new VICScreen(c64.getVIC().displayUnit);
 

@@ -2,6 +2,7 @@ package de.heiden.jem.models.c64.gui.swing.emulator;
 
 import de.heiden.jem.components.clock.Clock;
 import de.heiden.jem.models.c64.components.C64;
+import de.heiden.jem.models.c64.components.VideoSystem;
 
 import javax.swing.*;
 
@@ -38,7 +39,7 @@ public class C64Application {
      * Start the application.
      */
     public void start() throws Exception {
-        c64 = new C64(clock);
+        c64 = C64.builder(clock).videoSystem(VideoSystem.selected()).build();
 
         frame = new JFrame("C64");
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
