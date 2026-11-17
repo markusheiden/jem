@@ -854,6 +854,7 @@ public abstract class VIC implements BusDevice {
                 // Reading clears the collisions.
                 result = regSpritesSpriteCollision;
                 regSpritesSpriteCollision = 0;
+                displayUnit.spriteCollisionsRead();
                 break;
             }
             case 0x1F: {

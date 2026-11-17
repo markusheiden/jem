@@ -28,6 +28,12 @@ public class DisplayUnit extends AbstractDisplayUnit {
     private static final int COLLISION_DELAY = 12;
 
     /**
+     * Number of pixels, whose collisions with other sprites are lost,
+     * because the CPU read the sprite-sprite collision register.
+     */
+    private int spriteCollisionsRead = 0;
+
+    /**
      * No border pixel.
      */
     private static final byte NO_BORDER = -1;
@@ -318,10 +324,12 @@ public class DisplayUnit extends AbstractDisplayUnit {
         var x = (vic.x(cycle) - COLLISION_DELAY + vic.lastX) % vic.lastX;
         for (var i = 0; i < 8; i++) {
             var mask = spriteRenderer.sprites[x] & 0xFF;
+            if (spriteCollisionsRead > 0) {
+                spriteCollisionsRead--;
+            } else if ((mask & (mask - 1)) != 0) {
+                sprites |= mask;
+            }
             if (mask != 0) {
-                if ((mask & (mask - 1)) != 0) {
-                    sprites |= mask;
-                }
                 if (foreground[x]) {
                     background |= mask;
                 }
@@ -337,6 +345,15 @@ public class DisplayUnit extends AbstractDisplayUnit {
 
         // All pixels up to the cycle before the last cycle have been output.
         spriteRenderer.clear(vic.x(cycle - 2), 8);
+    }
+
+    /**
+     * The CPU read the sprite-sprite collision register in the current cycle:
+     * The collisions of the pixels, which are not visible in it yet, are lost.
+     */
+    @Override
+    void spriteCollisionsRead() {
+        spriteCollisionsRead = COLLISION_DELAY;
     }
 
     /**

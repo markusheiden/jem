@@ -369,6 +369,11 @@ public class C64Bus implements BusDevice, Patchable {
         assert value >= 0x00 && value < 0x100 : "value >= 0x00 && value < 0x100";
         assert address >= 0x0000 && address < 0x10000 : "address >= 0x0000 && address < 0x10000";
 
+        if (address <= 0x0001) {
+            // The value goes to the CPU port. The CPU does not drive the data bus,
+            // so the RAM gets the byte the VIC has read last.
+            value = openBus.read(address);
+        }
         ioModeWrite[address >> 8].write(value, address);
     }
 }

@@ -58,12 +58,12 @@ class VicTest extends AbstractTest {
      * Clearing of sprite collisions, restarting sprites and VSP (variable screen position).
      * These tests fail:
      * lp-trigger/test2.prg and lplatency/lplatency.prg: The light pen is not emulated.
-     * spritevssprite/spritevssprite.prg: Collisions of sprites at the same position.
      */
     @ParameterizedTest
     @ValueSource(strings = {
             "spritecollclear/bug2135.prg",
             "spriterestart/spriterestart.prg",
+            "spritevssprite/spritevssprite.prg",
             "vspbug/vsp_bug.prg",
             "vsp-tester/vsp-tester.prg",
             "vsp-tester/vsp-tester-ntsc.prg",

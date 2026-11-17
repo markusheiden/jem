@@ -12,7 +12,6 @@ import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
  */
 @Execution(CONCURRENT)
 class MemoryTest extends AbstractTest {
-    // general/ram0001/test1.prg fails: Writes to $00/$01 do not write the last value on the bus to the RAM below.
     @ParameterizedTest
     @ValueSource(strings = {
             "C64/bankio/bankio.prg",
@@ -21,6 +20,7 @@ class MemoryTest extends AbstractTest {
             "C64/raminitpattern/darkstarbbstest.prg",
             "C64/raminitpattern/platoontest.prg",
             "C64/raminitpattern/typicaltest.prg",
+            "general/ram0001/test1.prg",
     })
     void test(String program) throws Exception {
         testDebugCartridgeResult(path("/vice-emu-testprogs/" + program), 15);

@@ -65,6 +65,13 @@ public abstract class AbstractDisplayUnit implements ClockedComponent {
         // nothing to do by default
     }
 
+    /**
+     * The CPU read the sprite-sprite collision register in the current cycle.
+     */
+    void spriteCollisionsRead() {
+        // nothing to do by default
+    }
+
     @Override
     public void setTick(Tick tick) {
         this.tick = tick;
