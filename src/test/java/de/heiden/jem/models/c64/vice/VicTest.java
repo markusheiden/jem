@@ -15,8 +15,6 @@ import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
  */
 @Execution(CONCURRENT)
 class VicTest extends AbstractTest {
-    // spritegap/spritegap2.prg and spritegap/spritegap3.prg fail randomly since their VIC init enables all sprites
-    // for a frame (VICE r36660): 3 of 7 runs failed, the old versions passed 5 of 5 runs.
     @ParameterizedTest
     @Timeout(180)
     @ValueSource(strings = {
@@ -62,8 +60,17 @@ class VicTest extends AbstractTest {
     @ParameterizedTest
     @ValueSource(strings = {
             "spritecollclear/bug2135.prg",
+            "spritecollisions/sprite-sprite-hi-hi.prg",
+            "spritecollisions/sprite-sprite-hi-mc.prg",
+            "spritecollisions/sprite-sprite-mc-hi.prg",
+            "spritecollisions/sprite-sprite-mc-mc.prg",
+            "spritecollisions/sprite-gfx-hi-hi.prg",
+            "spritecollisions/sprite-gfx-hi-mc.prg",
+            "spritecollisions/sprite-gfx-mc-hi.prg",
+            "spritecollisions/sprite-gfx-mc-mc.prg",
             "spriterestart/spriterestart.prg",
             "spritevssprite/spritevssprite.prg",
+            "spritex/demusinterruptus.prg",
             "vspbug/vsp_bug.prg",
             "vsp-tester/vsp-tester.prg",
             "vsp-tester/vsp-tester-ntsc.prg",
@@ -71,5 +78,18 @@ class VicTest extends AbstractTest {
     void various(String program) throws Exception {
         videoSystem = videoSystemOf(program);
         testDebugCartridgeResult(path("/vice-emu-testprogs/VICII/" + program), 40);
+    }
+
+    /**
+     * Sprite DMA in the gap between the sprites. Each test takes about 45 seconds.
+     */
+    @ParameterizedTest
+    @Timeout(180)
+    @ValueSource(strings = {
+            "spritegap/spritegap2.prg",
+            "spritegap/spritegap3.prg",
+    })
+    void spriteGap(String program) throws Exception {
+        testDebugCartridgeResult(path("/vice-emu-testprogs/VICII/" + program), 1000);
     }
 }

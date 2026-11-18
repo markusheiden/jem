@@ -8,7 +8,8 @@ import org.junit.jupiter.params.provider.ValueSource;
 import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
 
 /**
- * VICE test suite for the memory: Banking, open I/O area, RAM power-up pattern and the RAM under the CPU port.
+ * VICE test suite for the memory: Banking, open I/O area, RAM power-up pattern and the RAM under the CPU port
+ * and the data bus of the SID.
  */
 @Execution(CONCURRENT)
 class MemoryTest extends AbstractTest {
@@ -21,6 +22,7 @@ class MemoryTest extends AbstractTest {
             "C64/raminitpattern/platoontest.prg",
             "C64/raminitpattern/typicaltest.prg",
             "general/ram0001/test1.prg",
+            "SID/busvalue/busvalue.prg",
     })
     void test(String program) throws Exception {
         testDebugCartridgeResult(path("/vice-emu-testprogs/" + program), 15);
