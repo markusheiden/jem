@@ -155,6 +155,7 @@ public class C64 {
         cpu.getNMI().connect(cia2.getIRQ());
         cpu.getNMI().connect(keyboard.getNMI());
         cpu.getRDY().connect(vic.getBA());
+        vic.connectCpuData(cpu::getBusData);
 
         keyboardBuffer = new KeyboardBuffer(clock, cpuBus);
 
@@ -165,12 +166,9 @@ public class C64 {
      * Additional init for test purposes.
      */
     private void init(RAM ram, ColorRAM colorRam) throws IOException {
-        // Init RAM with 0x02 (crash) to easier detect wrong behaviour.
+        // Init RAM with the pattern of a C64 after power-up, because some programs depend on it.
         // Not via the bus, because that would write to the registers of the I/O chips too.
-        // TODO 2010-06-22 mh: realistic init?
-        for (var addr = 0; addr < 0x10000; addr++) {
-            ram.write(0x02, addr);
-        }
+        ram.powerUpPattern();
 
         // Fill the screen with the complete character set.
         for (var i = 0; i < 0x400; i++) {

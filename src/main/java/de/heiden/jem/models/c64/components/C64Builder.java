@@ -51,7 +51,7 @@ public class C64Builder {
     /**
      * Device in the SID area $D400-$D7FF.
      */
-    private BusDevice sid = new SIDStub();
+    private BusDevice sid;
 
     /**
      * Slow down the emulation to real time?
@@ -138,7 +138,7 @@ public class C64Builder {
     public C64 build() throws Exception {
         var todInput = videoSystem.todInput().withFrequency(powerLineFrequency());
 
-        var ram = new RAM(0x10000).powerUpPattern();
+        var ram = new RAM(0x10000);
         var colorRam = new ColorRAM(0x400);
         var basic = ROMLoader.basic(DEFAULT_BASIC);
         var kernel = ROMLoader.kernel(DEFAULT_KERNEL);
@@ -154,6 +154,8 @@ public class C64Builder {
 
         // real time measurement
         var realTimeSlowDown = realTime ? new RealTimeSlowDown(clock, videoSystem.cpuFrequency(), 100) : null;
+
+        var sid = this.sid != null ? this.sid : new SIDStub(clock);
 
         return new C64(clock, ram, colorRam, basic, kernel, charset, cia1, cia2, vicBus, vic, sid, cpu, realTimeSlowDown);
     }

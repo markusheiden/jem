@@ -260,6 +260,7 @@ public class DisplayUnit extends AbstractDisplayUnit {
         }
 
         // Sprites reached by the raster beam since the last write of the CPU, before and after the sprite sequencer.
+        vic.completeSpriteData();
         var beamX = vic.x(cycle);
         spriteRenderer.trigger((vic.x(cycle - 1) + SPRITE_X_DELAY) % vic.lastX, 8 - SPRITE_X_DELAY);
 

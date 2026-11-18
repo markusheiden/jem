@@ -94,6 +94,11 @@ public class CPU6510 implements ClockedComponent {
     private boolean halted = false;
 
     /**
+     * Byte of the last access to the bus.
+     */
+    private int busData = 0xFF;
+
+    /**
      * Address -> Patch.
      */
     private final Map<Integer, Patch> patches = new HashMap<>();
@@ -107,7 +112,8 @@ public class CPU6510 implements ClockedComponent {
         // TODO mh: connect to emulated hardware
         portIn = new OutputPortImpl();
         portIn.setOutputMask(0xFF);
-        portIn.setOutputData(0xDF);
+        // The unconnected bits 6 and 7 are low, until they are driven high as outputs.
+        portIn.setOutputData(0x1F);
         portOut = new InputOutputPortImpl();
         portOut.connect(portIn);
 
@@ -3679,6 +3685,14 @@ public class CPU6510 implements ClockedComponent {
     //
 
     /**
+     * Byte of the last access of the CPU to the bus.
+     * The VIC loads it into the data of sprites without DMA.
+     */
+    public final int getBusData() {
+        return busData;
+    }
+
+    /**
      * Read a value for a read-modify-write instruction.
      * In the modify cycle the 6510 writes the unmodified value back, before it writes the result.
      * Programs rely on this, e.g. to acknowledge VIC interrupts with DEC $D019.
@@ -3740,6 +3754,7 @@ public class CPU6510 implements ClockedComponent {
         poll();
 
         // always write to bus!
+        busData = value;
         bus.write(value, addr);
         if (addr <= 1) {
             writePort(value, addr);
@@ -3792,6 +3807,7 @@ public class CPU6510 implements ClockedComponent {
         if (addr <= 1) {
             result = readPort(addr);
         }
+        busData = result;
         tick.waitForTick();
 
         return result;

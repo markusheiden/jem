@@ -105,7 +105,7 @@ public class TestC64 {
      */
     public TestC64(boolean newCias, VideoSystem videoSystem) throws Exception {
         clock = new SerialClock();
-        debugCartridge = new DebugCartridge(new SIDStub());
+        debugCartridge = new DebugCartridge(new SIDStub(clock));
         var c64 = C64.builder(clock)
                 .videoSystem(videoSystem)
                 .newCias(newCias)

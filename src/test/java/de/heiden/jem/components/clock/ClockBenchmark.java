@@ -5,6 +5,7 @@ import de.heiden.jem.components.clock.loom.SequentialFiberLatchClock;
 import de.heiden.jem.components.clock.loom.SequentialFiberParkClock;
 import de.heiden.jem.components.clock.loom.SequentialFiberQueueClock;
 import de.heiden.jem.components.clock.loom.SequentialFiberYieldClock;
+import de.heiden.jem.components.clock.serialthreads.SerialClock;
 import de.heiden.jem.components.clock.threads.ParallelBarrierClock;
 import de.heiden.jem.components.clock.threads.ParallelNotifyClock;
 import de.heiden.jem.components.clock.threads.ParallelSpinClock;
@@ -13,13 +14,15 @@ import de.heiden.jem.components.clock.threads.SequentialClock;
 import de.heiden.jem.components.clock.threads.SequentialSpinClock;
 import de.heiden.jem.components.clock.threads.SequentialYieldClock;
 import org.serialthreads.Interruptible;
+import org.serialthreads.agent.TransformingClassLoader;
+import org.serialthreads.transformer.Strategies;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Benchmark for the overhead per tick of the thread, fiber and continuation based clocks.
+ * Benchmark for the overhead per tick of the serial, thread, fiber and continuation based clocks.
  * The components just count, so only the handover between the components is measured.
  * <p>
  * Without arguments, each clock is benchmarked in its own JVM. The clocks executing their components sequentially
@@ -27,41 +30,9 @@ import java.util.concurrent.TimeUnit;
  * With the class name of a clock as argument, just this clock is benchmarked in this JVM.
  * The number of components may be set via the system property "components".
  * <p>
- * The serial clock is not part of this benchmark, because it needs byte code transformation.
+ * The serial clock needs byte code transformation, so its benchmark is loaded by a transforming class loader.
  */
 public final class ClockBenchmark {
-    /**
-     * Thread based clocks.
-     */
-    private static final List<Class<? extends Clock>> THREAD_CLOCKS = List.of(
-            SequentialClock.class,
-            SequentialSpinClock.class,
-            SequentialYieldClock.class,
-            ParallelBarrierClock.class,
-            ParallelNotifyClock.class,
-            ParallelSpinClock.class,
-            ParallelYieldClock.class);
-
-    /**
-     * Fiber based clocks.
-     */
-    private static final List<Class<? extends Clock>> FIBER_CLOCKS = List.of(
-            SequentialFiberLatchClock.class,
-            SequentialFiberParkClock.class,
-            SequentialFiberQueueClock.class,
-            SequentialFiberYieldClock.class);
-
-    /**
-     * Clocks executing all components and events with the same thread, if there is just a single carrier thread.
-     */
-    private static final List<Class<? extends Clock>> SINGLE_CARRIER_CLOCKS = List.of(
-            SequentialClock.class,
-            SequentialYieldClock.class,
-            SequentialFiberLatchClock.class,
-            SequentialFiberParkClock.class,
-            SequentialFiberQueueClock.class,
-            SequentialFiberYieldClock.class);
-
     /**
      * JVM arguments to execute all fibers on a single carrier thread.
      */
@@ -99,19 +70,25 @@ public final class ClockBenchmark {
      */
     public static void main(String[] args) throws Exception {
         if (args.length == 0) {
-            for (var clock : THREAD_CLOCKS) {
+            fork(SerialClock.class, List.of());
+            for (var clock : Clocks.THREAD_CLOCKS) {
                 fork(clock, List.of());
             }
-            for (var clock : FIBER_CLOCKS) {
+            for (var clock : Clocks.FIBER_CLOCKS) {
                 fork(clock, List.of());
             }
             fork(ContinuationClock.class, List.of());
             System.out.println("Single carrier thread:");
-            for (var clock : SINGLE_CARRIER_CLOCKS) {
+            for (var clock : Clocks.SINGLE_CARRIER_CLOCKS) {
                 fork(clock, SINGLE_CARRIER);
             }
+        } else if (args[0].equals(SerialClock.class.getName())) {
+            // Execute the benchmark with byte code transformation.
+            var classLoader = new TransformingClassLoader(ClockBenchmark.class.getClassLoader(), Strategies.DEFAULT, "de.heiden.jem");
+            Thread.currentThread().setContextClassLoader(classLoader);
+            classLoader.loadClass(ClockBenchmark.class.getName()).getMethod("benchmark", String.class).invoke(null, args[0]);
         } else {
-            benchmark(Class.forName(args[0]).asSubclass(Clock.class));
+            benchmark(args[0]);
         }
     }
 
@@ -141,8 +118,10 @@ public final class ClockBenchmark {
 
     /**
      * Benchmark the clock.
+     * Public, because it is called via reflection for the serial clock.
      */
-    private static void benchmark(Class<? extends Clock> clockClass) throws Exception {
+    public static void benchmark(String clockClassName) throws Exception {
+        var clockClass = Class.forName(clockClassName).asSubclass(Clock.class);
         try (var clock = clockClass.getConstructor().newInstance()) {
             for (var i = 0; i < COMPONENTS; i++) {
                 clock.addClockedComponent(i, new CountingComponent());
@@ -198,6 +177,49 @@ public final class ClockBenchmark {
                 count++;
                 tick.waitForTick();
             }
+        }
+    }
+
+    /**
+     * Clocks to benchmark.
+     * Not part of the benchmark class itself, because these clocks must not be loaded when benchmarking the serial clock:
+     * They are not transformable.
+     */
+    private static final class Clocks {
+        /**
+         * Thread based clocks.
+         */
+        static final List<Class<? extends Clock>> THREAD_CLOCKS = List.of(
+                SequentialClock.class,
+                SequentialSpinClock.class,
+                SequentialYieldClock.class,
+                ParallelBarrierClock.class,
+                ParallelNotifyClock.class,
+                ParallelSpinClock.class,
+                ParallelYieldClock.class);
+
+        /**
+         * Fiber based clocks.
+         */
+        static final List<Class<? extends Clock>> FIBER_CLOCKS = List.of(
+                SequentialFiberLatchClock.class,
+                SequentialFiberParkClock.class,
+                SequentialFiberQueueClock.class,
+                SequentialFiberYieldClock.class);
+
+        /**
+         * Clocks executing all components and events with the same thread, if there is just a single carrier thread.
+         */
+        static final List<Class<? extends Clock>> SINGLE_CARRIER_CLOCKS = List.of(
+                SequentialClock.class,
+                SequentialYieldClock.class,
+                SequentialFiberLatchClock.class,
+                SequentialFiberParkClock.class,
+                SequentialFiberQueueClock.class,
+                SequentialFiberYieldClock.class);
+
+        private Clocks() {
+            // Utility class.
         }
     }
 

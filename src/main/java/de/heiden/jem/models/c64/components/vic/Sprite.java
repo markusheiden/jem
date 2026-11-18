@@ -51,6 +51,12 @@ public class Sprite {
     public int data;
 
     /**
+     * Sprite sequencer: Is the last byte of the data still to be completed with the byte on the CPU bus?
+     * This is the case after the second access cycle of a sprite without DMA.
+     */
+    public boolean dataPending;
+
+    /**
      * Sprite sequencer: Sprite pointer, read in the first access cycle.
      */
     public int pointer;

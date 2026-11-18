@@ -8,6 +8,8 @@ import de.heiden.jem.models.c64.components.memory.ColorRAM;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.function.IntSupplier;
+
 /**
  * VIC.
  */
@@ -51,6 +53,11 @@ public abstract class VIC implements BusDevice {
     public final ColorRAM colorRam;
 
     private final OutputPortImpl irqPort;
+
+    /**
+     * Byte of the last access of the CPU to the bus.
+     */
+    private IntSupplier cpuData = () -> 0xFF;
 
     /**
      * BA output, connected to RDY of the CPU. Low halts the CPU, e.g. on bad lines.
@@ -348,6 +355,7 @@ public abstract class VIC implements BusDevice {
      */
     protected final void spriteCycle(int raster, int cycle) {
         this.cycle = cycle;
+        completeSpriteData();
 
         switch (cycle) {
             case 16 -> {
@@ -407,7 +415,7 @@ public abstract class VIC implements BusDevice {
             if (cycle != access % cyclesPerLine + 1) {
                 continue;
             }
-            sprite.armed = sprite.dma;
+            sprite.armed = true;
             if (sprite.dma) {
                 // The CPU is halted, so it does not matter, that the last byte is not read in the first phase.
                 var address = sprite.pointer << 6;
@@ -418,12 +426,42 @@ public abstract class VIC implements BusDevice {
                 }
                 sprite.data = data;
                 idle = false;
+            } else {
+                // Without DMA the data is loaded nevertheless: With the bytes on the CPU bus in the second phases
+                // of both access cycles and the idle access of the VIC in between.
+                // Such a sprite is visible, if its display is turned on in the line of its Y coordinate.
+                sprite.data = cpuData.getAsInt() << 16 | bus.read(0x3FFF) << 8 | 0xFF;
+                sprite.dataPending = true;
+                idle = false;
             }
         }
 
         if (idle) {
             bus.read(0x3FFF);
         }
+    }
+
+    /**
+     * Complete the data of sprites without DMA with the byte on the CPU bus in their second access cycle.
+     * To be called at the start of the following cycle, before the sprites are displayed.
+     */
+    final void completeSpriteData() {
+        for (var sprite : sprites) {
+            if (sprite.dataPending) {
+                sprite.dataPending = false;
+                sprite.data = sprite.data & 0xFFFF00 | cpuData.getAsInt();
+            }
+        }
+    }
+
+    /**
+     * Connect the CPU bus.
+     *
+     * @param cpuData
+     *         byte of the last access of the CPU to the bus
+     */
+    public void connectCpuData(IntSupplier cpuData) {
+        this.cpuData = cpuData;
     }
 
     /**

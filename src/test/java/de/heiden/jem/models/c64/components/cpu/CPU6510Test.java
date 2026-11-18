@@ -48,14 +48,22 @@ class CPU6510Test {
      */
     @Test
     void testPort() {
+        // The unconnected bits 6 and 7 are inputs, they read low.
         cpu.writePort(0x2F, 0x00);
         cpu.writePort(0x34, 0x01);
-        assertEquals(0xF4, cpu.getPort().outputData());
+        assertEquals(0x34, cpu.getPort().outputData());
         cpu.writePort(0x2E, 0x00);
         cpu.writePort(0x34, 0x01);
-        assertEquals(0xF5, cpu.getPort().outputData());
+        assertEquals(0x35, cpu.getPort().outputData());
         cpu.writePort(0x2F, 0x00);
         cpu.writePort(0x35, 0x01);
+        assertEquals(0x35, cpu.getPort().outputData());
+
+        // As outputs they are driven. As inputs they keep the level they have been driven to.
+        cpu.writePort(0xEF, 0x00);
+        cpu.writePort(0xF5, 0x01);
+        assertEquals(0xF5, cpu.getPort().outputData());
+        cpu.writePort(0x2F, 0x00);
         assertEquals(0xF5, cpu.getPort().outputData());
     }
 

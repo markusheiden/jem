@@ -29,7 +29,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 # Check for dependency updates
 ./gradlew dependencyUpdates
 
-# Benchmark the thread and fiber based clocks (each clock in its own JVM)
+# Benchmark the clocks (each clock in its own JVM)
 ./gradlew clockBenchmark
 
 # Test the sequential clocks on a single carrier thread (part of check)
