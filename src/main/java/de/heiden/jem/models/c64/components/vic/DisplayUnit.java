@@ -194,6 +194,7 @@ public class DisplayUnit extends AbstractDisplayUnit {
                     if (cycle == (raster == 0 ? 2 : 1)) {
                         vic.setRasterLine(raster);
                     }
+                    vic.lightPenCycle(raster, cycle);
                     cycle(raster, cycle);
                     tick.waitForTick();
                 }

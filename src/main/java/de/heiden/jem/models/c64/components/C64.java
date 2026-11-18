@@ -3,6 +3,7 @@ package de.heiden.jem.models.c64.components;
 import de.heiden.jem.components.bus.BusDevice;
 import de.heiden.jem.components.clock.Clock;
 import de.heiden.jem.components.clock.RealTimeSlowDown;
+import de.heiden.jem.components.ports.PortListener;
 import de.heiden.jem.models.c64.components.cia.AbstractCIA;
 import de.heiden.jem.models.c64.components.cpu.C64Bus;
 import de.heiden.jem.models.c64.components.cpu.CPU6510;
@@ -146,6 +147,11 @@ public class C64 {
         // Joystick port 1 is connected to CIA 1 port B, joystick port 2 to CIA 1 port A.
         joystick1 = new Joystick(clock, cia1.portB());
         joystick2 = new Joystick(clock, cia1.portA());
+
+        // The light pen input of the VIC is connected to PB4 of CIA 1, which the keyboard and joystick 1 can pull low too.
+        PortListener lightPen = (value, mask) -> vic.setLightPen((cia1.portB().pinData() & 0x10) == 0);
+        cia1.portB().addOutputPortListener(lightPen);
+        cia1.portB().addInputPortListener(lightPen);
 
         cpuBus = new C64Bus(ram, basic, vic, sid, colorRam, cia1, cia2, charset, kernel, vicBus.openBus());
         cpuBus.connect(cpu.getPort());

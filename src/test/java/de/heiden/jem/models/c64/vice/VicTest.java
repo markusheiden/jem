@@ -1,6 +1,7 @@
 package de.heiden.jem.models.c64.vice;
 
 import de.heiden.jem.models.c64.AbstractTest;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -53,12 +54,13 @@ class VicTest extends AbstractTest {
     }
 
     /**
-     * Clearing of sprite collisions, restarting sprites and VSP (variable screen position).
-     * These tests fail:
-     * lp-trigger/test2.prg and lplatency/lplatency.prg: The light pen is not emulated.
+     * Light pen, clearing of sprite collisions, restarting sprites and VSP (variable screen position).
+     * lp-trigger/test2new.prg is skipped, because it needs the new VIC 8565.
      */
     @ParameterizedTest
     @ValueSource(strings = {
+            "lp-trigger/test2.prg",
+            "lplatency/lplatency.prg",
             "spritecollclear/bug2135.prg",
             "spritecollisions/sprite-sprite-hi-hi.prg",
             "spritecollisions/sprite-sprite-hi-mc.prg",
@@ -78,6 +80,15 @@ class VicTest extends AbstractTest {
     void various(String program) throws Exception {
         videoSystem = videoSystemOf(program);
         testDebugCartridgeResult(path("/vice-emu-testprogs/VICII/" + program), 40);
+    }
+
+    /**
+     * Light pen in each cycle of a raster line. It needs more than 40 emulated seconds.
+     */
+    @Test
+    @Timeout(180)
+    void lightPen() throws Exception {
+        testDebugCartridgeResult(path("/vice-emu-testprogs/VICII/split-tests/lightpen/lightpen.prg"), 300);
     }
 
     /**

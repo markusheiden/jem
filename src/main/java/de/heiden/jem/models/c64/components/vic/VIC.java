@@ -119,9 +119,24 @@ public abstract class VIC implements BusDevice {
     protected int baseBitmapMode; // base address of bitmap screen
     protected int baseCharacterSet; // base address of character set
 
-    // strobe
+    // light pen
     private int regStrobeX; // 0x13
     private int regStrobeY; // 0x14
+
+    /**
+     * Is the light pen input low?
+     */
+    private boolean lightPenLow = false;
+
+    /**
+     * Has the light pen input gone low, so that the light pen triggers in the next cycle?
+     */
+    private boolean lightPenTrigger = false;
+
+    /**
+     * Has the light pen been triggered in the current frame? It triggers just once per frame.
+     */
+    private boolean lightPenTriggered = false;
 
     // irq register
     protected int regInterruptRequest; // 0x19
@@ -130,6 +145,7 @@ public abstract class VIC implements BusDevice {
     protected static final int INTERRUPT_RASTER = 1 << 0;
     protected static final int INTERRUPT_SPRITE_BACKGROUND = 1 << 1;
     protected static final int INTERRUPT_SPRITE_SPRITE = 1 << 2;
+    protected static final int INTERRUPT_LIGHT_PEN = 1 << 3;
     protected static final int INTERRUPT_ANY = 1 << 7;
     // color register
     protected byte regExteriorColor; // 0x20
@@ -581,12 +597,9 @@ public abstract class VIC implements BusDevice {
                 regRasterIRQ = regRasterIRQ & 0x0100 | value;
                 break;
             }
-            case 0x13: {
-                regStrobeX = value;
-                break;
-            }
+            case 0x13:
             case 0x14: {
-                regStrobeY = value;
+                // The light pen registers are read only.
                 break;
             }
             case 0x15: {
@@ -997,6 +1010,84 @@ public abstract class VIC implements BusDevice {
 
             logger.debug("Raster irq at line {} at tick {}", regRaster, clock.getTick());
         }
+    }
+
+    /**
+     * Set the light pen input, connected to PB4 of CIA 1 and the fire button of joystick port 1.
+     * A falling edge triggers the light pen in the next cycle.
+     *
+     * @param low
+     *         is the light pen input low?
+     */
+    public final void setLightPen(boolean low) {
+        if (low && !lightPenLow) {
+            lightPenTrigger = true;
+        }
+        lightPenLow = low;
+    }
+
+    /**
+     * Execute the light pen for a cycle of the current raster line.
+     * At the start of a frame, the light pen triggers again, if its input is still low.
+     *
+     * @param raster
+     *         raster line
+     * @param cycle
+     *         cycle, starting with 1
+     */
+    final void lightPenCycle(int raster, int cycle) {
+        if (raster == 0 && cycle == 2) {
+            lightPenTriggered = false;
+            if (lightPenLow) {
+                triggerLightPen(cycle, true);
+            }
+        }
+        if (lightPenTrigger) {
+            triggerLightPen(cycle, false);
+        }
+    }
+
+    /**
+     * Trigger the light pen: Latch the current position and request an interrupt, as VICE does.
+     *
+     * @param cycle
+     *         cycle, starting with 1
+     * @param startOfFrame
+     *         is the light pen triggered at the start of the frame, because its input is still low?
+     */
+    private void triggerLightPen(int cycle, boolean startOfFrame) {
+        lightPenTrigger = false;
+        if (lightPenTriggered) {
+            return;
+        }
+        lightPenTriggered = true;
+
+        // The light pen does not trigger in the last line, except in its first cycle.
+        if (regRaster == linesPerScreen - 1 && cycle > 1) {
+            return;
+        }
+
+        if (startOfFrame) {
+            regStrobeX = cyclesPerLine == 65 ? 0xD5 : 0xD1;
+        } else {
+            // The X coordinate of the cycle in units of 8 pixels, divided by 2,
+            // plus 2 because of the color latency of the 6569 and 6567.
+            regStrobeX = ((x(cycle) & ~0x07) / 2 + 2) & 0xFF;
+        }
+        regStrobeY = regRaster & 0xFF;
+
+        if (!lightPenIrqAtStartOfFrameOnly() || startOfFrame) {
+            regInterruptRequest |= INTERRUPT_LIGHT_PEN;
+            updateIRQ();
+        }
+    }
+
+    /**
+     * Does the light pen request an interrupt just at the start of a frame, if its input is low?
+     * That is the case for the old VICs 6569R1 and 6567R56A.
+     */
+    protected boolean lightPenIrqAtStartOfFrameOnly() {
+        return false;
     }
 
     /**

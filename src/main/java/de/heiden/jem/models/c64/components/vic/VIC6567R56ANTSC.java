@@ -33,4 +33,9 @@ public class VIC6567R56ANTSC extends VIC {
         // lastVisibleX = 388 & 0x01F8;
         // lastX = 512;
     }
+
+    @Override
+    protected boolean lightPenIrqAtStartOfFrameOnly() {
+        return true;
+    }
 }
