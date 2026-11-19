@@ -8,14 +8,17 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 # Build
 ./gradlew build
 
-# Run tests
+# Run the tests of the default groups (cpu, cia, vic, clock and none for the tests without a group)
 ./gradlew test
 
+# Run the tests of all groups (part of check, so of build too)
+./gradlew allTest
+
 # Run a single test class
-./gradlew test --tests "de.heiden.jem.models.c64.vice.LorenzTest"
+./gradlew test --tests "de.heiden.jem.models.c64.vice.CpuTest"
 
 # Run just some groups of tests (lorenz, interrupts, c64doc, cia, vic, cpu, clock; none for the tests without a group)
-./gradlew test -Pgroups=cpu,cia
+./gradlew test -Pgroups=lorenz,interrupts
 
 # Run the emulator (byte code transformation via TransformingClassLoader)
 ./gradlew run
@@ -26,7 +29,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 # Run the emulator (byte code transformation via the serial threads agent)
 ./gradlew runAgent
 
-# Coverage report (HTML + XML)
+# Coverage report of all tests (HTML + XML)
 ./gradlew jacocoTestReport
 
 # Check for dependency updates

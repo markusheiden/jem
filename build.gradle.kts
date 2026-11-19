@@ -173,17 +173,32 @@ tasks.withType<Test>().configureEach {
     ignoreFailures = false
 }
 
-tasks.test {
-    // Run just some groups of tests, e.g. ./gradlew test -Pgroups=cpu,cia
-    // Groups: lorenz, interrupts, c64doc, cia, vic, cpu, clock and none for the tests without a group.
-    providers.gradleProperty("groups").orNull?.let { groups ->
-        useJUnitPlatform {
-            // none() is the tag expression of JUnit for tests without any tag.
-            includeTags(*groups.split(",").map { it.trim() }.map { if (it == "none") "none()" else it }.toTypedArray())
-        }
-    }
+// Groups of tests: lorenz, interrupts, c64doc, cia, vic, cpu, clock and none for the tests without a group.
+// The groups tested by default are the fast ones. All groups are tested by allTest.
+val defaultGroups = "cpu,cia,vic,clock,none"
 
+tasks.test {
+    // Run just some groups of tests, e.g. ./gradlew test -Pgroups=lorenz,interrupts
+    val groups = providers.gradleProperty("groups").getOrElse(defaultGroups)
+    useJUnitPlatform {
+        // none() is the tag expression of JUnit for tests without any tag.
+        includeTags(*groups.split(",").map { it.trim() }.map { if (it == "none") "none()" else it }.toTypedArray())
+    }
+}
+
+val allTest = tasks.register<Test>("allTest") {
+    group = "verification"
+    description = "Runs the tests of all groups."
+    testClassesDirs = sourceSets.test.get().output.classesDirs
+    classpath = sourceSets.test.get().runtimeClasspath
     finalizedBy(tasks.jacocoTestReport)
+}
+
+// allTest includes the tests of test, so do not run them twice, e.g. on check.
+gradle.taskGraph.whenReady {
+    if (hasTask(allTest.get())) {
+        tasks.test.get().enabled = false
+    }
 }
 
 // Test the clocks executing their components sequentially on a single carrier thread,
@@ -204,7 +219,7 @@ val singleCarrierTest = tasks.register<Test>("singleCarrierTest") {
 }
 
 tasks.check {
-    dependsOn(singleCarrierTest)
+    dependsOn(allTest, singleCarrierTest)
 }
 
 // Run a program and capture frames for debugging, e.g. ./gradlew capture -Dcapture.program=demos/demo.prg
@@ -226,7 +241,8 @@ tasks.register<Test>("capture") {
 }
 
 tasks.jacocoTestReport {
-    dependsOn(tasks.test)
+    dependsOn(allTest)
+    executionData.setFrom(allTest.map { it.extensions.getByType<JacocoTaskExtension>().destinationFile!! })
     reports {
         xml.required = true
         html.required = true
