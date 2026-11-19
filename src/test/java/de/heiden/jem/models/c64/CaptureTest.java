@@ -13,7 +13,7 @@ import java.nio.file.Paths;
 /**
  * Run a program, e.g. a demo, and capture frames as PNG and VIC/CIA/CPU state for visual inspection and debugging.
  * Enabled only if the program is configured, e.g.
- * {@code ./gradlew test --tests CaptureTest -Dcapture.program=demos/lft-nine.prg -Dcapture.seconds=200 -Dcapture.step=4}.
+ * {@code ./gradlew capture -Dcapture.program=demos/lft-nine.prg -Dcapture.seconds=200 -Dcapture.step=4}.
  * <ul>
  *     <li>{@code capture.program}: The program (.prg) to run.</li>
  *     <li>{@code capture.dir}: The directory to write the frames to. Defaults to build/capture/[program name].</li>

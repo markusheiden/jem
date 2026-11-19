@@ -171,11 +171,6 @@ tasks.withType<Test>().configureEach {
     )
 
     ignoreFailures = false
-
-    // Pass the configuration of the CaptureTest to the test JVM, e.g. ./gradlew test --tests CaptureTest -Dcapture.program=demos/demo.prg
-    listOf("capture.program", "capture.dir", "capture.seconds", "capture.step").forEach { name ->
-        System.getProperty(name)?.let { systemProperty(name, it) }
-    }
 }
 
 tasks.test {
@@ -201,6 +196,24 @@ val singleCarrierTest = tasks.register<Test>("singleCarrierTest") {
 
 tasks.check {
     dependsOn(singleCarrierTest)
+}
+
+// Run a program and capture frames for debugging, e.g. ./gradlew capture -Dcapture.program=demos/demo.prg
+tasks.register<Test>("capture") {
+    group = "verification"
+    description = "Runs a program and captures frames as PNG and the VIC/CIA/CPU state for debugging."
+    testClassesDirs = sourceSets.test.get().output.classesDirs
+    classpath = sourceSets.test.get().runtimeClasspath
+    filter {
+        includeTestsMatching("de.heiden.jem.models.c64.CaptureTest")
+    }
+    listOf("capture.program", "capture.dir", "capture.seconds", "capture.step").forEach { name ->
+        System.getProperty(name)?.let { systemProperty(name, it) }
+    }
+    // Show the dumped state on the console.
+    testLogging.showStandardStreams = true
+    // Always capture, even if the inputs did not change.
+    outputs.upToDateWhen { false }
 }
 
 tasks.jacocoTestReport {
