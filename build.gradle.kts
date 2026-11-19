@@ -175,7 +175,7 @@ tasks.withType<Test>().configureEach {
 
 tasks.test {
     // Run just some groups of tests, e.g. ./gradlew test -Pgroups=cpu,cia
-    // Groups: lorenz, interrupts, c64doc, cia, vic, cpu and none for the tests without a group.
+    // Groups: lorenz, interrupts, c64doc, cia, vic, cpu, clock and none for the tests without a group.
     providers.gradleProperty("groups").orNull?.let { groups ->
         useJUnitPlatform {
             // none() is the tag expression of JUnit for tests without any tag.

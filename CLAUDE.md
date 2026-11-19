@@ -14,7 +14,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 # Run a single test class
 ./gradlew test --tests "de.heiden.jem.models.c64.vice.LorenzTest"
 
-# Run just some groups of tests (lorenz, interrupts, c64doc, cia, vic, cpu; none for the tests without a group)
+# Run just some groups of tests (lorenz, interrupts, c64doc, cia, vic, cpu, clock; none for the tests without a group)
 ./gradlew test -Pgroups=cpu,cia
 
 # Run the emulator (byte code transformation via TransformingClassLoader)

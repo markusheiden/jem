@@ -1,5 +1,6 @@
 package de.heiden.jem.components.clock;
 
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -14,6 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * Test for {@link AbstractClock}
  */
+@Tag("clock")
 class AbstractClockTest {
     /**
      * List of executed events.

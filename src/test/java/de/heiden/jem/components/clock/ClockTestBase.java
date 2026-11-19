@@ -1,6 +1,7 @@
 package de.heiden.jem.components.clock;
 
 import de.heiden.jem.components.clock.loom.FiberScheduler;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Isolated;
 
@@ -17,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.fail;
  * The tests are executed isolated: Most clocks share the carrier threads of the fibers of this JVM,
  * and the busy waiting ones occupy them, so the clocks of concurrently executed tests would block each other.
  */
+@Tag("clock")
 @Isolated
 public abstract class ClockTestBase {
     /**
