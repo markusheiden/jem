@@ -171,6 +171,11 @@ tasks.withType<Test>().configureEach {
     )
 
     ignoreFailures = false
+
+    // Pass the configuration of the CaptureTest to the test JVM, e.g. ./gradlew test --tests CaptureTest -Dcapture.program=demos/demo.prg
+    listOf("capture.program", "capture.dir", "capture.seconds", "capture.step").forEach { name ->
+        System.getProperty(name)?.let { systemProperty(name, it) }
+    }
 }
 
 tasks.test {
