@@ -2,6 +2,7 @@ package de.heiden.jem.models.c64.vice;
 
 import de.heiden.jem.models.c64.AbstractTest;
 import de.heiden.jem.models.c64.ProgramSuiteSource;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.params.ParameterizedTest;
 
@@ -15,6 +16,7 @@ import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
 /**
  * Testsuite 2.15.
  */
+@Tag("lorenz")
 @Execution(CONCURRENT)
 class LorenzTest extends AbstractTest {
     @ParameterizedTest(name = "{1}")

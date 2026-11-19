@@ -2,6 +2,7 @@ package de.heiden.jem.models.c64.vice;
 
 import de.heiden.jem.models.c64.AbstractTest;
 import de.heiden.jem.models.c64.ProgramSuiteSource;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -19,6 +20,7 @@ import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
 /**
  * VICE test suite.
  */
+@Tag("cia")
 @Execution(CONCURRENT)
 class CiaCountsTest extends AbstractTest {
     /**

@@ -2,6 +2,7 @@ package de.heiden.jem.models.c64.vice;
 
 import de.heiden.jem.models.c64.AbstractTest;
 import de.heiden.jem.models.c64.ProgramSuiteSource;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -15,6 +16,7 @@ import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
  * Each test checks all operands for one combination of the flags and takes 550 seconds on a C64.
  * They need just the CPU, so they are executed without the other components, which is much faster.
  */
+@Tag("cpu")
 @Execution(CONCURRENT)
 class DecimalModeTest extends AbstractTest {
     /**

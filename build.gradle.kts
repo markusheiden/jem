@@ -174,6 +174,14 @@ tasks.withType<Test>().configureEach {
 }
 
 tasks.test {
+    // Run just some groups of tests, e.g. ./gradlew test -Pgroups=cpu,cia
+    // Groups: lorenz, interrupts, c64doc, cia, vic, cpu. Tests without a group run only without -Pgroups.
+    providers.gradleProperty("groups").orNull?.let { groups ->
+        useJUnitPlatform {
+            includeTags(*groups.split(",").map { it.trim() }.toTypedArray())
+        }
+    }
+
     finalizedBy(tasks.jacocoTestReport)
 }
 

@@ -8,6 +8,7 @@ import de.heiden.jem.components.clock.serialthreads.SerialClock;
 import de.heiden.jem.models.c64.components.memory.RAM;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.serialthreads.agent.Transform;
 import org.slf4j.Logger;
@@ -24,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 /**
  * Test for {@link CPU6510}.
  */
+@Tag("cpu")
 @Transform(classPrefixes = "de.heiden.jem")
 class CPU6510Test {
     /**

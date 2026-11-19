@@ -1,5 +1,6 @@
 package de.heiden.jem.models.c64.components.cia;
 
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -7,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 /**
  * Test for the timing of the TOD of {@link AbstractCIA}.
  */
+@Tag("cia")
 class TodTest {
     /**
      * PAL: 50 Hz input, 50 Hz mode. 17734475 cycles are exactly 18 seconds.

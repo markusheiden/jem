@@ -3,6 +3,7 @@ package de.heiden.jem.models.c64.vice;
 import de.heiden.jem.models.c64.AbstractTest;
 import de.heiden.jem.models.c64.ProgramSuiteSource;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -16,6 +17,7 @@ import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
  * Tests for the old CIA 6526 are ignored.
  * CIA-AcountsB is part of {@link CiaCountsTest}.
  */
+@Tag("cia")
 @Execution(CONCURRENT)
 class CiaNewTest extends AbstractTest {
     /**

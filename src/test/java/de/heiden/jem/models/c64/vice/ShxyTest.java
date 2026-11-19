@@ -2,6 +2,7 @@ package de.heiden.jem.models.c64.vice;
 
 import de.heiden.jem.models.c64.AbstractTest;
 import de.heiden.jem.models.c64.ProgramSuiteSource;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.params.ParameterizedTest;
 
@@ -10,8 +11,10 @@ import java.nio.file.Path;
 import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
 
 /**
- * VICE test suite.
+ * VICE test suite for the unstable opcodes SHX and SHY:
+ * The value written and the address, when crossing a page and when the VIC halts the CPU during the opcode.
  */
+@Tag("cpu")
 @Execution(CONCURRENT)
 class ShxyTest extends AbstractTest {
     @ParameterizedTest(name = "{1}")

@@ -2,6 +2,7 @@ package de.heiden.jem.models.c64.vice;
 
 import de.heiden.jem.models.c64.AbstractTest;
 import de.heiden.jem.models.c64.ProgramSuiteSource;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -15,6 +16,7 @@ import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
  * VICE test suite for interrupts (PAL).
  * Interactive tests without result are ignored.
  */
+@Tag("interrupts")
 @Execution(CONCURRENT)
 class InterruptsTest extends AbstractTest {
     /**

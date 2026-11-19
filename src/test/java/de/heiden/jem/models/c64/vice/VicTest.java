@@ -1,6 +1,7 @@
 package de.heiden.jem.models.c64.vice;
 
 import de.heiden.jem.models.c64.AbstractTest;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.parallel.Execution;
@@ -14,6 +15,7 @@ import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
  * VICE test suite for the VICs 6569 (PAL), 6567R8 (NTSC) and 6567R56A (old NTSC): Tests with a result for the accesses of the VIC,
  * for the cycles it steals from the CPU, for sprites and for their collisions.
  */
+@Tag("vic")
 @Execution(CONCURRENT)
 class VicTest extends AbstractTest {
     @ParameterizedTest

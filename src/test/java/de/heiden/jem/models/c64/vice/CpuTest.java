@@ -1,6 +1,7 @@
 package de.heiden.jem.models.c64.vice;
 
 import de.heiden.jem.models.c64.AbstractTest;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.parallel.Execution;
@@ -12,6 +13,7 @@ import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
 /**
  * VICE test suite for the CPU: Unstable opcodes, CPU port and JSR.
  */
+@Tag("cpu")
 @Execution(CONCURRENT)
 class CpuTest extends AbstractTest {
     /**
