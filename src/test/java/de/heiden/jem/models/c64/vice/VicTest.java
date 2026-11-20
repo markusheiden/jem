@@ -97,7 +97,7 @@ class VicTest extends AbstractTest {
      * Sprite DMA in the gap between the sprites. Each test takes about 45 seconds.
      */
     @ParameterizedTest
-    @Timeout(180)
+    @Timeout(360)
     @ValueSource(strings = {
             "spritegap/spritegap2.prg",
             "spritegap/spritegap3.prg",

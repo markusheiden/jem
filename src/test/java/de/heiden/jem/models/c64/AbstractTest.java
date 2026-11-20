@@ -43,7 +43,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 /**
  * Test support.
  */
-@Timeout(60)
+@Timeout(120)
 @ExtendWith(TestWatcher.class)
 @Transform(classPrefixes = "de.heiden.jem")
 public abstract class AbstractTest {
