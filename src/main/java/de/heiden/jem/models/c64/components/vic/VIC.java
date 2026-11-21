@@ -507,78 +507,29 @@ public abstract class VIC implements BusDevice {
         assert value >= 0 && value < 0x100 : "value >= 0 && value < 0x100";
 
         switch (address & mask) {
-            case 0x00: {
-                sprites[0].setXLSB(value);
-                break;
-            }
-            case 0x01: {
-                sprites[0].y = value;
-                break;
-            }
-            case 0x02: {
-                sprites[1].setXLSB(value);
-                break;
-            }
-            case 0x03: {
-                sprites[1].y = value;
-                break;
-            }
-            case 0x04: {
-                sprites[2].setXLSB(value);
-                break;
-            }
-            case 0x05: {
-                sprites[2].y = value;
-                break;
-            }
-            case 0x06: {
-                sprites[3].setXLSB(value);
-                break;
-            }
-            case 0x07: {
-                sprites[3].y = value;
-                break;
-            }
-            case 0x08: {
-                sprites[4].setXLSB(value);
-                break;
-            }
-            case 0x09: {
-                sprites[4].y = value;
-                break;
-            }
-            case 0x0A: {
-                sprites[5].setXLSB(value);
-                break;
-            }
-            case 0x0B: {
-                sprites[5].y = value;
-                break;
-            }
-            case 0x0C: {
-                sprites[6].setXLSB(value);
-                break;
-            }
-            case 0x0D: {
-                sprites[6].y = value;
-                break;
-            }
-            case 0x0E: {
-                sprites[7].setXLSB(value);
-                break;
-            }
-            case 0x0F: {
-                sprites[7].y = value;
-                break;
-            }
-            case 0x10: {
+            case 0x00 -> sprites[0].setXLSB(value);
+            case 0x01 -> sprites[0].y = value;
+            case 0x02 -> sprites[1].setXLSB(value);
+            case 0x03 -> sprites[1].y = value;
+            case 0x04 -> sprites[2].setXLSB(value);
+            case 0x05 -> sprites[2].y = value;
+            case 0x06 -> sprites[3].setXLSB(value);
+            case 0x07 -> sprites[3].y = value;
+            case 0x08 -> sprites[4].setXLSB(value);
+            case 0x09 -> sprites[4].y = value;
+            case 0x0A -> sprites[5].setXLSB(value);
+            case 0x0B -> sprites[5].y = value;
+            case 0x0C -> sprites[6].setXLSB(value);
+            case 0x0D -> sprites[6].y = value;
+            case 0x0E -> sprites[7].setXLSB(value);
+            case 0x0F -> sprites[7].y = value;
+            case 0x10 -> {
                 regSpritesMSBX = value;
                 for (var sprite : sprites) {
                     sprite.setXMSB(value);
                 }
-                break;
             }
-            case 0x11: {
+            case 0x11 -> {
                 regControl1 = value;
                 // bit 7 is high bit of raster irq line
                 regRasterIRQ = regRasterIRQ & 0xFF | (value & 0x80) << 1;
@@ -590,26 +541,18 @@ public abstract class VIC implements BusDevice {
                     var multiColorMode = (regControl2 & VIC.CONTROL2_MULTI_COLOR) != 0;
                     logger.debug("bitmap: {}, extended color: {}, multi color: {}", bitmapMode, extColorMode, multiColorMode);
                 }
-
-                break;
             }
-            case 0x12: {
-                regRasterIRQ = regRasterIRQ & 0x0100 | value;
-                break;
-            }
-            case 0x13:
-            case 0x14: {
+            case 0x12 -> regRasterIRQ = regRasterIRQ & 0x0100 | value;
+            case 0x13, 0x14 -> {
                 // The light pen registers are read only.
-                break;
             }
-            case 0x15: {
+            case 0x15 -> {
                 regSpritesEnable = value;
                 for (var sprite : sprites) {
                     sprite.enable(value);
                 }
-                break;
             }
-            case 0x16: {
+            case 0x16 -> {
                 regControl2 = value;
                 displayUnit.graphicsChanged();
 
@@ -619,10 +562,8 @@ public abstract class VIC implements BusDevice {
                     var multiColorMode = (regControl2 & VIC.CONTROL2_MULTI_COLOR) != 0;
                     logger.debug("bitmap: {}, extended color: {}, multi color: {}", bitmapMode, extColorMode, multiColorMode);
                 }
-
-                break;
             }
-            case 0x17: {
+            case 0x17 -> {
                 regSpritesExpandY = value;
                 for (var sprite : sprites) {
                     sprite.setExpandY(value);
@@ -636,130 +577,79 @@ public abstract class VIC implements BusDevice {
                         sprite.expansion = true;
                     }
                 }
-                break;
             }
-            case 0x18: {
+            case 0x18 -> {
                 regBase = value | 0x01; // set unused bits to 1;
                 updateBaseAddresses();
-                break;
             }
-            case 0x19: {
+            case 0x19 -> {
                 // 1-bits in value clear the corresponding interrupt bits in the irq register
                 regInterruptRequest &= ~(value & INTERRUPT_MASK);
                 updateIRQ();
-                break;
             }
-            case 0x1A: {
+            case 0x1A -> {
                 regInterruptMask = value & INTERRUPT_MASK;
                 updateIRQ();
-                break;
             }
-            case 0x1B: {
-                regSpritesBackgroundPriority = value;
-                break;
-            }
-            case 0x1C: {
+            case 0x1B -> regSpritesBackgroundPriority = value;
+            case 0x1C -> {
                 regSpritesMulticolorMode = value;
                 for (var sprite : sprites) {
                     sprite.setMulticolor(value);
                 }
-                break;
             }
-            case 0x1D: {
+            case 0x1D -> {
                 regSpritesExpandX = value;
                 for (var sprite : sprites) {
                     sprite.setExpandX(value);
                 }
-                break;
             }
-            case 0x1E:
-            case 0x1F: {
+            case 0x1E, 0x1F -> {
                 // The collision registers are read only.
-                break;
             }
-            case 0x20: {
-                regExteriorColor = (byte) (value & 0x0F);
-                break;
-            }
-            case 0x21: {
+            case 0x20 -> regExteriorColor = (byte) (value & 0x0F);
+            case 0x21 -> {
                 regBackgroundColor0 = (byte) (value & 0x0F);
                 displayUnit.graphicsChanged();
-                break;
             }
-            case 0x22: {
+            case 0x22 -> {
                 regBackgroundColor1 = (byte) (value & 0x0F);
                 displayUnit.graphicsChanged();
-                break;
             }
-            case 0x23: {
+            case 0x23 -> {
                 regBackgroundColor2 = (byte) (value & 0x0F);
                 displayUnit.graphicsChanged();
-                break;
             }
-            case 0x24: {
+            case 0x24 -> {
                 regBackgroundColor3 = (byte) (value & 0x0F);
                 displayUnit.graphicsChanged();
-                break;
             }
-            case 0x25: {
+            case 0x25 -> {
                 var color = (byte) (value & 0x0F);
                 regSpritesMulticolor0 = color;
                 for (var sprite : sprites) {
                     sprite.multicolor1 = color;
                 }
-                break;
             }
-            case 0x26: {
+            case 0x26 -> {
                 var color = (byte) (value & 0x0F);
                 regSpritesMulticolor1 = color;
                 for (var sprite : sprites) {
                     sprite.multicolor2 = color;
                 }
-                break;
             }
-            case 0x27: {
-                sprites[0].color = (byte) (value & 0x0F);
-                break;
-            }
-            case 0x28: {
-                sprites[1].color = (byte) (value & 0x0F);
-                break;
-            }
-            case 0x29: {
-                sprites[2].color = (byte) (value & 0x0F);
-                break;
-            }
-            case 0x2A: {
-                sprites[3].color = (byte) (value & 0x0F);
-                break;
-            }
-            case 0x2B: {
-                sprites[4].color = (byte) (value & 0x0F);
-                break;
-            }
-            case 0x2C: {
-                sprites[5].color = (byte) (value & 0x0F);
-                break;
-            }
-            case 0x2D: {
-                sprites[6].color = (byte) (value & 0x0F);
-                break;
-            }
-            case 0x2E: {
-                sprites[7].color = (byte) (value & 0x0F);
-                break;
-            }
-            case 0x2F: {
-                regKeyboard = value;
-                break;
-            }
-            case 0x30: {
-                regFastMode = value;
-                break;
-            }
-            default: {
+            case 0x27 -> sprites[0].color = (byte) (value & 0x0F);
+            case 0x28 -> sprites[1].color = (byte) (value & 0x0F);
+            case 0x29 -> sprites[2].color = (byte) (value & 0x0F);
+            case 0x2A -> sprites[3].color = (byte) (value & 0x0F);
+            case 0x2B -> sprites[4].color = (byte) (value & 0x0F);
+            case 0x2C -> sprites[5].color = (byte) (value & 0x0F);
+            case 0x2D -> sprites[6].color = (byte) (value & 0x0F);
+            case 0x2E -> sprites[7].color = (byte) (value & 0x0F);
+            case 0x2F -> regKeyboard = value;
+            case 0x30 -> regFastMode = value;
+            default -> {
                 // ignore
-                break;
             }
         }
     }
@@ -773,220 +663,78 @@ public abstract class VIC implements BusDevice {
      */
     @Override
     public int read(int address) {
-        int result;
-        switch (address & mask) {
-            case 0x00: {
-                result = sprites[0].getXLSB();
-                break;
-            }
-            case 0x01: {
-                result = sprites[0].y;
-                break;
-            }
-            case 0x02: {
-                result = sprites[1].getXLSB();
-                break;
-            }
-            case 0x03: {
-                result = sprites[1].y;
-                break;
-            }
-            case 0x04: {
-                result = sprites[2].getXLSB();
-                break;
-            }
-            case 0x05: {
-                result = sprites[2].y;
-                break;
-            }
-            case 0x06: {
-                result = sprites[3].getXLSB();
-                break;
-            }
-            case 0x07: {
-                result = sprites[3].y;
-                break;
-            }
-            case 0x08: {
-                result = sprites[4].getXLSB();
-                break;
-            }
-            case 0x09: {
-                result = sprites[4].y;
-                break;
-            }
-            case 0x0A: {
-                result = sprites[5].getXLSB();
-                break;
-            }
-            case 0x0B: {
-                result = sprites[5].y;
-                break;
-            }
-            case 0x0C: {
-                result = sprites[6].getXLSB();
-                break;
-            }
-            case 0x0D: {
-                result = sprites[6].y;
-                break;
-            }
-            case 0x0E: {
-                result = sprites[7].getXLSB();
-                break;
-            }
-            case 0x0F: {
-                result = sprites[7].y;
-                break;
-            }
-            case 0x10: {
-                result = regSpritesMSBX;
-                break;
-            }
-            case 0x11: {
-                // TODO 2010-03-17 mh: correct?
-                result = regControl1 & 0x7F;
-                // bit 7 is high bit of current raster line
-                result |= (regRaster & 0x0100) >> 1;
-                break;
-            }
-            case 0x12: {
-                result = regRaster & 0xFF;
-                break;
-            }
-            case 0x13: {
-                result = regStrobeX;
-                break;
-            }
-            case 0x14: {
-                result = regStrobeY;
-                break;
-            }
-            case 0x15: {
-                result = regSpritesEnable;
-                break;
-            }
-            case 0x16: {
-                result = regControl2 | 0xC0; // unused bits are 1
-                break;
-            }
-            case 0x17: {
-                result = regSpritesExpandY;
-                break;
-            }
-            case 0x18: {
-                result = regBase;
-                break;
-            }
-            case 0x19: {
-                result = regInterruptRequest | 0x70; // unused bits are 1
+        var result = switch (address & mask) {
+            case 0x00 -> sprites[0].getXLSB();
+            case 0x01 -> sprites[0].y;
+            case 0x02 -> sprites[1].getXLSB();
+            case 0x03 -> sprites[1].y;
+            case 0x04 -> sprites[2].getXLSB();
+            case 0x05 -> sprites[2].y;
+            case 0x06 -> sprites[3].getXLSB();
+            case 0x07 -> sprites[3].y;
+            case 0x08 -> sprites[4].getXLSB();
+            case 0x09 -> sprites[4].y;
+            case 0x0A -> sprites[5].getXLSB();
+            case 0x0B -> sprites[5].y;
+            case 0x0C -> sprites[6].getXLSB();
+            case 0x0D -> sprites[6].y;
+            case 0x0E -> sprites[7].getXLSB();
+            case 0x0F -> sprites[7].y;
+            case 0x10 -> regSpritesMSBX;
+            // TODO 2010-03-17 mh: correct?
+            // bit 7 is high bit of current raster line
+            case 0x11 -> regControl1 & 0x7F | (regRaster & 0x0100) >> 1;
+            case 0x12 -> regRaster & 0xFF;
+            case 0x13 -> regStrobeX;
+            case 0x14 -> regStrobeY;
+            case 0x15 -> regSpritesEnable;
+            case 0x16 -> regControl2 | 0xC0; // unused bits are 1
+            case 0x17 -> regSpritesExpandY;
+            case 0x18 -> regBase;
+            case 0x19 -> {
+                var irq = regInterruptRequest | 0x70; // unused bits are 1
                 if ((regInterruptRequest & regInterruptMask) != 0) {
-                    result |= INTERRUPT_ANY;
+                    irq |= INTERRUPT_ANY;
                 }
-                break;
+                yield irq;
             }
-            case 0x1A: {
-                result = regInterruptMask | 0xF0; // unused bits are 1
-                break;
-            }
-            case 0x1B: {
-                result = regSpritesBackgroundPriority;
-                break;
-            }
-            case 0x1C: {
-                result = regSpritesMulticolorMode;
-                break;
-            }
-            case 0x1D: {
-                result = regSpritesExpandX;
-                break;
-            }
-            case 0x1E: {
+            case 0x1A -> regInterruptMask | 0xF0; // unused bits are 1
+            case 0x1B -> regSpritesBackgroundPriority;
+            case 0x1C -> regSpritesMulticolorMode;
+            case 0x1D -> regSpritesExpandX;
+            case 0x1E -> {
                 // Reading clears the collisions.
-                result = regSpritesSpriteCollision;
+                var collisions = regSpritesSpriteCollision;
                 regSpritesSpriteCollision = 0;
                 displayUnit.spriteCollisionsRead();
-                break;
+                yield collisions;
             }
-            case 0x1F: {
+            case 0x1F -> {
                 // Reading clears the collisions.
-                result = regSpritesBackgroundCollision;
+                var collisions = regSpritesBackgroundCollision;
                 regSpritesBackgroundCollision = 0;
-                break;
+                yield collisions;
             }
-            case 0x20: {
-                result = regExteriorColor | 0xF0; // unused bits are 1
-                break;
-            }
-            case 0x21: {
-                result = regBackgroundColor0 | 0xF0; // unused bits are 1
-                break;
-            }
-            case 0x22: {
-                result = regBackgroundColor1 | 0xF0; // unused bits are 1
-                break;
-            }
-            case 0x23: {
-                result = regBackgroundColor2 | 0xF0; // unused bits are 1
-                break;
-            }
-            case 0x24: {
-                result = regBackgroundColor3 | 0xF0; // unused bits are 1
-                break;
-            }
-            case 0x25: {
-                result = regSpritesMulticolor0 | 0xF0; // unused bits are 1
-                break;
-            }
-            case 0x26: {
-                result = regSpritesMulticolor1 | 0xF0; // unused bits are 1
-                break;
-            }
-            case 0x27: {
-                result = sprites[0].color | 0xF0; // unused bits are 1
-                break;
-            }
-            case 0x28: {
-                result = sprites[1].color | 0xF0; // unused bits are 1
-                break;
-            }
-            case 0x29: {
-                result = sprites[2].color | 0xF0; // unused bits are 1
-                break;
-            }
-            case 0x2A: {
-                result = sprites[3].color | 0xF0; // unused bits are 1
-                break;
-            }
-            case 0x2B: {
-                result = sprites[4].color | 0xF0; // unused bits are 1
-                break;
-            }
-            case 0x2C: {
-                result = sprites[5].color | 0xF0; // unused bits are 1
-                break;
-            }
-            case 0x2D: {
-                result = sprites[6].color | 0xF0; // unused bits are 1
-                break;
-            }
-            case 0x2E: {
-                result = sprites[7].color | 0xF0; // unused bits are 1
-                break;
-            }
-            case 0x2F: {
-                result = regKeyboard;
-                break;
-            }
-            case 0x30: {
-                result = regFastMode;
-                break;
-            }
-            default: {
-                result = 0xFF;
-                break;
-            }
-        }
+            // unused bits are 1
+            case 0x20 -> regExteriorColor | 0xF0;
+            case 0x21 -> regBackgroundColor0 | 0xF0;
+            case 0x22 -> regBackgroundColor1 | 0xF0;
+            case 0x23 -> regBackgroundColor2 | 0xF0;
+            case 0x24 -> regBackgroundColor3 | 0xF0;
+            case 0x25 -> regSpritesMulticolor0 | 0xF0;
+            case 0x26 -> regSpritesMulticolor1 | 0xF0;
+            case 0x27 -> sprites[0].color | 0xF0;
+            case 0x28 -> sprites[1].color | 0xF0;
+            case 0x29 -> sprites[2].color | 0xF0;
+            case 0x2A -> sprites[3].color | 0xF0;
+            case 0x2B -> sprites[4].color | 0xF0;
+            case 0x2C -> sprites[5].color | 0xF0;
+            case 0x2D -> sprites[6].color | 0xF0;
+            case 0x2E -> sprites[7].color | 0xF0;
+            case 0x2F -> regKeyboard;
+            case 0x30 -> regFastMode;
+            default -> 0xFF;
+        };
 
         assert result >= 0 && result < 0x100 : "result >= 0 && result < 0x100";
         return result;
