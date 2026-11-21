@@ -506,23 +506,10 @@ public abstract class VIC implements BusDevice {
     public void write(int value, int address) {
         assert value >= 0 && value < 0x100 : "value >= 0 && value < 0x100";
 
-        switch (address & mask) {
-            case 0x00 -> sprites[0].setXLSB(value);
-            case 0x01 -> sprites[0].y = value;
-            case 0x02 -> sprites[1].setXLSB(value);
-            case 0x03 -> sprites[1].y = value;
-            case 0x04 -> sprites[2].setXLSB(value);
-            case 0x05 -> sprites[2].y = value;
-            case 0x06 -> sprites[3].setXLSB(value);
-            case 0x07 -> sprites[3].y = value;
-            case 0x08 -> sprites[4].setXLSB(value);
-            case 0x09 -> sprites[4].y = value;
-            case 0x0A -> sprites[5].setXLSB(value);
-            case 0x0B -> sprites[5].y = value;
-            case 0x0C -> sprites[6].setXLSB(value);
-            case 0x0D -> sprites[6].y = value;
-            case 0x0E -> sprites[7].setXLSB(value);
-            case 0x0F -> sprites[7].y = value;
+        var a = address & mask;
+        switch (a) {
+            case 0x00, 0x02, 0x04, 0x06, 0x08, 0x0A, 0x0C, 0x0E -> sprites[a >> 1].setXLSB(value);
+            case 0x01, 0x03, 0x05, 0x07, 0x09, 0x0B, 0x0D, 0x0F -> sprites[a >> 1].y = value;
             case 0x10 -> {
                 regSpritesMSBX = value;
                 for (var sprite : sprites) {
@@ -638,14 +625,7 @@ public abstract class VIC implements BusDevice {
                     sprite.multicolor2 = color;
                 }
             }
-            case 0x27 -> sprites[0].color = (byte) (value & 0x0F);
-            case 0x28 -> sprites[1].color = (byte) (value & 0x0F);
-            case 0x29 -> sprites[2].color = (byte) (value & 0x0F);
-            case 0x2A -> sprites[3].color = (byte) (value & 0x0F);
-            case 0x2B -> sprites[4].color = (byte) (value & 0x0F);
-            case 0x2C -> sprites[5].color = (byte) (value & 0x0F);
-            case 0x2D -> sprites[6].color = (byte) (value & 0x0F);
-            case 0x2E -> sprites[7].color = (byte) (value & 0x0F);
+            case 0x27, 0x28, 0x29, 0x2A, 0x2B, 0x2C, 0x2D, 0x2E -> sprites[a - 0x27].color = (byte) (value & 0x0F);
             case 0x2F -> regKeyboard = value;
             case 0x30 -> regFastMode = value;
             default -> {
@@ -663,23 +643,10 @@ public abstract class VIC implements BusDevice {
      */
     @Override
     public int read(int address) {
-        var result = switch (address & mask) {
-            case 0x00 -> sprites[0].getXLSB();
-            case 0x01 -> sprites[0].y;
-            case 0x02 -> sprites[1].getXLSB();
-            case 0x03 -> sprites[1].y;
-            case 0x04 -> sprites[2].getXLSB();
-            case 0x05 -> sprites[2].y;
-            case 0x06 -> sprites[3].getXLSB();
-            case 0x07 -> sprites[3].y;
-            case 0x08 -> sprites[4].getXLSB();
-            case 0x09 -> sprites[4].y;
-            case 0x0A -> sprites[5].getXLSB();
-            case 0x0B -> sprites[5].y;
-            case 0x0C -> sprites[6].getXLSB();
-            case 0x0D -> sprites[6].y;
-            case 0x0E -> sprites[7].getXLSB();
-            case 0x0F -> sprites[7].y;
+        var a = address & mask;
+        var result = switch (a) {
+            case 0x00, 0x02, 0x04, 0x06, 0x08, 0x0A, 0x0C, 0x0E -> sprites[a >> 1].getXLSB();
+            case 0x01, 0x03, 0x05, 0x07, 0x09, 0x0B, 0x0D, 0x0F -> sprites[a >> 1].y;
             case 0x10 -> regSpritesMSBX;
             // TODO 2010-03-17 mh: correct?
             // bit 7 is high bit of current raster line
@@ -723,14 +690,7 @@ public abstract class VIC implements BusDevice {
             case 0x24 -> regBackgroundColor3 | 0xF0;
             case 0x25 -> regSpritesMulticolor0 | 0xF0;
             case 0x26 -> regSpritesMulticolor1 | 0xF0;
-            case 0x27 -> sprites[0].color | 0xF0;
-            case 0x28 -> sprites[1].color | 0xF0;
-            case 0x29 -> sprites[2].color | 0xF0;
-            case 0x2A -> sprites[3].color | 0xF0;
-            case 0x2B -> sprites[4].color | 0xF0;
-            case 0x2C -> sprites[5].color | 0xF0;
-            case 0x2D -> sprites[6].color | 0xF0;
-            case 0x2E -> sprites[7].color | 0xF0;
+            case 0x27, 0x28, 0x29, 0x2A, 0x2B, 0x2C, 0x2D, 0x2E -> sprites[a - 0x27].color | 0xF0;
             case 0x2F -> regKeyboard;
             case 0x30 -> regFastMode;
             default -> 0xFF;
