@@ -86,7 +86,7 @@ public abstract class AbstractDisplayUnit implements ClockedComponent {
 
     @Override
     public String getName() {
-        return vic.getClass().getSimpleName() + " display";
+        return "VIC " + vic.model + " display";
     }
 
     /**

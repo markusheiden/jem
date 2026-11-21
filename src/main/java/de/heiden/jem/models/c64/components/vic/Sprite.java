@@ -17,8 +17,6 @@ public class Sprite {
 
     public boolean multicolor;
     public byte color;
-    public byte multicolor1;
-    public byte multicolor2;
 
     /**
      * Sprite sequencer: Is the sprite DMA on?
@@ -86,8 +84,6 @@ public class Sprite {
 
         multicolor = false;
         color = 0;
-        multicolor1 = 0;
-        multicolor2 = 0;
 
         dma = false;
         display = false;

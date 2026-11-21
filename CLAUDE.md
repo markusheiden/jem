@@ -76,8 +76,8 @@ Each `C64*.java` in `de.heiden.jem.models.c64` is an entry point that wires up t
 - `C64` — top-level wiring: instantiates CPU, VIC, CIA×2, RAM, ROM, keyboard and connects them; configured via `C64.builder(clock)` (video system, old/new CIAs, power line frequency, debugger CPU; default PAL, 50 Hz, old CIAs)
 - `cpu/CPU6510` — MOS 6510 CPU; `CPU6510Debugger` adds trace/monitor support
 - `cpu/C64Bus` — memory map / PLA logic routing reads/writes to the right chip
-- `VideoSystem` — PAL, NTSC or old NTSC: selects the VIC and the frequencies of the CPU clock and the power line
-- `vic/VIC` — VIC-II video chip: `VIC6569PAL`, `VIC6567R8NTSC` and `VIC6567R56ANTSC` define its timing
+- `VideoSystem` — PAL, NTSC or old NTSC: selects the model of the VIC and the frequencies of the CPU clock and the power line
+- `vic/VIC` — VIC-II video chip: `VicModel` (6569, 6567R8, 6567R56A) defines its timing
 - `cia/CIA6526` — CIA timer/IO chips
 - `memory/` — RAM, ROM, ColorRAM
 - `keyboard/Keyboard` — keyboard matrix

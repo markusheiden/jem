@@ -13,6 +13,7 @@ import de.heiden.jem.models.c64.components.memory.ColorRAM;
 import de.heiden.jem.models.c64.components.memory.RAM;
 import de.heiden.jem.models.c64.components.memory.ROMLoader;
 import de.heiden.jem.models.c64.components.sid.SIDStub;
+import de.heiden.jem.models.c64.components.vic.VIC;
 import de.heiden.jem.models.c64.components.vic.VICBus;
 
 import static de.heiden.jem.models.c64.components.memory.ROMLoader.DEFAULT_BASIC;
@@ -148,7 +149,7 @@ public class C64Builder {
         var cia2 = createCia(todInput);
 
         var vicBus = new VICBus(ram, charset, cia2.portA());
-        var vic = videoSystem.createVic(clock, vicBus, colorRam);
+        var vic = new VIC(videoSystem.vicModel(), vicBus, colorRam);
 
         var cpu = debug ? new CPU6510Debugger() : new CPU6510();
 

@@ -1,7 +1,6 @@
 package de.heiden.jem.models.c64.components.vic;
 
 import de.heiden.jem.components.bus.BusDevice;
-import de.heiden.jem.components.clock.Clock;
 import de.heiden.jem.components.ports.OutputPort;
 import de.heiden.jem.components.ports.OutputPortImpl;
 import de.heiden.jem.models.c64.components.memory.ColorRAM;
@@ -11,7 +10,12 @@ import java.util.function.IntSupplier;
 /**
  * VIC.
  */
-public abstract class VIC implements BusDevice {
+public class VIC implements BusDevice {
+    /**
+     * Model of the VIC.
+     */
+    public final VicModel model;
+
     /**
      * VIC parameters.
      */
@@ -41,7 +45,6 @@ public abstract class VIC implements BusDevice {
     private final int mask;
 
     // components
-    protected final Clock clock;
     public final VICBus bus;
     public final ColorRAM colorRam;
 
@@ -159,47 +162,33 @@ public abstract class VIC implements BusDevice {
     /**
      * Constructor.
      *
-     * @param clock
-     *         system clock (1 MHz).
+     * @param model
+     *         model of the VIC.
      * @param bus
      *         vic memory bus.
      * @param colorRam
      *         color ram.
-     * @param cyclesPerLine
-     *         system clock cycles per line
-     * @param linesPerScreen
-     *         lines per screen
-     * @param firstVBlank
-     * @param lastVBlank
-     * @param firstVisibleX
-     * @param lastVisibleX
-     *         last x value
-     * @param lastX
-     * @param firstX
-     *         X coordinate of the first pixel of cycle 1
-     * @require clock != null
+     * @require model != null
      * @require bus != null
      * @require colorRam != null
      */
-    public VIC(Clock clock, VICBus bus, ColorRAM colorRam,
-            int cyclesPerLine, int linesPerScreen, int firstVBlank, int lastVBlank,
-            int firstVisibleX, int lastVisibleX, int lastX, int firstX) {
-        assert clock != null : "clock != null";
+    public VIC(VicModel model, VICBus bus, ColorRAM colorRam) {
+        assert model != null : "model != null";
         assert bus != null : "bus != null";
         assert colorRam != null : "colorRam != null";
 
-        this.clock = clock;
+        this.model = model;
         this.bus = bus;
         this.colorRam = colorRam;
 
-        this.cyclesPerLine = cyclesPerLine;
-        this.linesPerScreen = linesPerScreen;
-        this.firstVBlank = firstVBlank;
-        this.lastVBlank = lastVBlank;
-        this.firstVisibleX = (firstVisibleX + 0x007) & 0x01F8;
-        this.lastVisibleX = lastVisibleX & 0x01F8;
-        this.lastX = lastX;
-        this.firstX = firstX;
+        this.cyclesPerLine = model.cyclesPerLine;
+        this.linesPerScreen = model.linesPerScreen;
+        this.firstVBlank = model.firstVBlank;
+        this.lastVBlank = model.lastVBlank;
+        this.firstVisibleX = (model.firstVisibleX + 0x007) & 0x01F8;
+        this.lastVisibleX = model.lastVisibleX & 0x01F8;
+        this.lastX = model.lastX;
+        this.firstX = model.firstX;
 
         // address mask
         mask = 0x3F;
@@ -321,7 +310,7 @@ public abstract class VIC implements BusDevice {
      * So sprite 3 is read from cycle 1 (6569, 6567R56A) or from the last cycle 65 of the line (6567R8).
      */
     final int spriteAccessCycle(int number) {
-        var cycle = (cyclesPerLine == 63 ? 58 : 59) + 2 * number;
+        var cycle = model.firstSpriteCycle + 2 * number;
         return cycle > cyclesPerLine ? cycle - cyclesPerLine : cycle;
     }
 
@@ -595,20 +584,8 @@ public abstract class VIC implements BusDevice {
                 regBackgroundColor3 = (byte) (value & 0x0F);
                 displayUnit.graphicsChanged();
             }
-            case 0x25 -> {
-                var color = (byte) (value & 0x0F);
-                regSpritesMulticolor0 = color;
-                for (var sprite : sprites) {
-                    sprite.multicolor1 = color;
-                }
-            }
-            case 0x26 -> {
-                var color = (byte) (value & 0x0F);
-                regSpritesMulticolor1 = color;
-                for (var sprite : sprites) {
-                    sprite.multicolor2 = color;
-                }
-            }
+            case 0x25 -> regSpritesMulticolor0 = (byte) (value & 0x0F);
+            case 0x26 -> regSpritesMulticolor1 = (byte) (value & 0x0F);
             case 0x27, 0x28, 0x29, 0x2A, 0x2B, 0x2C, 0x2D, 0x2E -> sprites[a - 0x27].color = (byte) (value & 0x0F);
             case 0x2F -> regKeyboard = value;
             case 0x30 -> regFastMode = value;
@@ -774,7 +751,7 @@ public abstract class VIC implements BusDevice {
         }
 
         if (startOfFrame) {
-            regStrobeX = cyclesPerLine == 65 ? 0xD5 : 0xD1;
+            regStrobeX = model.lightPenXAtStartOfFrame;
         } else {
             // The X coordinate of the cycle in units of 8 pixels, divided by 2,
             // plus 2 because of the color latency of the 6569 and 6567.
@@ -782,18 +759,10 @@ public abstract class VIC implements BusDevice {
         }
         regStrobeY = regRaster & 0xFF;
 
-        if (!lightPenIrqAtStartOfFrameOnly() || startOfFrame) {
+        if (!model.lightPenIrqAtStartOfFrameOnly || startOfFrame) {
             regInterruptRequest |= INTERRUPT_LIGHT_PEN;
             updateIRQ();
         }
-    }
-
-    /**
-     * Does the light pen request an interrupt just at the start of a frame, if its input is low?
-     * That is the case for the old VICs 6569R1 and 6567R56A.
-     */
-    protected boolean lightPenIrqAtStartOfFrameOnly() {
-        return false;
     }
 
     /**
