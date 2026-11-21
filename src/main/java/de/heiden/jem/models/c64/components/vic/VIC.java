@@ -5,8 +5,6 @@ import de.heiden.jem.components.clock.Clock;
 import de.heiden.jem.components.ports.OutputPort;
 import de.heiden.jem.components.ports.OutputPortImpl;
 import de.heiden.jem.models.c64.components.memory.ColorRAM;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.function.IntSupplier;
 
@@ -14,11 +12,6 @@ import java.util.function.IntSupplier;
  * VIC.
  */
 public abstract class VIC implements BusDevice {
-    /**
-     * Logger.
-     */
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-
     /**
      * VIC parameters.
      */
@@ -526,13 +519,6 @@ public abstract class VIC implements BusDevice {
                 // bit 7 is high bit of raster irq line
                 regRasterIRQ = regRasterIRQ & 0xFF | (value & 0x80) << 1;
                 displayUnit.graphicsChanged();
-
-                if (logger.isDebugEnabled()) {
-                    var bitmapMode = (regControl1 & VIC.CONTROL1_BITMAP) != 0;
-                    var extColorMode = (regControl1 & VIC.CONTROL1_EXT_COLOR) != 0;
-                    var multiColorMode = (regControl2 & VIC.CONTROL2_MULTI_COLOR) != 0;
-                    logger.debug("bitmap: {}, extended color: {}, multi color: {}", bitmapMode, extColorMode, multiColorMode);
-                }
             }
             case 0x12 -> regRasterIRQ = regRasterIRQ & 0x0100 | value;
             case 0x13, 0x14 -> {
@@ -547,13 +533,6 @@ public abstract class VIC implements BusDevice {
             case 0x16 -> {
                 regControl2 = value;
                 displayUnit.graphicsChanged();
-
-                if (logger.isDebugEnabled()) {
-                    var bitmapMode = (regControl1 & VIC.CONTROL1_BITMAP) != 0;
-                    var extColorMode = (regControl1 & VIC.CONTROL1_EXT_COLOR) != 0;
-                    var multiColorMode = (regControl2 & VIC.CONTROL2_MULTI_COLOR) != 0;
-                    logger.debug("bitmap: {}, extended color: {}, multi color: {}", bitmapMode, extColorMode, multiColorMode);
-                }
             }
             case 0x17 -> {
                 regSpritesExpandY = value;
@@ -737,8 +716,6 @@ public abstract class VIC implements BusDevice {
         rasterIRQTriggered = true;
         regInterruptRequest |= INTERRUPT_RASTER;
         updateIRQ();
-
-        logger.debug("Raster irq at line {} at tick {}", regRaster, clock.getTick());
     }
 
     /**
