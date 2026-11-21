@@ -34,6 +34,12 @@ public class DisplayUnit extends AbstractDisplayUnit {
     private int spriteCollisionsRead = 0;
 
     /**
+     * Number of pixels, whose collisions with the foreground of the graphics are lost,
+     * because the CPU read the sprite-background collision register.
+     */
+    private int backgroundCollisionsRead = 0;
+
+    /**
      * No border pixel.
      */
     private static final byte NO_BORDER = -1;
@@ -194,6 +200,7 @@ public class DisplayUnit extends AbstractDisplayUnit {
                     if (cycle == (raster == 0 ? 2 : 1)) {
                         vic.setRasterLine(raster);
                     }
+                    vic.rasterCompareCycle();
                     vic.lightPenCycle(raster, cycle);
                     cycle(raster, cycle);
                     tick.waitForTick();
@@ -331,10 +338,10 @@ public class DisplayUnit extends AbstractDisplayUnit {
             } else if ((mask & (mask - 1)) != 0) {
                 sprites |= mask;
             }
-            if (mask != 0) {
-                if (foreground[x]) {
-                    background |= mask;
-                }
+            if (backgroundCollisionsRead > 0) {
+                backgroundCollisionsRead--;
+            } else if (mask != 0 && foreground[x]) {
+                background |= mask;
             }
             if (++x == vic.lastX) {
                 x = 0;
@@ -356,6 +363,15 @@ public class DisplayUnit extends AbstractDisplayUnit {
     @Override
     void spriteCollisionsRead() {
         spriteCollisionsRead = COLLISION_DELAY;
+    }
+
+    /**
+     * The CPU read the sprite-background collision register in the current cycle:
+     * The collisions of the pixels, which are not visible in it yet, are lost.
+     */
+    @Override
+    void backgroundCollisionsRead() {
+        backgroundCollisionsRead = COLLISION_DELAY;
     }
 
     /**

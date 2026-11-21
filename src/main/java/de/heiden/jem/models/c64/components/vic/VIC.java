@@ -108,6 +108,11 @@ public abstract class VIC implements BusDevice {
     protected static final int CONTROL1_SCROLL_Y = 0x07;
     protected int regRaster; // read: 0x11 bit 7, 0x12
     protected int regRasterIRQ; // write: 0x11 bit 7, 0x12
+
+    /**
+     * Has the raster interrupt been requested, since the raster line matches the raster line of the interrupt?
+     */
+    private boolean rasterIRQTriggered = false;
     protected int regControl2; // 0x16
     protected static final int CONTROL2_SCROLL_X = 0x07;
     protected static final int CONTROL2_40_COLUMNS = 1 << 3;
@@ -680,6 +685,7 @@ public abstract class VIC implements BusDevice {
                 // Reading clears the collisions.
                 var collisions = regSpritesBackgroundCollision;
                 regSpritesBackgroundCollision = 0;
+                displayUnit.backgroundCollisionsRead();
                 yield collisions;
             }
             // unused bits are 1
@@ -712,12 +718,27 @@ public abstract class VIC implements BusDevice {
      */
     protected void setRasterLine(int line) {
         regRaster = line;
-        if (line == regRasterIRQ) {
-            regInterruptRequest |= INTERRUPT_RASTER;
-            updateIRQ();
+    }
 
-            logger.debug("Raster irq at line {} at tick {}", regRaster, clock.getTick());
+    /**
+     * Compare the current raster line with the raster line of the raster interrupt in a cycle, as VICE does:
+     * The interrupt is requested, when the comparison changes from no match to match.
+     * So changing the raster line of the interrupt to the current raster line requests it in the following cycle.
+     * To be called in each cycle after {@link #setRasterLine(int)}.
+     */
+    final void rasterCompareCycle() {
+        if (regRaster != regRasterIRQ) {
+            rasterIRQTriggered = false;
+            return;
         }
+        if (rasterIRQTriggered) {
+            return;
+        }
+        rasterIRQTriggered = true;
+        regInterruptRequest |= INTERRUPT_RASTER;
+        updateIRQ();
+
+        logger.debug("Raster irq at line {} at tick {}", regRaster, clock.getTick());
     }
 
     /**
