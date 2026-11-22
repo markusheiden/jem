@@ -51,6 +51,10 @@ class TodTest {
         assertEquals(150, tenths(cia));
     }
 
+    //
+    // Helper.
+    //
+
     /**
      * Create a CIA and start its TOD at 00:00:00.0.
      *
@@ -59,7 +63,7 @@ class TodTest {
      * @param cra
      *         control register A
      */
-    private static AbstractCIA start(TodInput todInput, int cra) {
+    AbstractCIA start(TodInput todInput, int cra) {
         var cia = new CIA6526(todInput);
         cia.write(cra, 0x0E);
         cia.write(0x00, 0x0B);
@@ -72,7 +76,7 @@ class TodTest {
     /**
      * Execute cycles.
      */
-    private static void run(AbstractCIA cia, int cycles) {
+    void run(AbstractCIA cia, int cycles) {
         for (var i = 0; i < cycles; i++) {
             cia.cycle();
         }
@@ -81,7 +85,7 @@ class TodTest {
     /**
      * Time of day in tenths of seconds. Hours are expected to be zero.
      */
-    private static int tenths(AbstractCIA cia) {
+    int tenths(AbstractCIA cia) {
         assertEquals(0x00, cia.read(0x0B));
         var minutes = bcd(cia.read(0x0A));
         var seconds = bcd(cia.read(0x09));
@@ -89,7 +93,7 @@ class TodTest {
         return (minutes * 60 + seconds) * 10 + tenths;
     }
 
-    private static int bcd(int value) {
+    int bcd(int value) {
         return (value >> 4) * 10 + (value & 0x0F);
     }
 }
