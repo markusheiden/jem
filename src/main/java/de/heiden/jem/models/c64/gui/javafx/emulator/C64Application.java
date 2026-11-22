@@ -1,16 +1,21 @@
 package de.heiden.jem.models.c64.gui.javafx.emulator;
 
 import de.heiden.jem.components.clock.Clock;
+import de.heiden.jem.components.clock.RealTimeSlowDown;
 import de.heiden.jem.models.c64.components.C64;
 import de.heiden.jem.models.c64.components.VideoSystem;
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static javafx.application.Platform.runLater;
+import static javafx.animation.Animation.INDEFINITE;
 
 /**
  * Application for C64 emulation.
@@ -45,8 +50,9 @@ public class C64Application extends Application {
         var screen = new VICScreen(c64.getVIC().displayUnit);
 
         var statusBar = new StatusBar();
-        c64.getRealTimeSlowDown().setListener(elapsedMs ->
-                runLater(() -> statusBar.setTime(elapsedMs)));
+        // Poll from the JavaFX thread, so the emulation thread never calls into JavaFX.
+        var slowDown = c64.getRealTimeSlowDown();
+        statusBar.displayExecutionTime(slowDown::getElapsedMs);
 
         var root = new BorderPane(screen);
         root.setBottom(statusBar);

@@ -1,11 +1,19 @@
 package de.heiden.jem.models.c64.gui.javafx.emulator;
 
+import de.heiden.jem.components.clock.RealTimeSlowDown;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BorderPane;
+import javafx.util.Duration;
+
+import java.util.function.LongSupplier;
+
+import static javafx.animation.Animation.INDEFINITE;
 
 /**
  * Status bar showing the emulated joystick on the left and the time needed for 1 simulated second on the right.
@@ -58,8 +66,14 @@ public class StatusBar extends BorderPane {
 
     /**
      * Show the time (ms) needed for 1 simulated second.
+     *
+     * @param elapsedMs Supplier for the elapsed time in milliseconds.
      */
-    public void setTime(long elapsedMs) {
-        timeInfo.setText(elapsedMs + " ms");
+    public void displayExecutionTime(LongSupplier elapsedMs) {
+        var interval = Duration.seconds(1);
+        var timeUpdate = new Timeline(new KeyFrame(interval, _ ->
+                timeInfo.setText(elapsedMs.getAsLong() + " ms")));
+        timeUpdate.setCycleCount(INDEFINITE);
+        timeUpdate.play();
     }
 }
