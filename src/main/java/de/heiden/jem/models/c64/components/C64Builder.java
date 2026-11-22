@@ -45,11 +45,6 @@ public class C64Builder {
     private boolean newCias = false;
 
     /**
-     * Frequency of the power line in Hz, 0 for the frequency of the video system.
-     */
-    private int powerLineFrequency = 0;
-
-    /**
      * Device in the SID area $D400-$D7FF.
      */
     private BusDevice sid;
@@ -108,16 +103,6 @@ public class C64Builder {
     }
 
     /**
-     * Frequency of the power line in Hz, e.g. 50 or 60, which drives the TOD clocks of the CIAs.
-     * Default: The frequency of the video system, 50 Hz for PAL and 60 Hz for NTSC.
-     */
-    public C64Builder powerLineFrequency(int powerLineFrequency) {
-        assert powerLineFrequency > 0 : "powerLineFrequency > 0";
-        this.powerLineFrequency = powerLineFrequency;
-        return this;
-    }
-
-    /**
      * Device in the SID area $D400-$D7FF, e.g. a debug cartridge. Default: SID stub.
      */
     public C64Builder sid(BusDevice sid) {
@@ -137,7 +122,7 @@ public class C64Builder {
      * Build the C64.
      */
     public C64 build() throws Exception {
-        var todInput = videoSystem.todInput().withFrequency(powerLineFrequency());
+        var todInput = videoSystem.todInput();
 
         var ram = new RAM(0x10000);
         var colorRam = new ColorRAM(0x400);
@@ -159,13 +144,6 @@ public class C64Builder {
         var sid = this.sid != null ? this.sid : new SIDStub(clock);
 
         return new C64(clock, ram, colorRam, basic, kernel, charset, cia1, cia2, vicBus, vic, sid, cpu, realTimeSlowDown);
-    }
-
-    /**
-     * Frequency of the power line in Hz.
-     */
-    private int powerLineFrequency() {
-        return powerLineFrequency > 0 ? powerLineFrequency : videoSystem.todInput().frequency();
     }
 
     /**

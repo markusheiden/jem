@@ -37,34 +37,18 @@ class TodTest {
     }
 
     /**
-     * PAL CPU clock with 60 Hz input in 50 Hz mode: The TOD runs 6/5 too fast.
+     * PAL: 50 Hz input, 60 Hz mode (the default after reset). The TOD runs 5/6 too slow.
+     * <p>
+     * This is the state of a PAL C64, as long as the kernal swtiches to the 50 Hz mode.
      */
     @Test
-    void palWith60Hz() {
-        var todInput = TodInput.PAL.withFrequency(60);
-        var cia = start(todInput, AbstractCIA.CRA_TOD_50HZ);
+    void palIn60HzMode() {
+        var cia = start(TodInput.PAL, 0);
 
-        run(cia, todInput.cpuClock() - 1);
-        assertEquals(215, tenths(cia));
+        run(cia, TodInput.PAL.cpuClock() - 1);
+        assertEquals(149, tenths(cia));
         run(cia, 1);
-        assertEquals(216, tenths(cia));
-    }
-
-    /**
-     * NTSC CPU clock with 50 Hz input in 60 Hz mode: The TOD runs 5/6 too slow.
-     */
-    @Test
-    void ntscWith50Hz() {
-        var todInput = TodInput.NTSC.withFrequency(50);
-        var cia = start(todInput, 0);
-
-        run(cia, todInput.cpuClock() - 1);
-        assertEquals(2566, tenths(cia));
-        run(cia, 1);
-        assertEquals(2566, tenths(cia));
-        // 308 s * 50 Hz / 6 = 2566.67 tenths: The next tenth follows after 2 more ticks of the input.
-        run(cia, 2 * todInput.cpuClock() / todInput.increment() + 1);
-        assertEquals(2567, tenths(cia));
+        assertEquals(150, tenths(cia));
     }
 
     /**

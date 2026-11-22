@@ -32,16 +32,6 @@ public record TodInput(int cpuClock, int cpuDivider, int frequency) {
     }
 
     /**
-     * The same CPU clock with another frequency of the power line.
-     *
-     * @param frequency
-     *         frequency of the power line in Hz
-     */
-    public TodInput withFrequency(int frequency) {
-        return new TodInput(cpuClock, cpuDivider, frequency);
-    }
-
-    /**
      * Increment of the accumulator per cycle: A tick of the TOD input happens every {@link #cpuClock()} increments.
      */
     int increment() {
