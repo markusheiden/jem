@@ -146,7 +146,7 @@ public abstract class AbstractCIA implements BusDevice, ClockedComponent {
     /**
      * Time of day: Tenths, seconds, minutes, hours (0x08-0x0B). At power up the time is 01:00:00.0.
      */
-    private final int[] tod = {0x00, 0x00, 0x00, 0x01};
+    private final int[] tod = { 0x00, 0x00, 0x00, 0x01 };
 
     /**
      * Alarm: Tenths, seconds, minutes, hours.
