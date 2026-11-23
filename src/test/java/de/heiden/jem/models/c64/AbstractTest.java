@@ -427,11 +427,10 @@ public abstract class AbstractTest {
             try {
                 var test = (AbstractTest) context.getRequiredTestInstance();
                 test.dumpProgram();
-            } catch (Exception io) {
-                // Ignore.
-            } finally {
-                throw throwable;
+            } catch (Throwable e) {
+                throwable.addSuppressed(e);
             }
+            throw throwable;
         }
     }
 
