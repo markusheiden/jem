@@ -29,7 +29,12 @@ class C64docTest extends AbstractTest {
     private static final int BASIC = 0x0801;
 
     // sbx and vsbx take too long on a complete C64, see cpu().
-    @ProgramSuiteSource(resource = DIRECTORY + "dadc.prg", ignore = {"sbx", "vsbx"})
+    @ProgramSuiteSource(
+            resource = DIRECTORY + "dadc.prg",
+            ignore = {
+                    "sbx",
+                    "vsbx"
+            })
     @ParameterizedTest(name = "{1}")
     void test(Path program, String programName) throws Exception {
         // The tests need at max 21 seconds.
@@ -42,7 +47,7 @@ class C64docTest extends AbstractTest {
      * They need just the CPU, so they are executed without the other components, which is much faster.
      */
     @ParameterizedTest(name = "{0}")
-    @ValueSource(strings = {"sbx", "vsbx"})
+    @ValueSource(strings = { "sbx", "vsbx" })
     @Timeout(600)
     void cpu(String programName) throws Exception {
         // Start the program like its BASIC line does (SYS start of BASIC + 26).

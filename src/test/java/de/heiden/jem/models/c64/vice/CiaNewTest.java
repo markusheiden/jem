@@ -30,14 +30,23 @@ class CiaNewTest extends AbstractTest {
         newCias = true;
     }
 
-    @ProgramSuiteSource(resource = "/vice-emu-testprogs/CIA/cia-timer/cia-timer-newcias.prg", filter = "newcias")
+    @ProgramSuiteSource(
+            resource = "/vice-emu-testprogs/CIA/cia-timer/cia-timer-newcias.prg",
+            filter = "newcias")
     @ParameterizedTest(name = "{1}")
     void ciaTimer(Path program, String programName) throws Exception {
         testBorderResult(program, 220, false);
     }
 
     // cia3, cia3a, cia4 and cia8 have variants for the new CIA.
-    @ProgramSuiteSource(resource = "/vice-emu-testprogs/CIA/ciavarious/cia1.prg", ignore = {"cia3", "cia3a", "cia4", "cia8"})
+    @ProgramSuiteSource(
+            resource = "/vice-emu-testprogs/CIA/ciavarious/cia1.prg",
+            ignore = {
+                    "cia3",
+                    "cia3a",
+                    "cia4",
+                    "cia8"
+            })
     @ParameterizedTest(name = "{1}")
     void ciaVarious(Path program, String programName) throws Exception {
         // cia15 loops over all timer values.
@@ -51,8 +60,14 @@ class CiaNewTest extends AbstractTest {
     }
 
     // irqdelay, irqdelay2 and irqdelay-oneshot are for the old CIA.
-    @ProgramSuiteSource(resource = "/vice-emu-testprogs/CIA/irqdelay/irqdelay-cia1.prg", filter = NEW_CIA,
-            ignore = {"irqdelay", "irqdelay2", "irqdelay-oneshot"})
+    @ProgramSuiteSource(
+            resource = "/vice-emu-testprogs/CIA/irqdelay/irqdelay-cia1.prg",
+            filter = NEW_CIA,
+            ignore = {
+                    "irqdelay",
+                    "irqdelay2",
+                    "irqdelay-oneshot"
+            })
     @ParameterizedTest(name = "{1}")
     void irqDelay(Path program, String programName) throws Exception {
         testBorderResult(program, 30, false);
@@ -64,7 +79,9 @@ class CiaNewTest extends AbstractTest {
         testBorderResult(program, 40, false);
     }
 
-    @ProgramSuiteSource(resource = "/vice-emu-testprogs/CIA/shiftregister/cia-sp-test-oneshot-new.prg", filter = NEW_CIA)
+    @ProgramSuiteSource(
+            resource = "/vice-emu-testprogs/CIA/shiftregister/cia-sp-test-oneshot-new.prg",
+            filter = NEW_CIA)
     @ParameterizedTest(name = "{1}")
     void shiftRegister(Path program, String programName) throws Exception {
         testBorderResult(program, 70, false);
@@ -75,21 +92,29 @@ class CiaNewTest extends AbstractTest {
      * The tests for the CIAs with the timestamp 4485 are ignored, they behave differently.
      * The tests for all timer values (_7f) pass too, but are ignored, because each takes 130 seconds.
      */
-    @ProgramSuiteSource(resource = "/vice-emu-testprogs/CIA/shiftregister/cia-sdr-icr/cia1-sdr-icr-0.prg",
+    @ProgramSuiteSource(
+            resource = "/vice-emu-testprogs/CIA/shiftregister/cia-sdr-icr/cia1-sdr-icr-0.prg",
             filter = "^(?!.*(4485|_7f)).*$")
     @ParameterizedTest(name = "{1}")
     void shiftRegisterIcr(Path program, String programName) throws Exception {
         testBorderResult(program, 30, false);
     }
 
-    @ProgramSuiteSource(resource = "/vice-emu-testprogs/CIA/timerbasics/test_new.prg", filter = "_new$")
+    @ProgramSuiteSource(
+            resource = "/vice-emu-testprogs/CIA/timerbasics/test_new.prg",
+            filter = "_new$")
     @ParameterizedTest(name = "{1}")
     void timerBasics(Path program, String programName) throws Exception {
         testBorderResult(program, 120, false);
     }
 
     // stability and stability-ntsc are tested by todStability().
-    @ProgramSuiteSource(resource = "/vice-emu-testprogs/CIA/tod/alarm.prg", ignore = {"stability", "stability-ntsc"})
+    @ProgramSuiteSource(
+            resource = "/vice-emu-testprogs/CIA/tod/alarm.prg",
+            ignore = {
+                    "stability",
+                    "stability-ntsc"
+            })
     @ParameterizedTest(name = "{1}")
     void tod(Path program, String programName) throws Exception {
         testBorderResult(program, 120, false);
@@ -100,7 +125,7 @@ class CiaNewTest extends AbstractTest {
      * It shows its progress in the border, so just the debug cartridge tells the result.
      */
     @ParameterizedTest
-    @ValueSource(strings = {"stability", "stability-ntsc"})
+    @ValueSource(strings = { "stability", "stability-ntsc" })
     void todStability(String programName) throws Exception {
         videoSystem = videoSystemOf(programName);
         testDebugCartridgeResult(path("/vice-emu-testprogs/CIA/tod/" + programName + ".prg"), 50);

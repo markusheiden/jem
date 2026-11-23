@@ -16,8 +16,13 @@ import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
 class FuxxorTest extends AbstractTest {
     // test is the source of test-fuxxored, a BASIC program.
     // test-fuxxored and ef2-inst1 fail: They execute code in the disk drive, which is not emulated.
-    @ProgramSuiteSource(resource = "/vice-emu-testprogs/general/fuxxortest/test-fuxxored.prg", ignore = {
-            "test", "test-fuxxored", "ef2-inst1"})
+    @ProgramSuiteSource(
+            resource = "/vice-emu-testprogs/general/fuxxortest/test-fuxxored.prg",
+            ignore = {
+                    "test",
+                    "test-fuxxored",
+                    "ef2-inst1"
+            })
     @ParameterizedTest(name = "{1}")
     void test(Path program, String programName) throws Exception {
         testDebugCartridgeResult(program, 20);

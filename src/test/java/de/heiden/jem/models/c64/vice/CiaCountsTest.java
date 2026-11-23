@@ -38,7 +38,12 @@ class CiaCountsTest extends AbstractTest {
     private static final int DATA_LENGTH = 0x1200;
 
     // cia-b-counts-a and cia-b-counts-a_ntsc have no result, see data().
-    @ProgramSuiteSource(resource = DIRECTORY + "cia-b-counts-a.prg", ignore = {"cia-b-counts-a", "cia-b-counts-a_ntsc"})
+    @ProgramSuiteSource(
+            resource = DIRECTORY + "cia-b-counts-a.prg",
+            ignore = {
+                    "cia-b-counts-a",
+                    "cia-b-counts-a_ntsc"
+            })
     @ParameterizedTest(name = "{1}")
     void test(Path program, String programName) throws Exception {
         newCias = programName.contains("-new");
@@ -78,7 +83,7 @@ class CiaCountsTest extends AbstractTest {
     /**
      * Hex dump with 8 bytes per line: One line for each test of the program.
      */
-    private static String hexDump(byte[] bytes) {
+    private String hexDump(byte[] bytes) {
         var result = new StringBuilder();
         for (var i = 0; i < bytes.length; i += 8) {
             result.append(hexWord(DATA + i)).append(':');
