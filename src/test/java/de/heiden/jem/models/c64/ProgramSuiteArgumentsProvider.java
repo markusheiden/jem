@@ -4,6 +4,7 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.support.AnnotationConsumer;
+import org.junit.jupiter.params.support.ParameterDeclarations;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -55,7 +56,8 @@ public class ProgramSuiteArgumentsProvider implements ArgumentsProvider, Annotat
     }
 
     @Override
-    public Stream<? extends Arguments> provideArguments(ExtensionContext context) throws Exception {
+    public Stream<? extends Arguments> provideArguments(ParameterDeclarations parameters, ExtensionContext context)
+            throws Exception {
         return createParametersFromDirectory(resource, (Path path) -> {
             var filename = path.getFileName().toString();
             if (!filename.endsWith(PRG_SUFFIX)) {

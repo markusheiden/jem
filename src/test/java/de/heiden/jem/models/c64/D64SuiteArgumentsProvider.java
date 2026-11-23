@@ -6,6 +6,7 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.support.AnnotationConsumer;
+import org.junit.jupiter.params.support.ParameterDeclarations;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -57,7 +58,8 @@ public abstract class D64SuiteArgumentsProvider implements ArgumentsProvider, An
     }
 
     @Override
-    public Stream<? extends Arguments> provideArguments(ExtensionContext context) throws Exception {
+    public Stream<? extends Arguments> provideArguments(ParameterDeclarations parameters, ExtensionContext context)
+            throws Exception {
         return createParametersFromD64(resource, (String filename) -> {
             if (!filename.endsWith(PRG_SUFFIX)) {
                 return false;
