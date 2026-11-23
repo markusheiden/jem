@@ -225,7 +225,7 @@ public abstract class AbstractCIA implements BusDevice, ClockedComponent {
      * Constructor.
      *
      * @param todInput
-     *         TOD input
+     *         TOD input.
      */
     protected AbstractCIA(@Nonnull TodInput todInput) {
         this.todInput = todInput;
@@ -319,7 +319,7 @@ public abstract class AbstractCIA implements BusDevice, ClockedComponent {
             }
             case 0x0F -> timerB.writeControl(value);
             default -> {
-                // ignore
+                // Ignore.
             }
         }
     }
@@ -443,7 +443,7 @@ public abstract class AbstractCIA implements BusDevice, ClockedComponent {
      * When the output mode is entered again, if the output mode has been left while CNT was low.
      *
      * @param control
-     *         new value of the control register A
+     *         New value of the control register A.
      */
     private void changeSerialMode(int control) {
         // CNT needs some cycles to settle.
@@ -500,9 +500,9 @@ public abstract class AbstractCIA implements BusDevice, ClockedComponent {
      * Write a time of day register or, if selected by CRB, an alarm register.
      *
      * @param index
-     *         index of the register: 0 = tenths, 1 = seconds, 2 = minutes, 3 = hours
+     *         Index of the register: 0 = tenths, 1 = seconds, 2 = minutes, 3 = hours.
      * @param value
-     *         value without undefined bits
+     *         Value without undefined bits.
      */
     private void writeTod(int index, int value) {
         var setAlarm = (timerB.control & CRB_SET_ALARM) != 0;
@@ -535,7 +535,7 @@ public abstract class AbstractCIA implements BusDevice, ClockedComponent {
      * Reading the hours latches the time of day, reading the tenths releases it.
      *
      * @param index
-     *         index of the register: 0 = tenths, 1 = seconds, 2 = minutes, 3 = hours
+     *         Index of the register: 0 = tenths, 1 = seconds, 2 = minutes, 3 = hours.
      */
     private int readTod(int index) {
         if (!todLatched) {
@@ -783,9 +783,9 @@ public abstract class AbstractCIA implements BusDevice, ClockedComponent {
          * Constructor.
          *
          * @param interruptFlag
-         *         interrupt flag of this timer
+         *         Interrupt flag of this timer.
          * @param pbBit
-         *         bit of port B for the timer output
+         *         Bit of port B for the timer output.
          */
         private Timer(int interruptFlag, int pbBit) {
             this.interruptFlag = interruptFlag;
@@ -845,7 +845,7 @@ public abstract class AbstractCIA implements BusDevice, ClockedComponent {
         /**
          * Execute one cycle.
          *
-         * @return whether the timer underflowed
+         * @return Whether the timer underflowed.
          */
         private boolean cycle() {
             pulse = false;

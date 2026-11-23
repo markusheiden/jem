@@ -48,7 +48,7 @@ public class C64Application {
         frame.addKeyListener(new KeyListener(c64.getKeyboard(), new PCMapping()));
         frame.getContentPane().add(screen);
 
-        // pack
+        // Pack.
         frame.pack();
         // frame.setResizable(false);
         frame.setVisible(true);

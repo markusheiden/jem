@@ -8,7 +8,7 @@ public class RAM extends AbstractMemory {
      * Constructor.
      *
      * @param size
-     *         size in bytes
+     *         Size in bytes.
      * @require size >= 0 && size <= 0x10000
      */
     public RAM(int size) {
@@ -19,7 +19,7 @@ public class RAM extends AbstractMemory {
      * Constructor.
      *
      * @param content
-     *         ROM content
+     *         ROM content.
      * @require content.length >= 0 && content.length <= 0x10000
      */
     public RAM(byte[] content) {
@@ -44,9 +44,9 @@ public class RAM extends AbstractMemory {
      * Write byte to RAM.
      *
      * @param value
-     *         byte to write
+     *         Byte to write.
      * @param address
-     *         address to write byte to
+     *         Address to write byte to.
      * @require value >= 0 && value < 0x100
      */
     @Override
@@ -60,7 +60,7 @@ public class RAM extends AbstractMemory {
      * Read byte from RAM.
      *
      * @param address
-     *         address to read byte from
+     *         Address to read byte from.
      * @ensure result >= 0 && result < 0x100
      */
     @Override

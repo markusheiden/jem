@@ -26,11 +26,11 @@ public class LogEntry {
      * Constructor.
      *
      * @param read
-     *         is access a read access?.
+     *         Is access a read access?.
      * @param address
-     *         accessed address.
+     *         Accessed address.
      * @param value
-     *         value which has been written / read.
+     *         Value which has been written / read.
      */
     public LogEntry(boolean read, int address, int value) {
         this.read = read;

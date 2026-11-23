@@ -15,8 +15,8 @@ import org.slf4j.LoggerFactory;
 /**
  * C64 bus.
  * <p>
- * TODO evaluate loram, hiram, charen, game, exrom
- * TODO SID, IO1, IO2
+ * TODO Evaluate loram, hiram, charen, game, exrom.
+ * TODO SID, IO1, IO2.
  */
 public class C64Bus implements BusDevice, Patchable {
     /**
@@ -52,23 +52,23 @@ public class C64Bus implements BusDevice, Patchable {
      * Constructor. The SID is not emulated, so its area is mapped to RAM.
      *
      * @param ram
-     *         RAM
+     *         RAM.
      * @param basic
-     *         Basic ROM
+     *         Basic ROM.
      * @param vic
-     *         VIC
+     *         VIC.
      * @param colorRam
-     *         Color RAM
+     *         Color RAM.
      * @param cia1
-     *         CIA1
+     *         CIA1.
      * @param cia2
-     *         CIA2
+     *         CIA2.
      * @param charset
-     *         Charset ROM
+     *         Charset ROM.
      * @param kernel
-     *         Kernel ROM
+     *         Kernel ROM.
      * @param openBus
-     *         Device for the areas without a device $DE00-$DFFF
+     *         Device for the areas without a device $DE00-$DFFF.
      */
     public C64Bus(
             @Nonnull BusDevice ram,
@@ -87,25 +87,25 @@ public class C64Bus implements BusDevice, Patchable {
      * Constructor.
      *
      * @param ram
-     *         RAM
+     *         RAM.
      * @param basic
-     *         Basic ROM
+     *         Basic ROM.
      * @param vic
-     *         VIC
+     *         VIC.
      * @param sid
-     *         Device for the SID area $D400-$D7FF
+     *         Device for the SID area $D400-$D7FF.
      * @param colorRam
-     *         Color RAM
+     *         Color RAM.
      * @param cia1
-     *         CIA1
+     *         CIA1.
      * @param cia2
-     *         CIA2
+     *         CIA2.
      * @param charset
-     *         Charset ROM
+     *         Charset ROM.
      * @param kernel
-     *         Kernel ROM
+     *         Kernel ROM.
      * @param openBus
-     *         Device for the areas without a device $DE00-$DFFF
+     *         Device for the areas without a device $DE00-$DFFF.
      * @require cpu != null
      * @require ram != null
      * @require basic != null
@@ -244,7 +244,7 @@ public class C64Bus implements BusDevice, Patchable {
                 };
 
         cpu.addInputPortListener((value, mask) -> {
-            // TODO 2010-10-08 mh: consider signals from expansion port
+            // TODO 2010-10-08 mh: Consider signals from expansion port.
             var mode = ((value << 2) | 0x03) & 0x1f;
 
             var oldIoModeRead = ioModeRead;
@@ -312,7 +312,7 @@ public class C64Bus implements BusDevice, Patchable {
     }
 
     //
-    // public
+    // Public.
     //
 
     /**
@@ -326,7 +326,7 @@ public class C64Bus implements BusDevice, Patchable {
      * Read a byte from the bus device.
      *
      * @param address
-     *         address to read byte from
+     *         Address to read byte from.
      * @require address >= 0x0000 && address < 0x10000
      * @ensure result >= 0x00 && result < 0x100
      */
@@ -341,14 +341,14 @@ public class C64Bus implements BusDevice, Patchable {
      * Patch a byte in the ROM.
      *
      * @param value
-     *         byte to write
+     *         Byte to write.
      * @param address
-     *         address to write byte to
+     *         Address to write byte to.
      * @require value >= 0x00 && value < 0x100
      */
     @Override
     public void patch(int value, int address) {
-        // 0x100 is used to escape emulation in the cpu
+        // 0x100 is used to escape emulation in the cpu.
         assert value >= 0 && value < 0x100 : "value >= 0 && value < 0x100";
 
         ((Patchable) ioModeRead[address >> 8]).patch(value, address);
@@ -358,9 +358,9 @@ public class C64Bus implements BusDevice, Patchable {
      * Write the byte to the bus device.
      *
      * @param value
-     *         byte to write
+     *         Byte to write.
      * @param address
-     *         address to write byte to
+     *         Address to write byte to.
      * @require value >= 0x00 && value < 0x100
      * @require address >= 0x0000 && address < 0x10000
      */

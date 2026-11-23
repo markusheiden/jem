@@ -20,7 +20,7 @@ class JoystickTest {
      */
     @Test
     void deferred() {
-        cia.write(0x00, 0x03); // DDRB: all input
+        cia.write(0x00, 0x03); // DDRB: All input.
 
         joystick1.press(Direction.UP);
         assertEquals(0xFF, cia.read(0x01));
@@ -33,8 +33,8 @@ class JoystickTest {
      */
     @Test
     void joystick2() {
-        cia.write(0xFF, 0x02); // DDRA: all output
-        cia.write(0x7F, 0x00); // keyboard column 7
+        cia.write(0xFF, 0x02); // DDRA: All output.
+        cia.write(0x7F, 0x00); // Keyboard column 7.
         assertEquals(0x7F, cia.read(0x00));
 
         joystick2.press(Direction.UP);
@@ -62,7 +62,7 @@ class JoystickTest {
      */
     @Test
     void joystick1() {
-        cia.write(0x00, 0x03); // DDRB: all input
+        cia.write(0x00, 0x03); // DDRB: All input.
         assertEquals(0xFF, cia.read(0x01));
 
         joystick1.press(Direction.FIRE);

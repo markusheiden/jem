@@ -13,7 +13,7 @@ public class ROMLoader {
      * Basic ROM.
      *
      * @param filename
-     *         filename of rom image.
+     *         Filename of rom image.
      * @ensure result != null
      */
     public static @Nonnull ROM basic(String filename) throws Exception {
@@ -25,7 +25,7 @@ public class ROMLoader {
      * Kernel ROM.
      *
      * @param filename
-     *         filename of rom image.
+     *         Filename of rom image.
      * @ensure result != null
      */
     public static @Nonnull ROM kernel(String filename) throws Exception {
@@ -37,7 +37,7 @@ public class ROMLoader {
      * Charset ROM.
      *
      * @param filename
-     *         filename of rom image.
+     *         Filename of rom image.
      * @ensure result != null
      */
     public static @Nonnull ROM character(String filename) throws Exception {
@@ -49,7 +49,7 @@ public class ROMLoader {
      * Charset ROM.
      *
      * @param filename
-     *         filename of rom image.
+     *         Filename of rom image.
      * @ensure result != null
      */
     public static @Nonnull ROM pla(String filename) throws Exception {
@@ -58,12 +58,12 @@ public class ROMLoader {
     }
 
     /**
-     * Load ROM content from File
+     * Load ROM content from file.
      *
      * @param length
-     *         of expected content
+     *         Of expected content.
      * @param filename
-     *         filename of content
+     *         Filename of content.
      * @throws Exception
      */
     protected static @Nonnull byte[] load(int length, String filename) throws Exception {
@@ -84,7 +84,7 @@ public class ROMLoader {
     }
 
     //
-    // public constants
+    // Public constants.
     //
 
     public static final String DEFAULT_BASIC = "/roms/basic/901226-01.bin";

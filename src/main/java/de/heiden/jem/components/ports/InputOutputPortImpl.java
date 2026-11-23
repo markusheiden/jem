@@ -20,7 +20,7 @@ public final class InputOutputPortImpl implements InputOutputPort {
      * Connect the output port to this input port.
      *
      * @param port
-     *         output port to connect to.
+     *         Output port to connect to.
      * @require port != null
      */
     @Override
@@ -32,7 +32,7 @@ public final class InputOutputPortImpl implements InputOutputPort {
      * Disconnect the output port from this input port.
      *
      * @param port
-     *         output port to disconnect.
+     *         Output port to disconnect.
      * @require port != null
      */
     @Override
@@ -44,7 +44,7 @@ public final class InputOutputPortImpl implements InputOutputPort {
      * Add the input port listener.
      *
      * @param listener
-     *         port listener.
+     *         Port listener.
      * @require listener != null
      */
     @Override
@@ -56,7 +56,7 @@ public final class InputOutputPortImpl implements InputOutputPort {
      * Remove the input port listener.
      *
      * @param listener
-     *         port listener.
+     *         Port listener.
      * @require listener != null
      */
     @Override
@@ -85,7 +85,7 @@ public final class InputOutputPortImpl implements InputOutputPort {
      * Add the output port listener.
      *
      * @param listener
-     *         port listener.
+     *         Port listener.
      * @require listener != null
      */
     @Override
@@ -97,7 +97,7 @@ public final class InputOutputPortImpl implements InputOutputPort {
      * Remove the output port listener.
      *
      * @param listener
-     *         port listener.
+     *         Port listener.
      * @require listener != null
      */
     @Override

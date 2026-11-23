@@ -13,7 +13,7 @@ abstract class AbstractLineRenderer implements LineRenderer {
      * Constructor.
      *
      * @param vic
-     *         VIC
+     *         VIC.
      */
     AbstractLineRenderer(VIC vic) {
         this.vic = vic;

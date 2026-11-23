@@ -10,7 +10,7 @@ public interface InputPort {
      * Add the port listener.
      *
      * @param listener
-     *         port listener
+     *         Port listener.
      * @require listener != null
      */
     void addInputPortListener(@Nonnull PortListener listener);
@@ -19,7 +19,7 @@ public interface InputPort {
      * Remove the port listener.
      *
      * @param listener
-     *         port listener
+     *         Port listener.
      * @require listener != null
      */
     void removeInputPortListener(@Nonnull PortListener listener);
@@ -28,7 +28,7 @@ public interface InputPort {
      * Connect the output port to this input port.
      *
      * @param port
-     *         output port to connect to.
+     *         Output port to connect to.
      * @require port != null
      */
     void connect(@Nonnull OutputPort port);
@@ -37,7 +37,7 @@ public interface InputPort {
      * Disconnect the output port from this input port.
      *
      * @param port
-     *         output port to disconnect.
+     *         Output port to disconnect.
      * @require port != null
      */
     void disconnect(@Nonnull OutputPort port);

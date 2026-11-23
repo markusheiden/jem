@@ -33,14 +33,14 @@ public class StateGUI extends JPanel {
     }
 
     //
-    // painting
+    // Painting.
     //
 
     /**
      * The state changed, so update text.
      */
     public void stateChanged() {
-        // update text
+        // Update text.
         text.clear();
         if (cpu != null) {
             var state = cpu.getState();

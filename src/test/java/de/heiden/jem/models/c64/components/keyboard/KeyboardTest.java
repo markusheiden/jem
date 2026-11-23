@@ -21,23 +21,23 @@ class KeyboardTest {
     void singleKey() {
         keyboard.press(Key.A);
         keyboard.updateKeys();
-        port1.setOutputData(0x00); // port 1 is input
+        port1.setOutputData(0x00); // Port 1 is input.
         port1.setOutputMask(0x00);
-        port0.setOutputData(0x00); // port 0 drives all bits 0
+        port0.setOutputData(0x00); // Port 0 drives all bits 0.
         port0.setOutputMask(0xFF);
-        assertEquals(0xFB, port1.inputData()); // row 2 is driven to 0
+        assertEquals(0xFB, port1.inputData()); // Row 2 is driven to 0.
         assertEquals(0x04, port1.inputMask());
-        port0.setOutputData(0xFF); // port 0 drives all bits 1
-        assertEquals(0xFF, port1.inputData()); // row 2 is driven to 1
+        port0.setOutputData(0xFF); // Port 0 drives all bits 1.
+        assertEquals(0xFF, port1.inputData()); // Row 2 is driven to 1.
         assertEquals(0x04, port1.inputMask());
-        port0.setOutputData(0x00); // port 0 is input
+        port0.setOutputData(0x00); // Port 0 is input.
         port0.setOutputMask(0x00);
-        port1.setOutputData(0x00); // port 1 drives all bits 0
+        port1.setOutputData(0x00); // Port 1 drives all bits 0.
         port1.setOutputMask(0xFF);
-        assertEquals(0xFD, port0.inputData()); // row 1 is driven to 0
+        assertEquals(0xFD, port0.inputData()); // Row 1 is driven to 0.
         assertEquals(0x02, port0.inputMask());
-        port1.setOutputData(0xFF); // port 1 drives all bits 1
-        assertEquals(0xFF, port0.inputData()); // row 1 is driven to 1
+        port1.setOutputData(0xFF); // Port 1 drives all bits 1.
+        assertEquals(0xFF, port0.inputData()); // Row 1 is driven to 1.
         assertEquals(0x02, port0.inputMask());
         keyboard.release(Key.A);
 
@@ -69,15 +69,15 @@ class KeyboardTest {
      */
     @Test
     void deferred() {
-        port1.setOutputData(0x00); // port 1 is input
+        port1.setOutputData(0x00); // Port 1 is input.
         port1.setOutputMask(0x00);
-        port0.setOutputData(0x00); // port 0 drives all bits 0
+        port0.setOutputData(0x00); // Port 0 drives all bits 0.
         port0.setOutputMask(0xFF);
 
         keyboard.press(Key.A);
         assertEquals(0xFF, port1.inputData());
         keyboard.updateKeys();
-        assertEquals(0xFB, port1.inputData()); // row 2 is driven to 0
+        assertEquals(0xFB, port1.inputData()); // Row 2 is driven to 0.
 
         keyboard.release(Key.A);
         assertEquals(0xFB, port1.inputData());
@@ -105,7 +105,7 @@ class KeyboardTest {
      */
     @Test
     void doubleKey() {
-        // TODO not implemented yet...
+        // TODO Not implemented yet...
 /*
     keyboard.pressed(KeyEvent.VK_2, KeyEvent.KEY_LOCATION_STANDARD);
     keyboard.pressed(KeyEvent.VK_0, KeyEvent.KEY_LOCATION_STANDARD);

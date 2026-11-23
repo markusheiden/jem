@@ -7,7 +7,7 @@ import java.io.OutputStream;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Buffer for C64 screen output
+ * Buffer for C64 screen output.
  */
 public class ConsoleBuffer extends OutputStream {
     /**
@@ -60,7 +60,7 @@ public class ConsoleBuffer extends OutputStream {
      * Is string s on the screen?.
      *
      * @param s
-     *         String
+     *         String.
      */
     public synchronized boolean contains(String s) {
         return screen.indexOf(s) >= 0;

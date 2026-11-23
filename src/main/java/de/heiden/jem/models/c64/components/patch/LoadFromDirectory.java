@@ -25,7 +25,7 @@ public class LoadFromDirectory extends Patch {
      * Constructor.
      *
      * @param baseDirectory
-     *         Base directory to load files from
+     *         Base directory to load files from.
      */
     public LoadFromDirectory(Path baseDirectory) {
         super(0xF4C4);
@@ -35,7 +35,7 @@ public class LoadFromDirectory extends Patch {
 
     @Override
     protected int execute(CPU6510State state, BusDevice bus) {
-        // Read filename from ($BB), length ($B7)
+        // Read filename from ($BB), length ($B7).
         var wordBus = new WordBus(bus);
         var filename = StringUtil.read(bus, wordBus.readWord(0xBB), bus.read(0xB7));
         if (!filename.contains(".")) {

@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Output port abstract implementation
+ * Output port abstract implementation.
  */
 public final class OutputPortImpl implements OutputPort {
     /**
@@ -33,7 +33,7 @@ public final class OutputPortImpl implements OutputPort {
      * Add the port listener.
      *
      * @param listener
-     *         port listener.
+     *         Port listener.
      * @require listener != null
      */
     @Override
@@ -46,7 +46,7 @@ public final class OutputPortImpl implements OutputPort {
      * Remove the port listener.
      *
      * @param listener
-     *         port listener.
+     *         Port listener.
      * @require listener != null
      */
     @Override
@@ -76,7 +76,7 @@ public final class OutputPortImpl implements OutputPort {
      * Set the port output data.
      *
      * @param data
-     *         new output value.
+     *         New output value.
      */
     @Override
     public void setOutputData(int data) {
@@ -89,7 +89,7 @@ public final class OutputPortImpl implements OutputPort {
      * Set bit means port bit is output. Cleared bit means port bit is not driven.
      *
      * @param mask
-     *         driven bits.
+     *         Driven bits.
      */
     @Override
     public void setOutputMask(int mask) {
@@ -98,7 +98,7 @@ public final class OutputPortImpl implements OutputPort {
     }
 
     //
-    // protected
+    // Protected.
     //
 
     /**

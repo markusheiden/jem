@@ -31,11 +31,11 @@ public class VICBus implements BusDevice {
      * Constructor.
      *
      * @param ram
-     *         RAM
+     *         RAM.
      * @param character
-     *         char rom
+     *         Char rom.
      * @param cia2PortA
-     *         Port A of CIA 2 for VIC base address
+     *         Port A of CIA 2 for VIC base address.
      * @require ram != null
      * @require character != null
      * @require cia2PortA != null
@@ -56,7 +56,7 @@ public class VICBus implements BusDevice {
      * Read byte from bus device.
      *
      * @param address
-     *         address to read byte from
+     *         Address to read byte from.
      * @require address >= 0x0000 && address < 0x4000
      * @ensure result >= 0x00 && result < 0x100
      */
@@ -81,7 +81,7 @@ public class VICBus implements BusDevice {
 
             @Override
             public void write(int value, int address) {
-                // ignored
+                // Ignored.
             }
         };
     }
@@ -90,9 +90,9 @@ public class VICBus implements BusDevice {
      * Write byte to bus device.
      *
      * @param value
-     *         byte to write
+     *         Byte to write.
      * @param address
-     *         address to write byte to
+     *         Address to write byte to.
      * @require value >= 0x00 && value < 0x100
      * @require address >= 0x0000 && address < 0x10000
      */

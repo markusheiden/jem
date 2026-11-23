@@ -8,7 +8,7 @@ public class ColorRAM extends AbstractMemory {
      * Constructor.
      *
      * @param size
-     *         size in bytes
+     *         Size in bytes.
      * @require size >= 0 && size <= 0x10000
      */
     public ColorRAM(int size) {
@@ -19,7 +19,7 @@ public class ColorRAM extends AbstractMemory {
      * Constructor.
      *
      * @param content
-     *         ROM content
+     *         ROM content.
      * @require content.length >= 0 && content.length <= 0x10000
      */
     public ColorRAM(byte[] content) {
@@ -30,16 +30,16 @@ public class ColorRAM extends AbstractMemory {
      * Write byte to RAM.
      *
      * @param value
-     *         byte to write
+     *         Byte to write.
      * @param address
-     *         address to write byte to
+     *         Address to write byte to.
      * @require value >= 0 && value < 0x100
      */
     @Override
     public final void write(int value, int address) {
         assert value >= 0 && value < 0x100 : "value >= 0 && value < 0x100";
 
-        // high nibble is always 0
+        // High nibble is always 0.
         memory[address & mask] = value & 0x0F;
     }
 
@@ -47,7 +47,7 @@ public class ColorRAM extends AbstractMemory {
      * Read byte from RAM.
      *
      * @param address
-     *         address to read byte from
+     *         Address to read byte from.
      * @ensure result >= 0 && result < 0x100
      */
     @Override

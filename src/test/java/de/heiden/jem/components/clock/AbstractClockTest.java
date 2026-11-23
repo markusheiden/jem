@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * Test for {@link AbstractClock}
+ * Test for {@link AbstractClock}.
  */
 @Tag("clock")
 class AbstractClockTest {
@@ -178,7 +178,7 @@ class AbstractClockTest {
             clock.addClockEvent(3, event3);
             assertEquals(1, clock.getNextEventTick());
 
-            // Remove the second registered event -> next tick should still be the tick of the first event
+            // Remove the second registered event -> next tick should still be the tick of the first event.
             clock.removeClockEvent(event2);
             assertSame(event3, event1.next);
             assertSame(event1, event3.previous);
@@ -289,11 +289,11 @@ class AbstractClockTest {
             clock.addClockEvent(3, event3);
             assertEquals(0, executed.size());
 
-            // Execute tick 1, which has no registered events -> nothing should happen
+            // Execute tick 1, which has no registered events -> nothing should happen.
             clock.executeEvents(1);
             assertEquals(0, executed.size());
 
-            // Execute tick 2, which has two registered events -> both should be executed
+            // Execute tick 2, which has two registered events -> both should be executed.
             clock.executeEvents(2);
             assertEquals(2, executed.size());
             assertTrue(executed.contains(event2a));

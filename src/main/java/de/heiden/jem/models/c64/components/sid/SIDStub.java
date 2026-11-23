@@ -58,7 +58,7 @@ public class SIDStub implements BusDevice {
      * Constructor.
      *
      * @param clock
-     *         clock
+     *         Clock.
      */
     public SIDStub(@Nonnull Clock clock) {
         this.clock = clock;

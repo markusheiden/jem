@@ -80,7 +80,7 @@ public class DisassemblerGUI extends JPanel {
      * Connect component to model (a bus).
      *
      * @param bus
-     *         model
+     *         Model.
      */
     public void setBus(BusDevice bus) {
         this.bus = bus;
@@ -88,7 +88,7 @@ public class DisassemblerGUI extends JPanel {
     }
 
     //
-    // painting
+    // Painting.
     //
 
     /**
@@ -99,7 +99,7 @@ public class DisassemblerGUI extends JPanel {
             return;
         }
 
-        // update text
+        // Update text.
         try {
             var model = new DefaultListModel<String>();
             var code = new BusCodeBuffer(scrollBar.getValue(), bus);
@@ -113,7 +113,7 @@ public class DisassemblerGUI extends JPanel {
             text.setModel(model);
 
         } catch (IOException e) {
-            // ignore
+            // Ignore.
         }
 
         repaint();

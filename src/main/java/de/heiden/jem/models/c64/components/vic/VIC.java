@@ -38,13 +38,13 @@ public class VIC implements BusDevice {
     protected final int lastX;
 
 
-    // display unit
+    // Display unit.
     public final AbstractDisplayUnit displayUnit;
 
-    // address mask
+    // Address mask.
     private final int mask;
 
-    // components
+    // Components.
     public final VICBus bus;
     public final ColorRAM colorRam;
 
@@ -80,7 +80,7 @@ public class VIC implements BusDevice {
      */
     private int refresh = 0xFF;
 
-    // sprite register
+    // Sprite register.
     protected Sprite[] sprites;
 
     private int regSpritesEnable; // 0x15
@@ -95,7 +95,7 @@ public class VIC implements BusDevice {
     private int regSpritesBackgroundCollision; // 0x1F
     protected int regSpritesBackgroundPriority; // 0x1B
 
-    // control
+    // Control.
     protected int regControl1; // 0x11
     protected static final int CONTROL1_BITMAP = 1 << 5;
     protected static final int CONTROL1_EXT_COLOR = 1 << 6;
@@ -114,13 +114,13 @@ public class VIC implements BusDevice {
     protected static final int CONTROL2_40_COLUMNS = 1 << 3;
     protected static final int CONTROL2_MULTI_COLOR = 1 << 4;
 
-    // base addresses
+    // Base addresses.
     private int regBase; // 0x18
-    protected int baseCharacterMode; // base address of text screen
-    protected int baseBitmapMode; // base address of bitmap screen
-    protected int baseCharacterSet; // base address of character set
+    protected int baseCharacterMode; // Base address of text screen.
+    protected int baseBitmapMode; // Base address of bitmap screen.
+    protected int baseCharacterSet; // Base address of character set.
 
-    // light pen
+    // Light pen.
     private int regStrobeX; // 0x13
     private int regStrobeY; // 0x14
 
@@ -139,7 +139,7 @@ public class VIC implements BusDevice {
      */
     private boolean lightPenTriggered = false;
 
-    // irq register
+    // Irq register.
     protected int regInterruptRequest; // 0x19
     protected int regInterruptMask; // 0x1A
     protected static final int INTERRUPT_MASK = 0x0F;
@@ -148,14 +148,14 @@ public class VIC implements BusDevice {
     protected static final int INTERRUPT_SPRITE_SPRITE = 1 << 2;
     protected static final int INTERRUPT_LIGHT_PEN = 1 << 3;
     protected static final int INTERRUPT_ANY = 1 << 7;
-    // color register
+    // Color register.
     protected byte regExteriorColor; // 0x20
     protected byte regBackgroundColor0; // 0x21
     protected byte regBackgroundColor1; // 0x22
     protected byte regBackgroundColor2; // 0x23
     protected byte regBackgroundColor3; // 0x24
 
-    // C128 register
+    // C128 register.
     private int regKeyboard; // 0x2F
     private int regFastMode; // 0x30
 
@@ -163,11 +163,11 @@ public class VIC implements BusDevice {
      * Constructor.
      *
      * @param model
-     *         model of the VIC.
+     *         Model of the VIC.
      * @param bus
-     *         vic memory bus.
+     *         VIC memory bus.
      * @param colorRam
-     *         color ram.
+     *         Color ram.
      * @require model != null
      * @require bus != null
      * @require colorRam != null
@@ -190,10 +190,10 @@ public class VIC implements BusDevice {
         this.lastX = model.lastX;
         this.firstX = model.firstX;
 
-        // address mask
+        // Address mask.
         mask = 0x3F;
 
-        // prepare sprites
+        // Prepare sprites.
         sprites = new Sprite[8];
         for (var i = 0; i < sprites.length; i++) {
             sprites[i] = new Sprite(i);
@@ -214,7 +214,7 @@ public class VIC implements BusDevice {
      * Reset VIC.
      */
     public void reset() {
-        // TODO what to init?
+        // TODO What to init?
     }
 
     /**
@@ -255,7 +255,7 @@ public class VIC implements BusDevice {
      * BA is low on bad lines and for the sprite data accesses, see {@link #isBALow(int, int, boolean)}.
      *
      * @param cycle
-     *         number of the current cycle, starting with 1
+     *         Number of the current cycle, starting with 1.
      */
     protected final void updateBA(int cycle) {
         var raster = regRaster;
@@ -280,11 +280,11 @@ public class VIC implements BusDevice {
      * see {@link #spriteAccessCycle(int)}.
      *
      * @param raster
-     *         raster line
+     *         Raster line.
      * @param cycle
-     *         cycle, starting with 1
+     *         Cycle, starting with 1.
      * @param badLine
-     *         is the raster line a bad line?
+     *         Is the raster line a bad line?
      */
     private boolean isBALow(int raster, int cycle, boolean badLine) {
         if (badLine && cycle >= 12 && cycle <= 54) {
@@ -320,7 +320,7 @@ public class VIC implements BusDevice {
      * The 6567R8 has 8 pixels more per line than X coordinates, it repeats the X coordinates of cycle 62 in cycle 63.
      *
      * @param cycle
-     *         cycle, starting with 1. Cycles below 1 are cycles of the previous line.
+     *         Cycle, starting with 1. Cycles below 1 are cycles of the previous line.
      */
     final int x(int cycle) {
         if (cycle < 1) {
@@ -352,9 +352,9 @@ public class VIC implements BusDevice {
      * or does an idle access to $3FFF. The CPU reads the byte of the first phase from the open bus.
      *
      * @param raster
-     *         raster line
+     *         Raster line.
      * @param cycle
-     *         cycle, starting with 1
+     *         Cycle, starting with 1.
      */
     protected final void spriteCycle(int raster, int cycle) {
         this.cycle = cycle;
@@ -391,7 +391,7 @@ public class VIC implements BusDevice {
                 }
             }
             default -> {
-                // nothing to do
+                // Nothing to do.
             }
         }
 
@@ -461,7 +461,7 @@ public class VIC implements BusDevice {
      * Connect the CPU bus.
      *
      * @param cpuData
-     *         byte of the last access of the CPU to the bus
+     *         Byte of the last access of the CPU to the bus.
      */
     public void connectCpuData(IntSupplier cpuData) {
         this.cpuData = cpuData;
@@ -484,9 +484,9 @@ public class VIC implements BusDevice {
      * Write byte to bus device.
      *
      * @param value
-     *         byte to write
+     *         Byte to write.
      * @param address
-     *         address to write byte to
+     *         Address to write byte to.
      * @require value >= 0 && value < 0x100
      */
     @Override
@@ -505,7 +505,7 @@ public class VIC implements BusDevice {
             }
             case 0x11 -> {
                 regControl1 = value;
-                // bit 7 is high bit of raster irq line
+                // Bit 7 is high bit of raster irq line.
                 regRasterIRQ = regRasterIRQ & 0xFF | (value & 0x80) << 1;
                 displayUnit.graphicsChanged();
             }
@@ -539,11 +539,11 @@ public class VIC implements BusDevice {
                 }
             }
             case 0x18 -> {
-                regBase = value | 0x01; // set unused bits to 1;
+                regBase = value | 0x01; // Set unused bits to 1.
                 updateBaseAddresses();
             }
             case 0x19 -> {
-                // 1-bits in value clear the corresponding interrupt bits in the irq register
+                // 1-bits in value clear the corresponding interrupt bits in the irq register.
                 regInterruptRequest &= ~(value & INTERRUPT_MASK);
                 updateIRQ();
             }
@@ -590,7 +590,7 @@ public class VIC implements BusDevice {
             case 0x2F -> regKeyboard = value;
             case 0x30 -> regFastMode = value;
             default -> {
-                // ignore
+                // Ignore.
             }
         }
     }
@@ -599,7 +599,7 @@ public class VIC implements BusDevice {
      * Read byte from bus device.
      *
      * @param address
-     *         address to read byte from
+     *         Address to read byte from.
      * @ensure result >= 0 && result < 0x100
      */
     @Override
@@ -610,23 +610,23 @@ public class VIC implements BusDevice {
             case 0x01, 0x03, 0x05, 0x07, 0x09, 0x0B, 0x0D, 0x0F -> sprites[a >> 1].y;
             case 0x10 -> regSpritesMSBX;
             // TODO 2010-03-17 mh: correct?
-            // bit 7 is high bit of current raster line
+            // Bit 7 is high bit of current raster line.
             case 0x11 -> regControl1 & 0x7F | (regRaster & 0x0100) >> 1;
             case 0x12 -> regRaster & 0xFF;
             case 0x13 -> regStrobeX;
             case 0x14 -> regStrobeY;
             case 0x15 -> regSpritesEnable;
-            case 0x16 -> regControl2 | 0xC0; // unused bits are 1
+            case 0x16 -> regControl2 | 0xC0; // Unused bits are 1.
             case 0x17 -> regSpritesExpandY;
             case 0x18 -> regBase;
             case 0x19 -> {
-                var irq = regInterruptRequest | 0x70; // unused bits are 1
+                var irq = regInterruptRequest | 0x70; // Unused bits are 1.
                 if ((regInterruptRequest & regInterruptMask) != 0) {
                     irq |= INTERRUPT_ANY;
                 }
                 yield irq;
             }
-            case 0x1A -> regInterruptMask | 0xF0; // unused bits are 1
+            case 0x1A -> regInterruptMask | 0xF0; // Unused bits are 1.
             case 0x1B -> regSpritesBackgroundPriority;
             case 0x1C -> regSpritesMulticolorMode;
             case 0x1D -> regSpritesExpandX;
@@ -644,7 +644,7 @@ public class VIC implements BusDevice {
                 displayUnit.backgroundCollisionsRead();
                 yield collisions;
             }
-            // unused bits are 1
+            // Unused bits are 1.
             case 0x20 -> regExteriorColor | 0xF0;
             case 0x21 -> regBackgroundColor0 | 0xF0;
             case 0x22 -> regBackgroundColor1 | 0xF0;
@@ -663,14 +663,14 @@ public class VIC implements BusDevice {
     }
 
     //
-    // protected
+    // Protected.
     //
 
     /**
      * Sets to current raster line.
      *
      * @param line
-     *         raster line
+     *         Raster line.
      */
     protected void setRasterLine(int line) {
         regRaster = line;
@@ -700,7 +700,7 @@ public class VIC implements BusDevice {
      * A falling edge triggers the light pen in the next cycle.
      *
      * @param low
-     *         is the light pen input low?
+     *         Is the light pen input low?
      */
     public final void setLightPen(boolean low) {
         if (low && !lightPenLow) {
@@ -714,9 +714,9 @@ public class VIC implements BusDevice {
      * At the start of a frame, the light pen triggers again, if its input is still low.
      *
      * @param raster
-     *         raster line
+     *         Raster line.
      * @param cycle
-     *         cycle, starting with 1
+     *         Cycle, starting with 1.
      */
     final void lightPenCycle(int raster, int cycle) {
         if (raster == 0 && cycle == 2) {
@@ -734,9 +734,9 @@ public class VIC implements BusDevice {
      * Trigger the light pen: Latch the current position and request an interrupt, as VICE does.
      *
      * @param cycle
-     *         cycle, starting with 1
+     *         Cycle, starting with 1.
      * @param startOfFrame
-     *         is the light pen triggered at the start of the frame, because its input is still low?
+     *         Is the light pen triggered at the start of the frame, because its input is still low?
      */
     private void triggerLightPen(int cycle, boolean startOfFrame) {
         lightPenTrigger = false;
@@ -770,9 +770,9 @@ public class VIC implements BusDevice {
      * The first collision after reading the collision register requests an interrupt.
      *
      * @param sprites
-     *         bit mask of the sprites which collided with other sprites
+     *         Bit mask of the sprites which collided with other sprites.
      * @param background
-     *         bit mask of the sprites which collided with the foreground of the graphics
+     *         Bit mask of the sprites which collided with the foreground of the graphics.
      */
     protected final void spriteCollisions(int sprites, int background) {
         if (sprites != 0) {
@@ -807,6 +807,6 @@ public class VIC implements BusDevice {
     protected void updateBaseAddresses() {
         baseCharacterMode = (regBase & 0xF0) << 6;
         baseBitmapMode = (regBase & 0x08) << 10;
-        baseCharacterSet = (regBase & 0x0E) << 10; // TODO what about bit 1?
+        baseCharacterSet = (regBase & 0x0E) << 10; // TODO What about bit 1?
     }
 }

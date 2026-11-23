@@ -163,7 +163,7 @@ public class DisplayUnit extends AbstractDisplayUnit {
      * Hidden constructor.
      *
      * @param vic
-     *         vic this display unit belongs to
+     *         VIC this display unit belongs to.
      */
     DisplayUnit(VIC vic) {
         super(vic,
@@ -243,9 +243,9 @@ public class DisplayUnit extends AbstractDisplayUnit {
      * Execute one cycle of a raster line.
      *
      * @param raster
-     *         raster line
+     *         Raster line.
      * @param cycle
-     *         cycle, starting with 1
+     *         Cycle, starting with 1.
      */
     private void cycle(int raster, int cycle) {
         // The pixels of a cycle are output two cycles later, because register writes of the CPU affect pixels
@@ -423,7 +423,7 @@ public class DisplayUnit extends AbstractDisplayUnit {
      * c-access: Read a character and its color of the video matrix.
      *
      * @param column
-     *         column
+     *         Column.
      */
     private void readVideoMatrix(int column) {
         var address = (vcBase + column) & 0x03FF;
@@ -438,9 +438,9 @@ public class DisplayUnit extends AbstractDisplayUnit {
      * (VICE bug #1855, measured with the 6569 and the 6567R8).
      *
      * @param column
-     *         column
+     *         Column.
      * @param badLineInIdleState
-     *         has a bad line condition arisen in idle state in this cycle?
+     *         Has a bad line condition arisen in idle state in this cycle?
      */
     private void readGraphics(int column, boolean badLineInIdleState) {
         var x = vic.firstX_25 + (vic.regControl2 & VIC.CONTROL2_SCROLL_X) + 8 * column;

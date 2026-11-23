@@ -138,7 +138,7 @@ public class C64Builder {
 
         var cpu = debug ? new CPU6510Debugger() : new CPU6510();
 
-        // real time measurement
+        // Real time measurement.
         var realTimeSlowDown = realTime ? new RealTimeSlowDown(clock, videoSystem.cpuFrequency(), 100) : null;
 
         var sid = this.sid != null ? this.sid : new SIDStub(clock);

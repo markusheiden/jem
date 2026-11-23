@@ -13,7 +13,7 @@ public class LoggingBus extends BusDeviceAdapter {
     /**
      * Log entries.
      * <p>
-     * TODO 2010-10-12 mh: use array with cyclic pointer?
+     * TODO 2010-10-12 mh: Use array with cyclic pointer?
      */
     private final List<LogEntry> log;
 
@@ -21,7 +21,7 @@ public class LoggingBus extends BusDeviceAdapter {
      * Constructor.
      *
      * @param bus
-     *         Bus to delegate to
+     *         Bus to delegate to.
      * @require bus != null
      */
     public LoggingBus(BusDevice bus) {

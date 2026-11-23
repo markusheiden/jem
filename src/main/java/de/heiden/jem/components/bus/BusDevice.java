@@ -8,9 +8,9 @@ public interface BusDevice {
      * Write byte to the bus device.
      *
      * @param value
-     *         byte to write
+     *         Byte to write.
      * @param address
-     *         address to write byte to
+     *         Address to write byte to.
      * @require value >= 0 && value < 0x100
      * @require address >= 0 && address < size()
      */
@@ -20,7 +20,7 @@ public interface BusDevice {
      * Read byte from the bus device.
      *
      * @param address
-     *         address to read byte from
+     *         Address to read byte from.
      * @require address >= 0 && address < size()
      * @ensure result >= 0 && result < 0x100
      */

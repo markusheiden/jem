@@ -8,27 +8,27 @@ import static de.heiden.jem.models.c64.components.cpu.PLA.Input.CAS;
 /**
  * "MMU"-PLA.
  * <p>
- * TODO 2010-10-11 mh: use AbstractMemory as super class?
+ * TODO 2010-10-11 mh: Use AbstractMemory as super class?
  */
 public class PLA {
     /**
      * All inputs of the pla in the correct order.
      */
     public enum Input {
-        CAS, // low active
-        LORAM, // low active
-        HIRAM, // low active
-        CHAREN, // low active
+        CAS, // Low active.
+        LORAM, // Low active.
+        HIRAM, // Low active.
+        CHAREN, // Low active.
         VA14,
         A15,
         A14,
         A13,
         A12,
-        BA, // high active
-        AEC, // low active
+        BA, // High active.
+        AEC, // Low active.
         RW,
-        EXROM, // low active
-        GAME, // low active
+        EXROM, // Low active.
+        GAME, // Low active.
         VA13,
         VA12
     }
@@ -37,14 +37,14 @@ public class PLA {
      * All outputs of the pla in the correct order.
      */
     public enum Output {
-        RAM, // low active
-        BASIC, // low active
-        KERNAL, // low active
-        CHAROM, // low active
+        RAM, // Low active.
+        BASIC, // Low active.
+        KERNAL, // Low active.
+        CHAROM, // Low active.
         COLOR_RW,
-        IO, // low active
-        ROML, // low active
-        ROMH // low active
+        IO, // Low active.
+        ROML, // Low active.
+        ROMH // Low active.
     }
 
     private final byte[] content;
@@ -62,7 +62,7 @@ public class PLA {
      * Return the component (output) which is visible to the CPU.
      *
      * @param addr
-     *         address
+     *         Address.
      */
     public Output cpu(boolean rw, int addr, boolean loram, boolean hiram, boolean charen, boolean exrom, boolean game) {
         var a = addr >> 12;

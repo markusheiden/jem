@@ -55,7 +55,7 @@ public final class SerialClock extends AbstractSimpleClock {
                 }
             }
         } catch (ThreadFinishedException e) {
-            // TODO 2009-12-11 mh: should not happen!!!
+            // TODO 2009-12-11 mh: Should not happen!!!
         }
     }
 
@@ -74,7 +74,7 @@ public final class SerialClock extends AbstractSimpleClock {
                 }
             }
         } catch (ThreadFinishedException e) {
-            // TODO 2009-12-11 mh: should not happen!!!
+            // TODO 2009-12-11 mh: Should not happen!!!
         }
     }
 }

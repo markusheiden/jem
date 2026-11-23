@@ -66,9 +66,9 @@ public abstract class AbstractClock implements Clock {
      * Add a clocked component.
      *
      * @param position
-     *         position to insert component in execute queue
+     *         Position to insert component in execute queue.
      * @param component
-     *         clocked component to add
+     *         Clocked component to add.
      * @require position >= 0
      * @require component != null
      * @ensure result != null
@@ -130,7 +130,7 @@ public abstract class AbstractClock implements Clock {
      * Init clock.
      */
     protected void doInit() {
-        // overwrite, if needed
+        // Overwrite, if needed.
     }
 
     /**
@@ -142,7 +142,7 @@ public abstract class AbstractClock implements Clock {
      * Run this clock for a given number of ticks.
      *
      * @param ticks
-     *         number of ticks to run this clock for
+     *         Number of ticks to run this clock for.
      */
     protected abstract void doRun(int ticks);
 
@@ -171,7 +171,7 @@ public abstract class AbstractClock implements Clock {
      * Dispose the clock and all its clocked components.
      */
     protected void doClose() {
-        // overwrite, if needed
+        // Overwrite, if needed.
     }
 
     /**
@@ -191,9 +191,9 @@ public abstract class AbstractClock implements Clock {
      * The threads are expected to terminate, when they are interrupted while waiting for a tick.
      *
      * @param threads
-     *         Threads to terminate
+     *         Threads to terminate.
      * @throws IllegalStateException
-     *         if a thread did not terminate in time
+     *         If a thread did not terminate in time.
      */
     protected static void terminate(Iterable<Thread> threads) {
         threads.forEach(Thread::interrupt);
@@ -230,7 +230,7 @@ public abstract class AbstractClock implements Clock {
         var nextEvent = events;
         while (tick > nextEvent.tick) {
             nextEvent = nextEvent.next;
-            // search further
+            // Search further.
         }
 
         if (nextEvent == events) {
@@ -253,7 +253,7 @@ public abstract class AbstractClock implements Clock {
             return;
         }
 
-        // TODO mh: check, if events needs to be moved. otherwise exit early.
+        // TODO mh: Check, if events needs to be moved. Otherwise exit early.
         // Adding a registered event moves it.
         addClockEvent(tick, eventToUpdate);
     }
@@ -302,7 +302,7 @@ public abstract class AbstractClock implements Clock {
      * Execute current events, if any.
      *
      * @param tick
-     *         current clock tick
+     *         Current clock tick.
      */
     protected void executeEvents(long tick) {
         for (var event = events; event.tick == tick; event = events) {

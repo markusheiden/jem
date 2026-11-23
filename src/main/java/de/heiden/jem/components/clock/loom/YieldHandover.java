@@ -36,11 +36,11 @@ public final class YieldHandover {
      * Constructor.
      *
      * @param numThreads
-     *         Number of threads
+     *         Number of threads.
      * @param ring
-     *         Number of threads that execute one after another in a ring
+     *         Number of threads that execute one after another in a ring.
      * @param first
-     *         Index of the thread that executes first
+     *         Index of the thread that executes first.
      */
     public YieldHandover(int numThreads, int ring, int first) {
         this.ring = ring;
@@ -52,7 +52,7 @@ public final class YieldHandover {
      * Is the thread allowed to execute?
      *
      * @param index
-     *         Index of the thread
+     *         Index of the thread.
      */
     public boolean isCurrent(int index) {
         return current == index;
@@ -62,7 +62,7 @@ public final class YieldHandover {
      * Let the thread execute.
      *
      * @param index
-     *         Index of the thread to execute
+     *         Index of the thread to execute.
      */
     public void resume(int index) {
         current = index;
@@ -93,7 +93,7 @@ public final class YieldHandover {
      * Wait until the current thread is allowed to execute.
      *
      * @param index
-     *         Index of the current thread
+     *         Index of the current thread.
      */
     public void await(int index) {
         while (true) {

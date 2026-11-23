@@ -7,11 +7,11 @@ package de.heiden.jem.models.c64.components.cia;
  * The power line is independent of the CPU clock, so the ticks of the TOD input are distributed exactly over the cycles.
  *
  * @param cpuClock
- *         frequency of the crystal in Hz
+ *         Frequency of the crystal in Hz.
  * @param cpuDivider
- *         divider of the crystal frequency to the CPU clock
+ *         Divider of the crystal frequency to the CPU clock.
  * @param frequency
- *         frequency of the power line in Hz
+ *         Frequency of the power line in Hz.
  */
 public record TodInput(int cpuClock, int cpuDivider, int frequency) {
     /**

@@ -68,9 +68,9 @@ public class RealTimeSlowDown extends ClockEvent {
      * Constructor.
      *
      * @param clock
-     *         Clock to slow down
+     *         Clock to slow down.
      * @param freq
-     *         Frequency in Hz (clock ticks per second)
+     *         Frequency in Hz (clock ticks per second).
      * @param div
      *         How often per second should the clock speed be adjusted?
      */
@@ -90,7 +90,7 @@ public class RealTimeSlowDown extends ClockEvent {
         incrementTime = 1000000000 / div;
         incrementTime0 = 1000000000 - (div - 1) * incrementTime;
 
-        // Initial clock event
+        // Initial clock event.
         this.clock.addClockEvent(0, new ClockEvent("Init real time slow down") {
             @Override
             public void execute(long tick) {
@@ -116,9 +116,9 @@ public class RealTimeSlowDown extends ClockEvent {
 
     @Override
     public void execute(long tick) {
-        // Save the current timestamp as the end of the last processing cycle
+        // Save the current timestamp as the end of the last processing cycle.
         var now = System.nanoTime();
-        // Compute the duration of the last processing cycle and add it to the duration of processing 1 second
+        // Compute the duration of the last processing cycle and add it to the duration of processing 1 second.
         elapsed += now - lastTimestamp;
 
         var next = nextTimestamp;

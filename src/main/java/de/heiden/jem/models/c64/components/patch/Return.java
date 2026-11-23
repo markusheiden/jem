@@ -12,7 +12,7 @@ public class Return extends Patch {
      * Constructor.
      *
      * @param addr
-     *         Address to patch
+     *         Address to patch.
      */
     public Return(int addr) {
         super(addr);

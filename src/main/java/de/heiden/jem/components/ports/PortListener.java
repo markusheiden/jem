@@ -8,9 +8,9 @@ public interface PortListener {
      * Port changed.
      *
      * @param value
-     *         new port value
+     *         New port value.
      * @param mask
-     *         driven bits
+     *         Driven bits.
      */
     void portChanged(int value, int mask);
 }

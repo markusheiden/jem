@@ -96,7 +96,7 @@ public class PCMapping extends KeyMapping {
         addChar(')', LEFT_SHIFT, NUMBER_9);
         addChar('+', PLUS);
         addChar('-', MINUS);
-        // TODO how to map POUND?
+        // TODO How to map POUND?
 
         addChar('a', A);
         addChar('A', LEFT_SHIFT, A);
@@ -166,7 +166,7 @@ public class PCMapping extends KeyMapping {
 
         addChar('@', AT);
         addChar('*', ASTERISK);
-        // TODO how to map UP_ARROW?
+        // TODO How to map UP_ARROW?
         addChar('^', UP_ARROW);
         addChar('\n', ENTER);
 
@@ -189,17 +189,17 @@ public class PCMapping extends KeyMapping {
         addCode(KeyEvent.KEY_LOCATION_STANDARD, KeyEvent.VK_F7, F7);
         addCode(KeyEvent.KEY_LOCATION_STANDARD, KeyEvent.VK_F8, LEFT_SHIFT, F7);
 
-        // Shift is disabled, because the above chars/keys already contain shift
+        // Shift is disabled, because the above chars/keys already contain shift.
         // addCode(KeyEvent.KEY_LOCATION_LEFT, KeyEvent.VK_SHIFT, LEFT_SHIFT);
         // addCode(KeyEvent.KEY_LOCATION_RIGHT, KeyEvent.VK_SHIFT, RIGHT_SHIFT);
         addCode(KeyEvent.KEY_LOCATION_STANDARD, KeyEvent.VK_CONTROL, CTRL);
         addCode(KeyEvent.KEY_LOCATION_STANDARD, KeyEvent.VK_ALT, COMMODORE);
 
-        // run stop -> esc
+        // Run stop -> esc.
         addCode(KeyEvent.KEY_LOCATION_STANDARD, KeyEvent.VK_ESCAPE, RUN_STOP);
-        // restore -> delete
+        // Restore -> delete.
         addCode(KeyEvent.KEY_LOCATION_STANDARD, KeyEvent.VK_DELETE, RESTORE);
 
-        // TODO how to map LEFT_ARROW
+        // TODO How to map LEFT_ARROW?
     }
 }

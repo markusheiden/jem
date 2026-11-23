@@ -35,7 +35,7 @@ public class LoadFromD64 extends Patch {
 
     @Override
     protected int execute(CPU6510State state, BusDevice bus) {
-        // Read filename from ($BB), length ($B7)
+        // Read filename from ($BB), length ($B7).
         var wordBus = new WordBus(bus);
         var addr = wordBus.readWord(0xBB);
         var len = bus.read(0xB7);

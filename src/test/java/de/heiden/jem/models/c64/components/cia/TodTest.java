@@ -59,9 +59,9 @@ class TodTest {
      * Create a CIA and start its TOD at 00:00:00.0.
      *
      * @param todInput
-     *         TOD input
+     *         TOD input.
      * @param cra
-     *         control register A
+     *         Control register A.
      */
     AbstractCIA start(TodInput todInput, int cra) {
         var cia = new CIA6526(todInput);

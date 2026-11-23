@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 /**
- * Replaces standard C64 "System.out" at $E716 (part of $FFD2)
+ * Replaces standard C64 "System.out" at $E716 (part of $FFD2).
  */
 public class SystemOut extends Patch {
     /**
@@ -27,7 +27,7 @@ public class SystemOut extends Patch {
      * Set stream to write output to.
      *
      * @param stream
-     *         Stream
+     *         Stream.
      */
     public void setStream(OutputStream stream) {
         this.stream = stream;

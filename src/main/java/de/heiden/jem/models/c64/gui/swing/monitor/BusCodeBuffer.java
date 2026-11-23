@@ -13,9 +13,9 @@ public class BusCodeBuffer extends AbstractCodeBuffer {
      * Constructor.
      *
      * @param index
-     *         the start address of the code to disassemble.
+     *         The start address of the code to disassemble.
      * @param bus
-     *         bus.
+     *         Bus.
      */
     public BusCodeBuffer(int index, BusDevice bus) {
         super(0x0000, 0x10000);

@@ -20,12 +20,12 @@ public abstract class AbstractMemory implements BusDevice {
      * Constructor.
      *
      * @param size
-     *         size in bytes
+     *         Size in bytes.
      * @require size >= 0 && size <= 0x10000
      */
     protected AbstractMemory(int size) {
         assert size >= 0 && size <= 0x10000;
-        // assert that size is a power of 2
+        // Assert that size is a power of 2.
         assert Integer.bitCount(size) == 1;
 
         mask = size - 1;
@@ -36,7 +36,7 @@ public abstract class AbstractMemory implements BusDevice {
      * Constructor.
      *
      * @param content
-     *         ROM content
+     *         ROM content.
      * @require content.length >= 0 && content.length <= 0x10000
      */
     protected AbstractMemory(byte[] content) {

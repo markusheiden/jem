@@ -19,7 +19,7 @@ public class VICScreen extends JC64ScreenComponent {
      * Constructor.
      *
      * @param displayUnit
-     *         display unit to display.
+     *         Display unit to display.
      * @require displayUnit != null
      */
     public VICScreen(@Nonnull AbstractDisplayUnit displayUnit) {
@@ -37,7 +37,7 @@ public class VICScreen extends JC64ScreenComponent {
      * So the backing image will be updated.
      *
      * @param g
-     *         graphics.
+     *         Graphics.
      */
     @Override
     protected void doPaintComponent(Graphics g) {

@@ -94,9 +94,9 @@ public enum Key {
      * Constructor.
      *
      * @param row
-     *         row of the key in matrix.
+     *         Row of the key in matrix.
      * @param column
-     *         column of the key in matrix.
+     *         Column of the key in matrix.
      * @require row >= 0 && row < 8.
      * @require column >= 0 && column < 8.
      */

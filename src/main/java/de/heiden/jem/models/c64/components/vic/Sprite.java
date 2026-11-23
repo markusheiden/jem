@@ -68,7 +68,7 @@ public class Sprite {
      * Constructor.
      *
      * @param number
-     *         number of sprite
+     *         Number of sprite.
      */
     public Sprite(int number) {
         this.number = number;

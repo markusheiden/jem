@@ -50,7 +50,7 @@ public class C64Serial {
      * Load a class with the transforming class loader.
      *
      * @param className
-     *         Name of class
+     *         Name of class.
      */
     protected Class<?> loadClass(String className) throws Exception {
         return classLoader.loadClass(className);

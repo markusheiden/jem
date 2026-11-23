@@ -17,13 +17,13 @@ class InputOutputPortTest {
     @Test
     void pinData() {
         port.connect(device);
-        port.setOutputMask(0xF0); // upper nibble output
+        port.setOutputMask(0xF0); // Upper nibble output.
         port.setOutputData(0xA5);
-        assertEquals(0xAF, port.pinData()); // unconnected inputs are high
+        assertEquals(0xAF, port.pinData()); // Unconnected inputs are high.
 
         device.setOutputMask(0x3C);
-        device.setOutputData(0xC3); // pull bits 2..5 low
-        assertEquals(0x83, port.pinData()); // output bit 5 and input bits 2..3 pulled low
-        assertEquals(0xA3, port.outputData()); // output bits from the register, without the external device
+        device.setOutputData(0xC3); // Pull bits 2..5 low.
+        assertEquals(0x83, port.pinData()); // Output bit 5 and input bits 2..3 pulled low.
+        assertEquals(0xA3, port.outputData()); // Output bits from the register, without the external device.
     }
 }

@@ -65,11 +65,11 @@ public class JoystickKeys {
      * Constructor.
      *
      * @param joystick1
-     *         joystick in port 1
+     *         Joystick in port 1.
      * @param joystick2
-     *         joystick in port 2
+     *         Joystick in port 2.
      * @param modeListener
-     *         listener for mode changes
+     *         Listener for mode changes.
      */
     public JoystickKeys(Joystick joystick1, Joystick joystick2, Consumer<JoystickMode> modeListener) {
         this.joystick1 = joystick1;
@@ -87,7 +87,7 @@ public class JoystickKeys {
     /**
      * Handle key press.
      *
-     * @return whether the key has been handled and must not be passed to the keyboard
+     * @return Whether the key has been handled and must not be passed to the keyboard.
      */
     public boolean pressed(KeyEvent e) {
         var code = e.getCode();
@@ -110,7 +110,7 @@ public class JoystickKeys {
     /**
      * Handle key release.
      *
-     * @return whether the key has been handled and must not be passed to the keyboard
+     * @return Whether the key has been handled and must not be passed to the keyboard.
      */
     public boolean released(KeyEvent e) {
         var code = e.getCode();

@@ -31,9 +31,9 @@ public interface Clock extends AutoCloseable {
      * Add a clocked component.
      *
      * @param position
-     *         position to insert component in execute queue
+     *         Position to insert component in execute queue.
      * @param component
-     *         clocked component to add
+     *         Clocked component to add.
      * @require component != null
      * @require position >= 0
      * @require !isStarted()
@@ -49,7 +49,7 @@ public interface Clock extends AutoCloseable {
      * Run this clock a given number of ticks as the master clock.
      *
      * @param ticks
-     *         number of ticks to run this clock for
+     *         Number of ticks to run this clock for.
      */
     void run(int ticks);
 
@@ -57,9 +57,9 @@ public interface Clock extends AutoCloseable {
      * Add a new event.
      *
      * @param tick
-     *         tick to execute event at.
+     *         Tick to execute event at.
      * @param event
-     *         event to add.
+     *         Event to add.
      * @require tick > getTick()ate
      * @require event != null
      */
@@ -70,9 +70,9 @@ public interface Clock extends AutoCloseable {
      * Shortcut for removing and re-adding an event.
      *
      * @param tick
-     *         tick to execute event at.
+     *         Tick to execute event at.
      * @param event
-     *         event.
+     *         Event.
      * @require tick > getTick()
      * @require event != null
      */
@@ -82,7 +82,7 @@ public interface Clock extends AutoCloseable {
      * Remove event.
      *
      * @param event
-     *         event to remove
+     *         Event to remove.
      * @require event != null
      */
     void removeClockEvent(@Nonnull ClockEvent event);

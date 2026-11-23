@@ -23,9 +23,9 @@ public class StopWatch extends ClockEvent {
      * Constructor.
      *
      * @param clock
-     *         clock to slow down
+     *         Clock to slow down.
      * @param freq
-     *         frequency in Hz (clock ticks per second)
+     *         Frequency in Hz (clock ticks per second).
      */
     public StopWatch(@Nonnull Clock clock, long freq) {
         super("Stop watch");

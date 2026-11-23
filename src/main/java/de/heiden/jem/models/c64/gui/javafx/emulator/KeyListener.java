@@ -15,15 +15,15 @@ public class KeyListener {
      * Attach key listeners to the scene.
      *
      * @param scene
-     *         Scene
+     *         Scene.
      * @param keyboard
-     *         Keyboard
+     *         Keyboard.
      * @param keyboardBuffer
-     *         Keyboard buffer
+     *         Keyboard buffer.
      * @param keyMapping
-     *         Mapping from keys to C64 keys
+     *         Mapping from keys to C64 keys.
      * @param joystickKeys
-     *         Joystick emulation via keys, takes precedence over the keyboard
+     *         Joystick emulation via keys, takes precedence over the keyboard.
      */
     public static void attachTo(
             Scene scene,

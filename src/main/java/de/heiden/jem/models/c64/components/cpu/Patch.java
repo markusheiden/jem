@@ -42,7 +42,7 @@ public abstract class Patch {
      * Constructor.
      *
      * @param addr
-     *         Address to patch
+     *         Address to patch.
      */
     protected Patch(int addr) {
         this.addr = addr;

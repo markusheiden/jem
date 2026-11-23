@@ -12,7 +12,7 @@ public class Monitor {
      * CPU state as string.
      *
      * @param state
-     *         cpu state
+     *         CPU state.
      */
     public static String state(CPU6510State state) {
         var result = new StringBuilder(64);
@@ -49,12 +49,12 @@ public class Monitor {
      * Disassemble one line of code.
      *
      * @param addr
-     *         address to disassemble
+     *         Address to disassemble.
      * @param bus
-     *         bus to read opcode and arg from
+     *         Bus to read opcode and arg from.
      */
     public static String disassemble(int addr, BusDevice bus) {
-        // read opcode with arg
+        // Read opcode with arg.
         var opcode = Opcode.values()[bus.read(addr)];
         var bytes = new int[] { opcode.getOpcode(), 0, 0 };
         for (var i = 1; i <= opcode.getMode().getSize(); i++) {
@@ -72,7 +72,7 @@ public class Monitor {
         var result = new StringBuilder(32);
         result.append(".> ");
 
-        // mem dump
+        // Mem dump.
         result.append(HexUtil.hexWordPlain(addr));
         result.append(' ');
         for (var i = 0; i < opcode.getSize(); i++) {
@@ -83,7 +83,7 @@ public class Monitor {
             result.append("   ");
         }
 
-        // disassemble
+        // Disassemble.
         result.append(opcode.toString(addr, arg));
 
         return result.toString();
@@ -93,11 +93,11 @@ public class Monitor {
      * Mem dump.
      *
      * @param from
-     *         start address
+     *         Start address.
      * @param to
-     *         end address
+     *         End address.
      * @param bus
-     *         bus
+     *         Bus.
      */
     public static String dump(int from, int to, BusDevice bus) {
         var result = new StringBuilder();

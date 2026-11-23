@@ -8,9 +8,9 @@ public interface Patchable {
      * Patch byte in ROM.
      *
      * @param value
-     *         byte to write
+     *         Byte to write.
      * @param address
-     *         address to write byte to
+     *         Address to write byte to.
      * @require value >= 0x00 && value < 0x100
      */
     void patch(int value, int address);

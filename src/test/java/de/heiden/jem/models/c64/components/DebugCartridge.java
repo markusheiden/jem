@@ -27,7 +27,7 @@ public class DebugCartridge implements BusDevice {
      * Constructor.
      *
      * @param sid
-     *         SID
+     *         SID.
      */
     public DebugCartridge(BusDevice sid) {
         this.sid = sid;

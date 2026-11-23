@@ -46,9 +46,9 @@ class SpriteRenderer {
      * Constructor.
      *
      * @param vic
-     *         VIC
+     *         VIC.
      * @param width
-     *         number of X coordinates
+     *         Number of X coordinates.
      */
     SpriteRenderer(VIC vic, int width) {
         this.vic = vic;
@@ -65,9 +65,9 @@ class SpriteRenderer {
      * From 1 pixel before its 2 access cycles up to 3 pixels into its second access cycle.
      *
      * @param x
-     *         X coordinate of the first pixel
+     *         X coordinate of the first pixel.
      * @param count
-     *         number of pixels
+     *         Number of pixels.
      */
     void trigger(int x, int count) {
         var lastX = vic.lastX;
@@ -93,9 +93,9 @@ class SpriteRenderer {
      * The pixels have been output: Remove them.
      *
      * @param x
-     *         X coordinate of the first pixel
+     *         X coordinate of the first pixel.
      * @param count
-     *         number of pixels
+     *         Number of pixels.
      */
     void clear(int x, int count) {
         for (var i = 0; i < count; i++) {
@@ -121,7 +121,7 @@ class SpriteRenderer {
     /**
      * Render a single byte of sprite data.
      *
-     * @return X coordinate of the next pixel
+     * @return X coordinate of the next pixel.
      */
     private int renderByte(int x, int bitmap, Sprite sprite, boolean isBehind) {
         var width = sprite.expandX ? 2 : 1;
@@ -142,8 +142,8 @@ class SpriteRenderer {
      * Sprites wrap around at the end of the line.
      *
      * @param color
-     *         color or {@link #NONE} for transparent
-     * @return X coordinate of the next pixel
+     *         Color or {@link #NONE} for transparent.
+     * @return X coordinate of the next pixel.
      */
     private int renderPixel(int x, int width, int color, Sprite sprite, boolean isBehind) {
         var visible = Math.min(width, remaining);

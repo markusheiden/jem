@@ -11,6 +11,6 @@ public final class NoBusDevice implements BusDevice {
 
     @Override
     public void write(int value, int address) {
-        // ignored
+        // Ignored.
     }
 }

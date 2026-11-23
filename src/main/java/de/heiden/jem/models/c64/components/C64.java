@@ -95,29 +95,29 @@ public class C64 {
      * @param clock
      *         Clock.
      * @param ram
-     *         RAM
+     *         RAM.
      * @param colorRam
-     *         Color RAM
+     *         Color RAM.
      * @param basic
-     *         Basic ROM
+     *         Basic ROM.
      * @param kernel
-     *         Kernel ROM
+     *         Kernel ROM.
      * @param charset
-     *         Charset ROM
+     *         Charset ROM.
      * @param cia1
-     *         CIA1
+     *         CIA1.
      * @param cia2
-     *         CIA2
+     *         CIA2.
      * @param vicBus
-     *         Bus of the VIC
+     *         Bus of the VIC.
      * @param vic
-     *         VIC
+     *         VIC.
      * @param sid
-     *         Device for the SID area $D400-$D7FF
+     *         Device for the SID area $D400-$D7FF.
      * @param cpu
-     *         CPU
+     *         CPU.
      * @param realTimeSlowDown
-     *         Slow down to real time, null to run as fast as possible
+     *         Slow down to real time, null to run as fast as possible.
      */
     C64(
             @Nonnull Clock clock,
@@ -216,7 +216,7 @@ public class C64 {
     }
 
     //
-    // Expose components, e.g. for debugger
+    // Expose components, e.g. for debugger.
     //
 
     /**

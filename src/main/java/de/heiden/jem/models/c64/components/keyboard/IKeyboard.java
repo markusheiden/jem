@@ -8,7 +8,7 @@ public interface IKeyboard {
      * Execute key press on keyboard matrix.
      *
      * @param key
-     *         key
+     *         Key.
      */
     void press(Key key);
 
@@ -16,7 +16,7 @@ public interface IKeyboard {
      * Execute key release on keyboard matrix.
      *
      * @param key
-     *         key
+     *         Key.
      */
     void release(Key key);
 }

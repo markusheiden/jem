@@ -10,7 +10,7 @@ public interface OutputPort {
      * Add the port listener.
      *
      * @param listener
-     *         port listener
+     *         Port listener.
      * @require listener != null
      */
     void addOutputPortListener(@Nonnull PortListener listener);
@@ -19,7 +19,7 @@ public interface OutputPort {
      * Remove the port listener.
      *
      * @param listener
-     *         port listener
+     *         Port listener.
      * @require listener != null
      */
     void removeOutputPortListener(@Nonnull PortListener listener);
@@ -39,7 +39,7 @@ public interface OutputPort {
      * Set the port output data.
      *
      * @param data
-     *         new output value.
+     *         New output value.
      */
     void setOutputData(int data);
 
@@ -48,7 +48,7 @@ public interface OutputPort {
      * Set bit means port bit is output. Cleared bit means port bit is not driven.
      *
      * @param mask
-     *         driven bits.
+     *         Driven bits.
      */
     void setOutputMask(int mask);
 }

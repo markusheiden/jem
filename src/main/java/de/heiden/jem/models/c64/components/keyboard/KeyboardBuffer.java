@@ -53,11 +53,11 @@ public class KeyboardBuffer extends ClockEvent {
      * Key to type.
      *
      * @param petscii
-     *         PETSCII code
+     *         PETSCII code.
      * @param tick
-     *         tick, before which the key is not typed
+     *         Tick, before which the key is not typed.
      * @param exact
-     *         type the key exactly at the tick instead of at the next check?
+     *         Type the key exactly at the tick instead of at the next check?
      */
     private record Key(int petscii, long tick, boolean exact) {}
 
@@ -70,9 +70,9 @@ public class KeyboardBuffer extends ClockEvent {
      * Constructor.
      *
      * @param clock
-     *         clock
+     *         Clock.
      * @param bus
-     *         CPU bus
+     *         CPU bus.
      */
     public KeyboardBuffer(@Nonnull Clock clock, @Nonnull BusDevice bus) {
         super("Keyboard buffer");
@@ -148,7 +148,7 @@ public class KeyboardBuffer extends ClockEvent {
      * PETSCII code of a character for the upper case / graphics mode.
      * Letters of both cases are typed unshifted, so that pasted BASIC commands work in either case.
      *
-     * @return PETSCII code or -1, if there is no equivalent
+     * @return PETSCII code or -1, if there is no equivalent.
      */
     static int toPetscii(char c) {
         if (c >= 'a' && c <= 'z') {

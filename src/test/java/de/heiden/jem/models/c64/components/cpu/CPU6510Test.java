@@ -75,31 +75,31 @@ class CPU6510Test {
     @Test
     void test0x00() {
         ram.write(0x00, 0x0300); // BRK
-        ram.write(0xA5, 0x0301); // dummy
-        ram.write(0x48, 0xFFFE); // BRK vector low
-        ram.write(0xFF, 0xFFFF); // BRK vector high
-        ram.write(0xEA, 0xFF48); // NOP at BRK vector
+        ram.write(0xA5, 0x0301); // Dummy.
+        ram.write(0x48, 0xFFFE); // BRK vector low.
+        ram.write(0xFF, 0xFFFF); // BRK vector high.
+        ram.write(0xEA, 0xFF48); // NOP at BRK vector.
 
-        // load opcode -> PC = 0x0301
+        // Load opcode -> PC = 0x0301.
         executeOneTick_readPC(expectedState, 0x00);
 
-        // load byte after opcode -> PC = 0x0302
+        // Load byte after opcode -> PC = 0x0302.
         executeOneTick_readPC(expectedState, 0xA5);
 
-        // store high(PC) at stack
+        // Store high(PC) at stack.
         executeOneTick_push(expectedState, 0x03);
 
-        // store low(PC) at stack
+        // Store low(PC) at stack.
         executeOneTick_push(expectedState, 0x02);
 
-        // store status flag at stack
+        // Store status flag at stack.
         executeOneTick_push(expectedState, expectedState.getP());
 
-        // set I and load low(vector)
+        // Set I and load low(vector).
         expectedState.I = true;
         executeOneTick_read(expectedState, 0xFFFE, 0x48);
 
-        // load high(vector)
+        // Load high(vector).
         executeOneTick_read(expectedState, 0xFFFF, 0xFF);
         expectedState.PC = 0xFF48;
 
@@ -447,11 +447,11 @@ class CPU6510Test {
 
                 execute(opcode, value); // xxA #$xx, JMP
 
-                // register and flags change
+                // Register and flags change.
                 int result = operator.apply(a, value);
                 expectedState.A = result;
                 expectedZN(result);
-                // Check state and jump back
+                // Check state and jump back.
                 checkAndJmpBack();
             }
         }
@@ -470,13 +470,13 @@ class CPU6510Test {
                 ram.write(value, 0x00FF);
                 execute(opcode, 0xFF); // xxA $xx, JMP
 
-                // load value from address
+                // Load value from address.
                 executeOneTick_read(expectedState, 0x00FF, value);
-                // register and flags change
+                // Register and flags change.
                 int result = operator.apply(a, value);
                 expectedState.A = result;
                 expectedZN(result);
-                // Check state and jump back
+                // Check state and jump back.
                 checkAndJmpBack();
             }
         }
@@ -495,13 +495,13 @@ class CPU6510Test {
                 ram.write(value, 0x00FF);
                 execute(opcode, 0xFF, 0x00); // xxA $xxxx, JMP
 
-                // load value from address
+                // Load value from address.
                 executeOneTick_read(expectedState, 0x00FF, value);
-                // register and flags change
+                // Register and flags change.
                 int result = operator.apply(a, value);
                 expectedState.A = result;
                 expectedZN(result);
-                // Check state and jump back
+                // Check state and jump back.
                 checkAndJmpBack();
             }
         }
@@ -518,7 +518,7 @@ class CPU6510Test {
 
             execute(opcode); // IN?/DE?, JMP
 
-            // register and flags change
+            // Register and flags change.
             var result = (value + increment) & 0xFF;
             destination.set(expectedState, result);
             expectedZN(result);
@@ -537,10 +537,10 @@ class CPU6510Test {
 
             execute(opcode, value); // LD? #$xx, JMP
 
-            // register and flags change
+            // Register and flags change.
             destination.set(expectedState, value);
             expectedZN(value);
-            // Check state and jump back
+            // Check state and jump back.
             checkAndJmpBack();
         }
     }
@@ -556,12 +556,12 @@ class CPU6510Test {
             ram.write(value, 0x00FF);
             execute(opcode, 0xFF); // LD? $FF, JMP
 
-            // load value from zp address
+            // Load value from zp address.
             executeOneTick_read(expectedState, 0x00FF, value);
-            // register and flags change
+            // Register and flags change.
             destination.set(expectedState, value);
             expectedZN(value);
-            // Check state and jump back
+            // Check state and jump back.
             checkAndJmpBack();
         }
     }
@@ -577,12 +577,12 @@ class CPU6510Test {
             ram.write(value, 0x00FF);
             execute(opcode, 0xFF, 0x00); // LD? $00FF, JMP
 
-            // load value from address
+            // Load value from address.
             executeOneTick_read(expectedState, 0x00FF, value);
-            // register and flags change
+            // Register and flags change.
             destination.set(expectedState, value);
             expectedZN(value);
-            // Check state and jump back
+            // Check state and jump back.
             checkAndJmpBack();
         }
     }
@@ -602,17 +602,17 @@ class CPU6510Test {
                 ram.write(value, indexedAddress);
                 execute(opcode, lo(address), hi(address)); // LD? $xxxx,? JMP
 
-                // idle read, only if crossing the page boundary
-                // TODO test idle read
+                // Idle read, only if crossing the page boundary.
+                // TODO Test idle read.
                 if ((indexedAddress & 0xFF00) != (address & 0xFF00)) {
                     clock.run(1);
                 }
-                // load byte from address
+                // Load byte from address.
                 executeOneTick_read(expectedState, indexedAddress, value);
-                // register and flags change
+                // Register and flags change.
                 destination.set(expectedState, value);
                 expectedZN(value);
-                // Check state and jump back
+                // Check state and jump back.
                 checkAndJmpBack();
             }
         }
@@ -622,7 +622,7 @@ class CPU6510Test {
      * Test of PH?.
      */
     private void test_PHx(int opcode, SetRegister source, Function<Integer, Integer> modifier) {
-        // 256 values -> stack overflow will be tested too
+        // 256 values -> stack overflow will be tested too.
         for (var value = 0x00; value <= 0xFF; value = inc(value)) {
             resetState(value);
             source.set(state, value);
@@ -630,10 +630,10 @@ class CPU6510Test {
 
             execute(opcode); // PHx, JMP
 
-            // write to stack, decrement S
+            // Write to stack, decrement S.
             int expectedValue = modifier != null ? modifier.apply(value) : value;
             executeOneTick_push(expectedState, expectedValue);
-            // Check state and jump back
+            // Check state and jump back.
             checkAndJmpBack();
         }
     }
@@ -649,9 +649,9 @@ class CPU6510Test {
 
             execute(opcode, 0xFF); // ST? $FF, JMP
 
-            // write byte to zp address
+            // Write byte to zp address.
             executeOneTick_write(expectedState, 0x00FF, value);
-            // Check state and jump back
+            // Check state and jump back.
             checkAndJmpBack();
         }
     }
@@ -667,9 +667,9 @@ class CPU6510Test {
 
             execute(opcode, 0xFF, 0x00); // ST? $00FF, JMP
 
-            // write byte to zp address
+            // Write byte to zp address.
             executeOneTick_write(expectedState, 0x00FF, value);
-            // Check state and jump back
+            // Check state and jump back.
             checkAndJmpBack();
         }
     }
@@ -686,18 +686,18 @@ class CPU6510Test {
             // Setup code.
             execute(opcode); // T??, JMP
 
-            // register and flags change
+            // Register and flags change.
             destination.set(expectedState, value);
             if (updateP) {
                 expectedZN(value);
             }
-            // Check state and jump back
+            // Check state and jump back.
             checkAndJmpBack();
         }
     }
 
     //
-    // Setup and helper
+    // Setup and helper.
     //
 
     /**
@@ -717,10 +717,10 @@ class CPU6510Test {
         cpu = clock.addClockedComponent(Clock.CPU, new CPU6510());
         cpu.connect(bus);
 
-        // Test code starts at $300
+        // Test code starts at $300.
         bus.writeWord(0xFFFC, 0x0300);
 
-        // Execute reset sequence
+        // Execute reset sequence.
         clock.run(3);
 
         // Store state at start of test.
@@ -798,9 +798,9 @@ class CPU6510Test {
         ram.write(0x00, address++);
         ram.write(0x03, address++);
 
-        // execute opcode
+        // Execute opcode.
         executeOneTick_readPC(expectedState, opcode);
-        // execute read argument
+        // Execute read argument.
         if (arguments.length == 0) {
             // No arguments -> Idle read instead of argument read.
             executeOneTick_idleRead(expectedState);
@@ -833,9 +833,9 @@ class CPU6510Test {
      * Execute one cpu cycle and check for the expected CPU state and read of the value from the PC. Increments PC.
      *
      * @param expectedState
-     *         expected state after execution.
+     *         Expected state after execution.
      * @param value
-     *         value which has been read.
+     *         Value which has been read.
      */
     private void executeOneTick_readPC(CPU6510State expectedState, int value) {
         executeOneTick(expectedState, new LogEntry(true, expectedState.PC++, value));
@@ -845,7 +845,7 @@ class CPU6510Test {
      * Execute one cpu cycle and check for the expected CPU state and read of the value from the PC. Increments PC.
      *
      * @param expectedState
-     *         expected state after execution.
+     *         Expected state after execution.
      */
     private void executeOneTick_idleRead(CPU6510State expectedState) {
         executeOneTick(expectedState, new LogEntry(true, expectedState.PC, ram.read(expectedState.PC)));
@@ -855,11 +855,11 @@ class CPU6510Test {
      * Execute one cpu cycle and check for the expected CPU state and read of the value from the given address.
      *
      * @param expectedState
-     *         expected state after execution.
+     *         Expected state after execution.
      * @param address
-     *         accessed address.
+     *         Accessed address.
      * @param value
-     *         value which has been read.
+     *         Value which has been read.
      */
     private void executeOneTick_read(CPU6510State expectedState, int address, int value) {
         executeOneTick(expectedState, new LogEntry(true, address, value));
@@ -869,11 +869,11 @@ class CPU6510Test {
      * Execute one cpu cycle and check for the expected CPU state and write of the value to the given address.
      *
      * @param expectedState
-     *         expected state after execution.
+     *         Expected state after execution.
      * @param address
-     *         accessed address.
+     *         Accessed address.
      * @param value
-     *         value which has been written.
+     *         Value which has been written.
      */
     private void executeOneTick_write(CPU6510State expectedState, int address, int value) {
         executeOneTick(expectedState, new LogEntry(false, address, value));
@@ -883,9 +883,9 @@ class CPU6510Test {
      * Execute one cpu cycle and check for the expected CPU state and pop of the value from the stacks. Increments S.
      *
      * @param expectedState
-     *         expected state after execution.
+     *         Expected state after execution.
      * @param value
-     *         value which has been read.
+     *         Value which has been read.
      */
     private void executeOneTick_pop(CPU6510State expectedState, int value) {
         expectedState.S = (expectedState.S + 1) & 0xFF;
@@ -897,9 +897,9 @@ class CPU6510Test {
      * Execute one cpu cycle and check for the expected CPU state and push of the value onto the stack. Decrements S.
      *
      * @param expectedState
-     *         expected state after execution.
+     *         Expected state after execution.
      * @param value
-     *         value which has been written.
+     *         Value which has been written.
      */
     private void executeOneTick_push(CPU6510State expectedState, int value) {
         var log = new LogEntry(false, 0x0100 + expectedState.S, value);
@@ -911,9 +911,9 @@ class CPU6510Test {
      * Execute one cpu cycle and check for the expected CPU state and the given bus action.
      *
      * @param expectedState
-     *         expected state after execution.
+     *         Expected state after execution.
      * @param expectedLog
-     *         expected bus activity
+     *         Expected bus activity.
      */
     private void executeOneTick(CPU6510State expectedState, LogEntry expectedLog) {
         clock.run(1);

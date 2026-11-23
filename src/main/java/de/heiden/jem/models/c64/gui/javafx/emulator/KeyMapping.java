@@ -53,14 +53,14 @@ public abstract class KeyMapping {
      *
      * @param e
      *         Key(Event).
-     * @return description of the key.
+     * @return Description of the key.
      */
     public static String toString(KeyEvent e) {
         return e.getText();
     }
 
     //
-    // protected interface
+    // Protected interface.
     //
 
     /**

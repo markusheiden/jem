@@ -39,7 +39,7 @@ public abstract class AbstractDisplayUnit implements ClockedComponent {
      * Hidden constructor.
      *
      * @param vic
-     *         vic this display unit belongs to
+     *         VIC this display unit belongs to.
      */
     AbstractDisplayUnit(VIC vic, int offset, int lineLength, int lines, int width, int height) {
         this.vic = vic;
@@ -62,21 +62,21 @@ public abstract class AbstractDisplayUnit implements ClockedComponent {
      * The CPU changed the graphics mode or a background color in the current cycle.
      */
     void graphicsChanged() {
-        // nothing to do by default
+        // Nothing to do by default.
     }
 
     /**
      * The CPU read the sprite-sprite collision register in the current cycle.
      */
     void spriteCollisionsRead() {
-        // nothing to do by default
+        // Nothing to do by default.
     }
 
     /**
      * The CPU read the sprite-background collision register in the current cycle.
      */
     void backgroundCollisionsRead() {
-        // nothing to do by default
+        // Nothing to do by default.
     }
 
     @Override
@@ -93,7 +93,7 @@ public abstract class AbstractDisplayUnit implements ClockedComponent {
      * Screen rendering has been finished. Handles triple buffering.
      *
      * @param screen
-     *         new rendered screen
+     *         New rendered screen.
      */
     protected final synchronized void rendered(byte[] screen) {
         if (screenToDisplay == screenDisplaying) {
@@ -101,7 +101,7 @@ public abstract class AbstractDisplayUnit implements ClockedComponent {
             screenSpare = screenToDisplay;
         } else {
             screenRender = screenToDisplay;
-            // spare may not be changed, because it is currently displayed
+            // Spare may not be changed, because it is currently displayed.
         }
         screenToDisplay = screen;
 
@@ -113,7 +113,7 @@ public abstract class AbstractDisplayUnit implements ClockedComponent {
     /**
      * Notify display unit that a new screen will be displayed.
      *
-     * @return screen to display next
+     * @return Screen to display next.
      */
     public final synchronized byte[] display() {
         screenDisplaying = screenToDisplay;
@@ -124,7 +124,7 @@ public abstract class AbstractDisplayUnit implements ClockedComponent {
      * Sets the screen listener of this display unit.
      *
      * @param listener
-     *         Listener
+     *         Listener.
      */
     public void setScreenListener(IScreenListener listener) {
         this.listener = listener;

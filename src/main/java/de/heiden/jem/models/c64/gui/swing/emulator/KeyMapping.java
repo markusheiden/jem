@@ -34,8 +34,8 @@ public abstract class KeyMapping {
      * Get the key for the virtual key.
      *
      * @param e
-     *         Key(Event)
-     * @return Key or null if the key is not mapped
+     *         Key(Event).
+     * @return Key or null if the key is not mapped.
      */
     public Key[] getKeys(KeyEvent e) {
         var result = chars.get(e.getKeyChar());
@@ -51,7 +51,7 @@ public abstract class KeyMapping {
      *
      * @param e
      *         Key(Event)
-     * @return description of the virtual key
+     * @return Description of the virtual key.
      */
     public static String toString(KeyEvent e) {
         var result = KeyEvent.getKeyText(e.getKeyCode());
@@ -66,7 +66,7 @@ public abstract class KeyMapping {
     }
 
     //
-    // protected interface
+    // Protected interface.
     //
 
     /**
@@ -85,9 +85,9 @@ public abstract class KeyMapping {
      * Map a character to C64 keys.
      *
      * @param c
-     *         Character
+     *         Character.
      * @param keys
-     *         C64 keys
+     *         C64 keys.
      */
     protected final void addChar(char c, Key... keys) {
         chars.put(c, keys);
@@ -97,11 +97,11 @@ public abstract class KeyMapping {
      * Map a special key to C64 keys.
      *
      * @param location
-     *         Location of the special key
+     *         Location of the special key.
      * @param key
-     *         Key code of the special key
+     *         Key code of the special key.
      * @param keys
-     *         C64 keys
+     *         C64 keys.
      */
     protected final void addCode(int location, int key, Key... keys) {
         this.keys.put(keyID(location, key), keys);

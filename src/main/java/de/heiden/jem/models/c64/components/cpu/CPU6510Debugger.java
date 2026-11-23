@@ -74,7 +74,7 @@ public class CPU6510Debugger extends CPU6510 {
     @Interruptible
     protected final void execute() {
         //
-        // Support for manual tracing per java breakpoint
+        // Support for manual tracing per java breakpoint.
         //
 
         if (state.PC == tracePoint) {
@@ -88,13 +88,13 @@ public class CPU6510Debugger extends CPU6510 {
                 logger.debug(Monitor.state(state) + "  " + Monitor.disassemble(state.PC, bus));
             }
             if (count-- == 0) {
-                // dummy statement to set java breakpoint at
+                // Dummy statement to set java breakpoint at.
                 System.out.println("STOP");
             }
         }
 
         //
-        // Automatic tracing of the last executed opcodes
+        // Automatic tracing of the last executed opcodes.
         //
 
         var trace = traces[currentTrace++];
@@ -104,7 +104,7 @@ public class CPU6510Debugger extends CPU6510 {
         trace.read(state.PC, bus);
 
         //
-        // CPU Breakpoints
+        // CPU Breakpoints.
         //
 
         synchronized (suspendLock) {
@@ -124,7 +124,7 @@ public class CPU6510Debugger extends CPU6510 {
 
     private void waitForResume() {
         try {
-            // wait for a resume
+            // Wait for a resume.
             synchronized (suspendLock) {
                 suspended = true;
                 suspendLock.notifyAll();

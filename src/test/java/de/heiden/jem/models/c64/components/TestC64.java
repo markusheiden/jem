@@ -101,7 +101,7 @@ public class TestC64 {
      * @param newCias
      *         Use new CIAs (6526A) instead of old CIAs (6526)?
      * @param videoSystem
-     *         video system
+     *         Video system.
      */
     public TestC64(boolean newCias, VideoSystem videoSystem) throws Exception {
         clock = new SerialClock();
@@ -121,7 +121,7 @@ public class TestC64 {
         vic = c64.getVIC();
 
         //
-        // ROM patches
+        // ROM patches.
         //
 
         cpu.add(systemOut);
@@ -214,7 +214,7 @@ public class TestC64 {
      * Add a patch to the cpu, to insert a RTS at the given address.
      *
      * @param addr
-     *         Address to write RTS to
+     *         Address to write RTS to.
      */
     public void rts(int addr) {
         cpu.add(new Return(addr));

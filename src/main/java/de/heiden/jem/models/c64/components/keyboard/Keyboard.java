@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
  * Keys are pressed by the GUI thread, but the ports are driven by the C64 thread only,
  * because the ports are not thread safe.
  * <p>
- * TODO mapping of @, :, /, arrow up, ;, *, pound, commodore, run stop, arrow left
+ * TODO Mapping of @, :, /, arrow up, ;, *, pound, commodore, run stop, arrow left.
  * TODO C64 like mapping of -, +, home, shift lock, control?
  */
 public class Keyboard extends ClockEvent implements IKeyboard {
@@ -75,11 +75,11 @@ public class Keyboard extends ClockEvent implements IKeyboard {
      * Constructor.
      *
      * @param clock
-     *         clock
+     *         Clock.
      * @param port0
-     *         port for rows
+     *         Port for rows.
      * @param port1
-     *         port for columns
+     *         Port for columns.
      * @require port0 != null
      * @require port1 != null
      */
@@ -186,19 +186,19 @@ public class Keyboard extends ClockEvent implements IKeyboard {
 
         for (int i = 0, columnBit = 0x01; i < matrix.length; i++, columnBit <<= 1) {
             var matrix = this.matrix[i];
-            var bitmask = port1InMask & matrix; // 1: driven bits
+            var bitmask = port1InMask & matrix; // 1: Driven bits.
             if (bitmask != 0) {
-                port0OutMask |= columnBit; // bit is driven!
+                port0OutMask |= columnBit; // Bit is driven!
                 if ((port1InDataInv & bitmask) != 0) {
-                    port0OutData &= 0xFF - columnBit; // save 0 bits. 0 is stronger than 1.
+                    port0OutData &= 0xFF - columnBit; // Save 0 bits. 0 is stronger than 1.
                 }
             }
 
             if ((port0InMask & columnBit) != 0) {
-                // line is driven
+                // Line is driven.
                 port1OutMask |= matrix;
                 if ((port0InData & columnBit) == 0) {
-                    // line is 0
+                    // Line is 0.
                     port1OutData &= 0xFF - matrix;
                 }
             }
@@ -247,7 +247,7 @@ public class Keyboard extends ClockEvent implements IKeyboard {
 
         var port0 = matrixPort0.outputData();
         for (int i = 0, rowBit = 0x01; i < matrix.length; i++, rowBit <<= 1) {
-            // Row header, row port bit
+            // Row header, row port bit.
             result.append(i).append((port0 & rowBit) != 0 ? "H" : "L");
 
             // Values.

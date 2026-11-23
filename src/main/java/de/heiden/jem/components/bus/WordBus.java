@@ -14,7 +14,7 @@ public class WordBus extends BusDeviceAdapter {
      * Constructor.
      *
      * @param bus
-     *         Bus to delegate to
+     *         Bus to delegate to.
      * @require bus != null
      */
     public WordBus(@Nonnull BusDevice bus) {
@@ -25,7 +25,7 @@ public class WordBus extends BusDeviceAdapter {
      * Read word from bus.
      *
      * @param addr
-     *         Address to read from
+     *         Address to read from.
      */
     public int readWord(int addr) {
         return toWord(read(addr), read(addr + 1));
@@ -35,7 +35,7 @@ public class WordBus extends BusDeviceAdapter {
      * Write word to bus.
      *
      * @param addr
-     *         Address to read from
+     *         Address to read from.
      */
     public void writeWord(int addr, int word) {
         write(ByteUtil.lo(word), addr);

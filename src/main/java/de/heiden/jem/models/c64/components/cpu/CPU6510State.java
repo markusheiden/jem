@@ -13,14 +13,14 @@ public final class CPU6510State {
 
     public static final int N_BIT = 1 << 7;
     public static final int V_BIT = 1 << 6;
-    public static final int U_BIT = 1 << 5; // bit 5 is unused: always 1
+    public static final int U_BIT = 1 << 5; // Bit 5 is unused: always 1.
     public static final int B_BIT = 1 << 4;
     public static final int D_BIT = 1 << 3;
     public static final int I_BIT = 1 << 2;
     public static final int Z_BIT = 1 << 1;
     public static final int C_BIT = 1 << 0;
 
-    public int PC; // program counter
+    public int PC; // Program counter.
 
     /**
      * Stack pointer.
@@ -28,24 +28,24 @@ public final class CPU6510State {
      */
     public int S;
 
-    public boolean C; // status P: carry
-    public boolean Z; // status P: zero
+    public boolean C; // Status P: carry.
+    public boolean Z; // Status P: zero.
     /**
      * Interrupt inhibit flag.
      * Read only access from outside.
      * Use {@link #sei()} or {@link #cli()} to modify.
      */
-    public boolean I; // status P: interrupt
-    public boolean D; // status P: decimal
-    public boolean B; // status P: break
-    public boolean V; // status P: overflow
-    public boolean N; // status P: negative
+    public boolean I; // Status P: interrupt.
+    public boolean D; // Status P: decimal.
+    public boolean B; // Status P: break.
+    public boolean V; // Status P: overflow.
+    public boolean N; // Status P: negative.
 
-    public int A; // accumulator
+    public int A; // Accumulator.
 
-    public int X; // index x
+    public int X; // Index x.
 
-    public int Y; // index y
+    public int Y; // Index y.
 
     /**
      * Interrupt.
@@ -137,7 +137,7 @@ public final class CPU6510State {
     /**
      * Decrement stack pointer.
      *
-     * @return Stack pointer address before decrement
+     * @return Stack pointer address before decrement.
      */
     public int decS() {
         var s = S;
@@ -148,7 +148,7 @@ public final class CPU6510State {
     /**
      * Increment stack pointer.
      *
-     * @return Incremented stack pointer address
+     * @return Incremented stack pointer address.
      */
     public int incS() {
         var s = ((S + 1) & 0xFF);
@@ -160,7 +160,7 @@ public final class CPU6510State {
      * Set P.
      *
      * @param p
-     *         new value for p
+     *         New value for p.
      */
     public void setP(int p) {
         assert p >= 0 && p < 0x100 : "Precondition: p >= 0 && p < 0x100";
@@ -206,7 +206,7 @@ public final class CPU6510State {
     }
 
     //
-    // status register related functionality
+    // Status register related functionality.
     //
 
     /**
@@ -261,7 +261,7 @@ public final class CPU6510State {
     }
 
     //
-    // Register getter / setter for method reference access
+    // Register getter / setter for method reference access.
     //
 
     /**

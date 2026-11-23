@@ -30,7 +30,7 @@ public class CIA6526 extends AbstractCIA {
      * Constructor.
      *
      * @param todInput
-     *         TOD input
+     *         TOD input.
      */
     public CIA6526(@Nonnull TodInput todInput) {
         super(todInput);

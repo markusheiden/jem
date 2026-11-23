@@ -1,13 +1,12 @@
 package de.heiden.jem.models.c64.gui.swing.emulator;
 
 import de.heiden.jem.models.c64.components.keyboard.IKeyboard;
-import de.heiden.jem.models.c64.components.keyboard.Key;
 
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
 /**
- * {@link java.awt.event.KeyListener} for C64 Keyboard
+ * {@link java.awt.event.KeyListener} for C64 Keyboard.
  */
 public class KeyListener extends KeyAdapter {
     /**
@@ -24,9 +23,9 @@ public class KeyListener extends KeyAdapter {
      * Constructor.
      *
      * @param keyboard
-     *         Keyboard
+     *         Keyboard.
      * @param keyMapping
-     *         Mapping from keys to C64 keys
+     *         Mapping from keys to C64 keys.
      */
     public KeyListener(IKeyboard keyboard, KeyMapping keyMapping) {
         this.keyboard = keyboard;

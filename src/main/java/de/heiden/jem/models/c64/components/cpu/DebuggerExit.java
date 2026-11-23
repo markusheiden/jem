@@ -8,7 +8,7 @@ public class DebuggerExit extends RuntimeException {
      * Constructor.
      *
      * @param message
-     *         message
+     *         Message.
      */
     public DebuggerExit(String message) {
         super(message);

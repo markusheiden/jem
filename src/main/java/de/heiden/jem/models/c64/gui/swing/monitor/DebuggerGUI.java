@@ -116,7 +116,7 @@ public class DebuggerGUI extends JPanel {
     }
 
     //
-    // Toolbar actions
+    // Toolbar actions.
     //
 
     /**
@@ -214,7 +214,7 @@ public class DebuggerGUI extends JPanel {
                     cpu.stop();
                     thread.join();
                 } catch (InterruptedException e) {
-                    // ignore
+                    // Ignore.
                 } finally {
                     thread = null;
                 }

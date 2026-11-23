@@ -121,7 +121,7 @@ public abstract class AbstractFiberClock extends AbstractSimpleClock {
      * Called before the fibers are started.
      *
      * @param numThreads
-     *         Number of fibers plus one for the thread running the clock
+     *         Number of fibers plus one for the thread running the clock.
      */
     protected abstract void init(int numThreads);
 
@@ -137,7 +137,7 @@ public abstract class AbstractFiberClock extends AbstractSimpleClock {
      * Wait until the current thread is allowed to execute.
      *
      * @param index
-     *         Index of the current thread
+     *         Index of the current thread.
      */
     protected abstract void await(int index);
 

@@ -127,7 +127,7 @@ public abstract class AbstractSynchronizedClock extends AbstractClock {
     }
 
     protected void doSynchronizedInit() {
-        // overwrite, if needed
+        // Overwrite, if needed.
     }
 
     /**

@@ -391,7 +391,7 @@ public abstract class AbstractTest {
 
         // Load program.
         load(programName, 8);
-        // Skip further loads
+        // Skip further loads.
         c64.rts(0xE16F);
 
         run();
@@ -431,7 +431,7 @@ public abstract class AbstractTest {
                 var test = (AbstractTest) context.getRequiredTestInstance();
                 test.dumpProgram();
             } catch (Exception io) {
-                // ignore
+                // Ignore.
             } finally {
                 throw throwable;
             }
@@ -467,16 +467,16 @@ public abstract class AbstractTest {
      * Type string to the keyboard.
      *
      * @param s
-     *         String
+     *         String.
      */
     protected void type(String s) throws Exception {
         var dummySource = new Button();
         for (var c : s.toCharArray()) {
             var event = new KeyEvent(dummySource, 0, 0, 0, 0, c, 0);
             systemIn.keyPressed(event);
-            waitCycles(21000); // wait at least one interrupt
+            waitCycles(21000); // Wait at least one interrupt.
             systemIn.keyReleased(event);
-            waitCycles(21000); // wait at least one interrupt
+            waitCycles(21000); // Wait at least one interrupt.
         }
     }
 
@@ -576,12 +576,12 @@ public abstract class AbstractTest {
      * Wait the given number of clock cycles.
      *
      * @param cycles
-     *         Cycles
+     *         Cycles.
      */
     protected void waitCycles(long cycles) throws Exception {
         for (var end = getTick() + cycles; getTick() < end; ) {
             if (throwable != null) {
-                // Early exit on exceptions, because the emulation has been halted
+                // Early exit on exceptions, because the emulation has been halted.
                 return;
             }
 
@@ -597,7 +597,7 @@ public abstract class AbstractTest {
     }
 
     //
-    // Conditions
+    // Conditions.
     //
 
     /**
@@ -822,7 +822,7 @@ public abstract class AbstractTest {
     }
 
     /**
-     * Wait for value in memory
+     * Wait for value in memory.
      */
     private final class InMemory implements Condition {
         /**

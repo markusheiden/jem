@@ -12,7 +12,7 @@ public class VICScreen extends C64ScreenComponent {
      * Constructor.
      *
      * @param displayUnit
-     *         display unit to display
+     *         Display unit to display.
      * @require displayUnit != null
      */
     public VICScreen(@Nonnull AbstractDisplayUnit displayUnit) {

@@ -49,9 +49,9 @@ public class Joystick extends ClockEvent {
      * Constructor.
      *
      * @param clock
-     *         clock
+     *         Clock.
      * @param ciaPort
-     *         CIA port to connect to
+     *         CIA port to connect to.
      */
     public Joystick(@Nonnull Clock clock, @Nonnull InputOutputPort ciaPort) {
         super("Joystick");

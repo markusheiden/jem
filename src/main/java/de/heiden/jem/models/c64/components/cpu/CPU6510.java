@@ -109,7 +109,7 @@ public class CPU6510 implements ClockedComponent {
     public CPU6510() {
         state = new CPU6510State();
 
-        // TODO mh: connect to emulated hardware
+        // TODO mh: Connect to emulated hardware.
         portIn = new OutputPortImpl();
         portIn.setOutputMask(0xFF);
         // The unconnected bits 6 and 7 are low, until they are driven high as outputs.
@@ -120,14 +120,14 @@ public class CPU6510 implements ClockedComponent {
 
         irq = new InputPortImpl();
         irq.addInputPortListener((value, mask) -> {
-            // irq is low active
+            // irq is low active.
             var irq = (value & 0x01) == 0;
             if (irq && !irqState) {
                 state.triggerIRQ();
             } else if (!irq) {
-                // normally irq will be reset when it is about to be executed,
+                // Normally irq will be reset when it is about to be executed,
                 // but if the irq is not being handled due to the I flag,
-                // then it will be reset when the interrupt request is cleared
+                // then it will be reset when the interrupt request is cleared.
                 state.resetIRQ();
             }
             irqState = irq;
@@ -135,8 +135,8 @@ public class CPU6510 implements ClockedComponent {
 
         nmi = new InputPortImpl();
         nmi.addInputPortListener((value, mask) -> {
-            // nmi is low active
-            // the falling edge is latched until the nmi is executed
+            // nmi is low active.
+            // The falling edge is latched until the nmi is executed.
             var nmi = (value & 0x01) == 0;
             if (nmi && !nmiState) {
                 state.NMI = true;
@@ -159,7 +159,7 @@ public class CPU6510 implements ClockedComponent {
      * Connect to bus.
      *
      * @param bus
-     *         cpu bus
+     *         CPU bus.
      * @require bus != null
      */
     public void connect(@Nonnull BusDevice bus) {
@@ -174,26 +174,26 @@ public class CPU6510 implements ClockedComponent {
      */
     public void add(@Nonnull Patch patch) {
         patches.put(patch.getAddress(), patch);
-        writePort(0xFF, 0x0001); // standard memory layout
+        writePort(0xFF, 0x0001); // Standard memory layout.
         patch.replaced = bus.read(patch.getAddress());
-        ((Patchable) bus).patch(0x02, patch.getAddress()); // add breakpoint
+        ((Patchable) bus).patch(0x02, patch.getAddress()); // Add breakpoint.
     }
 
     /**
      * Reset CPU.
      * <p>
-     * TODO should be protected?
+     * TODO Should be protected?
      */
     @Interruptible
     public void reset() {
         logger.debug("reset");
 
-        // wait for first tick
+        // Wait for first tick.
         tick.waitForTick();
 
-        // TODO init something else?
+        // TODO Init something else?
         state.S = 0xFF;
-        state.setP(0x00); // TODO correct?
+        state.setP(0x00); // TODO Correct?
         state.PC = readAbsoluteAddress(0xFFFC);
     }
 
@@ -310,7 +310,7 @@ public class CPU6510 implements ClockedComponent {
                         @Interruptible
                         public void execute() // $02: *KIL (*) // TODO imm?
                         {
-                            // Use opcode $02 as escape
+                            // Use opcode $02 as escape.
                             var patch = patches.get(state.PC - 1);
                             if (patch != null) {
                                 var opcode = patch.execute(state, bus);
@@ -318,7 +318,7 @@ public class CPU6510 implements ClockedComponent {
                                     OPCODES[opcode].execute();
                                 }
                             } else {
-                                // no patch -> standard behaviour: crash
+                                // No patch -> standard behaviour: crash.
                                 crash();
                             }
                         }
@@ -395,7 +395,7 @@ public class CPU6510 implements ClockedComponent {
                         @Interruptible
                         public void execute() // $0A: ASL (2) // no
                         {
-                            idleRead(); // during operation
+                            idleRead(); // During operation.
                             state.A = shiftLeft(state.A);
                         }
                     },
@@ -479,7 +479,7 @@ public class CPU6510 implements ClockedComponent {
                         @Interruptible
                         public void execute() // $13: *SLO ($XX),Y (8) // izy
                         {
-                            // TODO 1 tick
+                            // TODO 1 tick.
                             slo(readZeropageIndirectYAddressPCForWrite());
                         }
                     },
@@ -527,7 +527,7 @@ public class CPU6510 implements ClockedComponent {
                         @Interruptible
                         public void execute() // $18: CLC (2) // no
                         {
-                            idleRead(); // during operation
+                            idleRead(); // During operation.
                             state.C = false;
                         }
                     },
@@ -556,7 +556,7 @@ public class CPU6510 implements ClockedComponent {
                         @Interruptible
                         public void execute() // $1B: *SLO $XXXX,Y (7)
                         {
-                            // TODO 1 tick
+                            // TODO 1 tick.
                             slo(readAbsoluteAddressPCForWrite(state.Y));
                         }
                     },
@@ -585,7 +585,7 @@ public class CPU6510 implements ClockedComponent {
                         @Interruptible
                         public void execute() // $1E: ASL $XXXX,X (7)
                         {
-                            // TODO 1 tick
+                            // TODO 1 tick.
                             var addr = readAbsoluteAddressPCForWrite(state.X);
                             write(shiftLeft(readForModify(addr)), addr);
                         }
@@ -596,7 +596,7 @@ public class CPU6510 implements ClockedComponent {
                         @Interruptible
                         public void execute() // $1F: *SLO $XXXX,X (7)
                         {
-                            // TODO 1 tick
+                            // TODO 1 tick.
                             slo(readAbsoluteAddressPCForWrite(state.X));
                         }
                     },
@@ -704,7 +704,7 @@ public class CPU6510 implements ClockedComponent {
                         @Interruptible
                         public void execute() // $2A: ROL (2) // no
                         {
-                            idleRead(); // during operation
+                            idleRead(); // During operation.
                             state.A = rotateLeft(state.A);
                         }
                     },
@@ -787,7 +787,7 @@ public class CPU6510 implements ClockedComponent {
                         @Interruptible
                         public void execute() // $33: *RLA ($XX),Y (8) // izy
                         {
-                            // TODO 1 tick
+                            // TODO 1 tick.
                             rla(readZeropageIndirectYAddressPCForWrite());
                         }
                     },
@@ -835,7 +835,7 @@ public class CPU6510 implements ClockedComponent {
                         @Interruptible
                         public void execute() // $38: SEC (2) // no
                         {
-                            idleRead(); // during operation
+                            idleRead(); // During operation.
                             state.C = true;
                         }
                     },
@@ -864,7 +864,7 @@ public class CPU6510 implements ClockedComponent {
                         @Interruptible
                         public void execute() // $3B: *RLA $XXXX,Y (7)
                         {
-                            // TODO 1 tick
+                            // TODO 1 tick.
                             rla(readAbsoluteAddressPCForWrite(state.Y));
                         }
                     },
@@ -893,7 +893,7 @@ public class CPU6510 implements ClockedComponent {
                         @Interruptible
                         public void execute() // $3E: ROL $XXXX,X (7)
                         {
-                            // TODO 1 tick
+                            // TODO 1 tick.
                             var addr = readAbsoluteAddressPCForWrite(state.X);
                             write(rotateLeft(readForModify(addr)), addr);
                         }
@@ -904,7 +904,7 @@ public class CPU6510 implements ClockedComponent {
                         @Interruptible
                         public void execute() // $3F: *RLA $XXXX,X (7)
                         {
-                            // TODO 1 tick
+                            // TODO 1 tick.
                             rla(readAbsoluteAddressPCForWrite(state.X));
                         }
                     },
@@ -1010,7 +1010,7 @@ public class CPU6510 implements ClockedComponent {
                         @Interruptible
                         public void execute() // $4A: LSR (2) // no
                         {
-                            idleRead(); // during operation
+                            idleRead(); // During operation.
                             state.A = shiftRight(state.A);
                         }
                     },
@@ -1141,7 +1141,7 @@ public class CPU6510 implements ClockedComponent {
                         public void execute() // $58: CLI (2) // no
                         {
                             if (ready) {
-                                idleRead(); // during operation
+                                idleRead(); // During operation.
                                 state.cli();
                             } else {
                                 // Halted: The flag is changed before the interrupts are polled again.
@@ -1203,7 +1203,7 @@ public class CPU6510 implements ClockedComponent {
                         @Interruptible
                         public void execute() // $5E: LSR $XXXX,X (7)
                         {
-                            // TODO 1 tick
+                            // TODO 1 tick.
                             var addr = readAbsoluteAddressPCForWrite(state.X);
                             write(shiftRight(readForModify(addr)), addr);
                         }
@@ -1319,7 +1319,7 @@ public class CPU6510 implements ClockedComponent {
                         @Interruptible
                         public void execute() // $6A: ROR (2) // no
                         {
-                            idleRead(); // during operation
+                            idleRead(); // During operation.
                             state.A = rotateRight(state.A);
                         }
                     },
@@ -1454,7 +1454,7 @@ public class CPU6510 implements ClockedComponent {
                                 pollNmi();
                                 tick.waitForTick();
                             }
-                            idleRead(); // during operation
+                            idleRead(); // During operation.
                             state.sei();
                         }
                     },
@@ -1511,7 +1511,7 @@ public class CPU6510 implements ClockedComponent {
                         @Interruptible
                         public void execute() // $7E: ROR $XXXX,X (7)
                         {
-                            // TODO 1 ticks
+                            // TODO 1 ticks.
                             var addr = readAbsoluteAddressPCForWrite(state.X);
                             write(rotateRight(readForModify(addr)), addr);
                         }
@@ -1605,7 +1605,7 @@ public class CPU6510 implements ClockedComponent {
                         @Interruptible
                         public void execute() // $88: DEY (2) // no
                         {
-                            idleRead(); // during operation
+                            idleRead(); // During operation.
                             state.Y = decrement(state.Y);
                         }
                     },
@@ -1762,7 +1762,7 @@ public class CPU6510 implements ClockedComponent {
                         @Interruptible
                         public void execute() // $99: STA $XXXX,Y (5)
                         {
-                            // TODO 1 tick
+                            // TODO 1 tick.
                             write(state.A, readAbsoluteAddressPCForWrite(state.Y));
                         }
                     },
@@ -1772,8 +1772,8 @@ public class CPU6510 implements ClockedComponent {
                         @Interruptible
                         public void execute() // $9A: TXS (2) // no
                         {
-                            idleRead(); // during operation
-                            state.S = state.X; // no update of P !!!
+                            idleRead(); // During operation.
+                            state.S = state.X; // No update of P !!!
                         }
                     },
 
@@ -2045,7 +2045,7 @@ public class CPU6510 implements ClockedComponent {
                         @Interruptible
                         public void execute() // $B8: CLV (2) // no
                         {
-                            idleRead(); // during operation
+                            idleRead(); // During operation.
                             state.V = false;
                         }
                     },
@@ -2193,7 +2193,7 @@ public class CPU6510 implements ClockedComponent {
                         @Interruptible
                         public void execute() // $C8: INY (2) // no
                         {
-                            idleRead(); // during operation
+                            idleRead(); // During operation.
                             state.Y = increment(state.Y);
                         }
                     },
@@ -2212,7 +2212,7 @@ public class CPU6510 implements ClockedComponent {
                         @Interruptible
                         public void execute() // $CA: DEX (2) // no
                         {
-                            idleRead(); // during operation
+                            idleRead(); // During operation.
                             state.X = decrement(state.X);
                         }
                     },
@@ -2342,7 +2342,7 @@ public class CPU6510 implements ClockedComponent {
                         @Interruptible
                         public void execute() // $D8: CLD (2) // no
                         {
-                            idleRead(); // during operation
+                            idleRead(); // During operation.
                             state.D = false;
                         }
                     },
@@ -2399,7 +2399,7 @@ public class CPU6510 implements ClockedComponent {
                         @Interruptible
                         public void execute() // $DE: DEC $XXXX,X (7)
                         {
-                            // TODO 1 tick
+                            // TODO 1 tick.
                             var addr = readAbsoluteAddressPCForWrite(state.X);
                             write(decrement(readForModify(addr)), addr);
                         }
@@ -2493,7 +2493,7 @@ public class CPU6510 implements ClockedComponent {
                         @Interruptible
                         public void execute() // $E8: INX (2) // no
                         {
-                            idleRead(); // during operation
+                            idleRead(); // During operation.
                             state.X = increment(state.X);
                         }
                     },
@@ -2512,7 +2512,7 @@ public class CPU6510 implements ClockedComponent {
                         @Interruptible
                         public void execute() // $EA: NOP (2) // no
                         {
-                            idleRead(); // during operation
+                            idleRead(); // During operation.
                         }
                     },
 
@@ -2641,7 +2641,7 @@ public class CPU6510 implements ClockedComponent {
                         @Interruptible
                         public void execute() // $F8: SED (2) // no
                         {
-                            idleRead(); // during operation
+                            idleRead(); // During operation.
                             state.D = true;
                         }
                     },
@@ -2698,7 +2698,7 @@ public class CPU6510 implements ClockedComponent {
                         @Interruptible
                         public void execute() // $FE: INC $XXXX,X (7)
                         {
-                            // TODO 1 tick
+                            // TODO 1 tick.
                             var addr = readAbsoluteAddressPCForWrite(state.X);
                             write(increment(readForModify(addr)), addr);
                         }
@@ -2727,7 +2727,7 @@ public class CPU6510 implements ClockedComponent {
     }
 
     //
-    // commands
+    // Commands.
     //
 
     /**
@@ -2735,9 +2735,9 @@ public class CPU6510 implements ClockedComponent {
      * (5)
      *
      * @param vector
-     *         interrupt vector
+     *         Interrupt vector.
      * @param p
-     *         status register to push
+     *         Status register to push.
      */
     @Interruptible
     protected final void interrupt(int vector, int p) {
@@ -2759,7 +2759,7 @@ public class CPU6510 implements ClockedComponent {
      * Shift left.
      *
      * @param value
-     *         value
+     *         Value.
      */
     protected final int shiftLeft(int value) {
         var result = value << 1;
@@ -2772,7 +2772,7 @@ public class CPU6510 implements ClockedComponent {
      * (1)
      *
      * @param value
-     *         value
+     *         Value.
      */
     protected final int shiftRight(int value) {
         var result = value >> 1;
@@ -2784,7 +2784,7 @@ public class CPU6510 implements ClockedComponent {
      * Rotate left.
      *
      * @param value
-     *         value
+     *         Value.
      */
     protected final int rotateLeft(int value) {
         var result = value << 1;
@@ -2800,7 +2800,7 @@ public class CPU6510 implements ClockedComponent {
      * (1)
      *
      * @param value
-     *         value
+     *         Value.
      */
     protected final int rotateRight(int value) {
         var result = value >> 1;
@@ -2815,7 +2815,7 @@ public class CPU6510 implements ClockedComponent {
      * And value with A temporary.
      *
      * @param value
-     *         value
+     *         Value.
      */
     protected final void bit(int value) {
         state.setZeroOverflowNegativeP(value, (state.A & value) == 0);
@@ -2825,7 +2825,7 @@ public class CPU6510 implements ClockedComponent {
      * And value with A.
      *
      * @param value
-     *         value
+     *         Value.
      */
     protected final void and(int value) {
         var a = state.A & value;
@@ -2837,7 +2837,7 @@ public class CPU6510 implements ClockedComponent {
      * Or value with A.
      *
      * @param value
-     *         value
+     *         Value.
      */
     protected final void or(int value) {
         var a = state.A | value;
@@ -2849,7 +2849,7 @@ public class CPU6510 implements ClockedComponent {
      * Exclusive or value with A.
      *
      * @param value
-     *         value
+     *         Value.
      */
     protected final void xor(int value) {
         var a = state.A ^ value;
@@ -2861,7 +2861,7 @@ public class CPU6510 implements ClockedComponent {
      * Add value to A.
      *
      * @param value
-     *         value
+     *         Value.
      */
     protected final void add(int value) {
         if (state.D) {
@@ -2875,7 +2875,7 @@ public class CPU6510 implements ClockedComponent {
      * Add value to A (binary mode).
      *
      * @param value
-     *         value
+     *         Value.
      */
     private void addBinary(int value) {
         var a = state.A + value;
@@ -2891,7 +2891,7 @@ public class CPU6510 implements ClockedComponent {
      * Z is set like in binary mode, N and V from the result before the decimal correction of the high nibble.
      *
      * @param value
-     *         value
+     *         Value.
      */
     private void addDecimal(int value) {
         var a = state.A;
@@ -2916,7 +2916,7 @@ public class CPU6510 implements ClockedComponent {
      * Subtract value from A.
      *
      * @param value
-     *         value
+     *         Value.
      */
     protected final void subtract(int value) {
         if (state.D) {
@@ -2931,7 +2931,7 @@ public class CPU6510 implements ClockedComponent {
      * The flags are set like in binary mode.
      *
      * @param value
-     *         value
+     *         Value.
      */
     private void subtractDecimal(int value) {
         var a = state.A;
@@ -2952,7 +2952,7 @@ public class CPU6510 implements ClockedComponent {
      * Load.
      *
      * @param value
-     *         value
+     *         Value.
      */
     @Interruptible
     protected final int load(int value) {
@@ -2965,7 +2965,7 @@ public class CPU6510 implements ClockedComponent {
      * (1)
      *
      * @param value
-     *         value
+     *         Value.
      */
     protected final int decrement(int value) {
         var result = (value - 1) & 0xFF;
@@ -2978,7 +2978,7 @@ public class CPU6510 implements ClockedComponent {
      * (1)
      *
      * @param value
-     *         value
+     *         Value.
      */
     protected final int increment(int value) {
         var result = (value + 1) & 0xFF;
@@ -3000,7 +3000,7 @@ public class CPU6510 implements ClockedComponent {
      * (2, 3 if branched, 4 if branched with page crossing)
      *
      * @param condition
-     *         condition to branch
+     *         Condition to branch.
      */
     @Interruptible
     protected final void branchIf(boolean condition) {
@@ -3083,7 +3083,7 @@ public class CPU6510 implements ClockedComponent {
     }
 
     //
-    // illegal commands
+    // Illegal commands.
     //
 
     /**
@@ -3127,7 +3127,7 @@ public class CPU6510 implements ClockedComponent {
      * *ALR: AND and LSR.
      *
      * @param value
-     *         argument
+     *         Argument.
      */
     @Interruptible
     protected void alr(int value) {
@@ -3146,7 +3146,7 @@ public class CPU6510 implements ClockedComponent {
      * *ALR: AND with moving bit 7 to carry (logic from ASL/ROL).
      *
      * @param value
-     *         argument
+     *         Argument.
      */
     @Interruptible
     protected void anc(int value) {
@@ -3163,9 +3163,9 @@ public class CPU6510 implements ClockedComponent {
      * *AHX: A and X and (Highbyte of address + 1).
      *
      * @param base
-     *         base address
+     *         Base address.
      * @param index
-     *         index
+     *         Index.
      */
     @Interruptible
     protected void ahx(int base, int index) {
@@ -3180,7 +3180,7 @@ public class CPU6510 implements ClockedComponent {
      * *ARR: AND with decimal mode corrections of ADC and with exchanging bit 7 with carry (logic from ROR).
      *
      * @param value
-     *         argument
+     *         Argument.
      */
     @Interruptible
     protected void arr(int value) {
@@ -3225,14 +3225,14 @@ public class CPU6510 implements ClockedComponent {
      * (?)
      *
      * @param addr
-     *         address
+     *         Address.
      */
     @Interruptible
     protected final void axs(int addr) {
         if (DEBUG) {
             reportIllegalOpcode();
         }
-        // no state change!
+        // No state change!
         write(state.A & state.X, addr);
     }
 
@@ -3240,10 +3240,10 @@ public class CPU6510 implements ClockedComponent {
      * *DCM (*DCP): Decrement and compare.
      * (?)
      * <p>
-     * TODO mh: add value as a parameter instead of reading it here?
+     * TODO mh: Add value as a parameter instead of reading it here?
      *
      * @param addr
-     *         address
+     *         Address.
      */
     @Interruptible
     protected final void dcm(int addr) {
@@ -3256,13 +3256,13 @@ public class CPU6510 implements ClockedComponent {
     }
 
     /**
-     * *INS (*ISC): increment address, subtract value from A.
+     * *INS (*ISC): Increment address, subtract value from A.
      * (?)
      * <p>
-     * TODO mh: add value as a parameter instead of reading it here?
+     * TODO mh: Add value as a parameter instead of reading it here?
      *
      * @param addr
-     *         address
+     *         Address.
      */
     @Interruptible
     protected final void ins(int addr) {
@@ -3295,7 +3295,7 @@ public class CPU6510 implements ClockedComponent {
      * (?)
      *
      * @param value
-     *         argument
+     *         Argument.
      */
     @Interruptible
     protected final void lax(int value) {
@@ -3311,10 +3311,10 @@ public class CPU6510 implements ClockedComponent {
      * *LSE: Logical shift right and eor.
      * (?)
      * <p>
-     * TODO mh: add value as a parameter instead of reading it here?
+     * TODO mh: Add value as a parameter instead of reading it here?
      *
      * @param addr
-     *         address
+     *         Address.
      */
     @Interruptible
     protected final void lse(int addr) {
@@ -3331,7 +3331,7 @@ public class CPU6510 implements ClockedComponent {
      * (?)
      *
      * @param value
-     *         argument
+     *         Argument.
      */
     @Interruptible
     protected final void lxa(int value) {
@@ -3348,10 +3348,10 @@ public class CPU6510 implements ClockedComponent {
      * *RLA: Rotate left and and with A, store result.
      * (3)
      * <p>
-     * TODO mh: add value as a parameter instead of reading it here?
+     * TODO mh: Add value as a parameter instead of reading it here?
      *
      * @param addr
-     *         address
+     *         Address.
      */
     @Interruptible
     protected final void rla(int addr) {
@@ -3370,10 +3370,10 @@ public class CPU6510 implements ClockedComponent {
      * *RRA: ROR and ADC.
      * (?)
      * <p>
-     * TODO mh: add value as a parameter instead of reading it here?
+     * TODO mh: Add value as a parameter instead of reading it here?
      *
      * @param addr
-     *         address
+     *         Address.
      */
     @Interruptible
     protected final void rra(int addr) {
@@ -3389,10 +3389,10 @@ public class CPU6510 implements ClockedComponent {
      * *SLO: Shift left and or with A.
      * (3)
      * <p>
-     * TODO mh: add value as a parameter instead of reading it here?
+     * TODO mh: Add value as a parameter instead of reading it here?
      *
      * @param addr
-     *         address
+     *         Address.
      */
     @Interruptible
     protected final void slo(int addr) {
@@ -3412,7 +3412,7 @@ public class CPU6510 implements ClockedComponent {
      * (?)
      *
      * @param value
-     *         argument
+     *         Argument.
      */
     @Interruptible
     protected final void sax(int value) {
@@ -3428,9 +3428,9 @@ public class CPU6510 implements ClockedComponent {
      * *SHX: X and (High byte of address + 1).
      *
      * @param base
-     *         base address
+     *         Base address.
      * @param index
-     *         index
+     *         Index.
      */
     @Interruptible
     protected void shx(int base, int index) {
@@ -3445,9 +3445,9 @@ public class CPU6510 implements ClockedComponent {
      * *SHY: Y and (High byte of address + 1).
      *
      * @param base
-     *         base address
+     *         Base address.
      * @param index
-     *         index
+     *         Index.
      */
     @Interruptible
     protected void shy(int base, int index) {
@@ -3462,9 +3462,9 @@ public class CPU6510 implements ClockedComponent {
      * *TAS: S = A amd X, write S and (High byte of address + 1).
      *
      * @param base
-     *         base address
+     *         Base address.
      * @param index
-     *         index
+     *         Index.
      */
     @Interruptible
     protected void tas(int base, int index) {
@@ -3500,7 +3500,7 @@ public class CPU6510 implements ClockedComponent {
      * (see VICE testprogs CPU/ane).
      *
      * @param value
-     *         argument
+     *         Argument.
      */
     @Interruptible
     protected final void xaa(int value) {
@@ -3511,7 +3511,7 @@ public class CPU6510 implements ClockedComponent {
     }
 
     //
-    // addressing modes
+    // Addressing modes.
     //
 
     /**
@@ -3622,7 +3622,7 @@ public class CPU6510 implements ClockedComponent {
      * (2)
      *
      * @param addr
-     *         address
+     *         Address.
      */
     @Interruptible
     protected final int readAbsoluteAddress(int addr) {
@@ -3635,7 +3635,7 @@ public class CPU6510 implements ClockedComponent {
      * (2)
      *
      * @param addr
-     *         address
+     *         Address.
      */
     @Interruptible
     protected final int readAbsoluteAddressForIndirect(int addr) {
@@ -3681,7 +3681,7 @@ public class CPU6510 implements ClockedComponent {
     }
 
     //
-    // read / write interface
+    // Read / write interface.
     //
 
     /**
@@ -3745,15 +3745,15 @@ public class CPU6510 implements ClockedComponent {
      * (1)
      *
      * @param value
-     *         value
+     *         Value.
      * @param addr
-     *         address
+     *         Address.
      */
     @Interruptible
     protected final void write(int value, int addr) {
         poll();
 
-        // always write to bus!
+        // Always write to bus!
         busData = value;
         bus.write(value, addr);
         if (addr <= 1) {
@@ -3766,9 +3766,9 @@ public class CPU6510 implements ClockedComponent {
      * Write the value to an IO port.
      *
      * @param value
-     *         value
+     *         Value.
      * @param addr
-     *         port address (0 or 1)
+     *         Port address (0 or 1).
      */
     final void writePort(int value, int addr) {
         if (addr == 0) {
@@ -3787,8 +3787,8 @@ public class CPU6510 implements ClockedComponent {
      * (1)
      *
      * @param addr
-     *         address
-     * @return byte from bus
+     *         Address.
+     * @return Byte from bus.
      */
     @Interruptible
     protected final int read(int addr) {
@@ -3836,8 +3836,8 @@ public class CPU6510 implements ClockedComponent {
      * Read a byte from an IO port.
      *
      * @param addr
-     *         Address of port
-     * @return byte from port
+     *         Address of port.
+     * @return Byte from port.
      */
     private int readPort(int addr) {
         if (addr == 0) {
@@ -3850,7 +3850,7 @@ public class CPU6510 implements ClockedComponent {
     }
 
     //
-    // External debugging support
+    // External debugging support.
     //
 
     /**
@@ -3861,7 +3861,7 @@ public class CPU6510 implements ClockedComponent {
     }
 
     //
-    // inner classes
+    // Inner classes.
     //
 
     /**

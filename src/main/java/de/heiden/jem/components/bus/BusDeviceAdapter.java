@@ -16,7 +16,7 @@ public class BusDeviceAdapter implements BusDevice {
      * Constructor.
      *
      * @param bus
-     *         Bus to delegate to
+     *         Bus to delegate to.
      */
     public BusDeviceAdapter(@Nonnull BusDevice bus) {
         this.bus = bus;

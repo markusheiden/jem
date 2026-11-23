@@ -97,7 +97,7 @@ public class MacMapping extends KeyMapping {
         addChar(')', LEFT_SHIFT, NUMBER_9);
         addChar('+', PLUS);
         addChar('-', MINUS);
-        // TODO how to map POUND?
+        // TODO How to map POUND?
 
         addChar('a', A);
         addChar('A', LEFT_SHIFT, A);
@@ -167,7 +167,7 @@ public class MacMapping extends KeyMapping {
 
         addChar('@', AT);
         addChar('*', ASTERISK);
-        // TODO how to map UP_ARROW?
+        // TODO How to map UP_ARROW?
         addChar('^', UP_ARROW);
         addChar('\n', ENTER);
 
@@ -190,18 +190,18 @@ public class MacMapping extends KeyMapping {
         addCode(KeyCode.F7, F7);
         addCode(KeyCode.F8, LEFT_SHIFT, F7);
 
-        // Shift is disabled, because the above chars/keys already contain shift
+        // Shift is disabled, because the above chars/keys already contain shift.
         // addCode(KeyCode.SHIFT, LEFT_SHIFT);
         // addCode(KeyCode.SHIFT, RIGHT_SHIFT);
         addCode(KeyCode.CONTROL, CTRL);
         addCode(KeyCode.ALT, COMMODORE);
 
-        // run stop -> esc
+        // Run stop -> esc.
         addCode(KeyCode.ESCAPE, RUN_STOP);
-        // restore -> delete
+        // Restore -> delete.
         addCode(KeyCode.DELETE, RESTORE);
 
-        // left arrow -> tab
+        // Left arrow -> tab.
         // TODO markus 2026-11-14: Is there a better suitable key?
         addCode(KeyCode.TAB, LET_ARROW);
     }

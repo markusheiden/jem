@@ -67,7 +67,7 @@ public class MemDumpGUI extends JPanel {
      * Connect component to model (a bus).
      *
      * @param bus
-     *         model
+     *         Model.
      */
     public void setBus(BusDevice bus) {
         this.bus = bus;
@@ -75,14 +75,14 @@ public class MemDumpGUI extends JPanel {
     }
 
     //
-    // painting
+    // Painting.
     //
 
     /**
      * The memory changed, so update image.
      */
     public void memoryChanged() {
-        // update text
+        // Update text.
         text.clear();
         if (bus != null) {
             var addr = scrollBar.getValue();
@@ -98,9 +98,9 @@ public class MemDumpGUI extends JPanel {
      * Dump line.
      *
      * @param addr
-     *         address to dump
+     *         Address to dump.
      * @param row
-     *         row to draw dump to
+     *         Row to draw dump to.
      */
     protected void dumpLine(int addr, int row) {
         text.setText(0, row, HexUtil.hexWordPlain(addr));
