@@ -68,7 +68,7 @@ public class C64Application extends Application {
 
         thread = new Thread(this::runC64);
         thread.setName("C64");
-        // JavaFX thread keeps vm running.
+        // JavaFX thread keeps VM running.
         thread.setDaemon(true);
         thread.start();
     }

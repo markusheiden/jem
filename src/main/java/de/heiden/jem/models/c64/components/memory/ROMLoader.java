@@ -10,10 +10,10 @@ import java.io.IOException;
  */
 public class ROMLoader {
     /**
-     * Basic ROM.
+     * BASIC ROM.
      *
      * @param filename
-     *         Filename of rom image.
+     *         Filename of ROM image.
      * @ensure result != null
      */
     public static @Nonnull ROM basic(String filename) throws Exception {
@@ -25,7 +25,7 @@ public class ROMLoader {
      * Kernel ROM.
      *
      * @param filename
-     *         Filename of rom image.
+     *         Filename of ROM image.
      * @ensure result != null
      */
     public static @Nonnull ROM kernel(String filename) throws Exception {
@@ -37,7 +37,7 @@ public class ROMLoader {
      * Charset ROM.
      *
      * @param filename
-     *         Filename of rom image.
+     *         Filename of ROM image.
      * @ensure result != null
      */
     public static @Nonnull ROM character(String filename) throws Exception {
@@ -49,7 +49,7 @@ public class ROMLoader {
      * Charset ROM.
      *
      * @param filename
-     *         Filename of rom image.
+     *         Filename of ROM image.
      * @ensure result != null
      */
     public static @Nonnull ROM pla(String filename) throws Exception {

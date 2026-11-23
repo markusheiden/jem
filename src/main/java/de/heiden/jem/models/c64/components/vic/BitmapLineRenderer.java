@@ -1,7 +1,7 @@
 package de.heiden.jem.models.c64.components.vic;
 
 /**
- * Standard bitmap mode: Video ram holds the colors of set (upper nibble) and unset (lower nibble) pixels.
+ * Standard bitmap mode: Video RAM holds the colors of set (upper nibble) and unset (lower nibble) pixels.
  */
 class BitmapLineRenderer extends AbstractLineRenderer {
     BitmapLineRenderer(VIC vic) {

@@ -318,7 +318,7 @@ public final class CPU6510State {
     //
 
     /**
-     * Copy cpu state.
+     * Copy CPU state.
      */
     public CPU6510State copy() {
         return new CPU6510State(PC, S, getP(), A, X, Y, IRQ, NMI);

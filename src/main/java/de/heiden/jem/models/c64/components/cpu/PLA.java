@@ -12,7 +12,7 @@ import static de.heiden.jem.models.c64.components.cpu.PLA.Input.CAS;
  */
 public class PLA {
     /**
-     * All inputs of the pla in the correct order.
+     * All inputs of the PLA in the correct order.
      */
     public enum Input {
         CAS, // Low active.
@@ -34,7 +34,7 @@ public class PLA {
     }
 
     /**
-     * All outputs of the pla in the correct order.
+     * All outputs of the PLA in the correct order.
      */
     public enum Output {
         RAM, // Low active.

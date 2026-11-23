@@ -830,7 +830,7 @@ class CPU6510Test {
 
 
     /**
-     * Execute one cpu cycle and check for the expected CPU state and read of the value from the PC. Increments PC.
+     * Execute one CPU cycle and check for the expected CPU state and read of the value from the PC. Increments PC.
      *
      * @param expectedState
      *         Expected state after execution.
@@ -842,7 +842,7 @@ class CPU6510Test {
     }
 
     /**
-     * Execute one cpu cycle and check for the expected CPU state and read of the value from the PC. Increments PC.
+     * Execute one CPU cycle and check for the expected CPU state and read of the value from the PC. Increments PC.
      *
      * @param expectedState
      *         Expected state after execution.
@@ -852,7 +852,7 @@ class CPU6510Test {
     }
 
     /**
-     * Execute one cpu cycle and check for the expected CPU state and read of the value from the given address.
+     * Execute one CPU cycle and check for the expected CPU state and read of the value from the given address.
      *
      * @param expectedState
      *         Expected state after execution.
@@ -866,7 +866,7 @@ class CPU6510Test {
     }
 
     /**
-     * Execute one cpu cycle and check for the expected CPU state and write of the value to the given address.
+     * Execute one CPU cycle and check for the expected CPU state and write of the value to the given address.
      *
      * @param expectedState
      *         Expected state after execution.
@@ -880,7 +880,7 @@ class CPU6510Test {
     }
 
     /**
-     * Execute one cpu cycle and check for the expected CPU state and pop of the value from the stacks. Increments S.
+     * Execute one CPU cycle and check for the expected CPU state and pop of the value from the stacks. Increments S.
      *
      * @param expectedState
      *         Expected state after execution.
@@ -894,7 +894,7 @@ class CPU6510Test {
     }
 
     /**
-     * Execute one cpu cycle and check for the expected CPU state and push of the value onto the stack. Decrements S.
+     * Execute one CPU cycle and check for the expected CPU state and push of the value onto the stack. Decrements S.
      *
      * @param expectedState
      *         Expected state after execution.
@@ -908,7 +908,7 @@ class CPU6510Test {
     }
 
     /**
-     * Execute one cpu cycle and check for the expected CPU state and the given bus action.
+     * Execute one CPU cycle and check for the expected CPU state and the given bus action.
      *
      * @param expectedState
      *         Expected state after execution.

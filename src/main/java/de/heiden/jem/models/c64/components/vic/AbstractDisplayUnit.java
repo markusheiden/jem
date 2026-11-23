@@ -4,7 +4,7 @@ import de.heiden.jem.components.clock.ClockedComponent;
 import de.heiden.jem.components.clock.Tick;
 
 /**
- * Display unit of vic.
+ * Display unit of VIC.
  */
 public abstract class AbstractDisplayUnit implements ClockedComponent {
     protected final VIC vic;

@@ -67,7 +67,7 @@ import static de.heiden.jem.models.c64.components.keyboard.Key.Y;
 import static de.heiden.jem.models.c64.components.keyboard.Key.Z;
 
 /**
- * Key mapping using the default pc keys.
+ * Key mapping using the default PC keys.
  */
 public class PCMapping extends KeyMapping {
     @Override

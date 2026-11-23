@@ -18,7 +18,7 @@ public class VICBus implements BusDevice {
     private final BusDevice character;
 
     /**
-     * VIC base address in cpu address space.
+     * VIC base address in CPU address space.
      */
     private int vicBase;
 
@@ -33,7 +33,7 @@ public class VICBus implements BusDevice {
      * @param ram
      *         RAM.
      * @param character
-     *         Char rom.
+     *         Char ROM.
      * @param cia2PortA
      *         Port A of CIA 2 for VIC base address.
      * @require ram != null

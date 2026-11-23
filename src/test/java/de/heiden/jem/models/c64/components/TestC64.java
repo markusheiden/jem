@@ -69,12 +69,12 @@ public class TestC64 {
     private final SystemOut systemOut = new SystemOut();
 
     /**
-     * Detects when a (basic) program ends.
+     * Detects when a (BASIC) program ends.
      */
     private final ProgramEndDetector programEnd = new ProgramEndDetector();
 
     /**
-     * Detects when a (basic) program ends.
+     * Detects when a (BASIC) program ends.
      */
     private final BrkDetector brk = new BrkDetector();
 
@@ -211,7 +211,7 @@ public class TestC64 {
     }
 
     /**
-     * Add a patch to the cpu, to insert a RTS at the given address.
+     * Add a patch to the CPU, to insert a RTS at the given address.
      *
      * @param addr
      *         Address to write RTS to.

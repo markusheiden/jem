@@ -1,7 +1,7 @@
 package de.heiden.jem.models.c64.components.vic;
 
 /**
- * Multi color bitmap mode: Colors from background color 0, video ram (upper and lower nibble) and color ram.
+ * Multi color bitmap mode: Colors from background color 0, video RAM (upper and lower nibble) and color RAM.
  */
 class MultiColorBitmapLineRenderer extends AbstractLineRenderer {
     MultiColorBitmapLineRenderer(VIC vic) {

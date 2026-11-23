@@ -30,7 +30,7 @@ interface LineRenderer {
      * @param character
      *         Byte of the video matrix.
      * @param color
-     *         Color from the color ram.
+     *         Color from the color RAM.
      */
     void render(byte[] pixels, boolean[] foreground, int x, int data, int character, int color);
 }

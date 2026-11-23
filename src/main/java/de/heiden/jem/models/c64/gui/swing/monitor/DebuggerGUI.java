@@ -241,7 +241,7 @@ public class DebuggerGUI extends JPanel {
 
 
     /**
-     * Notify gui to display current values.
+     * Notify GUI to display current values.
      */
     private void updateComponents() {
         updateButtons();

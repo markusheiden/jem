@@ -54,7 +54,7 @@ public class C64Bus implements BusDevice, Patchable {
      * @param ram
      *         RAM.
      * @param basic
-     *         Basic ROM.
+     *         BASIC ROM.
      * @param vic
      *         VIC.
      * @param colorRam
@@ -89,7 +89,7 @@ public class C64Bus implements BusDevice, Patchable {
      * @param ram
      *         RAM.
      * @param basic
-     *         Basic ROM.
+     *         BASIC ROM.
      * @param vic
      *         VIC.
      * @param sid
@@ -144,20 +144,20 @@ public class C64Bus implements BusDevice, Patchable {
         cartridgeL = new NoBusDevice(); // TODO
         cartridgeH = new NoBusDevice(); // TODO
 
-        var ioModeRead01 = computeIoModeRead(this.ram, this.ram, this.basic, null, this.kernel); // io
-        var ioModeRead02 = computeIoModeRead(this.ram, this.ram, this.basic, this.charset, this.kernel); // ram
-        var ioModeRead03 = computeIoModeRead(this.ram, this.ram, this.ram, null, this.ram); // io
-        var ioModeRead04 = computeIoModeRead(this.ram, this.ram, this.ram, this.charset, this.ram); // ram
-        var ioModeRead05 = computeIoModeRead(this.ram, this.ram, this.ram, this.ram, this.ram); // ram
-        var ioModeRead06 = computeIoModeRead(this.ram, this.ram, this.ram, null, this.kernel); // io
-        var ioModeRead07 = computeIoModeRead(this.ram, this.ram, this.basic, this.charset, this.kernel); // ram
-        var ioModeRead08 = computeIoModeRead(this.ram, cartridgeL, this.basic, null, this.kernel); // io
-        var ioModeRead09 = computeIoModeRead(this.ram, cartridgeL, this.basic, this.charset, this.kernel); // ram
-        var ioModeRead10 = computeIoModeRead(this.ram, this.ram, cartridgeH, null, this.kernel); // io
-        var ioModeRead11 = computeIoModeRead(this.ram, this.ram, cartridgeH, this.charset, this.kernel); // ram
-        var ioModeRead12 = computeIoModeRead(this.ram, cartridgeL, cartridgeH, null, this.kernel); // io
-        var ioModeRead13 = computeIoModeRead(this.ram, cartridgeL, cartridgeH, this.charset, this.kernel); // ram
-        var ioModeRead14 = computeIoModeRead(this.ram, cartridgeL, this.ram, null, cartridgeH); // cartridge / io
+        var ioModeRead01 = computeIoModeRead(this.ram, this.ram, this.basic, null, this.kernel); // IO
+        var ioModeRead02 = computeIoModeRead(this.ram, this.ram, this.basic, this.charset, this.kernel); // RAM
+        var ioModeRead03 = computeIoModeRead(this.ram, this.ram, this.ram, null, this.ram); // IO
+        var ioModeRead04 = computeIoModeRead(this.ram, this.ram, this.ram, this.charset, this.ram); // RAM
+        var ioModeRead05 = computeIoModeRead(this.ram, this.ram, this.ram, this.ram, this.ram); // RAM
+        var ioModeRead06 = computeIoModeRead(this.ram, this.ram, this.ram, null, this.kernel); // IO
+        var ioModeRead07 = computeIoModeRead(this.ram, this.ram, this.basic, this.charset, this.kernel); // RAM
+        var ioModeRead08 = computeIoModeRead(this.ram, cartridgeL, this.basic, null, this.kernel); // IO
+        var ioModeRead09 = computeIoModeRead(this.ram, cartridgeL, this.basic, this.charset, this.kernel); // RAM
+        var ioModeRead10 = computeIoModeRead(this.ram, this.ram, cartridgeH, null, this.kernel); // IO
+        var ioModeRead11 = computeIoModeRead(this.ram, this.ram, cartridgeH, this.charset, this.kernel); // RAM
+        var ioModeRead12 = computeIoModeRead(this.ram, cartridgeL, cartridgeH, null, this.kernel); // IO
+        var ioModeRead13 = computeIoModeRead(this.ram, cartridgeL, cartridgeH, this.charset, this.kernel); // RAM
+        var ioModeRead14 = computeIoModeRead(this.ram, cartridgeL, this.ram, null, cartridgeH); // cartridge / IO
 
         var ioModeWriteIo = computeIoModeWrite(this.ram, true);
         var ioModeWriteRam = computeIoModeWrite(this.ram, false);
@@ -316,7 +316,7 @@ public class C64Bus implements BusDevice, Patchable {
     //
 
     /**
-     * Connect to cpu port.
+     * Connect to CPU port.
      */
     public void connect(@Nonnull OutputPort cpu) {
         this.cpu.connect(cpu);
@@ -348,7 +348,7 @@ public class C64Bus implements BusDevice, Patchable {
      */
     @Override
     public void patch(int value, int address) {
-        // 0x100 is used to escape emulation in the cpu.
+        // 0x100 is used to escape emulation in the CPU.
         assert value >= 0 && value < 0x100 : "value >= 0 && value < 0x100";
 
         ((Patchable) ioModeRead[address >> 8]).patch(value, address);

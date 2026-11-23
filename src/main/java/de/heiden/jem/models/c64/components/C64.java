@@ -99,7 +99,7 @@ public class C64 {
      * @param colorRam
      *         Color RAM.
      * @param basic
-     *         Basic ROM.
+     *         BASIC ROM.
      * @param kernel
      *         Kernel ROM.
      * @param charset

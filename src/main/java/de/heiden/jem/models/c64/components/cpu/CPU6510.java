@@ -48,7 +48,7 @@ public class CPU6510 implements ClockedComponent {
     protected BusDevice bus;
 
     /**
-     * Port at address $0000/$0001 controlled by this cpu.
+     * Port at address $0000/$0001 controlled by this CPU.
      */
     private final InputOutputPortImpl portOut;
 
@@ -64,7 +64,7 @@ public class CPU6510 implements ClockedComponent {
     private boolean irqState = false;
 
     /**
-     * Port for nmi.
+     * Port for NMI.
      */
     private final InputPort nmi;
     private boolean nmiState = false;
@@ -120,13 +120,13 @@ public class CPU6510 implements ClockedComponent {
 
         irq = new InputPortImpl();
         irq.addInputPortListener((value, mask) -> {
-            // irq is low active.
+            // IRQ is low active.
             var irq = (value & 0x01) == 0;
             if (irq && !irqState) {
                 state.triggerIRQ();
             } else if (!irq) {
-                // Normally irq will be reset when it is about to be executed,
-                // but if the irq is not being handled due to the I flag,
+                // Normally IRQ will be reset when it is about to be executed,
+                // but if the IRQ is not being handled due to the I flag,
                 // then it will be reset when the interrupt request is cleared.
                 state.resetIRQ();
             }
@@ -135,8 +135,8 @@ public class CPU6510 implements ClockedComponent {
 
         nmi = new InputPortImpl();
         nmi.addInputPortListener((value, mask) -> {
-            // nmi is low active.
-            // The falling edge is latched until the nmi is executed.
+            // NMI is low active.
+            // The falling edge is latched until the NMI is executed.
             var nmi = (value & 0x01) == 0;
             if (nmi && !nmiState) {
                 state.NMI = true;
@@ -3854,7 +3854,7 @@ public class CPU6510 implements ClockedComponent {
     //
 
     /**
-     * Get cpu state.
+     * Get CPU state.
      */
     public synchronized CPU6510State getState() {
         return state;

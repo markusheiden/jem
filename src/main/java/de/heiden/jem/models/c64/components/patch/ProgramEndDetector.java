@@ -5,7 +5,7 @@ import de.heiden.jem.models.c64.components.cpu.CPU6510State;
 import de.heiden.jem.models.c64.components.cpu.Patch;
 
 /**
- * Detects when a (basic) program ends.
+ * Detects when a (BASIC) program ends.
  */
 public class ProgramEndDetector extends Patch {
     /**

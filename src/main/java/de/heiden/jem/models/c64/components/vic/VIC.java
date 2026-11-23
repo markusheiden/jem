@@ -139,7 +139,7 @@ public class VIC implements BusDevice {
      */
     private boolean lightPenTriggered = false;
 
-    // Irq register.
+    // IRQ register.
     protected int regInterruptRequest; // 0x19
     protected int regInterruptMask; // 0x1A
     protected static final int INTERRUPT_MASK = 0x0F;
@@ -167,7 +167,7 @@ public class VIC implements BusDevice {
      * @param bus
      *         VIC memory bus.
      * @param colorRam
-     *         Color ram.
+     *         Color RAM.
      * @require model != null
      * @require bus != null
      * @require colorRam != null
@@ -505,7 +505,7 @@ public class VIC implements BusDevice {
             }
             case 0x11 -> {
                 regControl1 = value;
-                // Bit 7 is high bit of raster irq line.
+                // Bit 7 is high bit of raster IRQ line.
                 regRasterIRQ = regRasterIRQ & 0xFF | (value & 0x80) << 1;
                 displayUnit.graphicsChanged();
             }
@@ -543,7 +543,7 @@ public class VIC implements BusDevice {
                 updateBaseAddresses();
             }
             case 0x19 -> {
-                // 1-bits in value clear the corresponding interrupt bits in the irq register.
+                // 1-bits in value clear the corresponding interrupt bits in the IRQ register.
                 regInterruptRequest &= ~(value & INTERRUPT_MASK);
                 updateIRQ();
             }

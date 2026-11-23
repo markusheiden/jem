@@ -30,7 +30,7 @@ public class C64Builder {
     private final Clock clock;
 
     /**
-     * Use debugger cpu?
+     * Use debugger CPU?
      */
     private boolean debug = false;
 
@@ -65,7 +65,7 @@ public class C64Builder {
     }
 
     /**
-     * Use debugger cpu? Default: no.
+     * Use debugger CPU? Default: no.
      */
     public C64Builder debug(boolean debug) {
         this.debug = debug;

@@ -139,7 +139,7 @@ public class CPU6510Debugger extends CPU6510 {
     }
 
     /**
-     * Is the cpu currently suspended?
+     * Is the CPU currently suspended?
      */
     public boolean isSuspended() {
         synchronized (suspendLock) {
@@ -148,7 +148,7 @@ public class CPU6510Debugger extends CPU6510 {
     }
 
     /**
-     * Suspend cpu execution.
+     * Suspend CPU execution.
      */
     public void suspendAndWait() throws DebuggerExit {
         try {
@@ -164,7 +164,7 @@ public class CPU6510Debugger extends CPU6510 {
     }
 
     /**
-     * Resume cpu execution.
+     * Resume CPU execution.
      */
     public void resume() {
         synchronized (suspendLock) {
@@ -174,7 +174,7 @@ public class CPU6510Debugger extends CPU6510 {
     }
 
     /**
-     * Resume cpu execution for execution of 1 opcode.
+     * Resume CPU execution for execution of 1 opcode.
      */
     public void resume1() {
         synchronized (suspendLock) {
