@@ -88,7 +88,7 @@ public class DisplayUnit extends AbstractDisplayUnit {
      * Columns of the last three g-accesses, the pixels of which may still be affected by register changes:
      * X coordinate of the first pixel (-1 for none), graphics data, video matrix data and color.
      */
-    private final int[] columnX = {-1, -1, -1};
+    private final int[] columnX = { -1, -1, -1 };
     private final int[] columnData = new int[3];
     private final int[] columnCharacter = new int[3];
     private final int[] columnColor = new int[3];
@@ -172,11 +172,12 @@ public class DisplayUnit extends AbstractDisplayUnit {
                 vic.lastX - vic.firstVisibleX + vic.lastVisibleX, visibleLines(vic));
 
         var invalidMode = new InvalidModeLineRenderer();
-        lineRenderers = new LineRenderer[]{
+        lineRenderers = new LineRenderer[] {
                 new TextLineRenderer(vic), new MultiColorTextLineRenderer(vic),
                 new BitmapLineRenderer(vic), new MultiColorBitmapLineRenderer(vic),
                 new ExtendedColorTextLineRenderer(vic), invalidMode,
-                invalidMode, invalidMode};
+                invalidMode, invalidMode
+        };
         spriteRenderer = new SpriteRenderer(vic, X_COORDINATES);
     }
 
