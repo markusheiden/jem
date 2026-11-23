@@ -60,7 +60,7 @@ public interface Clock extends AutoCloseable {
      *         Tick to execute event at.
      * @param event
      *         Event to add.
-     * @require tick > getTick()ate
+     * @require tick > getTick()
      * @require event != null
      */
     void addClockEvent(long tick, @Nonnull ClockEvent event);

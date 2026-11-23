@@ -39,7 +39,7 @@ class TodTest {
     /**
      * PAL: 50 Hz input, 60 Hz mode (the default after reset). The TOD runs 5/6 too slow.
      * <p>
-     * This is the state of a PAL C64, as long as the KERNAL swtiches to the 50 Hz mode.
+     * This is the state of a PAL C64, as long as the KERNAL switches to the 50 Hz mode.
      */
     @Test
     void palIn60HzMode() {

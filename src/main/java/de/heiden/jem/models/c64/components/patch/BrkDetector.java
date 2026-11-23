@@ -5,7 +5,7 @@ import de.heiden.jem.models.c64.components.cpu.CPU6510State;
 import de.heiden.jem.models.c64.components.cpu.Patch;
 
 /**
- * Detects when a runs into a BRK opcode.
+ * Detects when a program runs into a BRK opcode.
  */
 public class BrkDetector extends Patch {
     /**
