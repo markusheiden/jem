@@ -9,7 +9,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import java.nio.file.Path;
 import java.time.Duration;
 
-import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
 import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
 
@@ -94,6 +94,6 @@ class LorenzTest extends AbstractTest {
 
         // Assert that test program exits with "OK" message.
         // Consider everything else (timeout, error messages) as a test failure.
-        assertSame(passed, event);
+        assertThat(event).isSameAs(passed);
     }
 }

@@ -8,7 +8,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 
 import java.nio.file.Path;
 
-import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
 
 /**
@@ -23,6 +23,6 @@ class CpuJamTest extends AbstractTest {
         testBorderResult(program, 60, true);
         // Check again, because the border is set to green some cycles before the end of the test.
         waitSeconds(1);
-        assertSame(greenBorder, waitCyclesFor(1, greenBorder));
+        assertThat(waitCyclesFor(1, greenBorder)).isSameAs(greenBorder);
     }
 }

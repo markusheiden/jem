@@ -3,7 +3,7 @@ package de.heiden.jem.models.c64.components.cia;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test for the timing of the TOD of {@link AbstractCIA}.
@@ -18,9 +18,9 @@ class TodTest {
         var cia = start(TodInput.PAL, AbstractCIA.CRA_TOD_50HZ);
 
         run(cia, TodInput.PAL.cpuClock() - 1);
-        assertEquals(179, tenths(cia));
+        assertThat(tenths(cia)).isEqualTo(179);
         run(cia, 1);
-        assertEquals(180, tenths(cia));
+        assertThat(tenths(cia)).isEqualTo(180);
     }
 
     /**
@@ -31,9 +31,9 @@ class TodTest {
         var cia = start(TodInput.NTSC, 0);
 
         run(cia, TodInput.NTSC.cpuClock() - 1);
-        assertEquals(3079, tenths(cia));
+        assertThat(tenths(cia)).isEqualTo(3079);
         run(cia, 1);
-        assertEquals(3080, tenths(cia));
+        assertThat(tenths(cia)).isEqualTo(3080);
     }
 
     /**
@@ -46,9 +46,9 @@ class TodTest {
         var cia = start(TodInput.PAL, 0);
 
         run(cia, TodInput.PAL.cpuClock() - 1);
-        assertEquals(149, tenths(cia));
+        assertThat(tenths(cia)).isEqualTo(149);
         run(cia, 1);
-        assertEquals(150, tenths(cia));
+        assertThat(tenths(cia)).isEqualTo(150);
     }
 
     //
@@ -86,7 +86,7 @@ class TodTest {
      * Time of day in tenths of seconds. Hours are expected to be zero.
      */
     int tenths(AbstractCIA cia) {
-        assertEquals(0x00, cia.read(0x0B));
+        assertThat(cia.read(0x0B)).isEqualTo(0x00);
         var minutes = bcd(cia.read(0x0A));
         var seconds = bcd(cia.read(0x09));
         var tenths = cia.read(0x08);

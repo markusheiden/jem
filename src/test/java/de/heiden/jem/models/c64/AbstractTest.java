@@ -35,10 +35,7 @@ import static de.heiden.c64dt.bytes.HexUtil.hexWord;
 import static java.lang.Thread.sleep;
 import static java.util.Arrays.stream;
 import static org.apache.commons.lang3.StringUtils.join;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test support.
@@ -170,10 +167,10 @@ public abstract class AbstractTest {
         c64.hasEnded();
 
         // Wait for the boot to finish.
-        assertSame(programEnd, waitSecondsFor(3, programEnd));
+        assertThat(waitSecondsFor(3, programEnd)).isSameAs(programEnd);
         // The program end is detected before "READY." is printed.
         // Wait for it, so that it is not mistaken for the "READY." after the load.
-        assertSame(ready, waitSecondsFor(1, ready));
+        assertThat(waitSecondsFor(1, ready)).isSameAs(ready);
 
         // Reset the program end flag.
         c64.hasEnded();
@@ -186,7 +183,7 @@ public abstract class AbstractTest {
      */
     protected Path path(String classpath) throws Exception {
         var url = getClass().getResource(classpath);
-        assertNotNull(url, "Classpath resource " + classpath + " exists");
+        assertThat(url).as("Classpath resource " + classpath + " exists").isNotNull();
         return Paths.get(url.toURI());
     }
 
@@ -219,7 +216,7 @@ public abstract class AbstractTest {
         console.clear();
         c64.getKeyboardBuffer().type("load\"" + programName + "\"," + device + "," + secondary + "\n", LOAD_TICK);
         waitCycles(LOAD_TICK - getTick());
-        assertSame(ready, waitSecondsFor(10, ready));
+        assertThat(waitSecondsFor(10, ready)).isSameAs(ready);
     }
 
     /**
@@ -283,7 +280,7 @@ public abstract class AbstractTest {
     protected void testDebugCartridgeResult(Path program, int maxSeconds) throws Exception {
         loadAndRun(program);
         var result = waitSecondsFor(maxSeconds, debugCartridgePassed, debugCartridgeFailed);
-        assertSame(debugCartridgePassed, result, "Test failed");
+        assertThat(result).as("Test failed").isSameAs(debugCartridgePassed);
     }
 
     /**
@@ -325,7 +322,7 @@ public abstract class AbstractTest {
                 clock.run(10000000);
             }
 
-            assertEquals(0x00, ram.read(DEBUG_CARTRIDGE), "Debug cartridge");
+            assertThat(ram.read(DEBUG_CARTRIDGE)).as("Debug cartridge").isEqualTo(0x00);
         }
     }
 
@@ -420,7 +417,7 @@ public abstract class AbstractTest {
         }
 
         if (result != debugCartridgePassed) {
-            assertSame(passed, result, "Test failed");
+            assertThat(result).as("Test failed").isSameAs(passed);
         }
     }
 
@@ -459,7 +456,7 @@ public abstract class AbstractTest {
             c64.stop();
             thread.interrupt();
             thread.join(1000);
-            assertFalse(thread.isAlive(), "C64 thread has been stopped");
+            assertThat(thread.isAlive()).as("C64 thread has been stopped").isFalse();
         }
     }
 

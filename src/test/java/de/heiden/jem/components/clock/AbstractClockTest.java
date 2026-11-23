@@ -6,11 +6,7 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test for {@link AbstractClock}.
@@ -25,7 +21,7 @@ class AbstractClockTest {
     @Test
     void constructor() {
         try (var clock = new TestClock()) {
-            assertEquals(Long.MAX_VALUE, clock.getNextEventTick());
+            assertThat(clock.getNextEventTick()).isEqualTo(Long.MAX_VALUE);
         }
     }
 
@@ -38,26 +34,26 @@ class AbstractClockTest {
 
             // Add the first event -> Next tick should be set to tick of this event.
             clock.addClockEvent(2, event2);
-            assertNull(event2.previous);
-            assertNotNull(event2.next);
-            assertSame(event2, clock.getNextEvent());
-            assertEquals(2, clock.getNextEventTick());
+            assertThat(event2.previous).isNull();
+            assertThat(event2.next).isNotNull();
+            assertThat(clock.getNextEvent()).isSameAs(event2);
+            assertThat(clock.getNextEventTick()).isEqualTo(2);
 
             // Add event before first event -> Next tick should be set to tick of this event.
             clock.addClockEvent(1, event1);
-            assertNull(event1.previous);
-            assertSame(event2, event1.next);
-            assertSame(event1, event2.previous);
-            assertSame(event1, clock.getNextEvent());
-            assertEquals(1, clock.getNextEventTick());
+            assertThat(event1.previous).isNull();
+            assertThat(event1.next).isSameAs(event2);
+            assertThat(event2.previous).isSameAs(event1);
+            assertThat(clock.getNextEvent()).isSameAs(event1);
+            assertThat(clock.getNextEventTick()).isEqualTo(1);
 
             // Add event after first event -> Next tick should not change.
             clock.addClockEvent(3, event3);
-            assertSame(event3, event2.next);
-            assertSame(event2, event3.previous);
-            assertNotNull(event3.next);
-            assertSame(event1, clock.getNextEvent());
-            assertEquals(1, clock.getNextEventTick());
+            assertThat(event2.next).isSameAs(event3);
+            assertThat(event3.previous).isSameAs(event2);
+            assertThat(event3.next).isNotNull();
+            assertThat(clock.getNextEvent()).isSameAs(event1);
+            assertThat(clock.getNextEventTick()).isEqualTo(1);
         }
     }
 
@@ -72,12 +68,12 @@ class AbstractClockTest {
 
             // Add an already registered event -> It gets moved.
             clock.addClockEvent(3, event1);
-            assertSame(event2, clock.getNextEvent());
-            assertNull(event2.previous);
-            assertSame(event1, event2.next);
-            assertSame(event2, event1.previous);
-            assertNotNull(event1.next);
-            assertEquals(2, clock.getNextEventTick());
+            assertThat(clock.getNextEvent()).isSameAs(event2);
+            assertThat(event2.previous).isNull();
+            assertThat(event2.next).isSameAs(event1);
+            assertThat(event1.previous).isSameAs(event2);
+            assertThat(event1.next).isNotNull();
+            assertThat(clock.getNextEventTick()).isEqualTo(2);
         }
     }
 
@@ -94,25 +90,25 @@ class AbstractClockTest {
 
             // Nothing to update.
             clock.updateClockEvent(10, event10);
-            assertSame(event20, event10.next);
-            assertSame(event10, clock.getNextEvent());
-            assertEquals(10, clock.getNextEventTick());
+            assertThat(event10.next).isSameAs(event20);
+            assertThat(clock.getNextEvent()).isSameAs(event10);
+            assertThat(clock.getNextEventTick()).isEqualTo(10);
             // event10 is still the first, but the next event tick needs to be updated.
             clock.updateClockEvent(11, event10);
-            assertSame(event20, event10.next);
-            assertSame(event10, clock.getNextEvent());
-            assertEquals(11, clock.getNextEventTick());
+            assertThat(event10.next).isSameAs(event20);
+            assertThat(clock.getNextEvent()).isSameAs(event10);
+            assertThat(clock.getNextEventTick()).isEqualTo(11);
             // event10 is no longer the first event -> the next event (event20) takes its place.
             clock.updateClockEvent(21, event10);
-            assertSame(event10, event20.next);
-            assertSame(event30, event10.next);
-            assertSame(event20, clock.getNextEvent());
-            assertEquals(20, clock.getNextEventTick());
+            assertThat(event20.next).isSameAs(event10);
+            assertThat(event10.next).isSameAs(event30);
+            assertThat(clock.getNextEvent()).isSameAs(event20);
+            assertThat(clock.getNextEventTick()).isEqualTo(20);
             // event10 is now the last event.
             clock.updateClockEvent(31, event10);
-            assertSame(event10, event30.next);
-            assertSame(event20, clock.getNextEvent());
-            assertEquals(20, clock.getNextEventTick());
+            assertThat(event30.next).isSameAs(event10);
+            assertThat(clock.getNextEvent()).isSameAs(event20);
+            assertThat(clock.getNextEventTick()).isEqualTo(20);
         }
     }
 
@@ -126,10 +122,10 @@ class AbstractClockTest {
 
             // Remove not registered event -> No change.
             clock.removeClockEvent(event1);
-            assertNull(event1.previous);
-            assertNull(event1.next);
-            assertSame(event2, clock.getNextEvent());
-            assertEquals(2, clock.getNextEventTick());
+            assertThat(event1.previous).isNull();
+            assertThat(event1.next).isNull();
+            assertThat(clock.getNextEvent()).isSameAs(event2);
+            assertThat(clock.getNextEventTick()).isEqualTo(2);
         }
     }
 
@@ -142,8 +138,8 @@ class AbstractClockTest {
 
             // Remove only registered event -> Next tick should be reset.
             clock.removeClockEvent(event1);
-            assertNull(event1.previous);
-            assertEquals(Long.MAX_VALUE, clock.getNextEventTick());
+            assertThat(event1.previous).isNull();
+            assertThat(clock.getNextEventTick()).isEqualTo(Long.MAX_VALUE);
         }
     }
 
@@ -158,11 +154,11 @@ class AbstractClockTest {
 
             // Remove the first registered event -> Next tick should be reset.
             clock.removeClockEvent(event1);
-            assertNull(event1.previous);
-            assertNull(event2.previous);
-            assertNotNull(event2.next);
-            assertSame(event2, clock.getNextEvent());
-            assertEquals(2, clock.getNextEventTick());
+            assertThat(event1.previous).isNull();
+            assertThat(event2.previous).isNull();
+            assertThat(event2.next).isNotNull();
+            assertThat(clock.getNextEvent()).isSameAs(event2);
+            assertThat(clock.getNextEventTick()).isEqualTo(2);
         }
     }
 
@@ -176,14 +172,14 @@ class AbstractClockTest {
             clock.addClockEvent(1, event1);
             clock.addClockEvent(2, event2);
             clock.addClockEvent(3, event3);
-            assertEquals(1, clock.getNextEventTick());
+            assertThat(clock.getNextEventTick()).isEqualTo(1);
 
             // Remove the second registered event -> next tick should still be the tick of the first event.
             clock.removeClockEvent(event2);
-            assertSame(event3, event1.next);
-            assertSame(event1, event3.previous);
-            assertSame(event1, clock.getNextEvent());
-            assertEquals(1, clock.getNextEventTick());
+            assertThat(event1.next).isSameAs(event3);
+            assertThat(event3.previous).isSameAs(event1);
+            assertThat(clock.getNextEvent()).isSameAs(event1);
+            assertThat(clock.getNextEventTick()).isEqualTo(1);
         }
     }
 
@@ -201,12 +197,12 @@ class AbstractClockTest {
 
             // Remove the already removed event again -> The other events have to stay registered.
             clock.removeClockEvent(event2);
-            assertNull(event2.previous);
-            assertNull(event2.next);
-            assertSame(event1, clock.getNextEvent());
-            assertSame(event3, event1.next);
-            assertSame(event1, event3.previous);
-            assertNotNull(event3.next);
+            assertThat(event2.previous).isNull();
+            assertThat(event2.next).isNull();
+            assertThat(clock.getNextEvent()).isSameAs(event1);
+            assertThat(event1.next).isSameAs(event3);
+            assertThat(event3.previous).isSameAs(event1);
+            assertThat(event3.next).isNotNull();
         }
     }
 
@@ -221,15 +217,15 @@ class AbstractClockTest {
             clock.addClockEvent(2, event2);
             clock.addClockEvent(3, event3);
             clock.executeEvents(1);
-            assertNull(event1.next);
-            assertNull(event2.previous);
+            assertThat(event1.next).isNull();
+            assertThat(event2.previous).isNull();
 
             // Remove the already executed event -> The other events have to stay registered.
             clock.removeClockEvent(event1);
-            assertSame(event2, clock.getNextEvent());
-            assertNull(event2.previous);
-            assertSame(event3, event2.next);
-            assertSame(event2, event3.previous);
+            assertThat(clock.getNextEvent()).isSameAs(event2);
+            assertThat(event2.previous).isNull();
+            assertThat(event2.next).isSameAs(event3);
+            assertThat(event3.previous).isSameAs(event2);
         }
     }
 
@@ -247,11 +243,11 @@ class AbstractClockTest {
 
             // Update the already executed event -> It gets registered again, the other events stay registered.
             clock.updateClockEvent(3, event1);
-            assertSame(event2, clock.getNextEvent());
-            assertSame(event1, event2.next);
-            assertSame(event2, event1.previous);
-            assertSame(event3, event1.next);
-            assertSame(event1, event3.previous);
+            assertThat(clock.getNextEvent()).isSameAs(event2);
+            assertThat(event2.next).isSameAs(event1);
+            assertThat(event1.previous).isSameAs(event2);
+            assertThat(event1.next).isSameAs(event3);
+            assertThat(event3.previous).isSameAs(event1);
         }
     }
 
@@ -270,11 +266,11 @@ class AbstractClockTest {
             clock.addClockEvent(2, event2);
             clock.executeEvents(1);
 
-            assertSame(event2, clock.getNextEvent());
-            assertNull(event2.previous);
-            assertSame(event1, event2.next);
-            assertSame(event2, event1.previous);
-            assertNotNull(event1.next);
+            assertThat(clock.getNextEvent()).isSameAs(event2);
+            assertThat(event2.previous).isNull();
+            assertThat(event2.next).isSameAs(event1);
+            assertThat(event1.previous).isSameAs(event2);
+            assertThat(event1.next).isNotNull();
         }
     }
 
@@ -287,17 +283,17 @@ class AbstractClockTest {
             clock.addClockEvent(2, event2b);
             var event3 = new TestClockEvent();
             clock.addClockEvent(3, event3);
-            assertEquals(0, executed.size());
+            assertThat(executed).isEmpty();
 
             // Execute tick 1, which has no registered events -> nothing should happen.
             clock.executeEvents(1);
-            assertEquals(0, executed.size());
+            assertThat(executed).isEmpty();
 
             // Execute tick 2, which has two registered events -> both should be executed.
             clock.executeEvents(2);
-            assertEquals(2, executed.size());
-            assertTrue(executed.contains(event2a));
-            assertTrue(executed.contains(event2b));
+            assertThat(executed).hasSize(2);
+            assertThat(executed).contains(event2a);
+            assertThat(executed).contains(event2b);
         }
     }
 

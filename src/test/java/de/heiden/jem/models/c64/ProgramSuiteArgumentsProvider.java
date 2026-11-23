@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Base class for test defined via a program suite.
@@ -77,7 +77,7 @@ public class ProgramSuiteArgumentsProvider implements ArgumentsProvider, Annotat
     private static Stream<Arguments> createParametersFromDirectory(String resource, Predicate<Path> filter)
             throws Exception {
         var start = ProgramSuiteArgumentsProvider.class.getResource(resource);
-        assertNotNull(start, "Resource exists.");
+        assertThat(start).as("Resource exists.").isNotNull();
         return Files.list(Paths.get(start.toURI()).getParent())
                 .filter(filter)
                 .map(program -> {

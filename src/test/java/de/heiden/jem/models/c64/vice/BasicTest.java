@@ -7,7 +7,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 
 import java.nio.file.Path;
 
-import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
 
 /**
@@ -22,6 +22,6 @@ class BasicTest extends AbstractTest {
         testBorderResult(program, 1, false);
         // Check again, because the border is set to green some cycles before the end of the test.
         waitSeconds(1);
-        assertSame(greenBorder, waitCyclesFor(1, greenBorder, lightRedBorder));
+        assertThat(waitCyclesFor(1, greenBorder, lightRedBorder)).isSameAs(greenBorder);
     }
 }

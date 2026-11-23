@@ -17,7 +17,7 @@ import java.util.stream.Stream;
 
 import static de.heiden.c64dt.disk.FileType.PRG;
 import static java.util.Arrays.asList;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Base class for test defined via a D64 suite.
@@ -78,7 +78,7 @@ public abstract class D64SuiteArgumentsProvider implements ArgumentsProvider, An
     private static Stream<Arguments> createParametersFromD64(String resource, Predicate<String> filter)
             throws Exception {
         var start = D64SuiteArgumentsProvider.class.getResource(resource);
-        assertNotNull(start, "Resource exists.");
+        assertThat(start).as("Resource exists.").isNotNull();
         var d64 = new D64(35, false);
         d64.load(Files.newInputStream(Paths.get(start.toURI())));
         return d64.getDirectory().getFiles().stream()

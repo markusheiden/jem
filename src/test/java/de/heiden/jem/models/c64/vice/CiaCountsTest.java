@@ -13,8 +13,7 @@ import java.util.Arrays;
 
 import static de.heiden.c64dt.bytes.HexUtil.hexByte;
 import static de.heiden.c64dt.bytes.HexUtil.hexWord;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
 
 /**
@@ -64,8 +63,8 @@ class CiaCountsTest extends AbstractTest {
         loadAndRun(path(DIRECTORY + programName + ".prg"));
 
         // The program runs in the interrupt after it ended.
-        assertSame(programEnd, waitSecondsFor(5, programEnd));
-        assertSame(debugCartridgePassed, waitSecondsFor(60, debugCartridgePassed));
+        assertThat(waitSecondsFor(5, programEnd)).isSameAs(programEnd);
+        assertThat(waitSecondsFor(60, debugCartridgePassed)).isSameAs(debugCartridgePassed);
 
         // The NTSC dumps contain some bytes after the data.
         var expected = Arrays.copyOf(Files.readAllBytes(path(DIRECTORY + dump)), DATA_LENGTH);
@@ -73,7 +72,7 @@ class CiaCountsTest extends AbstractTest {
         for (var i = 0; i < actual.length; i++) {
             actual[i] = (byte) c64.getBus().read(DATA + i);
         }
-        assertEquals(hexDump(expected), hexDump(actual));
+        assertThat(hexDump(actual)).isEqualTo(hexDump(expected));
     }
 
     /**

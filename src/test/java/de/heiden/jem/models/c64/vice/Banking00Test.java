@@ -5,9 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.regex.Pattern;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * VICE test suite.
@@ -22,15 +20,15 @@ class Banking00Test extends AbstractTest {
         var screen = captureScreen();
         System.out.println(screen);
 
-        assertNull(result);
+        assertThat(result).isNull();
         var passed = Pattern.compile("passed        (\\p{XDigit}{8})").matcher(screen);
         var ram = Pattern.compile("ram->io fails (\\p{XDigit}{8})").matcher(screen);
         var io = Pattern.compile("io->ram fails (\\p{XDigit}{8})").matcher(screen);
 
-        assertTrue(passed.find() && ram.find() && io.find(), "Result page is visible.");
-        assertEquals("00000000", ram.group(1), "ram -> io error counter is 0.");
-        assertEquals("00000000", io.group(1), "io -> ram error counter is 0.");
+        assertThat(passed.find() && ram.find() && io.find()).as("Result page is visible.").isTrue();
+        assertThat(ram.group(1)).as("ram -> io error counter is 0.").isEqualTo("00000000");
+        assertThat(io.group(1)).as("io -> ram error counter is 0.").isEqualTo("00000000");
         var passes = Integer.parseInt(passed.group(1), 16);
-        assertTrue(passes > 1, "Check that more than one pass has been executed, but just executed " + passes + " passes.");
+        assertThat(passes).as("Check that more than one pass has been executed, but just executed " + passes + " passes.").isGreaterThan(1);
     }
 }

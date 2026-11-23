@@ -4,7 +4,7 @@ import de.heiden.jem.components.clock.serialthreads.SerialClock;
 import de.heiden.jem.models.c64.components.cia.CIA6526;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test for {@link Joystick} connected to a {@link CIA6526}.
@@ -23,9 +23,9 @@ class JoystickTest {
         cia.write(0x00, 0x03); // DDRB: All input.
 
         joystick1.press(Direction.UP);
-        assertEquals(0xFF, cia.read(0x01));
+        assertThat(cia.read(0x01)).isEqualTo(0xFF);
         joystick1.updatePort();
-        assertEquals(0xFE, cia.read(0x01));
+        assertThat(cia.read(0x01)).isEqualTo(0xFE);
     }
 
     /**
@@ -35,26 +35,26 @@ class JoystickTest {
     void joystick2() {
         cia.write(0xFF, 0x02); // DDRA: All output.
         cia.write(0x7F, 0x00); // Keyboard column 7.
-        assertEquals(0x7F, cia.read(0x00));
+        assertThat(cia.read(0x00)).isEqualTo(0x7F);
 
         joystick2.press(Direction.UP);
         joystick2.updatePort();
-        assertEquals(0x7E, cia.read(0x00));
+        assertThat(cia.read(0x00)).isEqualTo(0x7E);
         joystick2.press(Direction.FIRE);
         joystick2.updatePort();
-        assertEquals(0x6E, cia.read(0x00));
+        assertThat(cia.read(0x00)).isEqualTo(0x6E);
 
         joystick2.release(Direction.UP);
         joystick2.updatePort();
-        assertEquals(0x6F, cia.read(0x00));
+        assertThat(cia.read(0x00)).isEqualTo(0x6F);
         joystick2.releaseAll();
         joystick2.updatePort();
-        assertEquals(0x7F, cia.read(0x00));
+        assertThat(cia.read(0x00)).isEqualTo(0x7F);
 
         // Port B is not affected.
         joystick2.press(Direction.LEFT);
         joystick2.updatePort();
-        assertEquals(0xFF, cia.read(0x01));
+        assertThat(cia.read(0x01)).isEqualTo(0xFF);
     }
 
     /**
@@ -63,18 +63,18 @@ class JoystickTest {
     @Test
     void joystick1() {
         cia.write(0x00, 0x03); // DDRB: All input.
-        assertEquals(0xFF, cia.read(0x01));
+        assertThat(cia.read(0x01)).isEqualTo(0xFF);
 
         joystick1.press(Direction.FIRE);
         joystick1.updatePort();
-        assertEquals(0xEF, cia.read(0x01));
+        assertThat(cia.read(0x01)).isEqualTo(0xEF);
         joystick1.press(Direction.RIGHT);
         joystick1.updatePort();
-        assertEquals(0xE7, cia.read(0x01));
+        assertThat(cia.read(0x01)).isEqualTo(0xE7);
 
         joystick1.release(Direction.FIRE);
         joystick1.release(Direction.RIGHT);
         joystick1.updatePort();
-        assertEquals(0xFF, cia.read(0x01));
+        assertThat(cia.read(0x01)).isEqualTo(0xFF);
     }
 }

@@ -8,9 +8,9 @@ import org.junit.jupiter.api.parallel.Isolated;
 import java.time.Duration;
 
 import static java.lang.Runtime.getRuntime;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
-import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Test base for {@link Clock}s.
@@ -91,7 +91,7 @@ public abstract class ClockTestBase {
         // Other tests executed concurrently may need multiple carrier threads,
         // so the carrier threads are only limited when testing the sequential clocks separately.
         if (isSequential() && FiberScheduler.isSingleCarrier()) {
-            assertEquals(1, FiberScheduler.carrierThreads(), "All components are executed by the same carrier thread");
+            assertThat(FiberScheduler.carrierThreads()).as("All components are executed by the same carrier thread").isEqualTo(1);
         }
 
         // Check that all components are executed exactly the specified amount of cycles.

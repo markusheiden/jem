@@ -4,7 +4,7 @@ import de.heiden.jem.components.clock.serialthreads.SerialClock;
 import de.heiden.jem.components.ports.InputOutputPortImpl;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test.
@@ -25,20 +25,20 @@ class KeyboardTest {
         port1.setOutputMask(0x00);
         port0.setOutputData(0x00); // Port 0 drives all bits 0.
         port0.setOutputMask(0xFF);
-        assertEquals(0xFB, port1.inputData()); // Row 2 is driven to 0.
-        assertEquals(0x04, port1.inputMask());
+        assertThat(port1.inputData()).isEqualTo(0xFB); // Row 2 is driven to 0.
+        assertThat(port1.inputMask()).isEqualTo(0x04);
         port0.setOutputData(0xFF); // Port 0 drives all bits 1.
-        assertEquals(0xFF, port1.inputData()); // Row 2 is driven to 1.
-        assertEquals(0x04, port1.inputMask());
+        assertThat(port1.inputData()).isEqualTo(0xFF); // Row 2 is driven to 1.
+        assertThat(port1.inputMask()).isEqualTo(0x04);
         port0.setOutputData(0x00); // Port 0 is input.
         port0.setOutputMask(0x00);
         port1.setOutputData(0x00); // Port 1 drives all bits 0.
         port1.setOutputMask(0xFF);
-        assertEquals(0xFD, port0.inputData()); // Row 1 is driven to 0.
-        assertEquals(0x02, port0.inputMask());
+        assertThat(port0.inputData()).isEqualTo(0xFD); // Row 1 is driven to 0.
+        assertThat(port0.inputMask()).isEqualTo(0x02);
         port1.setOutputData(0xFF); // Port 1 drives all bits 1.
-        assertEquals(0xFF, port0.inputData()); // Row 1 is driven to 1.
-        assertEquals(0x02, port0.inputMask());
+        assertThat(port0.inputData()).isEqualTo(0xFF); // Row 1 is driven to 1.
+        assertThat(port0.inputMask()).isEqualTo(0x02);
         keyboard.release(Key.A);
 
         keyboard.press(Key.B);
@@ -47,20 +47,20 @@ class KeyboardTest {
         port1.setOutputMask(0x00);
         port0.setOutputData(0x00);
         port0.setOutputMask(0xFF);
-        assertEquals(0xEF, port1.inputData());
-        assertEquals(0x10, port1.inputMask());
+        assertThat(port1.inputData()).isEqualTo(0xEF);
+        assertThat(port1.inputMask()).isEqualTo(0x10);
         port0.setOutputData(0xFF);
-        assertEquals(0xFF, port1.inputData());
-        assertEquals(0x10, port1.inputMask());
+        assertThat(port1.inputData()).isEqualTo(0xFF);
+        assertThat(port1.inputMask()).isEqualTo(0x10);
         port0.setOutputData(0x00);
         port0.setOutputMask(0x00);
         port1.setOutputData(0x00);
         port1.setOutputMask(0xFF);
-        assertEquals(0xF7, port0.inputData());
-        assertEquals(0x08, port0.inputMask());
+        assertThat(port0.inputData()).isEqualTo(0xF7);
+        assertThat(port0.inputMask()).isEqualTo(0x08);
         port1.setOutputData(0xFF);
-        assertEquals(0xFF, port0.inputData());
-        assertEquals(0x08, port0.inputMask());
+        assertThat(port0.inputData()).isEqualTo(0xFF);
+        assertThat(port0.inputMask()).isEqualTo(0x08);
         keyboard.release(Key.B);
     }
 
@@ -75,14 +75,14 @@ class KeyboardTest {
         port0.setOutputMask(0xFF);
 
         keyboard.press(Key.A);
-        assertEquals(0xFF, port1.inputData());
+        assertThat(port1.inputData()).isEqualTo(0xFF);
         keyboard.updateKeys();
-        assertEquals(0xFB, port1.inputData()); // Row 2 is driven to 0.
+        assertThat(port1.inputData()).isEqualTo(0xFB); // Row 2 is driven to 0.
 
         keyboard.release(Key.A);
-        assertEquals(0xFB, port1.inputData());
+        assertThat(port1.inputData()).isEqualTo(0xFB);
         keyboard.updateKeys();
-        assertEquals(0xFF, port1.inputData());
+        assertThat(port1.inputData()).isEqualTo(0xFF);
     }
 
     /**
@@ -90,14 +90,14 @@ class KeyboardTest {
      */
     @Test
     void restore() {
-        assertEquals(0x1, keyboard.getNMI().outputData() & 0x1);
+        assertThat(keyboard.getNMI().outputData() & 0x1).isEqualTo(0x1);
         keyboard.press(Key.RESTORE);
-        assertEquals(0x1, keyboard.getNMI().outputData() & 0x1);
+        assertThat(keyboard.getNMI().outputData() & 0x1).isEqualTo(0x1);
         keyboard.updateKeys();
-        assertEquals(0x0, keyboard.getNMI().outputData() & 0x1);
+        assertThat(keyboard.getNMI().outputData() & 0x1).isEqualTo(0x0);
         keyboard.release(Key.RESTORE);
         keyboard.updateKeys();
-        assertEquals(0x1, keyboard.getNMI().outputData() & 0x1);
+        assertThat(keyboard.getNMI().outputData() & 0x1).isEqualTo(0x1);
     }
 
     /**
@@ -113,16 +113,16 @@ class KeyboardTest {
     port0.setOutputMask(0xEF);
     port1.setOutputData(0x00);
     port1.setOutputMask(0x00);
-    assertEquals(0xEF, port0.inputData());
-    assertEquals(0x10, port0.inputMask());
-    assertEquals(0xF7, port1.inputData());
-    assertEquals(0x08, port1.inputMask());
+    assertThat(port0.inputData()).isEqualTo(0xEF);
+    assertThat(port0.inputMask()).isEqualTo(0x10);
+    assertThat(port1.inputData()).isEqualTo(0xF7);
+    assertThat(port1.inputMask()).isEqualTo(0x08);
     port0.setOutputData(0x00);
     port0.setOutputMask(0x00);
     port1.setOutputData(0x00);
     port1.setOutputMask(0xFF);
-    assertEquals(0x6F, port0.inputData());
-    assertEquals(0x90, port0.inputMask());
+    assertThat(port0.inputData()).isEqualTo(0x6F);
+    assertThat(port0.inputMask()).isEqualTo(0x90);
     keyboard.released(KeyEvent.VK_0, KeyEvent.KEY_LOCATION_STANDARD);
     keyboard.released(KeyEvent.VK_2, KeyEvent.KEY_LOCATION_STANDARD);
 */

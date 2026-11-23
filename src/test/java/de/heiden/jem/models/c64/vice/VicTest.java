@@ -8,7 +8,7 @@ import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
 
 /**
@@ -52,7 +52,7 @@ class VicTest extends AbstractTest {
     void vicInterrupt(String program) throws Exception {
         loadAndRun(path("/vice-emu-testprogs/VICII/" + program));
         waitSeconds(5);
-        assertTrue(debugCartridgePassed.test(), "Test failed");
+        assertThat(debugCartridgePassed.test()).as("Test failed").isTrue();
     }
 
     /**

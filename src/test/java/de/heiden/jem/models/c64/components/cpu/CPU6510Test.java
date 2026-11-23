@@ -20,7 +20,7 @@ import java.util.function.Function;
 
 import static de.heiden.c64dt.bytes.ByteUtil.hi;
 import static de.heiden.c64dt.bytes.ByteUtil.lo;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test for {@link CPU6510}.
@@ -53,20 +53,20 @@ class CPU6510Test {
         // The unconnected bits 6 and 7 are inputs, they read low.
         cpu.writePort(0x2F, 0x00);
         cpu.writePort(0x34, 0x01);
-        assertEquals(0x34, cpu.getPort().outputData());
+        assertThat(cpu.getPort().outputData()).isEqualTo(0x34);
         cpu.writePort(0x2E, 0x00);
         cpu.writePort(0x34, 0x01);
-        assertEquals(0x35, cpu.getPort().outputData());
+        assertThat(cpu.getPort().outputData()).isEqualTo(0x35);
         cpu.writePort(0x2F, 0x00);
         cpu.writePort(0x35, 0x01);
-        assertEquals(0x35, cpu.getPort().outputData());
+        assertThat(cpu.getPort().outputData()).isEqualTo(0x35);
 
         // As outputs they are driven. As inputs they keep the level they have been driven to.
         cpu.writePort(0xEF, 0x00);
         cpu.writePort(0xF5, 0x01);
-        assertEquals(0xF5, cpu.getPort().outputData());
+        assertThat(cpu.getPort().outputData()).isEqualTo(0xF5);
         cpu.writePort(0x2F, 0x00);
-        assertEquals(0xF5, cpu.getPort().outputData());
+        assertThat(cpu.getPort().outputData()).isEqualTo(0xF5);
     }
 
     /**
@@ -104,7 +104,7 @@ class CPU6510Test {
         expectedState.PC = 0xFF48;
 
         // Check overall clock cycles.
-        assertEquals(startTick + 7, clock.getTick());
+        assertThat(clock.getTick()).isEqualTo(startTick + 7);
 
         // Check that NOP at BRK vector gets executed.
         executeOneTick_readPC(expectedState, 0xEA);
@@ -917,7 +917,7 @@ class CPU6510Test {
      */
     private void executeOneTick(CPU6510State expectedState, LogEntry expectedLog) {
         clock.run(1);
-        assertEquals(expectedState, cpu.getState());
-        assertEquals(expectedLog, loggingBus.getLastLogEntry());
+        assertThat(cpu.getState()).isEqualTo(expectedState);
+        assertThat(loggingBus.getLastLogEntry()).isEqualTo(expectedLog);
     }
 }

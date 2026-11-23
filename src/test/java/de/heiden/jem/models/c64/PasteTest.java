@@ -2,7 +2,7 @@ package de.heiden.jem.models.c64;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test for pasting text into the C64 via the keyboard buffer of the KERNAL.
@@ -18,6 +18,6 @@ class PasteTest extends AbstractTest {
         var result = onConsole(" 3628800\n");
         c64.getKeyboardBuffer().type("print 1*2*3*4*5*6*7*8*9*10\n");
 
-        assertSame(result, waitSecondsFor(5, result));
+        assertThat(waitSecondsFor(5, result)).isSameAs(result);
     }
 }

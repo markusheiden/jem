@@ -4,7 +4,7 @@ import de.heiden.jem.components.bus.BusDevice;
 import de.heiden.jem.components.clock.serialthreads.SerialClock;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test for {@link KeyboardBuffer}.
@@ -34,14 +34,14 @@ class KeyboardBufferTest {
      */
     @Test
     void toPetscii() {
-        assertEquals(0x41, KeyboardBuffer.toPetscii('a'));
-        assertEquals(0x41, KeyboardBuffer.toPetscii('A'));
-        assertEquals(0x5A, KeyboardBuffer.toPetscii('z'));
-        assertEquals(0x22, KeyboardBuffer.toPetscii('"'));
-        assertEquals(0x0D, KeyboardBuffer.toPetscii('\n'));
-        assertEquals(0x5C, KeyboardBuffer.toPetscii('£'));
-        assertEquals(-1, KeyboardBuffer.toPetscii('\t'));
-        assertEquals(-1, KeyboardBuffer.toPetscii('ä'));
+        assertThat(KeyboardBuffer.toPetscii('a')).isEqualTo(0x41);
+        assertThat(KeyboardBuffer.toPetscii('A')).isEqualTo(0x41);
+        assertThat(KeyboardBuffer.toPetscii('z')).isEqualTo(0x5A);
+        assertThat(KeyboardBuffer.toPetscii('"')).isEqualTo(0x22);
+        assertThat(KeyboardBuffer.toPetscii('\n')).isEqualTo(0x0D);
+        assertThat(KeyboardBuffer.toPetscii('£')).isEqualTo(0x5C);
+        assertThat(KeyboardBuffer.toPetscii('\t')).isEqualTo(-1);
+        assertThat(KeyboardBuffer.toPetscii('ä')).isEqualTo(-1);
     }
 
     /**
@@ -52,19 +52,19 @@ class KeyboardBufferTest {
         keyboardBuffer.type("load\"bluemax\",8,1\r\n");
 
         keyboardBuffer.execute(1);
-        assertEquals(10, memory[0xC6]);
-        assertEquals("LOAD\"BLUEM", text(10));
+        assertThat(memory[0xC6]).isEqualTo(10);
+        assertThat(text(10)).isEqualTo("LOAD\"BLUEM");
 
         // Buffer not yet consumed by the KERNAL: Nothing changes.
         keyboardBuffer.execute(2);
-        assertEquals(10, memory[0xC6]);
-        assertEquals("LOAD\"BLUEM", text(10));
+        assertThat(memory[0xC6]).isEqualTo(10);
+        assertThat(text(10)).isEqualTo("LOAD\"BLUEM");
 
         // KERNAL consumed the buffer: Rest is typed, "\r\n" as a single return.
         memory[0xC6] = 0;
         keyboardBuffer.execute(3);
-        assertEquals(8, memory[0xC6]);
-        assertEquals("AX\",8,1\r", text(8));
+        assertThat(memory[0xC6]).isEqualTo(8);
+        assertThat(text(8)).isEqualTo("AX\",8,1\r");
     }
 
     /**
