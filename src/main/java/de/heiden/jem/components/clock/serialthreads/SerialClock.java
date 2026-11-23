@@ -67,7 +67,7 @@ public final class SerialClock extends AbstractSimpleClock {
         stopRequested = false;
         var components = clockedComponents();
         try {
-            for (var stop = getTick() + ticks; getTick() < stop && !isStopRequested();) {
+            for (var stop = getTick() + ticks; getTick() < stop && !isStopRequested(); ) {
                 startTick();
                 for (var runnable : components) {
                     runnable.run();
