@@ -171,6 +171,11 @@ tasks.withType<Test>().configureEach {
     )
 
     ignoreFailures = false
+
+    // Show the progress of the (slow) tests.
+    testLogging {
+        events("passed", "failed", "skipped")
+    }
 }
 
 // Groups of tests: lorenz, interrupts, c64doc, cia, vic, cpu, clock and none for the tests without a group.
