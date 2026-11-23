@@ -1,6 +1,5 @@
 package de.heiden.jem.models.c64.gui.javafx.emulator;
 
-import de.heiden.jem.components.clock.RealTimeSlowDown;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
@@ -67,7 +66,8 @@ public class StatusBar extends BorderPane {
     /**
      * Show the time (ms) needed for 1 simulated second.
      *
-     * @param elapsedMs Supplier for the elapsed time in milliseconds.
+     * @param elapsedMs
+     *         Supplier for the elapsed time in milliseconds.
      */
     public void displayExecutionTime(LongSupplier elapsedMs) {
         var interval = Duration.seconds(1);

@@ -1,21 +1,14 @@
 package de.heiden.jem.models.c64.gui.javafx.emulator;
 
 import de.heiden.jem.components.clock.Clock;
-import de.heiden.jem.components.clock.RealTimeSlowDown;
 import de.heiden.jem.models.c64.components.C64;
 import de.heiden.jem.models.c64.components.VideoSystem;
-import javafx.animation.Animation;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static javafx.animation.Animation.INDEFINITE;
 
 /**
  * Application for C64 emulation.
