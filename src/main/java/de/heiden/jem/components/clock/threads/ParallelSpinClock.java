@@ -1,7 +1,8 @@
 package de.heiden.jem.components.clock.threads;
 
-import static de.heiden.jem.components.clock.ManualAbort.abortIfInterrupted;
 import de.heiden.jem.components.clock.Tick;
+
+import static de.heiden.jem.components.clock.ManualAbort.abortIfInterrupted;
 
 /**
  * Clock implemented without synchronization sequentially executing components by using spin locks (busy wait).
