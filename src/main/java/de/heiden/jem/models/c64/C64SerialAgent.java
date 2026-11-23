@@ -27,7 +27,7 @@ public class C64SerialAgent {
     public static void main(String[] args) {
         if (!isTransformationActive()) {
             logger.error("Byte code transformation is not active. " +
-                    "Start the JVM with the serial threads agent (-javaagent:serialthreads.jar), e.g. via ./gradlew runAgent.");
+                         "Start the JVM with the serial threads agent (-javaagent:serialthreads.jar), e.g. via ./gradlew runAgent.");
             System.exit(1);
         }
 
