@@ -40,9 +40,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 # Test the sequential clocks on a single carrier thread (part of check)
 ./gradlew singleCarrierTest
+
+# Run a program and capture frames (PNG) plus VIC/CIA/CPU state to build/capture/<program> for debugging
+./gradlew capture -Dcapture.program=demos/demo.prg -Dcapture.seconds=20 -Dcapture.step=2
 ```
 
-The shadow JAR is the primary artifact; the plain JAR is disabled. Test failures fail the build (`ignoreFailures = false`).
+The shadow JAR is the primary artifact; the plain JAR is disabled. Test failures fail the build (`ignoreFailures = false`). `build`/`check` run `allTest` (which disables `test` to avoid running it twice) and `singleCarrierTest`, so they include the slow groups (lorenz, interrupts, c64doc); use `./gradlew test` or `-Pgroups` for quick feedback. Tests run with `-Xmx4g`.
 
 ## Architecture
 
@@ -80,7 +83,8 @@ Each `C64*.java` in `de.heiden.jem.models.c64` is an entry point that wires up t
 - `vic/VIC` — VIC-II video chip: `VicModel` (6569, 6567R8, 6567R56A) defines its timing
 - `cia/CIA6526` — CIA timer/IO chips
 - `memory/` — RAM, ROM, ColorRAM
-- `keyboard/Keyboard` — keyboard matrix
+- `keyboard/Keyboard` — keyboard matrix; `joystick/` — joystick ports
+- `sid/SIDStub` — placeholder for the SID: no sound, emulates only its data bus (write-only registers read back the fading last bus byte)
 - `patch/` — ROM patches that intercept KERNAL calls (e.g. load from host filesystem, detect program end)
 
 ### GUIs
