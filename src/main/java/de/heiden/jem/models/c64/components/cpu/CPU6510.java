@@ -282,7 +282,7 @@ public class CPU6510 implements ClockedComponent {
 
     // <editor-fold desc="Opcodes">
 
-    @SuppressWarnings({ "Convert2Lambda", "Anonymous2MethodRef", "SpellCheckingInspection" })
+    @SuppressWarnings({ "Convert2Lambda", "Anonymous2MethodRef" })
     private final Opcode[] OPCODES =
             {
                     new Opcode() {
