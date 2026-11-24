@@ -72,6 +72,9 @@ public abstract class AbstractFiberClock extends AbstractSimpleClock {
             component.run();
         }));
 
+        // Placeholder for the thread running the clock, which is set on each execution.
+        threads[numComponents] = Thread.currentThread();
+
         this.threads = threads;
         init(numComponents + 1);
         for (var i = 0; i < numComponents; i++) {
@@ -147,7 +150,7 @@ public abstract class AbstractFiberClock extends AbstractSimpleClock {
 
     /**
      * Thread with the given index.
-     * The thread running the clock is only available while it runs the clock.
+     * The thread running the clock is only valid while it runs the clock.
      */
     protected final Thread thread(int index) {
         return requireNonNull(threads, "Clock is not started or already closed")[index];
