@@ -2,7 +2,7 @@ package de.heiden.jem.models.c64.components.sid;
 
 import de.heiden.jem.components.bus.BusDevice;
 import de.heiden.jem.components.clock.Clock;
-import jakarta.annotation.Nonnull;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Placeholder for the SID 6581 until it is emulated.
@@ -35,7 +35,7 @@ public class SIDStub implements BusDevice {
     /**
      * Clock, null if the byte on the data bus does not fade.
      */
-    private final Clock clock;
+    private final @Nullable Clock clock;
 
     /**
      * Byte, which has been on the data bus last.
@@ -60,7 +60,7 @@ public class SIDStub implements BusDevice {
      * @param clock
      *         Clock.
      */
-    public SIDStub(@Nonnull Clock clock) {
+    public SIDStub(Clock clock) {
         this.clock = clock;
     }
 

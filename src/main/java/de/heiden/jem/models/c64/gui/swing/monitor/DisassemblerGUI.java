@@ -3,6 +3,7 @@ package de.heiden.jem.models.c64.gui.swing.monitor;
 import de.heiden.c64dt.assembler.Disassembler;
 import de.heiden.c64dt.gui.swing.JC64List;
 import de.heiden.jem.components.bus.BusDevice;
+import org.jspecify.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
@@ -22,7 +23,7 @@ public class DisassemblerGUI extends JPanel {
 
     private final Disassembler disassembler;
 
-    private BusDevice bus;
+    private @Nullable BusDevice bus;
 
     public DisassemblerGUI() {
         setLayout(new BorderLayout());
@@ -82,7 +83,7 @@ public class DisassemblerGUI extends JPanel {
      * @param bus
      *         Model.
      */
-    public void setBus(BusDevice bus) {
+    public void setBus(@Nullable BusDevice bus) {
         this.bus = bus;
         codeChanged();
     }

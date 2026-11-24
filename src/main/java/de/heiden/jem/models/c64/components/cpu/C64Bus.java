@@ -8,7 +8,7 @@ import de.heiden.jem.components.ports.InputPortImpl;
 import de.heiden.jem.components.ports.OutputPort;
 import de.heiden.jem.models.c64.components.memory.Patchable;
 import de.heiden.jem.models.c64.components.sid.SIDStub;
-import jakarta.annotation.Nonnull;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,15 +71,15 @@ public class C64Bus implements BusDevice, Patchable {
      *         Device for the areas without a device $DE00-$DFFF.
      */
     public C64Bus(
-            @Nonnull BusDevice ram,
-            @Nonnull BusDevice basic,
-            @Nonnull BusDevice vic,
-            @Nonnull BusDevice colorRam,
-            @Nonnull BusDevice cia1,
-            @Nonnull BusDevice cia2,
-            @Nonnull BusDevice charset,
-            @Nonnull BusDevice kernel,
-            @Nonnull BusDevice openBus) {
+            BusDevice ram,
+            BusDevice basic,
+            BusDevice vic,
+            BusDevice colorRam,
+            BusDevice cia1,
+            BusDevice cia2,
+            BusDevice charset,
+            BusDevice kernel,
+            BusDevice openBus) {
         this(ram, basic, vic, new SIDStub(), colorRam, cia1, cia2, charset, kernel, openBus);
     }
 
@@ -119,16 +119,16 @@ public class C64Bus implements BusDevice, Patchable {
      * @require openBus != null
      */
     public C64Bus(
-            @Nonnull BusDevice ram,
-            @Nonnull BusDevice basic,
-            @Nonnull BusDevice vic,
-            @Nonnull BusDevice sid,
-            @Nonnull BusDevice colorRam,
-            @Nonnull BusDevice cia1,
-            @Nonnull BusDevice cia2,
-            @Nonnull BusDevice charset,
-            @Nonnull BusDevice kernel,
-            @Nonnull BusDevice openBus) {
+            BusDevice ram,
+            BusDevice basic,
+            BusDevice vic,
+            BusDevice sid,
+            BusDevice colorRam,
+            BusDevice cia1,
+            BusDevice cia2,
+            BusDevice charset,
+            BusDevice kernel,
+            BusDevice openBus) {
         this.ram = ram;
         this.basic = basic;
         this.vic = vic;
@@ -256,7 +256,7 @@ public class C64Bus implements BusDevice, Patchable {
         });
     }
 
-    private BusDevice[] computeIoModeRead(BusDevice ram, BusDevice x8000, BusDevice xA000, BusDevice xD000, BusDevice xE000) {
+    private BusDevice[] computeIoModeRead(BusDevice ram, BusDevice x8000, BusDevice xA000, @Nullable BusDevice xD000, BusDevice xE000) {
         var result = new BusDevice[256];
         for (var i = 0x00; i <= 0x7F; i++) {
             result[i] = ram;
@@ -318,7 +318,7 @@ public class C64Bus implements BusDevice, Patchable {
     /**
      * Connect to CPU port.
      */
-    public void connect(@Nonnull OutputPort cpu) {
+    public void connect(OutputPort cpu) {
         this.cpu.connect(cpu);
     }
 

@@ -1,7 +1,5 @@
 package de.heiden.jem.models.c64.components.memory;
 
-import jakarta.annotation.Nonnull;
-
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
@@ -16,7 +14,7 @@ public class ROMLoader {
      *         Filename of ROM image.
      * @ensure result != null
      */
-    public static @Nonnull ROM basic(String filename) throws Exception {
+    public static ROM basic(String filename) throws Exception {
         var content = load(0x2000, filename);
         return new ROM(content);
     }
@@ -28,7 +26,7 @@ public class ROMLoader {
      *         Filename of ROM image.
      * @ensure result != null
      */
-    public static @Nonnull ROM kernel(String filename) throws Exception {
+    public static ROM kernel(String filename) throws Exception {
         var content = load(0x2000, filename);
         return new ROM(content);
     }
@@ -40,7 +38,7 @@ public class ROMLoader {
      *         Filename of ROM image.
      * @ensure result != null
      */
-    public static @Nonnull ROM character(String filename) throws Exception {
+    public static ROM character(String filename) throws Exception {
         var content = load(0x1000, filename);
         return new ROM(content); // TODO correct?
     }
@@ -52,7 +50,7 @@ public class ROMLoader {
      *         Filename of ROM image.
      * @ensure result != null
      */
-    public static @Nonnull ROM pla(String filename) throws Exception {
+    public static ROM pla(String filename) throws Exception {
         var content = load(0x1000, filename);
         return new ROM(content);
     }
@@ -66,7 +64,7 @@ public class ROMLoader {
      *         Filename of content.
      * @throws Exception
      */
-    protected static @Nonnull byte[] load(int length, String filename) throws Exception {
+    protected static byte[] load(int length, String filename) throws Exception {
         try (var stream = ROMLoader.class.getResourceAsStream(filename)) {
             var result = new byte[length];
             var size = stream.read(result);

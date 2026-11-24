@@ -12,6 +12,7 @@ public final class SequentialFiberLatchClock extends AbstractFiberClock {
     /**
      * Semaphores of the components followed by the semaphore of the thread running the clock.
      */
+    @SuppressWarnings("NullAway.Init")
     private Semaphore[] semaphores;
 
     @Override

@@ -1,7 +1,5 @@
 package de.heiden.jem.components.ports;
 
-import jakarta.annotation.Nonnull;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,7 +35,7 @@ public final class OutputPortImpl implements OutputPort {
      * @require listener != null
      */
     @Override
-    public void addOutputPortListener(@Nonnull PortListener listener) {
+    public void addOutputPortListener(PortListener listener) {
         outputListenerList.add(listener);
         outputListeners = outputListenerList.toArray(PortListener[]::new);
     }
@@ -50,7 +48,7 @@ public final class OutputPortImpl implements OutputPort {
      * @require listener != null
      */
     @Override
-    public void removeOutputPortListener(@Nonnull PortListener listener) {
+    public void removeOutputPortListener(PortListener listener) {
         outputListenerList.remove(listener);
         outputListeners = outputListenerList.toArray(PortListener[]::new);
     }

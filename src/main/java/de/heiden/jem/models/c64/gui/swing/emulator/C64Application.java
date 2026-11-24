@@ -3,6 +3,7 @@ package de.heiden.jem.models.c64.gui.swing.emulator;
 import de.heiden.jem.components.clock.Clock;
 import de.heiden.jem.models.c64.components.C64;
 import de.heiden.jem.models.c64.components.VideoSystem;
+import org.jspecify.annotations.Nullable;
 
 import javax.swing.*;
 
@@ -18,12 +19,13 @@ public class C64Application {
     /**
      * C64.
      */
+    @SuppressWarnings("NullAway.Init")
     private C64 c64;
 
     /**
      * Main frame.
      */
-    private JFrame frame;
+    private @Nullable JFrame frame;
 
     /**
      * Constructor.
@@ -62,8 +64,11 @@ public class C64Application {
     public void stop() {
         c64.stop();
 
-        frame.setVisible(false);
-        frame.dispose();
-        frame = null;
+        var frame = this.frame;
+        if (frame != null) {
+            frame.setVisible(false);
+            frame.dispose();
+            this.frame = null;
+        }
     }
 }

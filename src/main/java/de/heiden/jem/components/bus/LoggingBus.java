@@ -1,7 +1,5 @@
 package de.heiden.jem.components.bus;
 
-import jakarta.annotation.Nonnull;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,7 +54,7 @@ public class LoggingBus extends BusDeviceAdapter {
      * @require getLog().length > 0
      * @ensure result != null
      */
-    public synchronized @Nonnull LogEntry getLastLogEntry() {
+    public synchronized LogEntry getLastLogEntry() {
         assert !getLog().isEmpty() : "Precondition: !getLog().isEmpty()";
 
         var result = log.get(log.size() - 1);

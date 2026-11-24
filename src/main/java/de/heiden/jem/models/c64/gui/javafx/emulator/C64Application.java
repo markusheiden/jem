@@ -22,11 +22,13 @@ public class C64Application extends Application {
     /**
      * C64.
      */
+    @SuppressWarnings("NullAway.Init")
     private C64 c64;
 
     /**
      * Thread running the emulated C64.
      */
+    @SuppressWarnings("NullAway.Init")
     private Thread thread;
 
     /**
@@ -45,7 +47,9 @@ public class C64Application extends Application {
         var statusBar = new StatusBar();
         // Poll from the JavaFX thread, so the emulation thread never calls into JavaFX.
         var slowDown = c64.getRealTimeSlowDown();
-        statusBar.displayExecutionTime(slowDown::getElapsedMs);
+        if (slowDown != null) {
+            statusBar.displayExecutionTime(slowDown::getElapsedMs);
+        }
 
         var root = new BorderPane(screen);
         root.setBottom(statusBar);

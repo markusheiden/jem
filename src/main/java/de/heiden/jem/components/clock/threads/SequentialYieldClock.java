@@ -21,6 +21,7 @@ public final class SequentialYieldClock extends AbstractSynchronizedClock {
      * While starting the component threads, the starting thread waits with the ordinal of the next component thread.
      * Package visible to avoid synthetic accessors.
      */
+    @SuppressWarnings("NullAway.Init")
     YieldHandover handover;
 
     @Override

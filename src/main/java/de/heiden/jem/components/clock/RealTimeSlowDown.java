@@ -1,6 +1,5 @@
 package de.heiden.jem.components.clock;
 
-import jakarta.annotation.Nonnull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,7 +73,7 @@ public class RealTimeSlowDown extends ClockEvent {
      * @param div
      *         How often per second should the clock speed be adjusted?
      */
-    public RealTimeSlowDown(@Nonnull Clock clock, long freq, int div) {
+    public RealTimeSlowDown(Clock clock, long freq, int div) {
         super("Real time slow down");
 
         assert freq > 0 : "Precondition: freq > 0";

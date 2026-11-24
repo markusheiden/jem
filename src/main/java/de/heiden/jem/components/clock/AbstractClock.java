@@ -1,6 +1,5 @@
 package de.heiden.jem.components.clock;
 
-import jakarta.annotation.Nonnull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,6 +10,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.lang.Thread.State.NEW;
 import static java.lang.Thread.currentThread;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Base implementation for all clocks.
@@ -74,7 +74,7 @@ public abstract class AbstractClock implements Clock {
      * @ensure result != null
      */
     @Override
-    public synchronized <C extends ClockedComponent> C addClockedComponent(int position, @Nonnull C component) {
+    public synchronized <C extends ClockedComponent> C addClockedComponent(int position, C component) {
         assert position >= 0 : "Precondition: position >= 0";
         assert !isStarted() : "Precondition: !isStarted()";
 
@@ -214,7 +214,7 @@ public abstract class AbstractClock implements Clock {
     }
 
     @Override
-    public void addClockEvent(long tick, @Nonnull ClockEvent newEvent) {
+    public void addClockEvent(long tick, ClockEvent newEvent) {
         assert tick > getTick() : "tick > getTick()";
 
 //    if (logger.isDebugEnabled()) {
@@ -229,14 +229,16 @@ public abstract class AbstractClock implements Clock {
 
         var nextEvent = events;
         while (tick > nextEvent.tick) {
-            nextEvent = nextEvent.next;
+            // The end marker has the maximum tick, so all events before it have a next event.
+            nextEvent = requireNonNull(nextEvent.next);
             // Search further.
         }
 
         if (nextEvent == events) {
             events = newEvent;
         } else {
-            var previousEvent = nextEvent.previous;
+            // Not the first event, so it has a previous event.
+            var previousEvent = requireNonNull(nextEvent.previous);
             previousEvent.next = newEvent;
             newEvent.previous = previousEvent;
         }
@@ -245,7 +247,7 @@ public abstract class AbstractClock implements Clock {
     }
 
     @Override
-    public void updateClockEvent(long tick, @Nonnull ClockEvent eventToUpdate) {
+    public void updateClockEvent(long tick, ClockEvent eventToUpdate) {
         assert tick > getTick() : "tick > getTick()";
 
         if (tick == eventToUpdate.tick) {
@@ -259,7 +261,7 @@ public abstract class AbstractClock implements Clock {
     }
 
     @Override
-    public void removeClockEvent(@Nonnull ClockEvent oldEvent) {
+    public void removeClockEvent(ClockEvent oldEvent) {
 //    if (logger.isDebugEnabled()) {
 //      logger.debug("Remove event {}.", event);
 //    }
@@ -308,7 +310,8 @@ public abstract class AbstractClock implements Clock {
         for (var event = events; event.tick == tick; event = events) {
             // Remove it and unlink it to mark it as not registered.
             // This has to happen before executing it, because events may re-register themselves.
-            var nextEvent = event.next;
+            // The end marker is never executed, so all executed events have a next event.
+            var nextEvent = requireNonNull(event.next);
             events = nextEvent;
             nextEvent.previous = null;
             event.next = null;

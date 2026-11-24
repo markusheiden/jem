@@ -3,6 +3,7 @@ package de.heiden.jem.models.c64.gui.javafx.emulator;
 import de.heiden.jem.models.c64.components.keyboard.Key;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import org.jspecify.annotations.Nullable;
 
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -39,7 +40,7 @@ public abstract class KeyMapping {
      *         Key(Event).
      * @return Key or null if the key is not mapped.
      */
-    public Key[] getKeys(KeyEvent e) {
+    public Key @Nullable [] getKeys(KeyEvent e) {
         var result = chars.get(e.getText());
         if (result == null) {
             result = keys.get(e.getCode());

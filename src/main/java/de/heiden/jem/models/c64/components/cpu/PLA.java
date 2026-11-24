@@ -1,6 +1,6 @@
 package de.heiden.jem.models.c64.components.cpu;
 
-import jakarta.annotation.Nonnull;
+import org.jspecify.annotations.Nullable;
 
 import static de.heiden.jem.models.c64.components.cpu.PLA.Input.AEC;
 import static de.heiden.jem.models.c64.components.cpu.PLA.Input.CAS;
@@ -52,7 +52,7 @@ public class PLA {
     /**
      * Constructor.
      */
-    public PLA(@Nonnull byte[] content) {
+    public PLA(byte[] content) {
         assert content.length == 0x10000 : "Precondition: content.length == 0x10000 ";
 
         this.content = content;
@@ -64,7 +64,7 @@ public class PLA {
      * @param addr
      *         Address.
      */
-    public Output cpu(boolean rw, int addr, boolean loram, boolean hiram, boolean charen, boolean exrom, boolean game) {
+    public @Nullable Output cpu(boolean rw, int addr, boolean loram, boolean hiram, boolean charen, boolean exrom, boolean game) {
         var a = addr >> 12;
 
         var plaAddress =

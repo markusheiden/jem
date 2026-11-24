@@ -4,6 +4,7 @@ import de.heiden.jem.models.c64.components.joystick.Direction;
 import de.heiden.jem.models.c64.components.joystick.Joystick;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,6 +13,8 @@ import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * Joystick emulation via keys: Cursor keys for the directions, shift for fire.
@@ -124,7 +127,7 @@ public class JoystickKeys {
 
         var joystick = joystick();
         if (joystick != null) {
-            joystick.release(DIRECTIONS.get(code));
+            joystick.release(requireNonNull(DIRECTIONS.get(code)));
         }
         return true;
     }
@@ -152,7 +155,7 @@ public class JoystickKeys {
     /**
      * Joystick of the current mode, if any.
      */
-    private Joystick joystick() {
+    private @Nullable Joystick joystick() {
         return switch (mode) {
             case OFF -> null;
             case JOYSTICK_2 -> joystick2;

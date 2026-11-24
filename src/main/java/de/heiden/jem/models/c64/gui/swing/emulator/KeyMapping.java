@@ -1,6 +1,7 @@
 package de.heiden.jem.models.c64.gui.swing.emulator;
 
 import de.heiden.jem.models.c64.components.keyboard.Key;
+import org.jspecify.annotations.Nullable;
 
 import java.awt.event.KeyEvent;
 import java.util.HashMap;
@@ -37,7 +38,7 @@ public abstract class KeyMapping {
      *         Key(Event).
      * @return Key or null if the key is not mapped.
      */
-    public Key[] getKeys(KeyEvent e) {
+    public Key @Nullable [] getKeys(KeyEvent e) {
         var result = chars.get(e.getKeyChar());
         if (result == null) {
             result = keys.get(keyID(e.getKeyLocation(), e.getKeyCode()));

@@ -1,7 +1,5 @@
 package de.heiden.jem.components.ports;
 
-import jakarta.annotation.Nonnull;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -49,7 +47,7 @@ public final class InputPortImpl implements InputPort {
      * @require port != null
      */
     @Override
-    public void connect(@Nonnull OutputPort port) {
+    public void connect(OutputPort port) {
         PortListener listener = (value, mask) -> updateInputPort();
         outputPortListeners.put(port, listener);
         outputPorts = outputPortListeners.keySet().toArray(OutputPort[]::new);
@@ -65,10 +63,12 @@ public final class InputPortImpl implements InputPort {
      * @require port != null
      */
     @Override
-    public void disconnect(@Nonnull OutputPort port) {
+    public void disconnect(OutputPort port) {
         var listener = outputPortListeners.remove(port);
         outputPorts = outputPortListeners.keySet().toArray(OutputPort[]::new);
-        port.removeOutputPortListener(listener);
+        if (listener != null) {
+            port.removeOutputPortListener(listener);
+        }
         updateInputPort();
     }
 
@@ -80,7 +80,7 @@ public final class InputPortImpl implements InputPort {
      * @require listener != null
      */
     @Override
-    public void addInputPortListener(@Nonnull PortListener listener) {
+    public void addInputPortListener(PortListener listener) {
         inputListenerLists.add(listener);
         inputListeners = inputListenerLists.toArray(PortListener[]::new);
     }
@@ -93,7 +93,7 @@ public final class InputPortImpl implements InputPort {
      * @require listener != null
      */
     @Override
-    public void removeInputPortListener(@Nonnull PortListener listener) {
+    public void removeInputPortListener(PortListener listener) {
         inputListenerLists.remove(listener);
         inputListeners = inputListenerLists.toArray(PortListener[]::new);
     }

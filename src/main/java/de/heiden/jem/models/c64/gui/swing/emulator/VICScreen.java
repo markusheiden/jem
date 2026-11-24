@@ -2,7 +2,6 @@ package de.heiden.jem.models.c64.gui.swing.emulator;
 
 import de.heiden.c64dt.gui.swing.JC64ScreenComponent;
 import de.heiden.jem.models.c64.components.vic.AbstractDisplayUnit;
-import jakarta.annotation.Nonnull;
 
 import java.awt.*;
 
@@ -22,7 +21,7 @@ public class VICScreen extends JC64ScreenComponent {
      *         Display unit to display.
      * @require displayUnit != null
      */
-    public VICScreen(@Nonnull AbstractDisplayUnit displayUnit) {
+    public VICScreen(AbstractDisplayUnit displayUnit) {
         super(displayUnit.getOffset(), displayUnit.getWidth(), displayUnit.getLineLength(), displayUnit.getHeight(), 2);
 
         this.displayUnit = displayUnit;

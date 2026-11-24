@@ -51,7 +51,7 @@ dependencies {
 
     implementation("org.slf4j:slf4j-api")
     runtimeOnly("ch.qos.logback:logback-classic")
-    compileOnly("jakarta.annotation:jakarta.annotation-api")
+    implementation("org.jspecify:jspecify")
 
     implementation(libs.serialthreads)
 
@@ -77,9 +77,12 @@ tasks.withType<JavaCompile>().configureEach {
     ))
 
     options.errorprone {
+        // Check just the null safety of the production code.
         disableAllChecks = true
-        option("NullAway:AnnotatedPackages", "de.heiden")
-        // error("NullAway")
+        enabled = !name.contains("test", ignoreCase = true)
+        error("NullAway")
+        option("NullAway:AnnotatedPackages", "de.heiden.jem")
+        option("NullAway:JSpecifyMode", "true")
     }
 }
 

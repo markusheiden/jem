@@ -1,6 +1,6 @@
 package de.heiden.jem.components.clock;
 
-import jakarta.annotation.Nonnull;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Clock event.
@@ -21,18 +21,18 @@ public abstract class ClockEvent {
      * Previous clock event.
      * Used for efficient list implementation in clocks.
      */
-    ClockEvent previous;
+    @Nullable ClockEvent previous;
 
     /**
      * Next clock event.
      * Used for efficient list implementation in clocks.
      */
-    ClockEvent next;
+    @Nullable ClockEvent next;
 
     /**
      * Constructor.
      */
-    protected ClockEvent(@Nonnull String name) {
+    protected ClockEvent(String name) {
         this.name = name;
     }
 

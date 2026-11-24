@@ -6,6 +6,7 @@ import de.heiden.jem.models.c64.components.C64;
 import de.heiden.jem.models.c64.components.VideoSystem;
 import de.heiden.jem.models.c64.components.cpu.CPU6510Debugger;
 import de.heiden.jem.models.c64.components.cpu.DebuggerExit;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,10 +22,10 @@ public class DebuggerGUI extends JPanel {
      */
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private Thread thread;
-    private C64 c64;
-    private CPU6510Debugger cpu;
-    private BusDevice bus;
+    private @Nullable Thread thread;
+    private @Nullable C64 c64;
+    private @Nullable CPU6510Debugger cpu;
+    private @Nullable BusDevice bus;
 
     private final JButton runButton;
     private final JButton resumeButton;
@@ -124,9 +125,12 @@ public class DebuggerGUI extends JPanel {
      */
     private void run() {
         try {
-            c64 = C64.builder(new SerialClock()).debug(true).videoSystem(VideoSystem.selected()).build();
-            cpu = (CPU6510Debugger) c64.getCpu();
-            bus = c64.getCpuBus();
+            var c64 = C64.builder(new SerialClock()).debug(true).videoSystem(VideoSystem.selected()).build();
+            var cpu = (CPU6510Debugger) c64.getCpu();
+            var bus = c64.getCpuBus();
+            this.c64 = c64;
+            this.cpu = cpu;
+            this.bus = bus;
 
             trace.setCpu(cpu);
             state.setCpu(cpu);
@@ -142,9 +146,9 @@ public class DebuggerGUI extends JPanel {
                 } catch (Exception e) {
                     logger.error("C64 terminated abnormally", e);
                 } finally {
-                    c64 = null;
-                    cpu = null;
-                    bus = null;
+                    this.c64 = null;
+                    this.cpu = null;
+                    this.bus = null;
                 }
             }, "C64 (debug)");
             thread.start();
@@ -161,12 +165,19 @@ public class DebuggerGUI extends JPanel {
     private void suspend() {
         new SwingWorker<>() {
             @Override
-            protected Object doInBackground() {
+            protected @Nullable Object doInBackground() {
+                var cpu = DebuggerGUI.this.cpu;
+                var thread = DebuggerGUI.this.thread;
+                if (cpu == null || thread == null) {
+                    // The C64 is not running.
+                    return null;
+                }
+
                 try {
                     cpu.suspendAndWait();
                 } catch (DebuggerExit e) {
                     thread.interrupt();
-                    thread = null;
+                    DebuggerGUI.this.thread = null;
                 }
 
                 return null;
@@ -185,12 +196,19 @@ public class DebuggerGUI extends JPanel {
     private void resume() {
         new SwingWorker<>() {
             @Override
-            protected Object doInBackground() {
+            protected @Nullable Object doInBackground() {
+                var cpu = DebuggerGUI.this.cpu;
+                var thread = DebuggerGUI.this.thread;
+                if (cpu == null || thread == null) {
+                    // The C64 is not running.
+                    return null;
+                }
+
                 try {
                     cpu.resume();
                 } catch (DebuggerExit e) {
                     thread.interrupt();
-                    thread = null;
+                    DebuggerGUI.this.thread = null;
                 }
 
                 return null;
@@ -209,14 +227,21 @@ public class DebuggerGUI extends JPanel {
     private void stop() {
         new SwingWorker<>() {
             @Override
-            protected Object doInBackground() {
+            protected @Nullable Object doInBackground() {
+                var cpu = DebuggerGUI.this.cpu;
+                var thread = DebuggerGUI.this.thread;
+                if (cpu == null || thread == null) {
+                    // The C64 is not running.
+                    return null;
+                }
+
                 try {
                     cpu.stop();
                     thread.join();
                 } catch (InterruptedException e) {
                     // Ignore.
                 } finally {
-                    thread = null;
+                    DebuggerGUI.this.thread = null;
                 }
 
                 return null;
@@ -233,9 +258,10 @@ public class DebuggerGUI extends JPanel {
      * Update the state of the buttons.
      */
     private void updateButtons() {
+        var cpu = this.cpu;
         runButton.setEnabled(thread == null);
-        suspendButton.setEnabled(thread != null && !cpu.isSuspended());
-        resumeButton.setEnabled(thread != null && cpu.isSuspended());
+        suspendButton.setEnabled(thread != null && cpu != null && !cpu.isSuspended());
+        resumeButton.setEnabled(thread != null && cpu != null && cpu.isSuspended());
         stopButton.setEnabled(thread != null);
     }
 
@@ -248,7 +274,10 @@ public class DebuggerGUI extends JPanel {
 
         trace.stateChanged();
         state.stateChanged();
-        disassembler.setAddress(cpu.getState().PC);
+        var cpu = this.cpu;
+        if (cpu != null) {
+            disassembler.setAddress(cpu.getState().PC);
+        }
         disassembler.codeChanged();
         memDump.memoryChanged();
     }

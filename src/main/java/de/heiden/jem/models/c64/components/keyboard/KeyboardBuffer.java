@@ -3,7 +3,6 @@ package de.heiden.jem.models.c64.components.keyboard;
 import de.heiden.jem.components.bus.BusDevice;
 import de.heiden.jem.components.clock.Clock;
 import de.heiden.jem.components.clock.ClockEvent;
-import jakarta.annotation.Nonnull;
 
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -74,7 +73,7 @@ public class KeyboardBuffer extends ClockEvent {
      * @param bus
      *         CPU bus.
      */
-    public KeyboardBuffer(@Nonnull Clock clock, @Nonnull BusDevice bus) {
+    public KeyboardBuffer(Clock clock, BusDevice bus) {
         super("Keyboard buffer");
 
         this.clock = clock;
@@ -87,7 +86,7 @@ public class KeyboardBuffer extends ClockEvent {
      * Type the given text. Characters without PETSCII equivalent are skipped.
      * May be called from any thread.
      */
-    public void type(@Nonnull String text) {
+    public void type(String text) {
         type(text, 0);
     }
 
@@ -95,7 +94,7 @@ public class KeyboardBuffer extends ClockEvent {
      * Type the given text, but not before the given tick. Characters without PETSCII equivalent are skipped.
      * A tick in the future types the text at a reproducible point in time. May be called from any thread.
      */
-    public void type(@Nonnull String text, long tick) {
+    public void type(String text, long tick) {
         type(text, tick, false);
     }
 
@@ -104,7 +103,7 @@ public class KeyboardBuffer extends ClockEvent {
      * This defines the phase of the typing relative to the raster beam, {@link #type(String, long)} types
      * always at the same position of the raster beam. May be called from any thread.
      */
-    public void typeAt(@Nonnull String text, long tick) {
+    public void typeAt(String text, long tick) {
         type(text, tick, true);
     }
 

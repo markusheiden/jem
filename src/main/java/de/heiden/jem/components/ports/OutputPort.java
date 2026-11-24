@@ -1,7 +1,5 @@
 package de.heiden.jem.components.ports;
 
-import jakarta.annotation.Nonnull;
-
 /**
  * Output port.
  */
@@ -13,7 +11,7 @@ public interface OutputPort {
      *         Port listener.
      * @require listener != null
      */
-    void addOutputPortListener(@Nonnull PortListener listener);
+    void addOutputPortListener(PortListener listener);
 
     /**
      * Remove the port listener.
@@ -22,7 +20,7 @@ public interface OutputPort {
      *         Port listener.
      * @require listener != null
      */
-    void removeOutputPortListener(@Nonnull PortListener listener);
+    void removeOutputPortListener(PortListener listener);
 
     /**
      * The port output data.

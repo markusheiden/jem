@@ -10,7 +10,6 @@ import de.heiden.jem.components.ports.InputPort;
 import de.heiden.jem.components.ports.InputPortImpl;
 import de.heiden.jem.components.ports.OutputPortImpl;
 import de.heiden.jem.models.c64.components.memory.Patchable;
-import jakarta.annotation.Nonnull;
 import org.serialthreads.Interruptible;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,11 +39,13 @@ public class CPU6510 implements ClockedComponent {
     /**
      * Tick.
      */
+    @SuppressWarnings("NullAway.Init")
     protected Tick tick;
 
     /**
      * Bus.
      */
+    @SuppressWarnings("NullAway.Init")
     protected BusDevice bus;
 
     /**
@@ -117,7 +118,6 @@ public class CPU6510 implements ClockedComponent {
         portOut = new InputOutputPortImpl();
         portOut.connect(portIn);
 
-
         irq = new InputPortImpl();
         irq.addInputPortListener((value, mask) -> {
             // IRQ is low active.
@@ -162,7 +162,7 @@ public class CPU6510 implements ClockedComponent {
      *         CPU bus.
      * @require bus != null
      */
-    public void connect(@Nonnull BusDevice bus) {
+    public void connect(BusDevice bus) {
         this.bus = bus;
     }
 
@@ -172,7 +172,7 @@ public class CPU6510 implements ClockedComponent {
      * @param patch
      *         Patch
      */
-    public void add(@Nonnull Patch patch) {
+    public void add(Patch patch) {
         patches.put(patch.getAddress(), patch);
         writePort(0xFF, 0x0001); // Standard memory layout.
         patch.replaced = bus.read(patch.getAddress());

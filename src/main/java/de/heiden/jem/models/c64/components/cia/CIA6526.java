@@ -1,7 +1,5 @@
 package de.heiden.jem.models.c64.components.cia;
 
-import jakarta.annotation.Nonnull;
-
 /**
  * CIA 6526 (old CIA), as in the original C64.
  * <p>
@@ -32,7 +30,7 @@ public class CIA6526 extends AbstractCIA {
      * @param todInput
      *         TOD input.
      */
-    public CIA6526(@Nonnull TodInput todInput) {
+    public CIA6526(TodInput todInput) {
         super(todInput);
     }
 

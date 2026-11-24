@@ -5,7 +5,6 @@ import de.heiden.jem.components.clock.ClockEvent;
 import de.heiden.jem.components.ports.InputOutputPort;
 import de.heiden.jem.components.ports.OutputPort;
 import de.heiden.jem.components.ports.OutputPortImpl;
-import jakarta.annotation.Nonnull;
 
 /**
  * Digital joystick connected to a port of a CIA.
@@ -53,7 +52,7 @@ public class Joystick extends ClockEvent {
      * @param ciaPort
      *         CIA port to connect to.
      */
-    public Joystick(@Nonnull Clock clock, @Nonnull InputOutputPort ciaPort) {
+    public Joystick(Clock clock, InputOutputPort ciaPort) {
         super("Joystick");
 
         this.clock = clock;
@@ -68,14 +67,14 @@ public class Joystick extends ClockEvent {
     /**
      * Press a direction or the fire button.
      */
-    public void press(@Nonnull Direction direction) {
+    public void press(Direction direction) {
         pressed |= direction.bit;
     }
 
     /**
      * Release a direction or the fire button.
      */
-    public void release(@Nonnull Direction direction) {
+    public void release(Direction direction) {
         pressed &= ~direction.bit;
     }
 

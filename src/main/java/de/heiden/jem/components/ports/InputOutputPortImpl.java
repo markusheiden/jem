@@ -1,7 +1,5 @@
 package de.heiden.jem.components.ports;
 
-import jakarta.annotation.Nonnull;
-
 /**
  * Input / output port implementation.
  */
@@ -24,7 +22,7 @@ public final class InputOutputPortImpl implements InputOutputPort {
      * @require port != null
      */
     @Override
-    public void connect(@Nonnull OutputPort port) {
+    public void connect(OutputPort port) {
         inputPort.connect(port);
     }
 
@@ -36,7 +34,7 @@ public final class InputOutputPortImpl implements InputOutputPort {
      * @require port != null
      */
     @Override
-    public void disconnect(@Nonnull OutputPort port) {
+    public void disconnect(OutputPort port) {
         inputPort.disconnect(port);
     }
 
@@ -48,7 +46,7 @@ public final class InputOutputPortImpl implements InputOutputPort {
      * @require listener != null
      */
     @Override
-    public void addInputPortListener(@Nonnull PortListener listener) {
+    public void addInputPortListener(PortListener listener) {
         inputPort.addInputPortListener(listener);
     }
 
@@ -60,7 +58,7 @@ public final class InputOutputPortImpl implements InputOutputPort {
      * @require listener != null
      */
     @Override
-    public void removeInputPortListener(@Nonnull PortListener listener) {
+    public void removeInputPortListener(PortListener listener) {
         inputPort.removeInputPortListener(listener);
     }
 
@@ -89,7 +87,7 @@ public final class InputOutputPortImpl implements InputOutputPort {
      * @require listener != null
      */
     @Override
-    public void addOutputPortListener(@Nonnull PortListener listener) {
+    public void addOutputPortListener(PortListener listener) {
         outputPort.addOutputPortListener(listener);
     }
 
@@ -101,7 +99,7 @@ public final class InputOutputPortImpl implements InputOutputPort {
      * @require listener != null
      */
     @Override
-    public void removeOutputPortListener(@Nonnull PortListener listener) {
+    public void removeOutputPortListener(PortListener listener) {
         outputPort.removeOutputPortListener(listener);
     }
 

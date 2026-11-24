@@ -3,6 +3,7 @@ package de.heiden.jem.models.c64.gui.swing.monitor;
 import de.heiden.c64dt.assembler.Disassembler;
 import de.heiden.c64dt.gui.swing.JC64TextArea;
 import de.heiden.jem.models.c64.components.cpu.CPU6510Debugger;
+import org.jspecify.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
@@ -17,7 +18,7 @@ public class TraceGUI extends JPanel {
 
     private final Disassembler disassembler;
 
-    private CPU6510Debugger cpu;
+    private @Nullable CPU6510Debugger cpu;
 
     /**
      * Constructor.
@@ -32,7 +33,7 @@ public class TraceGUI extends JPanel {
         disassembler = new Disassembler();
     }
 
-    public final void setCpu(CPU6510Debugger cpu) {
+    public final void setCpu(@Nullable CPU6510Debugger cpu) {
         this.cpu = cpu;
 
         stateChanged();

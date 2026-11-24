@@ -3,6 +3,7 @@ package de.heiden.jem.models.c64.gui.swing.monitor;
 import de.heiden.c64dt.bytes.HexUtil;
 import de.heiden.c64dt.gui.swing.JC64TextArea;
 import de.heiden.jem.models.c64.components.cpu.CPU6510;
+import org.jspecify.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,7 +14,7 @@ import java.awt.*;
 public class StateGUI extends JPanel {
     private final JC64TextArea text;
 
-    private CPU6510 cpu;
+    private @Nullable CPU6510 cpu;
 
     /**
      * Constructor.
@@ -26,7 +27,7 @@ public class StateGUI extends JPanel {
         add(text, BorderLayout.CENTER);
     }
 
-    public final void setCpu(CPU6510 cpu) {
+    public final void setCpu(@Nullable CPU6510 cpu) {
         this.cpu = cpu;
 
         stateChanged();

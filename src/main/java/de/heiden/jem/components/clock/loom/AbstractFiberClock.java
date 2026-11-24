@@ -1,8 +1,11 @@
 package de.heiden.jem.components.clock.loom;
 
 import de.heiden.jem.components.clock.AbstractSimpleClock;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Arrays;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * Base implementation for all clocks using {@link Thread fibers} from project loom.
@@ -17,7 +20,7 @@ public abstract class AbstractFiberClock extends AbstractSimpleClock {
     /**
      * Fibers of the components followed by the thread running the clock.
      */
-    private Thread[] threads;
+    private Thread @Nullable [] threads;
 
     /**
      * Last tick to execute.
@@ -108,6 +111,7 @@ public abstract class AbstractFiberClock extends AbstractSimpleClock {
         if (getTick() >= stop) {
             return;
         }
+        var threads = requireNonNull(this.threads, "Clock is not started or already closed");
         var clock = threads.length - 1;
         threads[clock] = Thread.currentThread();
         this.stop = stop;
@@ -146,7 +150,7 @@ public abstract class AbstractFiberClock extends AbstractSimpleClock {
      * The thread running the clock is only available while it runs the clock.
      */
     protected final Thread thread(int index) {
-        return threads[index];
+        return requireNonNull(threads, "Clock is not started or already closed")[index];
     }
 
     @Override

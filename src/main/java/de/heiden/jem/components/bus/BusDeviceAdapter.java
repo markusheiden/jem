@@ -1,7 +1,5 @@
 package de.heiden.jem.components.bus;
 
-import jakarta.annotation.Nonnull;
-
 /**
  * Adapter for {@link BusDevice}.
  * Delegates all methods to a given bus device.
@@ -18,7 +16,7 @@ public class BusDeviceAdapter implements BusDevice {
      * @param bus
      *         Bus to delegate to.
      */
-    public BusDeviceAdapter(@Nonnull BusDevice bus) {
+    public BusDeviceAdapter(BusDevice bus) {
         this.bus = bus;
     }
 

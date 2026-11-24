@@ -3,11 +3,14 @@ package de.heiden.jem.models.c64.gui.swing.monitor;
 import de.heiden.c64dt.bytes.HexUtil;
 import de.heiden.c64dt.gui.swing.JC64TextArea;
 import de.heiden.jem.components.bus.BusDevice;
+import org.jspecify.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * GUI for showing a memory dump.
@@ -18,7 +21,7 @@ public class MemDumpGUI extends JPanel {
     private final JC64TextArea text;
     private final JScrollBar scrollBar;
 
-    private BusDevice bus;
+    private @Nullable BusDevice bus;
 
     /**
      * Constructor.
@@ -69,7 +72,7 @@ public class MemDumpGUI extends JPanel {
      * @param bus
      *         Model.
      */
-    public void setBus(BusDevice bus) {
+    public void setBus(@Nullable BusDevice bus) {
         this.bus = bus;
         memoryChanged();
     }
@@ -103,6 +106,7 @@ public class MemDumpGUI extends JPanel {
      *         Row to draw dump to.
      */
     protected void dumpLine(int addr, int row) {
+        var bus = requireNonNull(this.bus, "Bus");
         text.setText(0, row, HexUtil.hexWordPlain(addr));
 
         for (int i = 0, c = 0; i < 8; i++, c++) {

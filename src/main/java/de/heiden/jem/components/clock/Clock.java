@@ -1,7 +1,5 @@
 package de.heiden.jem.components.clock;
 
-import jakarta.annotation.Nonnull;
-
 /**
  * Clock.
  */
@@ -63,7 +61,7 @@ public interface Clock extends AutoCloseable {
      * @require tick > getTick()
      * @require event != null
      */
-    void addClockEvent(long tick, @Nonnull ClockEvent event);
+    void addClockEvent(long tick, ClockEvent event);
 
     /**
      * Set tick to execute an existing event at.
@@ -76,7 +74,7 @@ public interface Clock extends AutoCloseable {
      * @require tick > getTick()
      * @require event != null
      */
-    void updateClockEvent(long tick, @Nonnull ClockEvent event);
+    void updateClockEvent(long tick, ClockEvent event);
 
     /**
      * Remove event.
@@ -85,7 +83,7 @@ public interface Clock extends AutoCloseable {
      *         Event to remove.
      * @require event != null
      */
-    void removeClockEvent(@Nonnull ClockEvent event);
+    void removeClockEvent(ClockEvent event);
 
     /**
      * Get current tick.

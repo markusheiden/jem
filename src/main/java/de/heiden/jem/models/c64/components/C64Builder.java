@@ -15,6 +15,7 @@ import de.heiden.jem.models.c64.components.memory.ROMLoader;
 import de.heiden.jem.models.c64.components.sid.SIDStub;
 import de.heiden.jem.models.c64.components.vic.VIC;
 import de.heiden.jem.models.c64.components.vic.VICBus;
+import org.jspecify.annotations.Nullable;
 
 import static de.heiden.jem.models.c64.components.memory.ROMLoader.DEFAULT_BASIC;
 import static de.heiden.jem.models.c64.components.memory.ROMLoader.DEFAULT_CHARACTER;
@@ -47,7 +48,7 @@ public class C64Builder {
     /**
      * Device in the SID area $D400-$D7FF.
      */
-    private BusDevice sid;
+    private @Nullable BusDevice sid;
 
     /**
      * Slow down the emulation to real time?

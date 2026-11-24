@@ -9,6 +9,7 @@ public final class SequentialFiberYieldClock extends AbstractFiberClock {
     /**
      * Handover of execution between the fibers and the thread running the clock.
      */
+    @SuppressWarnings("NullAway.Init")
     private YieldHandover handover;
 
     @Override

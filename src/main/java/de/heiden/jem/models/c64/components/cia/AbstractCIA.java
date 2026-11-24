@@ -7,7 +7,6 @@ import de.heiden.jem.components.ports.InputOutputPort;
 import de.heiden.jem.components.ports.InputOutputPortImpl;
 import de.heiden.jem.components.ports.OutputPort;
 import de.heiden.jem.components.ports.OutputPortImpl;
-import jakarta.annotation.Nonnull;
 import org.serialthreads.Interruptible;
 
 import java.util.Arrays;
@@ -67,6 +66,7 @@ public abstract class AbstractCIA implements BusDevice, ClockedComponent {
     /**
      * Clock tick.
      */
+    @SuppressWarnings("NullAway.Init")
     private Tick tick;
 
     /**
@@ -227,7 +227,7 @@ public abstract class AbstractCIA implements BusDevice, ClockedComponent {
      * @param todInput
      *         TOD input.
      */
-    protected AbstractCIA(@Nonnull TodInput todInput) {
+    protected AbstractCIA(TodInput todInput) {
         this.todInput = todInput;
         irqPort.setOutputMask(0x01);
         irqPort.setOutputData(0x01);
@@ -266,15 +266,15 @@ public abstract class AbstractCIA implements BusDevice, ClockedComponent {
         }
     }
 
-    public @Nonnull InputOutputPort portA() {
+    public InputOutputPort portA() {
         return portA;
     }
 
-    public @Nonnull InputOutputPort portB() {
+    public InputOutputPort portB() {
         return portB;
     }
 
-    public @Nonnull InputOutputPort portSerial() {
+    public InputOutputPort portSerial() {
         return portSerial;
     }
 

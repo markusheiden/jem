@@ -3,8 +3,10 @@ package de.heiden.jem.components.clock.loom;
 import de.heiden.jem.components.clock.AbstractSimpleClock;
 import jdk.internal.vm.Continuation;
 import jdk.internal.vm.ContinuationScope;
+import org.jspecify.annotations.Nullable;
 
 import static de.heiden.jem.components.clock.ManualAbort.abortIfInterrupted;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Clock using the continuations, which {@link Thread fibers} from project loom are built on.
@@ -30,7 +32,7 @@ public final class ContinuationClock extends AbstractSimpleClock {
     /**
      * Continuations of the components.
      */
-    private Continuation[] continuations;
+    private Continuation @Nullable [] continuations;
 
     @Override
     protected void doInit() {
@@ -61,7 +63,7 @@ public final class ContinuationClock extends AbstractSimpleClock {
      * Execute ticks until the given tick.
      */
     private void execute(long stop) {
-        var continuations = this.continuations;
+        var continuations = requireNonNull(this.continuations, "Clock is not started or already closed");
         while (getTick() < stop) {
             startTick();
             for (var continuation : continuations) {

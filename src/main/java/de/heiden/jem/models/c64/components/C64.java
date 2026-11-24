@@ -16,8 +16,7 @@ import de.heiden.jem.models.c64.components.memory.ROM;
 import de.heiden.jem.models.c64.components.patch.LoadFromDirectory;
 import de.heiden.jem.models.c64.components.vic.VIC;
 import de.heiden.jem.models.c64.components.vic.VICBus;
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,7 +76,7 @@ public class C64 {
      * Slow down to real time, measures the time needed for each simulated second.
      * Null, if the emulation runs as fast as possible.
      */
-    private final RealTimeSlowDown realTimeSlowDown;
+    private final @Nullable RealTimeSlowDown realTimeSlowDown;
 
     /**
      * Builder for a C64, by default a PAL C64 with old CIAs.
@@ -120,18 +119,18 @@ public class C64 {
      *         Slow down to real time, null to run as fast as possible.
      */
     C64(
-            @Nonnull Clock clock,
-            @Nonnull RAM ram,
-            @Nonnull ColorRAM colorRam,
-            @Nonnull ROM basic,
-            @Nonnull ROM kernel,
-            @Nonnull ROM charset,
-            @Nonnull AbstractCIA cia1,
-            @Nonnull AbstractCIA cia2,
-            @Nonnull VICBus vicBus,
-            @Nonnull VIC vic,
-            @Nonnull BusDevice sid,
-            @Nonnull CPU6510 cpu,
+            Clock clock,
+            RAM ram,
+            ColorRAM colorRam,
+            ROM basic,
+            ROM kernel,
+            ROM charset,
+            AbstractCIA cia1,
+            AbstractCIA cia2,
+            VICBus vicBus,
+            VIC vic,
+            BusDevice sid,
+            CPU6510 cpu,
             @Nullable RealTimeSlowDown realTimeSlowDown) throws IOException {
         this.clock = clock;
         this.vic = vic;
@@ -279,7 +278,7 @@ public class C64 {
      * Slow down to real time, measures the time needed for each simulated second.
      * Null, if the emulation runs as fast as possible.
      */
-    public RealTimeSlowDown getRealTimeSlowDown() {
+    public @Nullable RealTimeSlowDown getRealTimeSlowDown() {
         return realTimeSlowDown;
     }
 }

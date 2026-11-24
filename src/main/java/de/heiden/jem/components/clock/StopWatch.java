@@ -1,6 +1,5 @@
 package de.heiden.jem.components.clock;
 
-import jakarta.annotation.Nonnull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +26,7 @@ public class StopWatch extends ClockEvent {
      * @param freq
      *         Frequency in Hz (clock ticks per second).
      */
-    public StopWatch(@Nonnull Clock clock, long freq) {
+    public StopWatch(Clock clock, long freq) {
         super("Stop watch");
 
         assert freq > 0 : "Precondition: freq > 0";

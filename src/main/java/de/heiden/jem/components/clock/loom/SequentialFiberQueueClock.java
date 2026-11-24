@@ -17,6 +17,7 @@ public final class SequentialFiberQueueClock extends AbstractFiberClock {
     /**
      * Queues of the components followed by the queue of the thread running the clock.
      */
+    @SuppressWarnings("NullAway.Init")
     private SynchronousQueue<Object>[] queues;
 
     @Override

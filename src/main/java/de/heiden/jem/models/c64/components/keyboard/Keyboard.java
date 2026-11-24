@@ -5,7 +5,6 @@ import de.heiden.jem.components.clock.ClockEvent;
 import de.heiden.jem.components.ports.InputOutputPort;
 import de.heiden.jem.components.ports.OutputPort;
 import de.heiden.jem.components.ports.OutputPortImpl;
-import jakarta.annotation.Nonnull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,7 +82,7 @@ public class Keyboard extends ClockEvent implements IKeyboard {
      * @require port0 != null
      * @require port1 != null
      */
-    public Keyboard(@Nonnull Clock clock, @Nonnull InputOutputPort port0, @Nonnull InputOutputPort port1) {
+    public Keyboard(Clock clock, InputOutputPort port0, InputOutputPort port1) {
         super("Keyboard");
 
         this.clock = clock;

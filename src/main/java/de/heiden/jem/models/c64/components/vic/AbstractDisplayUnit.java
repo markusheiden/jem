@@ -8,6 +8,7 @@ import de.heiden.jem.components.clock.Tick;
  */
 public abstract class AbstractDisplayUnit implements ClockedComponent {
     protected final VIC vic;
+    @SuppressWarnings("NullAway.Init")
     protected Tick tick;
 
     private final int offset;
@@ -16,6 +17,7 @@ public abstract class AbstractDisplayUnit implements ClockedComponent {
     private final int width;
     private final int height;
 
+    @SuppressWarnings("NullAway.Init")
     private IScreenListener listener;
 
     /**

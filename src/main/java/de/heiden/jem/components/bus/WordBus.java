@@ -1,7 +1,6 @@
 package de.heiden.jem.components.bus;
 
 import de.heiden.c64dt.bytes.ByteUtil;
-import jakarta.annotation.Nonnull;
 
 import static de.heiden.c64dt.bytes.ByteUtil.toWord;
 
@@ -17,7 +16,7 @@ public class WordBus extends BusDeviceAdapter {
      *         Bus to delegate to.
      * @require bus != null
      */
-    public WordBus(@Nonnull BusDevice bus) {
+    public WordBus(BusDevice bus) {
         super(bus);
     }
 

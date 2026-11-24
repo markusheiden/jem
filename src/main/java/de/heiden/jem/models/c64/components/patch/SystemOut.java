@@ -14,6 +14,7 @@ public class SystemOut extends Patch {
     /**
      * Stream to write output to.
      */
+    @SuppressWarnings("NullAway.Init")
     private OutputStream stream;
 
     /**

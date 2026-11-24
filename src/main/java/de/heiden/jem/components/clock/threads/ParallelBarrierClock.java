@@ -39,6 +39,7 @@ public final class ParallelBarrierClock extends AbstractSynchronizedClock {
     /**
      * Component threads.
      */
+    @SuppressWarnings("NullAway.Init")
     private Thread[] threads;
 
     /**

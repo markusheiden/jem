@@ -27,6 +27,7 @@ public final class SequentialClock extends AbstractSynchronizedClock {
      * Thread of the first component.
      * Set before the thread of the last component, which is the only one reading it, is started.
      */
+    @SuppressWarnings("NullAway.Init")
     private Thread firstThread;
 
     @Override
