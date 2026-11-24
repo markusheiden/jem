@@ -111,7 +111,6 @@ public class Keyboard extends ClockEvent implements IKeyboard {
      * NMI output.
      */
     public OutputPort getNMI() {
-        assert nmi != null : "Postcondition: result != null";
         return nmi;
     }
 

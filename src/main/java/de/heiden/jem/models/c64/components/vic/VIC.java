@@ -173,10 +173,6 @@ public class VIC implements BusDevice {
      * @require colorRam != null
      */
     public VIC(VicModel model, VICBus bus, ColorRAM colorRam) {
-        assert model != null : "model != null";
-        assert bus != null : "bus != null";
-        assert colorRam != null : "colorRam != null";
-
         this.model = model;
         this.bus = bus;
         this.colorRam = colorRam;

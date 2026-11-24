@@ -41,10 +41,6 @@ public class VICBus implements BusDevice {
      * @require cia2PortA != null
      */
     public VICBus(BusDevice ram, BusDevice character, OutputPort cia2PortA) {
-        assert cia2PortA != null : "cia2PortA != null";
-        assert ram != null : "ram != null";
-        assert character != null : "character != null";
-
         this.ram = ram;
         this.character = character;
 
