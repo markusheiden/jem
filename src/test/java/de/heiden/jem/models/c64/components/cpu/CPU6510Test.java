@@ -631,7 +631,7 @@ class CPU6510Test {
             execute(opcode); // PHx, JMP
 
             // Write to stack, decrement S.
-            int expectedValue = modifier != null ? modifier.apply(value) : value;
+            var expectedValue = modifier != null ? modifier.apply(value) : value;
             executeOneTick_push(expectedState, expectedValue);
             // Check state and jump back.
             checkAndJmpBack();
