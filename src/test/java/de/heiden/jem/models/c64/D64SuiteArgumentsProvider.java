@@ -11,13 +11,13 @@ import org.junit.jupiter.params.support.ParameterDeclarations;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import static de.heiden.c64dt.disk.FileType.PRG;
-import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -51,7 +51,7 @@ public abstract class D64SuiteArgumentsProvider implements ArgumentsProvider, An
             throw new NullPointerException("Resource has to be specified.");
         }
 
-        ignore = new HashSet<>(asList(source.ignore()));
+        ignore = new HashSet<>(List.of(source.ignore()));
         ignore.remove("NULL");
         filter = !source.filter().equals("NULL") ?
                 Pattern.compile(source.filter()).asPredicate() : programName -> true;

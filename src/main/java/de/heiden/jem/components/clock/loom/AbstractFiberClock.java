@@ -3,7 +3,7 @@ package de.heiden.jem.components.clock.loom;
 import de.heiden.jem.components.clock.AbstractSimpleClock;
 import org.jspecify.annotations.Nullable;
 
-import java.util.Arrays;
+import java.util.List;
 
 import static java.util.Objects.requireNonNull;
 
@@ -157,7 +157,7 @@ public abstract class AbstractFiberClock extends AbstractSimpleClock {
     protected void doClose() {
         var threads = this.threads;
         if (threads != null) {
-            terminate(Arrays.asList(threads).subList(0, threads.length - 1));
+            terminate(List.of(threads).subList(0, threads.length - 1));
             this.threads = null;
         }
     }
