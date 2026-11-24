@@ -20,7 +20,6 @@ public class LoggingBus extends BusDeviceAdapter {
      *
      * @param bus
      *         Bus to delegate to.
-     * @require bus != null
      */
     public LoggingBus(BusDevice bus) {
         super(bus);
@@ -52,7 +51,6 @@ public class LoggingBus extends BusDeviceAdapter {
      * Get the last log entry.
      *
      * @require getLog().length > 0
-     * @ensure result != null
      */
     public synchronized LogEntry getLastLogEntry() {
         assert !getLog().isEmpty() : "Precondition: !getLog().isEmpty()";

@@ -9,7 +9,6 @@ public interface OutputPort {
      *
      * @param listener
      *         Port listener.
-     * @require listener != null
      */
     void addOutputPortListener(PortListener listener);
 
@@ -18,7 +17,6 @@ public interface OutputPort {
      *
      * @param listener
      *         Port listener.
-     * @require listener != null
      */
     void removeOutputPortListener(PortListener listener);
 

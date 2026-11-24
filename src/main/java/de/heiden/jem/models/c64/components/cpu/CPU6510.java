@@ -160,7 +160,6 @@ public class CPU6510 implements ClockedComponent {
      *
      * @param bus
      *         CPU bus.
-     * @require bus != null
      */
     public void connect(BusDevice bus) {
         this.bus = bus;

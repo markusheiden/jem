@@ -32,7 +32,6 @@ public final class OutputPortImpl implements OutputPort {
      *
      * @param listener
      *         Port listener.
-     * @require listener != null
      */
     @Override
     public void addOutputPortListener(PortListener listener) {
@@ -45,7 +44,6 @@ public final class OutputPortImpl implements OutputPort {
      *
      * @param listener
      *         Port listener.
-     * @require listener != null
      */
     @Override
     public void removeOutputPortListener(PortListener listener) {

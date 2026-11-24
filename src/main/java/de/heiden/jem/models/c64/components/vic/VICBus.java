@@ -36,9 +36,6 @@ public class VICBus implements BusDevice {
      *         Char ROM.
      * @param cia2PortA
      *         Port A of CIA 2 for VIC base address.
-     * @require ram != null
-     * @require character != null
-     * @require cia2PortA != null
      */
     public VICBus(BusDevice ram, BusDevice character, OutputPort cia2PortA) {
         this.ram = ram;

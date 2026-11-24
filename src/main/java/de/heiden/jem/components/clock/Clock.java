@@ -32,7 +32,6 @@ public interface Clock extends AutoCloseable {
      *         Position to insert component in execute queue.
      * @param component
      *         Clocked component to add.
-     * @require component != null
      * @require position >= 0
      * @require !isStarted()
      */
@@ -59,7 +58,6 @@ public interface Clock extends AutoCloseable {
      * @param event
      *         Event to add.
      * @require tick > getTick()
-     * @require event != null
      */
     void addClockEvent(long tick, ClockEvent event);
 
@@ -72,7 +70,6 @@ public interface Clock extends AutoCloseable {
      * @param event
      *         Event.
      * @require tick > getTick()
-     * @require event != null
      */
     void updateClockEvent(long tick, ClockEvent event);
 
@@ -81,7 +78,6 @@ public interface Clock extends AutoCloseable {
      *
      * @param event
      *         Event to remove.
-     * @require event != null
      */
     void removeClockEvent(ClockEvent event);
 

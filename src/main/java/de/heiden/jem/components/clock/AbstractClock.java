@@ -70,8 +70,6 @@ public abstract class AbstractClock implements Clock {
      * @param component
      *         Clocked component to add.
      * @require position >= 0
-     * @require component != null
-     * @ensure result != null
      */
     @Override
     public synchronized <C extends ClockedComponent> C addClockedComponent(int position, C component) {

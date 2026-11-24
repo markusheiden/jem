@@ -168,9 +168,6 @@ public class VIC implements BusDevice {
      *         VIC memory bus.
      * @param colorRam
      *         Color RAM.
-     * @require model != null
-     * @require bus != null
-     * @require colorRam != null
      */
     public VIC(VicModel model, VICBus bus, ColorRAM colorRam) {
         this.model = model;

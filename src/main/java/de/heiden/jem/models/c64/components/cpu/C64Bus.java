@@ -106,17 +106,6 @@ public class C64Bus implements BusDevice, Patchable {
      *         Kernel ROM.
      * @param openBus
      *         Device for the areas without a device $DE00-$DFFF.
-     * @require cpu != null
-     * @require ram != null
-     * @require basic != null
-     * @require vic != null
-     * @require sid != null
-     * @require colorRam != null
-     * @require cia1 != null
-     * @require cia2 != null
-     * @require charset != null
-     * @require kernel != null
-     * @require openBus != null
      */
     public C64Bus(
             BusDevice ram,

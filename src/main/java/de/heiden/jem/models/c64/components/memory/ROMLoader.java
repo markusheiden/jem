@@ -12,7 +12,6 @@ public class ROMLoader {
      *
      * @param filename
      *         Filename of ROM image.
-     * @ensure result != null
      */
     public static ROM basic(String filename) throws Exception {
         var content = load(0x2000, filename);
@@ -24,7 +23,6 @@ public class ROMLoader {
      *
      * @param filename
      *         Filename of ROM image.
-     * @ensure result != null
      */
     public static ROM kernel(String filename) throws Exception {
         var content = load(0x2000, filename);
@@ -36,7 +34,6 @@ public class ROMLoader {
      *
      * @param filename
      *         Filename of ROM image.
-     * @ensure result != null
      */
     public static ROM character(String filename) throws Exception {
         var content = load(0x1000, filename);
@@ -48,7 +45,6 @@ public class ROMLoader {
      *
      * @param filename
      *         Filename of ROM image.
-     * @ensure result != null
      */
     public static ROM pla(String filename) throws Exception {
         var content = load(0x1000, filename);

@@ -79,8 +79,6 @@ public class Keyboard extends ClockEvent implements IKeyboard {
      *         Port for rows.
      * @param port1
      *         Port for columns.
-     * @require port0 != null
-     * @require port1 != null
      */
     public Keyboard(Clock clock, InputOutputPort port0, InputOutputPort port1) {
         super("Keyboard");

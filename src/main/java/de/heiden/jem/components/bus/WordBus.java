@@ -14,7 +14,6 @@ public class WordBus extends BusDeviceAdapter {
      *
      * @param bus
      *         Bus to delegate to.
-     * @require bus != null
      */
     public WordBus(BusDevice bus) {
         super(bus);
