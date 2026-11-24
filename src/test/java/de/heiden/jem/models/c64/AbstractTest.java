@@ -12,6 +12,7 @@ import de.heiden.jem.models.c64.components.cpu.CPU6510;
 import de.heiden.jem.models.c64.components.memory.RAM;
 import de.heiden.jem.models.c64.components.patch.LoadFile;
 import de.heiden.jem.models.c64.components.patch.LoadFromDirectory;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,6 +35,7 @@ import static de.heiden.c64dt.bytes.HexUtil.hexByte;
 import static de.heiden.c64dt.bytes.HexUtil.hexWord;
 import static java.lang.Thread.sleep;
 import static java.util.Arrays.stream;
+import static java.util.Objects.requireNonNull;
 import static org.apache.commons.lang3.StringUtils.join;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -100,6 +102,7 @@ public abstract class AbstractTest {
     /**
      * Transformed test C64.
      */
+    @SuppressWarnings("NullAway.Init")
     protected TestC64 c64;
 
     /**
@@ -115,21 +118,24 @@ public abstract class AbstractTest {
     /**
      * Keyboard input for test C64.
      */
+    @SuppressWarnings("NullAway.Init")
     private KeyListener systemIn;
 
     /**
      * Thread to run test C64.
      */
+    @SuppressWarnings("NullAway.Init")
     protected Thread thread;
 
     /**
      * Throwable from C64 thread, if any.
      */
-    private volatile Throwable throwable;
+    private volatile @Nullable Throwable throwable;
 
     /**
      * Program.
      */
+    @SuppressWarnings("NullAway.Init")
     private byte[] bytes;
 
     /**
@@ -357,7 +363,7 @@ public abstract class AbstractTest {
         programName = programName.substring(0, programName.indexOf(".prg"));
 
         createC64(programName);
-        c64.add(new LoadFromDirectory(program.getParent()));
+        c64.add(new LoadFromDirectory(requireNonNull(program.getParent())));
         doLoadAndRun(programName, Files.readAllBytes(program));
     }
 
@@ -499,7 +505,7 @@ public abstract class AbstractTest {
      *         Conditions.
      * @return Condition that met or null, if timeout.
      */
-    protected Condition waitSecondsFor(int maxSeconds, Condition... conditions) throws Exception {
+    protected @Nullable Condition waitSecondsFor(int maxSeconds, Condition... conditions) throws Exception {
         return waitCyclesFor(maxSeconds * 1000000L, conditions);
     }
 
@@ -512,7 +518,7 @@ public abstract class AbstractTest {
      *         Conditions.
      * @return Condition that met or null, if timeout.
      */
-    protected Condition waitCyclesFor(long maxCycles, Condition... conditions) throws Exception {
+    protected @Nullable Condition waitCyclesFor(long maxCycles, Condition... conditions) throws Exception {
         for (long start = getTick(), end = start + maxCycles; ; ) {
             // Test the program end first, because the C64 is still running:
             // Otherwise a condition met just before the program end may be missed.

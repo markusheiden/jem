@@ -32,16 +32,19 @@ public abstract class D64SuiteArgumentsProvider implements ArgumentsProvider, An
     /**
      * Classpath to directory with test D64 image.
      */
+    @SuppressWarnings("NullAway.Init")
     private String resource;
 
     /**
      * Program names to ignore.
      */
+    @SuppressWarnings("NullAway.Init")
     private Set<String> ignore;
 
     /**
      * Additional program name filter {@link Pattern regex} to use.
      */
+    @SuppressWarnings("NullAway.Init")
     private Predicate<String> filter;
 
     @Override

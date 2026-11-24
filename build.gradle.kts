@@ -77,9 +77,8 @@ tasks.withType<JavaCompile>().configureEach {
     ))
 
     options.errorprone {
-        // Check just the null safety of the production code.
+        // Check just the null safety.
         disableAllChecks = true
-        enabled = !name.contains("test", ignoreCase = true)
         error("NullAway")
         option("NullAway:AnnotatedPackages", "de.heiden.jem")
         option("NullAway:JSpecifyMode", "true")

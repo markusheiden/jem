@@ -11,6 +11,7 @@ public final class CounterComponent implements ClockedComponent {
     /**
      * Tick.
      */
+    @SuppressWarnings("NullAway.Init")
     private Tick tick;
 
     /**

@@ -30,16 +30,19 @@ public class ProgramSuiteArgumentsProvider implements ArgumentsProvider, Annotat
     /**
      * Classpath to directory with test programs.
      */
+    @SuppressWarnings("NullAway.Init")
     private String resource;
 
     /**
      * Program names to ignore.
      */
+    @SuppressWarnings("NullAway.Init")
     private Set<String> ignore;
 
     /**
      * Additional program name filter {@link Pattern regex} to use.
      */
+    @SuppressWarnings("NullAway.Init")
     private Predicate<String> filter;
 
     @Override

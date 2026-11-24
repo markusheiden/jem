@@ -21,6 +21,7 @@ import de.heiden.jem.models.c64.gui.swing.emulator.KeyListener;
 import de.heiden.jem.models.c64.gui.swing.emulator.PCMapping;
 
 import java.io.OutputStream;
+import org.jspecify.annotations.Nullable;
 
 import static java.lang.Thread.interrupted;
 
@@ -199,7 +200,7 @@ public class TestC64 {
     /**
      * Set stream for screen output.
      */
-    public void setSystemOut(OutputStream systemOut) {
+    public void setSystemOut(@Nullable OutputStream systemOut) {
         this.systemOut.setStream(systemOut);
     }
 

@@ -152,6 +152,7 @@ public final class ClockBenchmark {
         /**
          * Tick.
          */
+        @SuppressWarnings("NullAway.Init")
         private Tick tick;
 
         /**

@@ -6,6 +6,7 @@ import de.heiden.jem.components.bus.WordBus;
 import de.heiden.jem.components.clock.Clock;
 import de.heiden.jem.components.clock.serialthreads.SerialClock;
 import de.heiden.jem.models.c64.components.memory.RAM;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
@@ -621,7 +622,7 @@ class CPU6510Test {
     /**
      * Test of PH?.
      */
-    private void test_PHx(int opcode, SetRegister source, Function<Integer, Integer> modifier) {
+    private void test_PHx(int opcode, SetRegister source, @Nullable Function<Integer, Integer> modifier) {
         // 256 values -> stack overflow will be tested too.
         for (var value = 0x00; value <= 0xFF; value = inc(value)) {
             resetState(value);

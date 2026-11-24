@@ -6,6 +6,7 @@ import de.heiden.jem.models.c64.components.cpu.Patch;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Replaces standard C64 "System.out" at $E716 (part of $FFD2).
@@ -14,8 +15,7 @@ public class SystemOut extends Patch {
     /**
      * Stream to write output to.
      */
-    @SuppressWarnings("NullAway.Init")
-    private OutputStream stream;
+    private @Nullable OutputStream stream;
 
     /**
      * Constructor.
@@ -30,7 +30,7 @@ public class SystemOut extends Patch {
      * @param stream
      *         Stream.
      */
-    public void setStream(OutputStream stream) {
+    public void setStream(@Nullable OutputStream stream) {
         this.stream = stream;
     }
 
